@@ -2007,7 +2007,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     double price1 = Math.ceil((distance) * Double.parseDouble(dataSnapshot.child("km").getValue(String.class)));
                     int price2 = (int) price1;
-                    if (price2 < Double.parseDouble(dataSnapshot.child("minimum").getValue(String.class))) price2 = Integer.parseInt(dataSnapshot.child("minimum").getValue(String.class));
+                    if (price2 < Double.parseDouble(dataSnapshot.child("minimum").getValue(String.class)))
+                        price2 = Integer.parseInt(dataSnapshot.child("minimum").getValue(String.class));
                     price.setText(price2 + " MAD");
                 }
 
