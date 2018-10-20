@@ -15,6 +15,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ScaleDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -116,6 +118,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import comingoo.one.user.comingoouser.R;
@@ -1745,7 +1748,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Aide = (ConstraintLayout) findViewById(R.id.aide);
         logout = (ConstraintLayout) findViewById(R.id.logout);
 
-
         Historique.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -1895,6 +1897,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
         setSearchFunc();
+
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        List<Address> addresses = null;
+        try {
+            addresses = geocoder.getFromLocation(userLatLng.latitude,userLatLng.longitude, 1);
+            startCity = addresses.get(0).getLocality();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void showFavoritsAndRecents(){
@@ -1938,6 +1949,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     //Check Start Position
     private boolean startPositionIsValid(){
        //PolyUtil.containsLocation(position.latitude, position.longitude, casaPoly, true);
+
+
+
+        startCity =  "casa";
 
         if(PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.casaPoly(), true) ||PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.errahmaPoly(), true)){
             startCity = "casa";

@@ -1197,7 +1197,7 @@
                     android:id="@+id/confirm_start"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/main_button_ripple"
+                    android:background="@color/gradiantEnd2"
                     android:elevation="1dp"
                     android:fontFamily="@font/roboto_bold"
                     android:text="@string/confirm_start"
