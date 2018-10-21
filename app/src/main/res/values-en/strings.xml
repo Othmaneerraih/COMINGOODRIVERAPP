@@ -85,4 +85,8 @@
     <string name="PS">"Use the voice recorder to share with us your experience with COMINGOO. P.S. The best recordings will be used in our advertising campaign. "</string>
     <string name="Record">"Hold your finger on the button to record "</string>
     <string name="passer">Pass</string>
+
+    <string name="sinch_app_key">05a626b9-33a4-4b83-b7bc-2d49062ea9ae</string>
+    <string name="sinch_app_secret">gVW3Tm0140e9i17wRwUzzw==</string>
+    <string name="sinch_envirentmnet_host">clientapi.sinch.com</string>
 </resources>

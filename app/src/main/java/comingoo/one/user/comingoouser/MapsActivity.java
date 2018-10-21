@@ -342,6 +342,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         menuButton.setImageBitmap(scaleBitmap(45, 45, R.drawable.home_icon));
         positionButton.setImageBitmap(scaleBitmap(40, 37, R.drawable.my_position_icon));
         X.setImageBitmap(scaleBitmap(30, 35, R.drawable.cancel));
+        searchEditText.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) (dpWidth - 30), (int )((dpWidth - 30) / 3.75), R.drawable.search_icon)));
+
         //citySelectLayout.setBackground(new BitmapDrawable(getResources(), scaleBitmap(115, 29, R.drawable.)));
         //gooButton.setImageBitmap(scaleBitmap(20, 20, R.drawable.goo));
         gooBox.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) (dpWidth - 30), (int )((dpWidth - 30) / 3.75), R.drawable.footer_min)));
@@ -383,9 +385,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             sinchClient = Sinch.getSinchClientBuilder()
                     .context(MapsActivity.this)
                     .userId(userId)
-                    .applicationKey("05a626b9-33a4-4b83-b7bc-2d49062ea9ae")
-                    .applicationSecret("gVW3Tm0140e9i17wRwUzzw==")
-                    .environmentHost("clientapi.sinch.com")
+                    .applicationKey(resources.getString(R.string.sinch_app_key))
+                    .applicationSecret(resources.getString(R.string.sinch_app_secret))
+                    .environmentHost(resources.getString(R.string.sinch_envirentmnet_host))
                     .build();
             sinchClient.setSupportCalling(true);
             sinchClient.start();
@@ -419,7 +421,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 Intent intent = new Intent(MapsActivity.this, comingoonuActivity.class);
                                 intent.putExtra("image", dataSnapshot.child("image").getValue(String.class));
                                 intent.putExtra("name", dataSnapshot.child("fullName").getValue(String.class));
-                                intent.putExtra("phone", "+212 " + dataSnapshot.child("phoneNumber").getValue(String.class));
+                                intent.putExtra("phone", dataSnapshot.child("phoneNumber").getValue(String.class));
+//                                intent.putExtra("phone", "+212 " + dataSnapshot.child("phoneNumber").getValue(String.class));
                                 startActivity(intent);
                             }
                         });
@@ -979,7 +982,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         @Override
         protected String doInBackground(String... params) {
 
-            userId = "123";
+//            userId = "123";
             FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("COURSE").addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
@@ -1587,6 +1590,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //LeakCanary.install(getApplication());
         SharedPreferences prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
         String userId = prefs.getString("userID", null);
+
+        // if user not login any more
         if(userId == null || FirebaseAuth.getInstance().getCurrentUser() == null){
             prefs.edit().remove("userID");
             FirebaseAuth.getInstance().signOut();
