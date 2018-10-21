@@ -14,7 +14,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/logo_min" />
+        android:src="@drawable/logo_min"
+        />
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/constraintLayout"
@@ -23,7 +24,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="52dp"
-        android:background="@drawable/box_min"
+        android:background="@drawable/prelogin_bg"
         android:paddingBottom="40dp"
         android:paddingTop="40dp"
         app:layout_constraintEnd_toEndOf="parent"

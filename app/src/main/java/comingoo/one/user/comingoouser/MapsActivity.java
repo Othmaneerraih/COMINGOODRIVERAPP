@@ -385,9 +385,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             sinchClient = Sinch.getSinchClientBuilder()
                     .context(MapsActivity.this)
                     .userId(userId)
-                    .applicationKey(resources.getString(R.string.sinch_app_key))
-                    .applicationSecret(resources.getString(R.string.sinch_app_secret))
-                    .environmentHost(resources.getString(R.string.sinch_envirentmnet_host))
+                    .applicationKey("05a626b9-33a4-4b83-b7bc-2d49062ea9ae")
+                    .applicationSecret("gVW3Tm0140e9i17wRwUzzw==")
+                    .environmentHost("clientapi.sinch.com")
+//                    .applicationKey(resources.getString(R.string.sinch_app_key))
+//                    .applicationSecret(resources.getString(R.string.sinch_app_secret))
+//                    .environmentHost(resources.getString(R.string.sinch_envirentmnet_host))
                     .build();
             sinchClient.setSupportCalling(true);
             sinchClient.start();
@@ -421,8 +424,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 Intent intent = new Intent(MapsActivity.this, comingoonuActivity.class);
                                 intent.putExtra("image", dataSnapshot.child("image").getValue(String.class));
                                 intent.putExtra("name", dataSnapshot.child("fullName").getValue(String.class));
-                                intent.putExtra("phone", dataSnapshot.child("phoneNumber").getValue(String.class));
-//                                intent.putExtra("phone", "+212 " + dataSnapshot.child("phoneNumber").getValue(String.class));
+//                                intent.putExtra("phone", dataSnapshot.child("phoneNumber").getValue(String.class));
+                                intent.putExtra("phone", "+212 " + dataSnapshot.child("phoneNumber").getValue(String.class));
                                 startActivity(intent);
                             }
                         });
