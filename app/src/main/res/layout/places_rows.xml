@@ -31,7 +31,7 @@
             android:layout_marginBottom="5dp"
             android:layout_marginLeft="10dp"
             android:layout_marginStart="10dp"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="8dp"
             android:layout_weight="1"
             android:scaleType="fitXY"
             app:srcCompat="@drawable/lieux_proches" />
@@ -42,6 +42,7 @@
             android:layout_marginLeft="20dp"
             android:layout_marginStart="20dp"
             android:layout_marginBottom="2dp"
+            android:layout_marginTop="5dp"
             android:layout_weight="1"
             android:orientation="vertical">
 
