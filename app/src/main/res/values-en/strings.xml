@@ -68,7 +68,7 @@
     <string name="Facturetotale">"Total bill "</string>
     <string name="Chauffeur">Driver</string>
     <string name="Votrechauffeurestenroute">"Your driver is on the way "</string>
-    <string name="Daccord">Ok</string>
+    <string name="Daccord">Alright</string>
     <string name="Votrechauffeurestarrivé">"Your driver has arrived "</string>
     <string name="Montanttotalàpayer">"Total amount to pay "</string>
     <string name="Evaluezvotreéxperience">"Rate your experience "</string>
@@ -85,6 +85,7 @@
     <string name="PS">"Use the voice recorder to share with us your experience with COMINGOO. P.S. The best recordings will be used in our advertising campaign. "</string>
     <string name="Record">"Hold your finger on the button to record "</string>
     <string name="passer">Pass</string>
+    <string name="driver_arrived_txt">At Comingoo, we ride in the front</string>
 
     <string name="sinch_app_key">05a626b9-33a4-4b83-b7bc-2d49062ea9ae</string>
     <string name="sinch_app_secret">gVW3Tm0140e9i17wRwUzzw==</string>

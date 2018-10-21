@@ -5,6 +5,7 @@
     android:id="@+id/body"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:background="@drawable/box"
     android:minWidth="300dp">
 
     <android.support.constraint.ConstraintLayout
@@ -69,32 +70,71 @@
                 android:adjustViewBounds="false"
                 android:orientation="vertical">
 
-                <Button
-                    android:id="@+id/button5"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/select_box"
-                    android:fontFamily="@font/roboto_light"
-                    android:text="@string/Heuredarrivée"
-                    android:textAllCaps="false" />
 
-                <Button
-                    android:id="@+id/button6"
+                <android.support.v7.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/select_box"
-                    android:fontFamily="@font/roboto_light"
-                    android:text="Service"
-                    android:textAllCaps="false" />
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    app:cardBackgroundColor="@android:color/transparent"
+                    android:elevation="0dp"
+                    app:cardElevation="0dp"
+                    android:layout_marginBottom="0dp"
+                    android:layout_marginTop="0dp">
 
-                <Button
-                    android:id="@+id/button7"
+                    <Button
+                        android:id="@+id/button5"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/select_box"
+                        android:fontFamily="@font/roboto_light"
+                        android:text="@string/Heuredarrivée"
+                        android:textAllCaps="false" />
+
+                </android.support.v7.widget.CardView>
+
+                <android.support.v7.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/select_box"
-                    android:fontFamily="@font/roboto_light"
-                    android:text="@string/Etatdelavoiture"
-                    android:textAllCaps="false" />
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    app:cardBackgroundColor="@android:color/transparent"
+                    android:elevation="0dp"
+                    app:cardElevation="0dp"
+                    android:layout_marginBottom="0dp"
+                    android:layout_marginTop="0dp">
+
+                    <Button
+                        android:id="@+id/button6"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/select_box"
+                        android:fontFamily="@font/roboto_light"
+                        android:text="Service"
+                        android:textAllCaps="false" />
+
+                </android.support.v7.widget.CardView>
+
+
+                <android.support.v7.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    app:cardBackgroundColor="@android:color/transparent"
+                    android:elevation="0dp"
+                    app:cardElevation="0dp"
+                    android:layout_marginBottom="0dp"
+                    android:layout_marginTop="0dp">
+                    <Button
+                        android:id="@+id/button7"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/select_box"
+                        android:fontFamily="@font/roboto_light"
+                        android:text="@string/Etatdelavoiture"
+                        android:textAllCaps="false" />
+                </android.support.v7.widget.CardView>
             </LinearLayout>
 
             <LinearLayout
@@ -104,32 +144,72 @@
                 android:adjustViewBounds="false"
                 android:orientation="vertical">
 
-                <Button
-                    android:id="@+id/button8"
+                <android.support.v7.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/select_box"
-                    android:fontFamily="@font/roboto_thin"
-                    android:text="@string/Conduite"
-                    android:textAllCaps="false" />
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    app:cardBackgroundColor="@android:color/transparent"
+                    android:elevation="0dp"
+                    app:cardElevation="0dp"
+                    android:layout_marginBottom="0dp"
+                    android:layout_marginTop="0dp">
 
-                <Button
-                    android:id="@+id/button9"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/select_box"
-                    android:fontFamily="@font/roboto_light"
-                    android:text="@string/Itinéraire"
-                    android:textAllCaps="false" />
+                    <Button
+                        android:id="@+id/button8"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/select_box"
+                        android:fontFamily="@font/roboto_thin"
+                        android:text="@string/Conduite"
+                        android:textAllCaps="false" />
 
-                <Button
-                    android:id="@+id/button10"
+                </android.support.v7.widget.CardView>
+
+                <android.support.v7.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/select_box"
-                    android:fontFamily="@font/roboto_light"
-                    android:text="@string/Autre"
-                    android:textAllCaps="false" />
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    app:cardBackgroundColor="@android:color/transparent"
+                    android:elevation="0dp"
+                    app:cardElevation="0dp"
+                    android:layout_marginBottom="0dp"
+                    android:layout_marginTop="0dp">
+
+                    <Button
+                        android:id="@+id/button9"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/select_box"
+                        android:fontFamily="@font/roboto_light"
+                        android:text="@string/Itinéraire"
+                        android:textAllCaps="false" />
+
+                </android.support.v7.widget.CardView>
+
+                <android.support.v7.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    app:cardBackgroundColor="@android:color/transparent"
+                    android:elevation="0dp"
+                    app:cardElevation="0dp"
+                    android:layout_marginBottom="0dp"
+                    android:layout_marginTop="0dp">
+
+                    <Button
+                        android:id="@+id/button10"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/select_box"
+                        android:fontFamily="@font/roboto_light"
+                        android:text="@string/Autre"
+                        android:textAllCaps="false" />
+
+                </android.support.v7.widget.CardView>
+
             </LinearLayout>
         </LinearLayout>
 
