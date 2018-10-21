@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">comingouserTwo</string>
+    <string name="app_name">Comingoo</string>
     <string name="title_activity_maps" translatable="false">Map</string>
     <string name="confirm_start" translatable="false">Confirmer le lieu de départ</string>
     <string name="language_value">Francais</string>
