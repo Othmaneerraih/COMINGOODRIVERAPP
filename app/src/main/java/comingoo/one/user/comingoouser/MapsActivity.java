@@ -1905,15 +1905,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
         setSearchFunc();
-
-        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
-        List<Address> addresses = null;
-        try {
-            addresses = geocoder.getFromLocation(userLatLng.latitude,userLatLng.longitude, 1);
-            startCity = addresses.get(0).getLocality();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public void showFavoritsAndRecents(){
