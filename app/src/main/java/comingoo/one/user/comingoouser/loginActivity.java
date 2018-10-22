@@ -50,15 +50,15 @@ public class loginActivity extends AppCompatActivity {
 
 
         if(FirebaseAuth.getInstance().getCurrentUser() != null){
-            SharedPreferences prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
-            prefs.edit().putString("userID", FirebaseAuth.getInstance().getCurrentUser().getUid()).apply();
+//            SharedPreferences prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
+//            prefs.edit().putString("userID", FirebaseAuth.getInstance().getCurrentUser().getUid()).apply();
             startActivity(new Intent(loginActivity.this, MapsActivity.class));
             finish();
         }
 
-        phoneNumber = (EditText) findViewById(R.id.code);
-        password = (EditText) findViewById(R.id.password);
-        loginBtn = (ImageButton) findViewById(R.id.loginBtn);
+//        phoneNumber = (EditText) findViewById(R.id.code);
+//        password = (EditText) findViewById(R.id.password);
+//        loginBtn = (ImageButton) findViewById(R.id.loginBtn);
 
 
         FacebookSdk.sdkInitialize(getApplicationContext());
@@ -102,13 +102,18 @@ public class loginActivity extends AppCompatActivity {
                                                     }else{
                                                         loginBtn.setVisibility(View.VISIBLE);
                                                         Toast.makeText(loginActivity.this, "Error!!!", Toast.LENGTH_SHORT).show();
+                                                        startActivity(new Intent(loginActivity.this, signupActivity.class));
+                                                        finish();
                                                     }
+
                                                 }
                                             });
 
                                             LoginManager.getInstance().logOut();
                                         }catch(Exception e){
                                             Toast.makeText(loginActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                                            startActivity(new Intent(loginActivity.this, signupActivity.class));
+                                            finish();
                                         }
                                     }
                                 });
@@ -127,6 +132,8 @@ public class loginActivity extends AppCompatActivity {
                     @Override
                     public void onError(FacebookException exception) {
                         // App code
+                        startActivity(new Intent(loginActivity.this, signupActivity.class));
+                        finish();
                     }
                 });
     }

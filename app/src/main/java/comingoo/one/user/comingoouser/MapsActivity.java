@@ -406,7 +406,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     if(!dataSnapshot.exists()){
                         prefs.edit().remove("userID");
                         FirebaseAuth.getInstance().signOut();
-                        Intent intent = new Intent(MapsActivity.this, MainActivity.class);
+                        Intent intent = new Intent(MapsActivity.this, loginActivity.class);
                         startActivity(intent);
                         finish();
                         return;
@@ -1598,7 +1598,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if(userId == null || FirebaseAuth.getInstance().getCurrentUser() == null){
             prefs.edit().remove("userID");
             FirebaseAuth.getInstance().signOut();
-            Intent intent = new Intent(MapsActivity.this, MainActivity.class);
+            Intent intent = new Intent(MapsActivity.this, loginActivity.class);
             startActivity(intent);
             finish();
         }
@@ -1774,7 +1774,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 SharedPreferences prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
                 prefs.edit().remove("userID");
                 FirebaseAuth.getInstance().signOut();
-                startActivity(new Intent(MapsActivity.this, MainActivity.class));
+                startActivity(new Intent(MapsActivity.this, loginActivity.class));
                 finish();
             }
         });
