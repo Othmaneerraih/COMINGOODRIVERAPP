@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -48,8 +49,7 @@ public class loginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-
-        if(FirebaseAuth.getInstance().getCurrentUser() != null){
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
 //            SharedPreferences prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
 //            prefs.edit().putString("userID", FirebaseAuth.getInstance().getCurrentUser().getUid()).apply();
             startActivity(new Intent(loginActivity.this, MapsActivity.class));
@@ -67,7 +67,7 @@ public class loginActivity extends AppCompatActivity {
         callbackManager = CallbackManager.Factory.create();
 
         final String EMAIL = "email";
-        final LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
+        final LoginButton loginButton = findViewById(R.id.login_button);
         loginButton.setReadPermissions(Arrays.asList(EMAIL));
 
         LoginManager.getInstance().registerCallback(callbackManager,
@@ -76,7 +76,6 @@ public class loginActivity extends AppCompatActivity {
                     public void onSuccess(LoginResult loginResult) {
                         // App code
 
-
                         GraphRequest request = GraphRequest.newMeRequest(
                                 loginResult.getAccessToken(),
                                 new GraphRequest.GraphJSONObjectCallback() {
@@ -84,22 +83,23 @@ public class loginActivity extends AppCompatActivity {
                                     public void onCompleted(JSONObject object, GraphResponse response) {
                                         // Application code
                                         try {
-                                            final String Email  = object.getString("email");
+                                            final String Email = object.getString("email");
                                             final String name = Profile.getCurrentProfile().getName();
                                             final String phoneNumber = getIntent().getStringExtra("phoneNumber");
                                             final String password = Profile.getCurrentProfile().getId();
                                             final String imageURI = Profile.getCurrentProfile().getProfilePictureUri(300, 300).toString();
 
+                                            Log.e("loginActivity", "onCompleted: email: " + Email);
 
                                             FirebaseAuth.getInstance().signInWithEmailAndPassword(Email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                                                 @Override
                                                 public void onComplete(@NonNull Task<AuthResult> task) {
-                                                    if(task.isSuccessful()){
-                                                        SharedPreferences prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
+                                                    if (task.isSuccessful()) {
+                                                        SharedPreferences prefs = getSharedPreferences("COMINGOOUSERD`ATA", MODE_PRIVATE);
                                                         prefs.edit().putString("userID", FirebaseAuth.getInstance().getCurrentUser().getUid()).apply();
                                                         startActivity(new Intent(loginActivity.this, MapsActivity.class));
                                                         finish();
-                                                    }else{
+                                                    } else {
                                                         loginBtn.setVisibility(View.VISIBLE);
                                                         Toast.makeText(loginActivity.this, "Error!!!", Toast.LENGTH_SHORT).show();
                                                         startActivity(new Intent(loginActivity.this, signupActivity.class));
@@ -110,7 +110,7 @@ public class loginActivity extends AppCompatActivity {
                                             });
 
                                             LoginManager.getInstance().logOut();
-                                        }catch(Exception e){
+                                        } catch (Exception e) {
                                             Toast.makeText(loginActivity.this, "Error", Toast.LENGTH_SHORT).show();
                                             startActivity(new Intent(loginActivity.this, signupActivity.class));
                                             finish();
@@ -118,10 +118,9 @@ public class loginActivity extends AppCompatActivity {
                                     }
                                 });
                         Bundle parameters = new Bundle();
-                        parameters.putString("fields", "id,name,email,gender,birthday ");
+                        parameters.putString("fields", "id,name,email,gender,birthday");
                         request.setParameters(parameters);
                         request.executeAsync();
-
                     }
 
                     @Override
@@ -139,45 +138,43 @@ public class loginActivity extends AppCompatActivity {
     }
 
 
-
-
-    private void login(String phoneNumber, final String password){
+    private void login(String phoneNumber, final String password) {
         loginBtn.setVisibility(View.GONE);
-        if(password == null || phoneNumber == null){
+        if (password == null || phoneNumber == null) {
             loginBtn.setVisibility(View.VISIBLE);
             return;
         }
-        if(phoneNumber.length() > 9){
+        if (phoneNumber.length() > 9) {
             phoneNumber = phoneNumber.substring(1, 10);
         }
 
         FirebaseDatabase.getInstance().getReference("clientUSERS").orderByChild("phoneNumber").equalTo(phoneNumber).limitToFirst(1).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
-                if(!dataSnapshot.exists()){
+                if (!dataSnapshot.exists()) {
                     loginBtn.setVisibility(View.VISIBLE);
                     Toast.makeText(loginActivity.this, "Numéro erroné!!!", Toast.LENGTH_SHORT).show();
-                }else{
+                } else {
 
-                    for(DataSnapshot data : dataSnapshot.getChildren()){
+                    for (DataSnapshot data : dataSnapshot.getChildren()) {
 
                         String email = data.child("email").getValue(String.class);
-                        if(email != null){
+                        if (email != null) {
                             FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
-                                    if(task.isSuccessful()){
+                                    if (task.isSuccessful()) {
                                         SharedPreferences prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
                                         prefs.edit().putString("userID", FirebaseAuth.getInstance().getCurrentUser().getUid()).apply();
                                         startActivity(new Intent(loginActivity.this, MapsActivity.class));
                                         finish();
-                                    }else{
+                                    } else {
                                         loginBtn.setVisibility(View.VISIBLE);
                                         Toast.makeText(loginActivity.this, "Error!!!", Toast.LENGTH_SHORT).show();
                                     }
                                 }
                             });
-                        }else{
+                        } else {
                             loginBtn.setVisibility(View.VISIBLE);
                             Toast.makeText(loginActivity.this, "Error!!!", Toast.LENGTH_SHORT).show();
                         }
@@ -196,11 +193,11 @@ public class loginActivity extends AppCompatActivity {
 
 
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
-
     }
 
 }
