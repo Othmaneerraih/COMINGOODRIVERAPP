@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -22,22 +24,33 @@ public class signupConfirmActivity extends AppCompatActivity {
     private String phoneNumber;
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallBacks;
     static Activity context;
+
+    EditText code;
+    EditText code2;
+    EditText code3;
+    EditText code4;
+    EditText code5;
+    EditText code6;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup_confirm);
 
-        final EditText code = (EditText) findViewById(R.id.code);
-        final EditText code2 = (EditText) findViewById(R.id.code2);
-        final EditText code3 = (EditText) findViewById(R.id.code3);
-        final EditText code4 = (EditText) findViewById(R.id.code4);
-        final EditText code5 = (EditText) findViewById(R.id.code5);
-        final EditText code6 = (EditText) findViewById(R.id.code6);
+        code = (EditText) findViewById(R.id.code);
+        code2 = (EditText) findViewById(R.id.code2);
+        code3 = (EditText) findViewById(R.id.code3);
+        code4 = (EditText) findViewById(R.id.code4);
+        code5 = (EditText) findViewById(R.id.code5);
+        code6 = (EditText) findViewById(R.id.code6);
 
 
         context = this;
 
         phoneNumber = getIntent().getStringExtra("phoneNumber");
+
+        edittextFlow();
+
 
         findViewById(R.id.imageButton).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,5 +90,107 @@ public class signupConfirmActivity extends AppCompatActivity {
     }
     static void Dest(){
         context.finish();
+    }
+
+    private void edittextFlow(){
+        code.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                // TODO Auto-generated method stub
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // TODO Auto-generated method stub
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // add a condition to check length here - you can give here length according to your requirement to go to next EditTexts.
+                if(code.getText().toString().trim().length() == 1){
+                    code2.requestFocus();
+                }
+            }
+        });
+
+        code2.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                // TODO Auto-generated method stub
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // TODO Auto-generated method stub
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // add a condition to check length here - you can give here length according to your requirement to go to next EditTexts.
+                if(code.getText().toString().trim().length() == 1){
+                    code3.requestFocus();
+                }
+            }
+        });
+
+        code3.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                // TODO Auto-generated method stub
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // TODO Auto-generated method stub
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // add a condition to check length here - you can give here length according to your requirement to go to next EditTexts.
+                if(code.getText().toString().trim().length() == 1){
+                    code4.requestFocus();
+                }
+            }
+        });
+
+        code4.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                // TODO Auto-generated method stub
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // TODO Auto-generated method stub
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // add a condition to check length here - you can give here length according to your requirement to go to next EditTexts.
+                if(code.getText().toString().trim().length() == 1){
+                    code5.requestFocus();
+                }
+            }
+        });
+
+        code5.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                // TODO Auto-generated method stub
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // TODO Auto-generated method stub
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // add a condition to check length here - you can give here length according to your requirement to go to next EditTexts.
+                if(code.getText().toString().trim().length() == 1){
+                    code6.requestFocus();
+                }
+            }
+        });
     }
 }
