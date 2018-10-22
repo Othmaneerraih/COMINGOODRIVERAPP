@@ -41,7 +41,7 @@ public class loginActivity extends AppCompatActivity {
 
     private EditText phoneNumber;
     private EditText password;
-    private ImageButton loginBtn;
+//    private ImageButton loginBtn;
     private CallbackManager callbackManager;
 
     @Override
@@ -91,23 +91,85 @@ public class loginActivity extends AppCompatActivity {
 
                                             Log.e("loginActivity", "onCompleted: email: " + Email);
 
-                                            FirebaseAuth.getInstance().signInWithEmailAndPassword(Email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+//                                            FirebaseAuth.getInstance().signInWithEmailAndPassword(Email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+//                                                @Override
+//                                                public void onComplete(@NonNull Task<AuthResult> task) {
+//                                                    if (task.isSuccessful()) {
+//                                                        SharedPreferences prefs = getSharedPreferences("COMINGOOUSERD`ATA", MODE_PRIVATE);
+//                                                        prefs.edit().putString("userID", FirebaseAuth.getInstance().getCurrentUser().getUid()).apply();
+//                                                        startActivity(new Intent(loginActivity.this, MapsActivity.class));
+//                                                        finish();
+//                                                    } else {
+//                                                        loginBtn.setVisibility(View.VISIBLE);
+//                                                        Toast.makeText(loginActivity.this, "Error!!!", Toast.LENGTH_SHORT).show();
+//                                                        startActivity(new Intent(loginActivity.this, signupActivity.class));
+//                                                        finish();
+//                                                    }
+//
+//                                                }
+//                                            });
+
+
+
+                                            FirebaseDatabase.getInstance().getReference("clientUSERS").orderByChild("email").equalTo(Email).
+                                                    limitToFirst(1).addListenerForSingleValueEvent(new ValueEventListener() {
+
                                                 @Override
-                                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                                    if (task.isSuccessful()) {
-                                                        SharedPreferences prefs = getSharedPreferences("COMINGOOUSERD`ATA", MODE_PRIVATE);
-                                                        prefs.edit().putString("userID", FirebaseAuth.getInstance().getCurrentUser().getUid()).apply();
-                                                        startActivity(new Intent(loginActivity.this, MapsActivity.class));
-                                                        finish();
-                                                    } else {
-                                                        loginBtn.setVisibility(View.VISIBLE);
-                                                        Toast.makeText(loginActivity.this, "Error!!!", Toast.LENGTH_SHORT).show();
+                                                public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
+                                                    if (!dataSnapshot.exists()) {
+//                                                        loginBtn.setVisibility(View.VISIBLE);
+//                                                        Toast.makeText(loginActivity.this, "Numéro erroné!!!", Toast.LENGTH_SHORT).show();
+
+//                                                        loginBtn.setVisibility(View.VISIBLE);
+//                                                        Toast.makeText(loginActivity.this, "Error!!!", Toast.LENGTH_SHORT).show();
                                                         startActivity(new Intent(loginActivity.this, signupActivity.class));
                                                         finish();
+
+                                                    } else {
+
+                                                        for (DataSnapshot data : dataSnapshot.getChildren()) {
+
+                                                            String email = data.child("email").getValue(String.class);
+
+                                                            if (email != null) {
+                                                                FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                                                                    @Override
+                                                                    public void onComplete(@NonNull Task<AuthResult> task) {
+                                                                        if (task.isSuccessful()) {
+                                                                            SharedPreferences prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
+                                                                            prefs.edit().putString("userID", FirebaseAuth.getInstance().getCurrentUser().getUid()).apply();
+                                                                            startActivity(new Intent(loginActivity.this, MapsActivity.class));
+                                                                            finish();
+                                                                        } else {
+//                                                                            loginBtn.setVisibility(View.VISIBLE);
+                                                                            Toast.makeText(loginActivity.this, "Error!!!", Toast.LENGTH_SHORT).show();
+                                                                        }
+                                                                    }
+                                                                });
+                                                            } else {
+//                                                                loginBtn.setVisibility(View.VISIBLE);
+                                                                Toast.makeText(loginActivity.this, "Error!!!", Toast.LENGTH_SHORT).show();
+                                                            }
+
+
+                                                        }
+
                                                     }
+                                                }
+
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError databaseError) {
 
                                                 }
                                             });
+
+
+
+
+
+
+
+
 
                                             LoginManager.getInstance().logOut();
                                         } catch (Exception e) {
@@ -138,61 +200,61 @@ public class loginActivity extends AppCompatActivity {
     }
 
 
-    private void login(String phoneNumber, final String password) {
-        loginBtn.setVisibility(View.GONE);
-        if (password == null || phoneNumber == null) {
-            loginBtn.setVisibility(View.VISIBLE);
-            return;
-        }
-        if (phoneNumber.length() > 9) {
-            phoneNumber = phoneNumber.substring(1, 10);
-        }
-
-        FirebaseDatabase.getInstance().getReference("clientUSERS").orderByChild("phoneNumber").equalTo(phoneNumber).limitToFirst(1).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
-                if (!dataSnapshot.exists()) {
-                    loginBtn.setVisibility(View.VISIBLE);
-                    Toast.makeText(loginActivity.this, "Numéro erroné!!!", Toast.LENGTH_SHORT).show();
-                } else {
-
-                    for (DataSnapshot data : dataSnapshot.getChildren()) {
-
-                        String email = data.child("email").getValue(String.class);
-                        if (email != null) {
-                            FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                    if (task.isSuccessful()) {
-                                        SharedPreferences prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
-                                        prefs.edit().putString("userID", FirebaseAuth.getInstance().getCurrentUser().getUid()).apply();
-                                        startActivity(new Intent(loginActivity.this, MapsActivity.class));
-                                        finish();
-                                    } else {
-                                        loginBtn.setVisibility(View.VISIBLE);
-                                        Toast.makeText(loginActivity.this, "Error!!!", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            });
-                        } else {
-                            loginBtn.setVisibility(View.VISIBLE);
-                            Toast.makeText(loginActivity.this, "Error!!!", Toast.LENGTH_SHORT).show();
-                        }
-
-
-                    }
-
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-
-    }
+//    private void login(String phoneNumber, final String password) {
+//        loginBtn.setVisibility(View.GONE);
+//        if (password == null || phoneNumber == null) {
+//            loginBtn.setVisibility(View.VISIBLE);
+//            return;
+//        }
+//        if (phoneNumber.length() > 9) {
+//            phoneNumber = phoneNumber.substring(1, 10);
+//        }
+//
+//        FirebaseDatabase.getInstance().getReference("clientUSERS").orderByChild("phoneNumber").equalTo(phoneNumber).limitToFirst(1).addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
+//                if (!dataSnapshot.exists()) {
+//                    loginBtn.setVisibility(View.VISIBLE);
+//                    Toast.makeText(loginActivity.this, "Numéro erroné!!!", Toast.LENGTH_SHORT).show();
+//                } else {
+//
+//                    for (DataSnapshot data : dataSnapshot.getChildren()) {
+//
+//                        String email = data.child("email").getValue(String.class);
+//                        if (email != null) {
+//                            FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+//                                @Override
+//                                public void onComplete(@NonNull Task<AuthResult> task) {
+//                                    if (task.isSuccessful()) {
+//                                        SharedPreferences prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
+//                                        prefs.edit().putString("userID", FirebaseAuth.getInstance().getCurrentUser().getUid()).apply();
+//                                        startActivity(new Intent(loginActivity.this, MapsActivity.class));
+//                                        finish();
+//                                    } else {
+//                                        loginBtn.setVisibility(View.VISIBLE);
+//                                        Toast.makeText(loginActivity.this, "Error!!!", Toast.LENGTH_SHORT).show();
+//                                    }
+//                                }
+//                            });
+//                        } else {
+//                            loginBtn.setVisibility(View.VISIBLE);
+//                            Toast.makeText(loginActivity.this, "Error!!!", Toast.LENGTH_SHORT).show();
+//                        }
+//
+//
+//                    }
+//
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
+//
+//
+//    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
