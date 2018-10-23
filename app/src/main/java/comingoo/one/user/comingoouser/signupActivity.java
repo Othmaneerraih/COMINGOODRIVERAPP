@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -23,33 +24,28 @@ import java.util.concurrent.TimeUnit;
 import comingoo.one.user.comingoouser.R;
 
 public class signupActivity extends AppCompatActivity {
-
+private String TAG = "signupActivity";
     private ImageButton registerButton;
     private EditText phoneNumberField;
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallBacks;
     private FirebaseAuth mAuth;
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference mRef;
-    
-    
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
 
 
-
-
-
         firebaseDatabase = FirebaseDatabase.getInstance();
         mRef = firebaseDatabase.getReference("clientUSERS");
         mAuth = FirebaseAuth.getInstance();
 
-        phoneNumberField = (EditText) findViewById(R.id.code);
-        registerButton = (ImageButton) findViewById(R.id.continuer);
-        mCallBacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+        phoneNumberField =  findViewById(R.id.code);
+        registerButton = findViewById(R.id.continuer);
 
+        mCallBacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
             @Override
             public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
@@ -62,6 +58,7 @@ public class signupActivity extends AppCompatActivity {
             @Override
             public void onVerificationFailed(FirebaseException e) {
                 Toast.makeText(signupActivity.this, "ERROR : " + e, Toast.LENGTH_LONG).show();
+                Log.e(TAG, "onVerificationFailed: "+e.getMessage());
                 registerButton.setVisibility(View.VISIBLE);
             }
 
@@ -75,7 +72,6 @@ public class signupActivity extends AppCompatActivity {
                 registerButton.setVisibility(View.VISIBLE);
             }
         };
-
 
 
 

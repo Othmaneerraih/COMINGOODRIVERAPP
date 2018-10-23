@@ -5,8 +5,12 @@ import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -32,10 +36,14 @@ import java.util.Map;
 
 import comingoo.one.user.comingoouser.R;
 
+import static android.widget.Toast.makeText;
 
 public class signupFacebookActivity extends AppCompatActivity {
-
+    private String TAG = "signupFacebookActivity";
     private CallbackManager callbackManager;
+    private AccessTokenTracker accessTokenTracker;
+    private String fbUserFirstName = "", fbUserLastName = "",
+            fbUserEmail = "", fbUserImage = "", fbUserBirthDay = "", fbUserGender = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +55,7 @@ public class signupFacebookActivity extends AppCompatActivity {
         callbackManager = CallbackManager.Factory.create();
 
         final String EMAIL = "email";
-        final LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
+        LoginButton loginButton = findViewById(R.id.login_button);
         loginButton.setReadPermissions(Arrays.asList(EMAIL));
 
         LoginManager.getInstance().registerCallback(callbackManager,
@@ -55,8 +63,6 @@ public class signupFacebookActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
                         // App code
-
-
                         GraphRequest request = GraphRequest.newMeRequest(
                                 loginResult.getAccessToken(),
                                 new GraphRequest.GraphJSONObjectCallback() {
@@ -70,7 +76,15 @@ public class signupFacebookActivity extends AppCompatActivity {
                                             final String password = Profile.getCurrentProfile().getId();
                                             final String imageURI = Profile.getCurrentProfile().getProfilePictureUri(300, 300).toString();
 
-                                            FirebaseAuth.getInstance().createUserWithEmailAndPassword(Email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                                            Log.e("signUpFacebookActivity", "onCompleted: email: "+Email );
+                                            Log.e("signUpFacebookActivity", "onCompleted: name: "+name );
+                                            Log.e("signUpFacebookActivity", "onCompleted: phoneNumber: "+phoneNumber );
+                                            Log.e("signUpFacebookActivity", "onCompleted: imageURI: "+imageURI );
+                                            Log.e("signUpFacebookActivity", "onCompleted: pass: "+password );
+
+                                            FirebaseAuth.getInstance().createUserWithEmailAndPassword(Email, password).
+                                                    addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+
                                                 @Override
                                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                                     if (task.isSuccessful()) {
@@ -86,14 +100,18 @@ public class signupFacebookActivity extends AppCompatActivity {
                                                         data.put("image", imageURI);
                                                         data.put("level", "2");
 
+                                                        Log.e(TAG, "onComplete: successfull");
+
                                                         FirebaseDatabase.getInstance().getReference("clientUSERS").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).setValue(data).addOnCompleteListener(new OnCompleteListener<Void>() {
                                                             @Override
                                                             public void onComplete(@NonNull Task<Void> task) {
                                                                 if(!task.isSuccessful()){
+                                                                    Log.e("signUpFacebookActivity", "onComplete: 1111 " );
                                                                     Toast.makeText(signupFacebookActivity.this, "Error!!!", Toast.LENGTH_SHORT).show();
                                                                     FirebaseAuth.getInstance().getCurrentUser().delete();
                                                                     FirebaseAuth.getInstance().signOut();
                                                                 }else{
+                                                                    Log.e("signUpFacebookActivity", "onComplete: 22222" );
                                                                     SharedPreferences prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
                                                                     prefs.edit().putString("userID", FirebaseAuth.getInstance().getCurrentUser().getUid()).apply();
                                                                     startActivity(new Intent(signupFacebookActivity.this, MapsActivity.class));
@@ -102,11 +120,15 @@ public class signupFacebookActivity extends AppCompatActivity {
 
                                                             }
                                                         });
+                                                    } else {
+                                                        Log.e(TAG, "onComplete:Not " );
+                                                        Log.e(TAG, "onComplete: successfull not"+task.getResult().toString());
                                                     }
                                                 }});
 
                                             LoginManager.getInstance().logOut();
                                         }catch(Exception e){
+                                            Log.e(TAG, "onFailed: "+e.getMessage() );
                                             Toast.makeText(signupFacebookActivity.this, "Error", Toast.LENGTH_SHORT).show();
                                         }
                                     }
@@ -121,11 +143,13 @@ public class signupFacebookActivity extends AppCompatActivity {
                     @Override
                     public void onCancel() {
                         // App code
+                        Log.e(TAG, "onCancel: " );
                     }
 
                     @Override
                     public void onError(FacebookException exception) {
                         // App code
+                        Log.e(TAG, "onError: "+exception.getMessage());
                     }
                 });
 
@@ -135,7 +159,6 @@ public class signupFacebookActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
-
     }
 
 }
