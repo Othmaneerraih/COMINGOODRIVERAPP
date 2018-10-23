@@ -96,7 +96,7 @@ public class signupFacebookActivity extends AppCompatActivity {
                                                                 }else{
                                                                     SharedPreferences prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
                                                                     prefs.edit().putString("userID", FirebaseAuth.getInstance().getCurrentUser().getUid()).apply();
-                                                                    startActivity(new Intent(signupFacebookActivity.this, MainActivity.class));
+                                                                    startActivity(new Intent(signupFacebookActivity.this, MapsActivity.class));
                                                                     finish();
                                                                 }
 
