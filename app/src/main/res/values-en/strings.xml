@@ -48,7 +48,7 @@
     <string name="sapplique">S\'applique quand la voiture est en mouvement en dessous de 16 km/h. Premiére 3min sont gratuites.le temps d\'attente supplémentaire est facturé par minute.</string>
     <string name="pénalité">*Aucune pénalité pour les commandes annulées 2 minutes aprés le confirmation.</string>
     <string name="inviteText">"We value friendship, so we encourage you to invite your friends to use Comingoo to earn points that you can then convert to Comingoo credit. "</string>
-    <string name="Inviter">Invite</string>
+    <string name="Inviter">Refer</string>
     <string name="SeConnecter">Sign in</string>
     <string name="signupText">"Don’t have an account? "</string>
     <string name="Sinscrire">"Sign up "</string>
