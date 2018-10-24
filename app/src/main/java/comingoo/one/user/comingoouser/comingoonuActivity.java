@@ -25,6 +25,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -45,7 +46,7 @@ public class comingoonuActivity extends AppCompatActivity {
 
     private Button changePassBtn;
 
-    private TextView langVal;
+    private TextView langVal,depart,minimum,routePerKM,perHour;
 
 
     private ConstraintLayout tarifs;
@@ -81,6 +82,11 @@ public class comingoonuActivity extends AppCompatActivity {
         pA = (ConstraintLayout) findViewById(R.id.paLayout);
         pR = (ConstraintLayout) findViewById(R.id.prLayout);
         pO = (ConstraintLayout) findViewById(R.id.poLayout);
+
+        depart = (TextView) findViewById(R.id.textView66);
+        minimum = (TextView) findViewById(R.id.textView73);
+        routePerKM = (TextView) findViewById(R.id.textView74);
+        perHour = (TextView) findViewById(R.id.textView75);
 
         changePasswordButton = (ConstraintLayout) findViewById(R.id.change_password_button);
         backChangePassword = (ImageButton) findViewById(R.id.back_select_password);
@@ -138,6 +144,21 @@ public class comingoonuActivity extends AppCompatActivity {
                 }else{
                     useC.setBackgroundResource(R.drawable.checked_cnu);
                 }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        FirebaseDatabase.getInstance().getReference("PRICES").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                routePerKM.setText((new DecimalFormat("##.##").format(Double.parseDouble(dataSnapshot.child("km").getValue(String.class)))) + " MAD");
+                perHour.setText((new DecimalFormat("##.##").format(Double.parseDouble(dataSnapshot.child("att").getValue(String.class)))) + " MAD");
+                depart.setText(dataSnapshot.child("base").getValue(String.class)+ " MAD");
+                minimum.setText(dataSnapshot.child("minimum").getValue(String.class)+ " MAD");
             }
 
             @Override

@@ -732,9 +732,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 findViewById(R.id.call).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Uri number = Uri.parse("tel:" + driverPhone);
-                        Intent callIntent = new Intent(Intent.ACTION_DIAL, number);
-                        startActivity(callIntent);
+                        if(!driverPhone.isEmpty() || driverPhone != null){
+                            try{
+                                Intent callIntent = new Intent(Intent.ACTION_CALL);
+                                callIntent.setData(Uri.parse("tel:"+driverPhone));
+                                if (ActivityCompat.checkSelfPermission(getBaseContext(), Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
+                                    startActivity(callIntent);
+                                }
+                            }catch(Exception e){
+                                e.printStackTrace();
+                            }
+                        }
                     }
                 });
             }
@@ -831,9 +839,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 findViewById(R.id.call).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Uri number = Uri.parse("tel:" + driverPhone);
-                        Intent callIntent = new Intent(Intent.ACTION_DIAL, number);
-                        startActivity(callIntent);
+                        if(!driverPhone.isEmpty() || driverPhone != null){
+                            try{
+                                Intent callIntent = new Intent(Intent.ACTION_CALL);
+                                callIntent.setData(Uri.parse("tel:"+driverPhone));
+                                if (ActivityCompat.checkSelfPermission(getBaseContext(), Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
+                                    startActivity(callIntent);
+                                }
+                            }catch(Exception e){
+                                e.printStackTrace();
+                            }
+                        }
                     }
                 });
             }

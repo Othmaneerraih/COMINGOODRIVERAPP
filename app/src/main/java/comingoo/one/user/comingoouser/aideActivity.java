@@ -94,8 +94,6 @@ public class aideActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (ContextCompat.checkSelfPermission(aideActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions(aideActivity.this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-
-
                 } else {
                     Intent intent = new Intent(Intent.ACTION_PICK);
                     intent.setType("image/*");
