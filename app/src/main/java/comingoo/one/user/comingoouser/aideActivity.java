@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
@@ -25,10 +26,11 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
-import comingoo.one.user.comingoouser.R;
 
 public class aideActivity extends AppCompatActivity {
     private ConstraintLayout Q1, Q2, A1, A2;
@@ -74,15 +76,24 @@ public class aideActivity extends AppCompatActivity {
         findViewById(R.id.add_voice).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(aideActivity.this, "This feature is not yet available!", Toast.LENGTH_SHORT).show();
+
+                Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(intent, 10);
+                } else {
+                    Toast.makeText(aideActivity.this, "Your Device Don't Support Speech Input", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
         image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(ContextCompat.checkSelfPermission(aideActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
-                    ActivityCompat.requestPermissions(aideActivity.this, new String[] {android.Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+                if (ContextCompat.checkSelfPermission(aideActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(aideActivity.this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
 
 
                 } else {
@@ -105,10 +116,10 @@ public class aideActivity extends AppCompatActivity {
         Q1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!a1) {
+                if (!a1) {
                     AnimateConstraint.animate(aideActivity.this, A1, 100, 2, 500);
                     a1 = true;
-                }else{
+                } else {
                     AnimateConstraint.animate(aideActivity.this, A1, 2, 100, 500);
                     a1 = false;
                 }
@@ -117,10 +128,10 @@ public class aideActivity extends AppCompatActivity {
         Q2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!a2) {
+                if (!a2) {
                     AnimateConstraint.animate(aideActivity.this, A2, 70, 2, 500);
                     a2 = true;
-                }else{
+                } else {
                     AnimateConstraint.animate(aideActivity.this, A2, 2, 70, 500);
                     a2 = false;
                 }
@@ -139,10 +150,10 @@ public class aideActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResult){
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResult) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResult);
 
-        if(grantResult.length > 0 && grantResult[0] == PackageManager.PERMISSION_GRANTED){
+        if (grantResult.length > 0 && grantResult[0] == PackageManager.PERMISSION_GRANTED) {
 
             Intent intent = new Intent(Intent.ACTION_PICK);
             intent.setType("image/*");
@@ -153,6 +164,7 @@ public class aideActivity extends AppCompatActivity {
     }
 
     private boolean finished;
+
     private class UpdateInfoTask extends AsyncTask<String, Integer, String> {
         @Override
         protected void onPreExecute() {
@@ -167,9 +179,9 @@ public class aideActivity extends AppCompatActivity {
             final Map<String, String> data = new HashMap<>();
             data.put("user", userId);
             data.put("message", message.getText().toString());
-            if(imageUri != null) {
+            if (imageUri != null) {
 
-                final StorageReference filepath= FirebaseStorage.getInstance().getReference("DRIVERCONTACTUS").child(userId);
+                final StorageReference filepath = FirebaseStorage.getInstance().getReference("DRIVERCONTACTUS").child(userId);
                 filepath.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -186,13 +198,13 @@ public class aideActivity extends AppCompatActivity {
 
                 data.put("image", imageUri.toString());
 
-            }else {
+            } else {
                 data.put("image", "");
                 FirebaseDatabase.getInstance().getReference("CONTACTUSCLIENT").push().setValue(data);
                 finished = true;
             }
 
-            while(!finished){
+            while (!finished) {
 
             }
 
@@ -223,7 +235,7 @@ public class aideActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == 2 && resultCode == RESULT_OK){
+        if (requestCode == 2 && resultCode == RESULT_OK) {
 
             imageUri = data.getData();
             //image.setBackgroundResource();
@@ -231,10 +243,18 @@ public class aideActivity extends AppCompatActivity {
 
 
         }
+
+        if (requestCode == 10 && resultCode == RESULT_OK) {
+            if (resultCode == RESULT_OK && data != null) {
+                ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                message.setText(result.get(0));
+            }
+        }
+
     }
 
 
-    public void updateViews(){
+    public void updateViews() {
         Context context;
         Resources resources;
         String language;
@@ -253,7 +273,6 @@ public class aideActivity extends AppCompatActivity {
         TextView image_text = (TextView) findViewById(R.id.image_text);
         TextView textView34 = (TextView) findViewById(R.id.textView34);
         TextView send = (TextView) findViewById(R.id.send);
-
 
 
         //Set Texts
