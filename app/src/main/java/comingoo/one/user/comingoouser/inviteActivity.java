@@ -1,12 +1,14 @@
 package comingoo.one.user.comingoouser;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import comingoo.one.user.comingoouser.R;
 
@@ -45,6 +47,28 @@ public class inviteActivity extends AppCompatActivity {
         textView33.setText(resources.getString(R.string.Invitervosamis));
         textView37.setText(resources.getString(R.string.inviteText));
         button2.setText(resources.getString(R.string.Inviter));
+
+        button2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                shareSocialMedia();
+            }
+        });
+    }
+
+    private void shareSocialMedia(){
+
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.setPackage("com.facebook.katana");
+        intent.setPackage("com.android.twitter");
+        intent .putExtra(Intent.EXTRA_TEXT, "Bonjour,\n" +
+                "Je vous invite a utiliser l'application Comingoo pour vos déplacements. www.comingoo.com/app");
+        try {
+            this.startActivity(intent );
+        } catch (android.content.ActivityNotFoundException ex) {
+            Toast.makeText(inviteActivity.this, "Facebook have not been installed.", Toast.LENGTH_SHORT).show();
+        }
     }
 
 }

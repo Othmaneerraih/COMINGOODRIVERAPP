@@ -188,13 +188,21 @@ public class notificationActivity extends AppCompatActivity {
                    holder.apply.setOnClickListener(new View.OnClickListener() {
                        @Override
                        public void onClick(View v) {
-                           MapsActivity.promoCode.setText(newCourse.getCode());
-                           SharedPreferences prefs = getSharedPreferences("COMINGOODRIVERDATA", MODE_PRIVATE);
-                           userId = prefs.getString("userId", null);
+                           try{
+                               if (newCourse.getCode() == null){
+                                   MapsActivity.promoCode.setText(newCourse.getCode());
+                                   SharedPreferences prefs = getSharedPreferences("COMINGOODRIVERDATA", MODE_PRIVATE);
+                                   userId = prefs.getString("userId", null);
 
-                           FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("PROMOCODE").setValue(newCourse.getCode());
+                                   FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("PROMOCODE").setValue(newCourse.getCode());
 
-                           finish();
+                                   finish();
+                               }
+                           }catch (Exception e){
+                               e.printStackTrace();
+                           }
+
+
                        }
                    });
                }
