@@ -41,7 +41,9 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -1775,6 +1777,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
+        gooBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showCustomDialog(MapsActivity.this);
+            }
+        });
+
 
         int fHeight = 170;
         int rHeight = HeightAbsolute - fHeight - 5;
@@ -1891,6 +1900,72 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setSearchFunc();
     }
 
+    public void showCustomDialog(final Context context) {
+        final Dialog dialog = new Dialog(context);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.content_promo_code, null, false);
+        final EditText etPromoCode = view.findViewById(R.id.et_user_promo_code);
+        Button btnOk = view.findViewById(R.id.btn_promo_code_ok);
+        Button btnCancel = view.findViewById(R.id.btn_promo_code_cancel);
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
+        btnOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!etPromoCode.getText().toString().equals("")) {
+
+                    FirebaseDatabase.getInstance().getReference("CLIENTNOTIFICATIONS").
+                            child("qsjkldjqld").child("code").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.getValue().equals(etPromoCode.getText().toString())) {
+
+                                FirebaseDatabase.getInstance().getReference("CLIENTNOTIFICATIONS").
+                                        child("qsjkldjqld").child("value").addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        price.setText(dataSnapshot.getValue() + " MAD");
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+
+                            } else
+                                Toast.makeText(getApplicationContext(), "", Toast.LENGTH_LONG).show();
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
+                } else
+                    Toast.makeText(getApplicationContext(), "Enter Promo Code", Toast.LENGTH_LONG).show();
+            }
+        });
+
+
+        dialog.setContentView(view);
+//        final Window window = dialog.getWindow();
+//        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+//        window.setBackgroundDrawableResource(R.color.colorTransparent);
+//        window.setGravity(Gravity.CENTER);
+        dialog.show();
+    }
+
+
+
     public void showFavoritsAndRecents() {
         fPlaceData.clear();
         rPlaceData.clear();
@@ -1989,7 +2064,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
 
-                    double price1 = Math.ceil((distance) * Double.parseDouble(dataSnapshot.child("km").getValue(String.class)));
+                            double price1 = Math.ceil((distance) * Double.parseDouble(dataSnapshot.child("km").getValue(String.class)));
                             int price2 = (int) price1;
                             if (price2 < Double.parseDouble(dataSnapshot.child("minimum").getValue(String.class)))
                                 price2 = Integer.parseInt(dataSnapshot.child("minimum").getValue(String.class));
@@ -2077,7 +2152,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } else {
             gooButton.setVisibility(View.VISIBLE);
             searchDestEditText.setText("Destination non choisi.");
-            price.setText("13 MAD");
+//            price.setText("13 MAD");
         }
 
         menuButton.setOnClickListener(new View.OnClickListener() {
