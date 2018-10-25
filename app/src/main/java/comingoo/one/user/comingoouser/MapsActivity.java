@@ -24,6 +24,7 @@ import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
@@ -123,6 +124,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import comingoo.one.user.comingoouser.Database.SharedPreferenceTask;
 import comingoo.one.user.comingoouser.R;
 import de.hdodenhof.circleimageview.CircleImageView;
 import pl.droidsonroids.gif.GifImageButton;
@@ -640,6 +642,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean courseScreenStageOne = false;
     private Marker driverPosMarker;
     private Marker startPositionMarker;
+    private boolean blockingTimeOver = true;
 
     private void handleCourseCallBack() {
 
@@ -734,14 +737,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 findViewById(R.id.call).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if(!driverPhone.isEmpty() || driverPhone != null){
-                            try{
+                        if (!driverPhone.isEmpty() || driverPhone != null) {
+                            try {
                                 Intent callIntent = new Intent(Intent.ACTION_CALL);
-                                callIntent.setData(Uri.parse("tel:"+driverPhone));
+                                callIntent.setData(Uri.parse("tel:" + driverPhone));
                                 if (ActivityCompat.checkSelfPermission(getBaseContext(), Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
                                     startActivity(callIntent);
                                 }
-                            }catch(Exception e){
+                            } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         }
@@ -781,33 +784,60 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         if (statusT.equals("0")) {
-
             findViewById(R.id.cancelCourse).setVisibility(View.VISIBLE);
             findViewById(R.id.cancelCourse).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    try {
 
-//                    Toast.makeText(getApplicationContext(), "Additional charge may apply", Toast.LENGTH_LONG).show();
-                    DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            switch (which) {
-                                case DialogInterface.BUTTON_POSITIVE:
-                                    //Yes button clicked
-                                    FirebaseDatabase.getInstance().getReference("COURSES").child(courseIDT).child("state").setValue("5");
-                                    FirebaseDatabase.getInstance().getReference("COURSES").child(courseIDT).removeValue();
-                                    break;
 
-                                case DialogInterface.BUTTON_NEGATIVE:
-                                    //No button clicked
-                                    break;
+                        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                switch (which) {
+                                    case DialogInterface.BUTTON_POSITIVE:
+                                        //Yes button clicked
+                                        FirebaseDatabase.getInstance().getReference("COURSES").child(courseIDT).child("state").setValue("5");
+                                        FirebaseDatabase.getInstance().getReference("COURSES").child(courseIDT).removeValue();
+
+                                        SharedPreferenceTask preferenceTask = new SharedPreferenceTask(getApplicationContext());
+                                        int prevCancel = preferenceTask.getCancelNumber();
+                                        preferenceTask.setCancelNumber(prevCancel + 1);
+
+                                        if (preferenceTask.getCancelNumber() > 3) {
+                                            Toast.makeText(MapsActivity.this,
+                                                    "Vous avez annulé beaucoup de fois, l’application va se bloquer pendant 1h", Toast.LENGTH_LONG).show();
+
+                                            blockingTimeOver = false;
+
+                                            new CountDownTimer(3600000, 1000) {
+
+                                                public void onTick(long millisUntilFinished) {
+//                                              mTextField.setText("seconds remaining: " + millisUntilFinished / 1000);
+                                                }
+
+                                                public void onFinish() {
+//                                              mTextField.setTextext("done!");
+                                                    blockingTimeOver = true;
+                                                }
+                                            }.start();
+                                        }
+
+                                        break;
+
+                                    case DialogInterface.BUTTON_NEGATIVE:
+                                        //No button clicked
+                                        break;
+                                }
                             }
-                        }
-                    };
-                    AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
-                    builder.setTitle("Vous étes sure?").setMessage("Voulez-vous annuler la course?\n Additional charge may apply").setPositiveButton("Yes", dialogClickListener)
-                            .setNegativeButton("No", dialogClickListener).show();
+                        };
+                        AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
+                        builder.setTitle("Vous étes sure?").setMessage("Voulez-vous annuler la course?\n Additional charge may apply").setPositiveButton("Yes", dialogClickListener)
+                                .setNegativeButton("No", dialogClickListener).show();
 
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             });
 
@@ -841,14 +871,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 findViewById(R.id.call).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if(!driverPhone.isEmpty() || driverPhone != null){
-                            try{
+                        if (!driverPhone.isEmpty() || driverPhone != null) {
+                            try {
                                 Intent callIntent = new Intent(Intent.ACTION_CALL);
-                                callIntent.setData(Uri.parse("tel:"+driverPhone));
+                                callIntent.setData(Uri.parse("tel:" + driverPhone));
                                 if (ActivityCompat.checkSelfPermission(getBaseContext(), Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
                                     startActivity(callIntent);
                                 }
-                            }catch(Exception e){
+                            } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         }
@@ -1798,7 +1828,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         gooButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                gooButton.setClickable(false);
+                if (blockingTimeOver) {
+                    gooButton.setClickable(false);
                /* Handler h = new Handler();
                 Runnable r= new Runnable(){
                     @Override
@@ -1809,16 +1840,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 };
                 h.postDelayed(r, 300);*/
 
-                CameraPosition cameraPosition = new CameraPosition.Builder()
-                        .target(startLatLng)      // Sets the center of the map to Mountain View
-                        .zoom(17)                   // Sets the zoom
-                        .build();                   // Creates a CameraPosition from the builder
-                mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-                AnimateConstraint.fadeOut(context, gooButton, 200, 10);
-                //AnimateConstraint.expandCircleAnimation(context, findViewById(R.id.gooLayout), dpHeight, dpWidth);
-                startSearchUI();
-                new sendRequestsTask().execute();
-
+                    CameraPosition cameraPosition = new CameraPosition.Builder()
+                            .target(startLatLng)      // Sets the center of the map to Mountain View
+                            .zoom(17)                   // Sets the zoom
+                            .build();                   // Creates a CameraPosition from the builder
+                    mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                    AnimateConstraint.fadeOut(context, gooButton, 200, 10);
+                    //AnimateConstraint.expandCircleAnimation(context, findViewById(R.id.gooLayout), dpHeight, dpWidth);
+                    startSearchUI();
+                    new sendRequestsTask().execute();
+                } else
+                    Toast.makeText(MapsActivity.this, "Vous avez annulé beaucoup de fois, l’application va se bloquer pendant 1h", Toast.LENGTH_LONG).show();
             }
         });
 
@@ -1862,25 +1894,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 } else if (searchLoc.equals("")) {
                     searchLoc = "Casablanca";
                     city.setText(searchLoc);
-                }else if (searchLoc.equals("sale")) {
+                } else if (searchLoc.equals("sale")) {
                     searchLoc = "sale";
                     city.setText(searchLoc);
-                }else if (searchLoc.equals("bouskoura")) {
+                } else if (searchLoc.equals("bouskoura")) {
                     searchLoc = "bouskoura";
                     city.setText(searchLoc);
-                }else if (searchLoc.equals("aeroportCasa")) {
+                } else if (searchLoc.equals("aeroportCasa")) {
                     searchLoc = "aeroportCasa";
                     city.setText(searchLoc);
-                }else if (searchLoc.equals("sidirahal")) {
+                } else if (searchLoc.equals("sidirahal")) {
                     searchLoc = "sidirahal";
                     city.setText(searchLoc);
-                }else if (searchLoc.equals("darBouazza")) {
+                } else if (searchLoc.equals("darBouazza")) {
                     searchLoc = "darBouazza";
                     city.setText(searchLoc);
-                }else if (searchLoc.equals("marrakech")) {
+                } else if (searchLoc.equals("marrakech")) {
                     searchLoc = "marrakech";
                     city.setText(searchLoc);
-                }else if (searchLoc.equals("jadida")) {
+                } else if (searchLoc.equals("jadida")) {
                     searchLoc = "jadida";
                     city.setText(searchLoc);
                 }
@@ -1986,7 +2018,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
-
     public void showFavoritsAndRecents() {
         fPlaceData.clear();
         rPlaceData.clear();
@@ -2022,7 +2053,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
-
     //Check Start Position
     private boolean startPositionIsValid() {
         //PolyUtil.containsLocation(position.latitude, position.longitude, casaPoly, true);
@@ -2031,23 +2061,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.casaPoly(), true) || PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.errahmaPoly(), true)) {
             startCity = "casa";
-        } else if(PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.salePoly(), true)) {
+        } else if (PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.salePoly(), true)) {
             startCity = "sale";
-        }else if(PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.aeroportCasaPoly(), true)) {
+        } else if (PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.aeroportCasaPoly(), true)) {
             startCity = "aeroportCasa";
-        }else if(PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.bouskouraPoly(), true)) {
+        } else if (PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.bouskouraPoly(), true)) {
             startCity = "bouskoura";
-        }else if(PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.darBouazzaPoly(), true)) {
+        } else if (PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.darBouazzaPoly(), true)) {
             startCity = "darBouazza";
-        }else if(PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.jadidaPoly(), true)) {
+        } else if (PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.jadidaPoly(), true)) {
             startCity = "jadida";
-        }else if(PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.marrakechPoly(), true)) {
+        } else if (PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.marrakechPoly(), true)) {
             startCity = "marrakech";
-        }else if(PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.sidiRahalPoly(), true)) {
+        } else if (PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.sidiRahalPoly(), true)) {
             startCity = "sidirahal";
-        }else if(PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.rabatPoly(), true) || PolyUtil.containsLocation(destLatLng.latitude, destLatLng.longitude, LocationInitializer.missingRabatPoly(), true)) {
+        } else if (PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.rabatPoly(), true) || PolyUtil.containsLocation(destLatLng.latitude, destLatLng.longitude, LocationInitializer.missingRabatPoly(), true)) {
             startCity = "rabat";
-        }else {
+        } else {
             Toast.makeText(context, "On est seulement disponible sur Casablanca!", Toast.LENGTH_SHORT).show();
             return false;
         }
