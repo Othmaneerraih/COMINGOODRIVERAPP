@@ -1941,7 +1941,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 });
 
                             } else
-                                Toast.makeText(getApplicationContext(), "", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(), "Promo Code is expired", Toast.LENGTH_LONG).show();
                         }
 
                         @Override
@@ -1951,7 +1951,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     });
 
                 } else
-                    Toast.makeText(getApplicationContext(), "Enter Promo Code", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Please Enter Promo Code", Toast.LENGTH_LONG).show();
             }
         });
 
