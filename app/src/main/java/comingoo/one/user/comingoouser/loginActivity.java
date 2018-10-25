@@ -85,34 +85,10 @@ public class loginActivity extends AppCompatActivity {
                                         try {
                                             final String Email = object.getString("email");
                                             final String name = Profile.getCurrentProfile().getName();
-                                            final String phoneNumber = getIntent().getStringExtra("phoneNumber");
                                             final String password = Profile.getCurrentProfile().getId();
                                             final String imageURI = Profile.getCurrentProfile().getProfilePictureUri(300, 300).toString();
 
                                             Log.e("loginActivity", "onCompleted: email: " + Email);
-
-//                                            FirebaseAuth.getInstance().signInWithEmailAndPassword(Email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-//                                                @Override
-//                                                public void onComplete(@NonNull Task<AuthResult> task) {
-//                                                    if (task.isSuccessful()) {
-//                                                        SharedPreferences prefs = getSharedPreferences("COMINGOOUSERD`ATA", MODE_PRIVATE);
-//                                                        prefs.edit().putString("userID", FirebaseAuth.getInstance().getCurrentUser().getUid()).apply();
-//                                                        startActivity(new Intent(loginActivity.this, MapsActivity.class));
-//                                                        finish();
-//                                                    } else {
-//                                                        loginBtn.setVisibility(View.VISIBLE);
-//                                                        Toast.makeText(loginActivity.this, "Error!!!", Toast.LENGTH_SHORT).show();
-//                                                        startActivity(new Intent(loginActivity.this, signupActivity.class));
-//                                                        finish();
-//                                                    }
-//
-//                                                }
-//                                            });
-
-
-
-
-
 
 
                                             FirebaseDatabase.getInstance().getReference("clientUSERS").orderByChild("email").equalTo(Email).
@@ -126,7 +102,12 @@ public class loginActivity extends AppCompatActivity {
 
 //                                                        loginBtn.setVisibility(View.VISIBLE);
 //                                                        Toast.makeText(loginActivity.this, "Error!!!", Toast.LENGTH_SHORT).show();
-                                                        startActivity(new Intent(loginActivity.this, signupActivity.class));
+                                                        Intent intent = new Intent(loginActivity.this, signupActivity.class);
+                                                        intent.putExtra("Email",  Email);
+                                                        intent.putExtra("name",  name);
+                                                        intent.putExtra("password",  password);
+                                                        intent.putExtra("imageURI",  imageURI);
+                                                        startActivity(intent);
                                                         finish();
 
                                                     } else {
@@ -178,8 +159,6 @@ public class loginActivity extends AppCompatActivity {
                                             LoginManager.getInstance().logOut();
                                         } catch (Exception e) {
                                             Toast.makeText(loginActivity.this, "Error", Toast.LENGTH_SHORT).show();
-                                            startActivity(new Intent(loginActivity.this, signupActivity.class));
-                                            finish();
                                         }
                                     }
                                 });
@@ -197,8 +176,7 @@ public class loginActivity extends AppCompatActivity {
                     @Override
                     public void onError(FacebookException exception) {
                         // App code
-                        startActivity(new Intent(loginActivity.this, signupActivity.class));
-                        finish();
+                        Toast.makeText(loginActivity.this, exception.toString(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }

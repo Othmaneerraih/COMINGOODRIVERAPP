@@ -22,28 +22,58 @@
         android:layout_height="200dp"
         android:layout_below="@+id/title_image"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="85dp" />
+        android:layout_marginTop="70dp" />
 
     <RelativeLayout
-        android:layout_width="350dp"
-        android:layout_height="70dp"
+        android:layout_width="354dp"
+        android:layout_height="50dp"
         android:layout_below="@+id/title_image"
-        android:layout_centerHorizontal="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="30dp"
         android:layout_marginTop="60dp"
-        android:background="@drawable/fb_btn">
+        android:background="@drawable/fb_bg">
 
+        <!--<LinearLayout-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_alignParentLeft="true"-->
+            <!--android:layout_centerHorizontal="true"-->
+            <!--android:orientation="horizontal">-->
+
+            <!---->
+            <!---->
+        <!--</LinearLayout>-->
+
+        <ImageView
+            android:id="@+id/fbLogo"
+            android:layout_width="20dp"
+            android:layout_height="30dp"
+            android:layout_alignParentLeft="true"
+            android:layout_marginStart="50dp"
+            android:layout_centerVertical="true"
+            android:background="@drawable/fb_logo"/>
+
+        <ImageView
+            android:id="@+id/divider"
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="24dp"
+            android:layout_toEndOf="@+id/fbLogo"
+            android:background="@android:color/white" />
 
         <TextView
             android:id="@+id/textView44"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="20dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:fontFamily="@font/roboto_light"
             android:text="@string/Seconnecter"
-            android:textColor="@color/colorPrimaryDark"
+            android:textColor="@android:color/white"
             android:textSize="18sp" />
 
     </RelativeLayout>

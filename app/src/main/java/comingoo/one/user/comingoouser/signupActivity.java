@@ -24,13 +24,15 @@ import java.util.concurrent.TimeUnit;
 import comingoo.one.user.comingoouser.R;
 
 public class signupActivity extends AppCompatActivity {
-private String TAG = "signupActivity";
+    private String TAG = "signupActivity";
     private ImageButton registerButton;
     private EditText phoneNumberField;
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallBacks;
     private FirebaseAuth mAuth;
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference mRef;
+
+    private String Email,name,phoneNumber,password,imageURI;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,12 +47,17 @@ private String TAG = "signupActivity";
         phoneNumberField =  findViewById(R.id.code);
         registerButton = findViewById(R.id.continuer);
 
+        phoneNumber = getIntent().getStringExtra("phoneNumber");
+        Email = getIntent().getStringExtra("Email");
+        name = getIntent().getStringExtra("name");
+        password = getIntent().getStringExtra("password");
+        imageURI = getIntent().getStringExtra("imageURI");
+
         mCallBacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
             @Override
             public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
-                Intent intent = new Intent(signupActivity.this, signupFacebookActivity.class);
-                intent.putExtra("phoneNumber",  phoneNumberField.getText().toString());
+                Intent intent = new Intent(signupActivity.this, MapsActivity.class);
                 startActivity(intent);
                 finish();
             }
@@ -68,7 +75,12 @@ private String TAG = "signupActivity";
                 Intent intent = new Intent(signupActivity.this, signupConfirmActivity.class);
                 intent.putExtra("id", s);
                 intent.putExtra("phoneNumber", phoneNumberField.getText().toString());
+                intent.putExtra("Email",  Email);
+                intent.putExtra("name",  name);
+                intent.putExtra("password",  password);
+                intent.putExtra("imageURI",  imageURI);
                 startActivity(intent);
+                finish();
                 registerButton.setVisibility(View.VISIBLE);
             }
         };
@@ -104,10 +116,10 @@ private String TAG = "signupActivity";
 
             }
         });
-        
-        
-        
-        
+
+
+
+
     }
 
     @Override

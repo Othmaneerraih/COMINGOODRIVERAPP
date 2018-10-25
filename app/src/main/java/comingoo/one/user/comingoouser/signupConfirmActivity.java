@@ -2,11 +2,13 @@ package comingoo.one.user.comingoouser;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -17,6 +19,10 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import comingoo.one.user.comingoouser.R;
 
@@ -31,6 +37,9 @@ public class signupConfirmActivity extends AppCompatActivity {
     EditText code4;
     EditText code5;
     EditText code6;
+
+    private String Email,name,password,imageURI;
+    private String TAG = "signupConfirmActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +57,10 @@ public class signupConfirmActivity extends AppCompatActivity {
         context = this;
 
         phoneNumber = getIntent().getStringExtra("phoneNumber");
+        Email = getIntent().getStringExtra("Email");
+        name = getIntent().getStringExtra("name");
+        password = getIntent().getStringExtra("password");
+        imageURI = getIntent().getStringExtra("imageURI");
 
         edittextFlow();
 
@@ -68,9 +81,7 @@ public class signupConfirmActivity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if((FirebaseAuth.getInstance().getCurrentUser()) != null){
                                 FirebaseAuth.getInstance().getCurrentUser().delete();
-                                Intent intent = new Intent(signupConfirmActivity.this, signupFacebookActivity.class);
-                                intent.putExtra("phoneNumber", phoneNumber);
-                                startActivity(intent);
+                                signUpFirebase();
                                 finish();
                             }else {
                                 Toast.makeText(signupConfirmActivity.this, "WRONG CODE PLEASE TRY AGAIN", Toast.LENGTH_SHORT).show();
@@ -90,6 +101,53 @@ public class signupConfirmActivity extends AppCompatActivity {
     }
     static void Dest(){
         context.finish();
+    }
+
+
+    private void signUpFirebase(){
+        FirebaseAuth.getInstance().createUserWithEmailAndPassword(Email, password).
+                addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            FirebaseAuth.getInstance().signInWithEmailAndPassword(Email, password);
+                            final String id = FirebaseAuth.getInstance().getUid();
+                            Map<String, Object> data = new HashMap<>();
+                            data.put("fullName", name);
+                            data.put("email", Email);
+                            data.put("SOLDE", "0");
+                            data.put("USECREDIT", "1");
+                            data.put("LASTCOURSE", "**La Premiére Course**");
+                            data.put("phoneNumber", phoneNumber);
+                            data.put("image", imageURI);
+                            data.put("level", "2");
+
+                            Log.e(TAG, "onComplete: successfull");
+
+                            FirebaseDatabase.getInstance().getReference("clientUSERS").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).setValue(data).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if(!task.isSuccessful()){
+                                        Log.e("signUpFacebookActivity", "onComplete: 1111 " );
+                                        Toast.makeText(signupConfirmActivity.this, "Error!!!", Toast.LENGTH_SHORT).show();
+                                        FirebaseAuth.getInstance().getCurrentUser().delete();
+                                        FirebaseAuth.getInstance().signOut();
+                                    }else{
+                                        Log.e("signUpFacebookActivity", "onComplete: 22222" );
+                                        SharedPreferences prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
+                                        prefs.edit().putString("userID", FirebaseAuth.getInstance().getCurrentUser().getUid()).apply();
+                                        startActivity(new Intent(signupConfirmActivity.this, MapsActivity.class));
+                                        finish();
+                                    }
+
+                                }
+                            });
+                        } else {
+                            Log.e(TAG, "onComplete:Not " );
+                            Log.e(TAG, "onComplete: successfull not"+task.getResult().toString());
+                        }
+                    }});
     }
 
     private void edittextFlow(){
