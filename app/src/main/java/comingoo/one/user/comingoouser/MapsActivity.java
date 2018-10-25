@@ -698,7 +698,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             cancelRequest.setVisibility(View.GONE);
 
 
-            AnimateConstraint.animate(MapsActivity.this, startConstraint, (dpHeight - 100), 100, 0);
+            AnimateConstraint.animate(MapsActivity.this, startConstraint, (dpHeight - 80), 100, 0);
             AnimateConstraint.animate(MapsActivity.this, endConstraint, dpHeight - 70, 180, 0);
 
             findViewById(R.id.buttonsLayout).setVisibility(View.GONE);
@@ -1862,6 +1862,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 } else if (searchLoc.equals("")) {
                     searchLoc = "Casablanca";
                     city.setText(searchLoc);
+                }else if (searchLoc.equals("sale")) {
+                    searchLoc = "sale";
+                    city.setText(searchLoc);
+                }else if (searchLoc.equals("bouskoura")) {
+                    searchLoc = "bouskoura";
+                    city.setText(searchLoc);
+                }else if (searchLoc.equals("aeroportCasa")) {
+                    searchLoc = "aeroportCasa";
+                    city.setText(searchLoc);
+                }else if (searchLoc.equals("sidirahal")) {
+                    searchLoc = "sidirahal";
+                    city.setText(searchLoc);
+                }else if (searchLoc.equals("darBouazza")) {
+                    searchLoc = "darBouazza";
+                    city.setText(searchLoc);
+                }else if (searchLoc.equals("marrakech")) {
+                    searchLoc = "marrakech";
+                    city.setText(searchLoc);
+                }else if (searchLoc.equals("jadida")) {
+                    searchLoc = "jadida";
+                    city.setText(searchLoc);
                 }
             }
         });
@@ -2001,6 +2022,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
+
     //Check Start Position
     private boolean startPositionIsValid() {
         //PolyUtil.containsLocation(position.latitude, position.longitude, casaPoly, true);
@@ -2009,7 +2031,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.casaPoly(), true) || PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.errahmaPoly(), true)) {
             startCity = "casa";
-        } else {
+        } else if(PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.salePoly(), true)) {
+            startCity = "sale";
+        }else if(PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.aeroportCasaPoly(), true)) {
+            startCity = "aeroportCasa";
+        }else if(PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.bouskouraPoly(), true)) {
+            startCity = "bouskoura";
+        }else if(PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.darBouazzaPoly(), true)) {
+            startCity = "darBouazza";
+        }else if(PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.jadidaPoly(), true)) {
+            startCity = "jadida";
+        }else if(PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.marrakechPoly(), true)) {
+            startCity = "marrakech";
+        }else if(PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.sidiRahalPoly(), true)) {
+            startCity = "sidirahal";
+        }else if(PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.rabatPoly(), true) || PolyUtil.containsLocation(destLatLng.latitude, destLatLng.longitude, LocationInitializer.missingRabatPoly(), true)) {
+            startCity = "rabat";
+        }else {
             Toast.makeText(context, "On est seulement disponible sur Casablanca!", Toast.LENGTH_SHORT).show();
             return false;
         }
@@ -2056,7 +2094,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void getPrice() {
         if ((startCity.equals("casa") && destCity.equals("casa")) ||
-                (startCity.equals("rabat") && destCity.equals("rabat"))) {
+                (startCity.equals("rabat") && destCity.equals("rabat")) || (startCity.equals("sale") && destCity.equals("sale"))
+                || (startCity.equals("bouskoura") && destCity.equals("bouskoura")) || (startCity.equals("aeroportCasa") && destCity.equals("aeroportCasa"))
+                || (startCity.equals("sidirahal") && destCity.equals("sidirahal"))
+                || (startCity.equals("darBouazza") && destCity.equals("darBouazza"))
+                || (startCity.equals("marrakech") && destCity.equals("marrakech"))
+                || (startCity.equals("jadida") && destCity.equals("jadida"))) {
 
             FirebaseDatabase.getInstance().getReference("PRICES").
                     addListenerForSingleValueEvent(new ValueEventListener() {
@@ -2105,7 +2148,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         destArrow.setVisibility(View.GONE);
         findViewById(R.id.gooContent).setVisibility(View.GONE);
 
-        startConstraint.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) (dpHeight - 52), context.getResources().getDisplayMetrics());
+        startConstraint.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) (dpHeight - 42), context.getResources().getDisplayMetrics());
 
         shadowBg.setVisibility(View.VISIBLE);
         searchButtonDest.setVisibility(View.VISIBLE);
@@ -2126,7 +2169,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         AnimateConstraint.animate(context, endConstraint, dpHeight - 20, 180, 500, selectDest, findViewById(R.id.destArrow));
         AnimateConstraint.fadeIn(MapsActivity.this, findViewById(R.id.gooContent), 500, 10);
 
-        startConstraint.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) (dpHeight - 52), context.getResources().getDisplayMetrics());
+        startConstraint.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) (dpHeight - 42), context.getResources().getDisplayMetrics());
 
         //shadowBg.setVisibility(View.GONE);
         searchButtonDest.setVisibility(View.GONE);
@@ -2285,7 +2328,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         searchEditText.setEnabled(true);
 
-        AnimateConstraint.animate(MapsActivity.this, startConstraint, 100, (dpHeight - 150), 500);
+        AnimateConstraint.animate(MapsActivity.this, startConstraint, 80, (dpHeight - 130), 500);
 
         findViewById(R.id.locationPin).setVisibility(View.VISIBLE);
         findViewById(R.id.closestDriver).setVisibility(View.VISIBLE);
@@ -2329,7 +2372,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         float dpHeight = outMetrics.heightPixels / density;
         float dpWidth = outMetrics.widthPixels / density;
 
-        AnimateConstraint.animate(MapsActivity.this, startConstraint, (dpHeight - 100), 100, 500);
+        AnimateConstraint.animate(MapsActivity.this, startConstraint, (dpHeight - 80), 100, 500);
         AnimateConstraint.fadeIn(MapsActivity.this, endConstraint, 500, 10);
         AnimateConstraint.fadeIn(MapsActivity.this, selectDest, 500, 10);
 
