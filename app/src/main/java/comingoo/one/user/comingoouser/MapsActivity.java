@@ -787,7 +787,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 @Override
                 public void onClick(View v) {
 
-
+//                    Toast.makeText(getApplicationContext(), "Additional charge may apply", Toast.LENGTH_LONG).show();
                     DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -805,7 +805,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         }
                     };
                     AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
-                    builder.setTitle("Vous étes sure?").setMessage("Voulez-vous annuler la course?").setPositiveButton("Yes", dialogClickListener)
+                    builder.setTitle("Vous étes sure?").setMessage("Voulez-vous annuler la course?\n Additional charge may apply").setPositiveButton("Yes", dialogClickListener)
                             .setNegativeButton("No", dialogClickListener).show();
 
                 }
