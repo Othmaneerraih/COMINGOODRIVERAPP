@@ -22,6 +22,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
 
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/logo_user"
@@ -76,6 +77,17 @@
             android:screenOrientation="portrait"
             android:label="Comingoo">
         </activity>
+
+        <activity android:name=".CallActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"
+            android:label="Comingoo">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity android:name=".signupActivity"   android:configChanges="orientation"
             android:screenOrientation="portrait"/>
         <activity android:name=".signupConfirmActivity"   android:configChanges="orientation"
@@ -88,11 +100,7 @@
             android:configChanges="orientation"
             android:screenOrientation="portrait"
             android:label="Comingoo">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity android:name=".historiqueActivity"   android:configChanges="orientation"
             android:screenOrientation="portrait"/>

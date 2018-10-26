@@ -91,8 +91,12 @@
     <string name="passer">Passer</string>
     <string name="driver_arrived_txt">Chez comingoo, on monte a l\'avant </string>
 
-    <string name="sinch_app_key">05a626b9-33a4-4b83-b7bc-2d49062ea9ae</string>
-    <string name="sinch_app_secret">gVW3Tm0140e9i17wRwUzzw==</string>
+    <!--<string name="sinch_app_key">05a626b9-33a4-4b83-b7bc-2d49062ea9ae</string>-->
+    <!--<string name="sinch_app_secret">gVW3Tm0140e9i17wRwUzzw==</string>-->
+    <!--<string name="sinch_envirentmnet_host">clientapi.sinch.com</string>-->
+
+    <string name="sinch_app_key">04ae7d45-1084-4fb5-9d7c-08d82527d191</string>
+    <string name="sinch_app_secret">TfJrquo6qEmkV8DG/EXQPg==</string>
     <string name="sinch_envirentmnet_host">clientapi.sinch.com</string>
 
 

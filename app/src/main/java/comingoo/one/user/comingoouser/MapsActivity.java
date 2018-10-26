@@ -20,6 +20,7 @@ import android.graphics.drawable.ScaleDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
@@ -388,9 +389,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             sinchClient = Sinch.getSinchClientBuilder()
                     .context(MapsActivity.this)
                     .userId(userId)
-                    .applicationKey("05a626b9-33a4-4b83-b7bc-2d49062ea9ae")
-                    .applicationSecret("gVW3Tm0140e9i17wRwUzzw==")
-                    .environmentHost("clientapi.sinch.com")
+                    .applicationKey(resources.getString(R.string.sinch_app_key))
+                    .applicationSecret(resources.getString(R.string.sinch_app_secret))
+                    .environmentHost(resources.getString(R.string.sinch_envirentmnet_host))
 //                    .applicationKey(resources.getString(R.string.sinch_app_key))
 //                    .applicationSecret(resources.getString(R.string.sinch_app_secret))
 //                    .environmentHost(resources.getString(R.string.sinch_envirentmnet_host))
@@ -714,15 +715,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             }
 
+            if (ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(MapsActivity.this,
+                        new String[]{android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.READ_PHONE_STATE},
+                        1);
+            }
+
             callButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-                        ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.RECORD_AUDIO}, 4);
-                    } else {
-                        Call call = sinchClient.getCallClient().callUser(driverIDT);
-                        call.addCallListener(new SinchCallListener());
-                    }
+                    Call call = sinchClient.getCallClient().callUser(driverIDT);
+                    call.addCallListener(new SinchCallListener());
+
                 }
             });
 
@@ -962,6 +966,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         public void onCallEnded(Call endedCall) {
             //call ended by either party
             findViewById(R.id.callLayout).setVisibility(View.GONE);
+            setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
         }
 
         @Override
@@ -970,6 +975,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             findViewById(R.id.callLayout).setVisibility(View.VISIBLE);
             Button hangup = (Button) findViewById(R.id.hangup);
             hangup.setText("Hangup");
+            setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
             hangup.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
