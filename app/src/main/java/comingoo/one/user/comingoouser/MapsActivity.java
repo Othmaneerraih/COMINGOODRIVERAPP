@@ -389,9 +389,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             sinchClient = Sinch.getSinchClientBuilder()
                     .context(MapsActivity.this)
                     .userId(userId)
-                    .applicationKey(resources.getString(R.string.sinch_app_key))
-                    .applicationSecret(resources.getString(R.string.sinch_app_secret))
-                    .environmentHost(resources.getString(R.string.sinch_envirentmnet_host))
+                    .applicationKey("04ae7d45-1084-4fb5-9d7c-08d82527d191")
+                    .applicationSecret("TfJrquo6qEmkV8DG/EXQPg==")
+                    .environmentHost("clientapi.sinch.com")
 //                    .applicationKey(resources.getString(R.string.sinch_app_key))
 //                    .applicationSecret(resources.getString(R.string.sinch_app_secret))
 //                    .environmentHost(resources.getString(R.string.sinch_envirentmnet_host))
@@ -2065,6 +2065,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         startCity = "casa";
 
+//        if(startLatLng != null)
         if (PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.casaPoly(), true) || PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.errahmaPoly(), true)) {
             startCity = "casa";
         } else if (PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.salePoly(), true)) {
@@ -2081,7 +2082,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             startCity = "marrakech";
         } else if (PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.sidiRahalPoly(), true)) {
             startCity = "sidirahal";
-        } else if (PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.rabatPoly(), true) || PolyUtil.containsLocation(destLatLng.latitude, destLatLng.longitude, LocationInitializer.missingRabatPoly(), true)) {
+        } else if (PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.rabatPoly(), true) || PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.missingRabatPoly(), true)) {
             startCity = "rabat";
         } else {
             Toast.makeText(context, "On est seulement disponible sur Casablanca!", Toast.LENGTH_SHORT).show();

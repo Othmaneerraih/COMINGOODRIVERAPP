@@ -15,8 +15,11 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.database.FirebaseDatabase;
@@ -82,7 +85,7 @@ public class signupConfirmActivity extends AppCompatActivity {
                             if((FirebaseAuth.getInstance().getCurrentUser()) != null){
                                 FirebaseAuth.getInstance().getCurrentUser().delete();
                                 signUpFirebase();
-                                finish();
+
                             }else {
                                 Toast.makeText(signupConfirmActivity.this, "WRONG CODE PLEASE TRY AGAIN", Toast.LENGTH_SHORT).show();
                                 findViewById(R.id.imageButton).setVisibility(View.VISIBLE);
@@ -144,10 +147,77 @@ public class signupConfirmActivity extends AppCompatActivity {
                                 }
                             });
                         } else {
+//                            FirebaseAuth.getInstance().getCurrentUser().delete();
+                            removeUserFromFireBase();
+                            String a = task.getResult().toString();
                             Log.e(TAG, "onComplete:Not " );
                             Log.e(TAG, "onComplete: successfull not"+task.getResult().toString());
                         }
                     }});
+    }
+
+
+    private void removeUserFromFireBase(){
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+// Get auth credentials from the user for re-authentication. The example below shows
+// email and password credentials but there are multiple possible providers,
+// such as GoogleAuthProvider or FacebookAuthProvider.
+        AuthCredential credential = EmailAuthProvider
+                .getCredential(Email, password);
+
+// Prompt the user to re-provide their sign-in credentials
+        user.reauthenticate(credential)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Log.d(TAG, "User re-authenticated.");
+                    }
+                });
+//        Log.d(TAG, "ingreso a deleteAccount");
+//        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+//        final FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+//        currentUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+//            @Override
+//            public void onComplete(@NonNull Task<Void> task) {
+//                if (task.isSuccessful()) {
+//                    Log.d(TAG,"OK! Works fine!");
+//                    signUpFirebase();
+//                } else {
+//                    Log.w(TAG,"Something is wrong!");
+//                }
+//            }
+//        });
+
+
+
+//        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+//
+//        // Get auth credentials from the user for re-authentication. The example below shows
+//        // email and password credentials but there are multiple possible providers,
+//        // such as GoogleAuthProvider or FacebookAuthProvider.
+//        AuthCredential credential = EmailAuthProvider
+//                .getCredential(Email, password);
+//
+//        // Prompt the user to re-provide their sign-in credentials
+//        user.reauthenticate(credential)
+//                .addOnCompleteListener(new OnCompleteListener<Void>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<Void> task) {
+//                        user.delete()
+//                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+//                                    @Override
+//                                    public void onComplete(@NonNull Task<Void> task) {
+//                                        if (task.isSuccessful()) {
+//                                            Log.d(TAG, "User account deleted.");
+//                                            signUpFirebase();
+//                                        }
+//                                    }
+//                                });
+//
+//                    }
+//                });
     }
 
     private void edittextFlow(){

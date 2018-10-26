@@ -82,11 +82,6 @@
             android:configChanges="orientation"
             android:screenOrientation="portrait"
             android:label="Comingoo">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity android:name=".signupActivity"   android:configChanges="orientation"
             android:screenOrientation="portrait"/>
@@ -100,7 +95,11 @@
             android:configChanges="orientation"
             android:screenOrientation="portrait"
             android:label="Comingoo">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity android:name=".historiqueActivity"   android:configChanges="orientation"
             android:screenOrientation="portrait"/>
