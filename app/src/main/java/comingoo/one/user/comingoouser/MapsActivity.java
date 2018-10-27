@@ -2440,8 +2440,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 selectedOp.setVisibility(View.GONE);
                 selectDest.setVisibility(View.GONE);
                 findViewById(R.id.coverButton).setVisibility(View.GONE);
-
-
+                
                 showFavoritsAndRecents();
             }
         });
