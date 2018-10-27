@@ -804,6 +804,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                         SharedPreferenceTask preferenceTask = new SharedPreferenceTask(getApplicationContext());
                                         int prevCancel = preferenceTask.getCancelNumber();
                                         preferenceTask.setCancelNumber(prevCancel + 1);
+                                        driverInfoLayout.setVisibility(View.GONE);
 
                                         if (preferenceTask.getCancelNumber() > 3) {
                                             Toast.makeText(MapsActivity.this,
