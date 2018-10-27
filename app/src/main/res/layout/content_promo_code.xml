@@ -2,33 +2,63 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center">
+    android:background="@drawable/layout_round_background"
+    android:gravity="center"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/tv_promo_code"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:text="Please enter a valid promo code"
+        android:textColor="@android:color/white"
+        android:textSize="18sp" />
 
     <EditText
         android:id="@+id/et_user_promo_code"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="Enter Promo Code"
+        android:layout_below="@id/tv_promo_code"
+        android:layout_centerHorizontal="true"
+        android:backgroundTint="@android:color/white"
+        android:textColorHint="#8af4f1f1"
+        android:gravity="center"
+        android:textColor="@android:color/white"
+        android:layout_marginTop="10dp"
+        android:hint="COMINGOO20"
         android:padding="20dp" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/et_user_promo_code"
-        android:gravity="center">
+        android:gravity="center"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="10dp">
 
         <Button
             android:id="@+id/btn_promo_code_cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cancel" />
+            android:text="Cancel"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:textColor="@color/colorPrimaryDark"
+            android:background="@android:color/white"/>
 
         <Button
             android:id="@+id/btn_promo_code_ok"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
             android:layout_toRightOf="@id/btn_promo_code_cancel"
-            android:text="ok" android:layout_marginLeft="30dp"/>
+            android:text="Confirm"
+            android:textColor="@color/colorPrimaryDark"
+            android:background="@android:color/white"/>
 
     </RelativeLayout>
 </RelativeLayout>

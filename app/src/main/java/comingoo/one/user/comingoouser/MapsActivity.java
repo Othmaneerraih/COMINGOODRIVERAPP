@@ -1683,7 +1683,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         locationDestPin = (ImageView) findViewById(R.id.location_dest_pin);
         locationPinStart = (ImageView) findViewById(R.id.locationPin);
 
-
         menuButton = (ImageButton) findViewById(R.id.menu_button);
 
         gooButton = (ImageButton) findViewById(R.id.gooButton);
@@ -1815,8 +1814,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 showCustomDialog(MapsActivity.this);
             }
         });
-
-        gooBox.setVisibility(View.GONE);
 
         int fHeight = 170;
         int rHeight = HeightAbsolute - fHeight - 5;
@@ -2012,6 +2009,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
         dialog.setContentView(view);
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         dialog.show();
     }
 
@@ -2686,37 +2684,38 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (orderDriverState != 0 && orderDriverState != 1)
                 return "";
 
-            Geocoder geocoder = new Geocoder(mContext);
-            double latitude = params[0].latitude;
-            double longitude = params[0].longitude;
+//            Geocoder geocoder = new Geocoder(mContext);
+//            double latitude = params[0].latitude;
+//            double longitude = params[0].longitude;
+//
+//            List<Address> addresses = null;
+//            String addressText = "";
+//
+//            try {
+//                addresses = geocoder.getFromLocation(latitude, longitude, 1);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//
+//            if (addresses != null && addresses.size() > 0) {
+//                Address address = addresses.get(0);
+//
+//                if (address != null) {
+//                    if (address.getThoroughfare() != null) {
+//                        addressText = String.format("%s, %s.",
+//                                address.getThoroughfare().length() > 0 ? address.getThoroughfare() : "",
+//                                address.getLocality());
+//                    } else {
+//                        addressText = "Address non trouvé";
+//                    }
+//                } else {
+//                    addressText = "Address non trouvé";
+//                }
+//
+//            }
 
-            List<Address> addresses = null;
-            String addressText = "";
-
-            try {
-                addresses = geocoder.getFromLocation(latitude, longitude, 1);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            if (addresses != null && addresses.size() > 0) {
-                Address address = addresses.get(0);
-
-                if (address != null) {
-                    if (address.getThoroughfare() != null) {
-                        addressText = String.format("%s, %s.",
-                                address.getThoroughfare().length() > 0 ? address.getThoroughfare() : "",
-                                address.getLocality());
-                    } else {
-                        addressText = "Address non trouvé";
-                    }
-                } else {
-                    addressText = "Address non trouvé";
-                }
-
-            }
-
-            return addressText;
+//            return addressText;
+            return getCompleteAddressString(context, params[0].latitude, params[0].longitude);
         }
 
         @Override
@@ -2897,6 +2896,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             String distance = "" + (loc.distanceTo(loca) / 1000);
 
 
+                            searchEditText.setText(getCompleteAddressString(context, startLatLng.latitude, startLatLng.longitude));
+
+
                             for (int j = 0; j < driversKeys.size(); j++) {
                                 if (Double.parseDouble(driversLocations.get(j)) > Double.parseDouble(distance)) {
                                     driversKeys.add(j, dataSnapshot.getKey());
@@ -3015,6 +3017,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(false);
         }
+
         mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
             @Override
             public void onCameraIdle() {
