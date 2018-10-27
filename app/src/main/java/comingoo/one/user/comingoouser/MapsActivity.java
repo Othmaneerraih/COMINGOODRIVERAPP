@@ -646,7 +646,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean blockingTimeOver = true;
 
     private void handleCourseCallBack() {
-
         if (statusT.equals("4")) {
             mMap.clear();
             positionButton.setVisibility(View.VISIBLE);
@@ -660,7 +659,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 coverButton.setClickable(true);
             }
 
-            findViewById(R.id.driverInfoLayout).setVisibility(View.GONE);
+            findViewById(R.id.driverInfoLayout).setVisibility(View.VISIBLE);
             findViewById(R.id.buttonsLayout).setVisibility(View.VISIBLE);
             return;
         }
@@ -726,7 +725,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 public void onClick(View v) {
                     Call call = sinchClient.getCallClient().callUser(driverIDT);
                     call.addCallListener(new SinchCallListener());
-
                 }
             });
 
@@ -735,10 +733,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (statusT.equals("0") && !courseScreenStageZero) {
 
-
             if (!userLevel.equals("2")) {
-                findViewById(R.id.call).setVisibility(View.VISIBLE);
-                findViewById(R.id.call).setOnClickListener(new View.OnClickListener() {
+                callButton.setVisibility(View.VISIBLE);
+                callButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         if (!driverPhone.isEmpty() || driverPhone != null) {
@@ -871,7 +868,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (statusT.equals("1") && !courseScreenStageOne) {
             findViewById(R.id.cancelCourse).setVisibility(View.GONE);
             if (!userLevel.equals("2")) {
-                findViewById(R.id.call).setVisibility(View.VISIBLE);
+                callButton.setVisibility(View.VISIBLE);
                 findViewById(R.id.call).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -973,7 +970,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         public void onCallEstablished(final Call establishedCall) {
             //incoming call was picked up
             findViewById(R.id.callLayout).setVisibility(View.VISIBLE);
-            Button hangup = (Button) findViewById(R.id.hangup);
+            Button hangup = findViewById(R.id.hangup);
             hangup.setText("Hangup");
             setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
             hangup.setOnClickListener(new View.OnClickListener() {
@@ -1532,6 +1529,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             });
         }
+
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
@@ -1687,8 +1685,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         menuButton = (ImageButton) findViewById(R.id.menu_button);
-        //mDrawer = (FlowingDrawer) findViewById(R.id.drawerlayout);
-
 
         gooButton = (ImageButton) findViewById(R.id.gooButton);
 
@@ -1820,14 +1816,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
+        gooBox.setVisibility(View.GONE);
 
         int fHeight = 170;
         int rHeight = HeightAbsolute - fHeight - 5;
 
-
         fR.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) fHeight, context.getResources().getDisplayMetrics());
         rR.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) rHeight, context.getResources().getDisplayMetrics());
-
 
         loadImages();
         updateViews();
@@ -1882,11 +1877,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view) {
                 // mDrawer.openMenu(true);
-                ConstraintLayout contentConstraint = (ConstraintLayout) findViewById(R.id.contentLayout);
-                ConstraintLayout contentBlocker = (ConstraintLayout) findViewById(R.id.contentBlocker);
+                ConstraintLayout contentConstraint = findViewById(R.id.contentLayout);
+                ConstraintLayout contentBlocker = findViewById(R.id.contentBlocker);
                 AnimateConstraint.resideAnimation(context, contentConstraint, contentBlocker, (int) dpWidth, (int) dpHeight, 200);
             }
         });
+
 
         findViewById(R.id.select_city).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1924,6 +1920,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             }
         });
+
         X.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -2014,12 +2011,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-
         dialog.setContentView(view);
-//        final Window window = dialog.getWindow();
-//        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-//        window.setBackgroundDrawableResource(R.color.colorTransparent);
-//        window.setGravity(Gravity.CENTER);
         dialog.show();
     }
 
