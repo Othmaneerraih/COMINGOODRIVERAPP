@@ -1757,13 +1757,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         rLocationView.setHasFixedSize(true);
         rLocationView.setLayoutManager(new LinearLayoutManager(this));
 
-        placeAdapter = new MyPlaceAdapter(placeData);
+        placeAdapter = new MyPlaceAdapter(getApplicationContext(), placeData);
         mLocationView.setAdapter(placeAdapter);
 
-        fPlaceAdapter = new MyPlaceAdapter(fPlaceData);
+        fPlaceAdapter = new MyPlaceAdapter(getApplicationContext(), fPlaceData);
         fLocationView.setAdapter(fPlaceAdapter);
 
-        rPlaceAdapter = new MyPlaceAdapter(rPlaceData);
+        rPlaceAdapter = new MyPlaceAdapter(getApplicationContext(), rPlaceData);
         rLocationView.setAdapter(rPlaceAdapter);
 
 
@@ -2735,7 +2735,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
-    static void goToLocation(Double lat, Double lng) {
+    static void goToLocation(Context context, Double lat, Double lng) {
         // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), 17));
         image1.setVisibility(View.INVISIBLE);
         image2.setVisibility(View.INVISIBLE);
@@ -3038,6 +3038,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             }
         });
+
+        mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+            @Override
+            public void onMapLoaded() {
+                searchEditText.setText(getCompleteAddressString(context, startLatLng.latitude, startLatLng.longitude));
+//                Log.e("MapsActivity", "goToLocation: "+getCompleteAddressString(context, lat, lng) );
+            }
+        });
+    }
+
+    private static String getCompleteAddressString(Context context, double LATITUDE, double LONGITUDE) {
+        String strAdd = "";
+        Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(LATITUDE, LONGITUDE, 1);
+            if (addresses != null) {
+                Address returnedAddress = addresses.get(0);
+                StringBuilder strReturnedAddress = new StringBuilder("");
+
+                for (int i = 0; i <= returnedAddress.getMaxAddressLineIndex(); i++) {
+                    strReturnedAddress.append(returnedAddress.getAddressLine(i)).append("\n");
+                }
+                strAdd = strReturnedAddress.toString();
+            } else {
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return strAdd;
     }
 
     public static void hideKeyboard(Activity activity) {
@@ -3063,7 +3092,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             // GPS location can be null if GPS is switched off
                             if (location != null) {
                                 userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-                                goToLocation(userLatLng.latitude, userLatLng.longitude);
+                                goToLocation(getApplicationContext(), userLatLng.latitude, userLatLng.longitude);
                             }
                         }
                     })

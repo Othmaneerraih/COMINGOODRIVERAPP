@@ -1,6 +1,7 @@
 package comingoo.one.user.comingoouser;
 
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,7 @@ import comingoo.one.user.comingoouser.R;
 
 public class MyPlaceAdapter extends RecyclerView.Adapter<MyPlaceAdapter.ViewHolder> {
     private List<place> mDataset;
+    private Context context;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -35,8 +37,9 @@ public class MyPlaceAdapter extends RecyclerView.Adapter<MyPlaceAdapter.ViewHold
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public MyPlaceAdapter(List<place> myDataset) {
+    public MyPlaceAdapter(Context context, List<place> myDataset) {
         this.mDataset = myDataset;
+        this.context = context;
     }
 
     // Create new views (invoked by the layout manager)
@@ -61,7 +64,7 @@ public class MyPlaceAdapter extends RecyclerView.Adapter<MyPlaceAdapter.ViewHold
             @Override
             public void onClick(View view) {
                         MapsActivity.showSearchAddressStartUI();
-                            MapsActivity.goToLocation(Double.parseDouble(newPlace.getLat()), Double.parseDouble(newPlace.getLng()));
+                            MapsActivity.goToLocation(context, Double.parseDouble(newPlace.getLat()), Double.parseDouble(newPlace.getLng()));
             }
         });
         //holder.image.setImageResource(newPlace.getImage());
