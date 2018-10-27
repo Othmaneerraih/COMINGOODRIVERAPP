@@ -659,7 +659,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 coverButton.setClickable(true);
             }
 
-            findViewById(R.id.driverInfoLayout).setVisibility(View.VISIBLE);
+//            findViewById(R.id.driverInfoLayout).setVisibility(View.VISIBLE);
             findViewById(R.id.buttonsLayout).setVisibility(View.VISIBLE);
             return;
         }
@@ -1773,6 +1773,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Aide = (ConstraintLayout) findViewById(R.id.aide);
         logout = (ConstraintLayout) findViewById(R.id.logout);
 
+
         Historique.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -1814,6 +1815,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 showCustomDialog(MapsActivity.this);
             }
         });
+
+        driverInfoLayout.setVisibility(View.GONE);
 
         int fHeight = 170;
         int rHeight = HeightAbsolute - fHeight - 5;
@@ -2440,7 +2443,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 selectedOp.setVisibility(View.GONE);
                 selectDest.setVisibility(View.GONE);
                 findViewById(R.id.coverButton).setVisibility(View.GONE);
-                
+
                 showFavoritsAndRecents();
             }
         });
