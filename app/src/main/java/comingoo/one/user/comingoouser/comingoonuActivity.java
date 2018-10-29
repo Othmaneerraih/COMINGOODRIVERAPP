@@ -265,7 +265,6 @@ public class comingoonuActivity extends AppCompatActivity {
             }
         });
 
-
         updateViews();
     }
 

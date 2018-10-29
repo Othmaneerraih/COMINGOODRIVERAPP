@@ -520,90 +520,94 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // This is run in a background thread
         @Override
         protected String doInBackground(String... params) {
-
-            FirebaseDatabase.getInstance().getReference("COURSES").orderByChild("client").equalTo(userId).addValueEventListener(new ValueEventListener() {
+            FirebaseDatabase.getInstance().getReference("COURSES").orderByChild("client").
+                    equalTo(userId).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
-                        for (final DataSnapshot data : dataSnapshot.getChildren()) {
-                            courseIDT = data.getKey();
-                            statusT = data.child("state").getValue(String.class);
-                            clientIdT = data.child("client").getValue(String.class);
-                            driverIDT = data.child("driver").getValue(String.class);
-                            driverPosT = new LatLng(Double.parseDouble(data.child("driverPosLat").getValue(String.class)),
-                                    Double.parseDouble(data.child("driverPosLong").getValue(String.class)));
-                            startPositionT = new LatLng(Double.parseDouble(data.child("startLat").getValue(String.class)),
-                                    Double.parseDouble(data.child("startLong").getValue(String.class)));
+                        try {
+                            for (final DataSnapshot data : dataSnapshot.getChildren()) {
+                                courseIDT = data.getKey();
+                                statusT = data.child("state").getValue(String.class);
+                                clientIdT = data.child("client").getValue(String.class);
+                                driverIDT = data.child("driver").getValue(String.class);
+                                driverPosT = new LatLng(Double.parseDouble(data.child("driverPosLat").getValue(String.class)),
+                                        Double.parseDouble(data.child("driverPosLong").getValue(String.class)));
+                                startPositionT = new LatLng(Double.parseDouble(data.child("startLat").getValue(String.class)),
+                                        Double.parseDouble(data.child("startLong").getValue(String.class)));
 
 
-                            driverLocT = new Location("");
-                            startLocT = new Location("");
+                                driverLocT = new Location("");
+                                startLocT = new Location("");
 
 
-                            startText = data.child("startAddress").getValue(String.class);
-                            endText = data.child("endAddress").getValue(String.class);
+                                startText = data.child("startAddress").getValue(String.class);
+                                endText = data.child("endAddress").getValue(String.class);
 
-                            driverLocT.setLatitude(driverPosT.latitude);
-                            driverLocT.setLatitude(driverPosT.longitude);
+                                driverLocT.setLatitude(driverPosT.latitude);
+                                driverLocT.setLatitude(driverPosT.longitude);
 
-                            startLocT.setLatitude(startPositionT.latitude);
-                            startLocT.setLatitude(startPositionT.longitude);
+                                startLocT.setLatitude(startPositionT.latitude);
+                                startLocT.setLatitude(startPositionT.longitude);
 
 
-                            FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(driverIDT).addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    if (dataSnapshot.exists()) {
-                                        driverPhone = dataSnapshot.child("phoneNumber").getValue(String.class);
-                                        driverImage = dataSnapshot.child("image").getValue(String.class);
-                                        driverName = dataSnapshot.child("fullName").getValue(String.class);
+                                FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(driverIDT).addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        if (dataSnapshot.exists()) {
+                                            driverPhone = dataSnapshot.child("phoneNumber").getValue(String.class);
+                                            driverImage = dataSnapshot.child("image").getValue(String.class);
+                                            driverName = dataSnapshot.child("fullName").getValue(String.class);
 
-                                        FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(driverIDT).child("CARS").orderByChild("selected").equalTo("1").addListenerForSingleValueEvent(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                if (dataSnapshot.exists()) {
+                                            FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(driverIDT).child("CARS").orderByChild("selected").equalTo("1").addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                    if (dataSnapshot.exists()) {
 
-                                                    for (DataSnapshot data : dataSnapshot.getChildren()) {
-                                                        driverCar = data.child("name").getValue(String.class) + " " + data.child("description").getValue(String.class);
+                                                        for (DataSnapshot data : dataSnapshot.getChildren()) {
+                                                            driverCar = data.child("name").getValue(String.class) + " " + data.child("description").getValue(String.class);
+                                                        }
+                                                    } else {
+                                                        driverCar = "data not available!";
                                                     }
-                                                } else {
-                                                    driverCar = "data not available!";
+
+                                                    FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientIdT).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                        @Override
+                                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                            userLevel = dataSnapshot.child("level").getValue(String.class);
+                                                            handleCourseCallBack();
+
+                                                        }
+
+                                                        @Override
+                                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                        }
+                                                    });
+
                                                 }
 
-                                                FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientIdT).addListenerForSingleValueEvent(new ValueEventListener() {
-                                                    @Override
-                                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                        userLevel = dataSnapshot.child("level").getValue(String.class);
-                                                        handleCourseCallBack();
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                                    }
+                                                }
+                                            });
 
-                                                    @Override
-                                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                        }
 
-                                                    }
-                                                });
-
-                                            }
-
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                            }
-                                        });
 
                                     }
 
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                }
-                            });
+                                    }
+                                });
 
 
+                            }
+                        }catch (NullPointerException e){
+                            e.printStackTrace();
                         }
                     } else {
                         statusT = "4";
@@ -790,14 +794,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 @Override
                 public void onClick(View v) {
                     try {
-
-
                         DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 switch (which) {
                                     case DialogInterface.BUTTON_POSITIVE:
-                                        //Yes button clicked
+
                                         FirebaseDatabase.getInstance().getReference("COURSES").child(courseIDT).child("state").setValue("5");
                                         FirebaseDatabase.getInstance().getReference("COURSES").child(courseIDT).removeValue();
 
@@ -807,7 +809,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                         if (preferenceTask.getCancelNumber() > 3) {
                                             Toast.makeText(MapsActivity.this,
-                                                    "Vous avez annulé beaucoup de fois, l’application va se bloquer pendant 1h", Toast.LENGTH_LONG).show();
+                                                    "Vous avez annulé beaucoup de fois, l’application va se bloquer pendant 1h",
+                                                    Toast.LENGTH_LONG).show();
 
                                             blockingTimeOver = false;
 
