@@ -1627,8 +1627,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             startActivity(intent);
             finish();
         }
-        new CheckUserTask().execute();
-        new checkFinishedCourse().execute();
+
+        try {
+            new CheckUserTask().execute();
+            new checkFinishedCourse().execute();
+        } catch (NullPointerException e){
+            e.printStackTrace();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
 
         setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -1852,9 +1860,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     AnimateConstraint.fadeOut(context, gooButton, 200, 10);
                     //AnimateConstraint.expandCircleAnimation(context, findViewById(R.id.gooLayout), dpHeight, dpWidth);
                     startSearchUI();
-                    new sendRequestsTask().execute();
-                } else
-                    Toast.makeText(MapsActivity.this, "Vous avez annulé beaucoup de fois, l’application va se bloquer pendant 1h", Toast.LENGTH_LONG).show();
+
+                    try {
+                        new sendRequestsTask().execute();
+                    } catch (NullPointerException e) {
+                        e.printStackTrace();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         });
 
@@ -2046,8 +2060,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         findViewById(R.id.x).setVisibility(View.VISIBLE);
         findViewById(R.id.my_position).setVisibility(View.GONE);
         findViewById(R.id.adress_result).setVisibility(View.INVISIBLE);
-
-        // citySelectLayout.setVisibility(View.VISIBLE);
 
 
         //  AnimateConstraint.animate(MapsActivity.this,fR,  fHeight, 1, 1);
@@ -3010,8 +3022,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
         mMap.getUiSettings().setRotateGesturesEnabled(false);
         mMap.setBuildingsEnabled(false);
-        // mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
-        new checkCourseTask().execute();
+
+       // mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+
+        try {
+            new checkCourseTask().execute();
+        } catch (NullPointerException e){
+            e.printStackTrace();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
 
         if (ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(MapsActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);

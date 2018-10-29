@@ -102,13 +102,23 @@ public class loginActivity extends AppCompatActivity {
 
 //                                                        loginBtn.setVisibility(View.VISIBLE);
 //                                                        Toast.makeText(loginActivity.this, "Error!!!", Toast.LENGTH_SHORT).show();
-                                                        Intent intent = new Intent(loginActivity.this, signupActivity.class);
-                                                        intent.putExtra("Email",  Email);
-                                                        intent.putExtra("name",  name);
-                                                        intent.putExtra("password",  password);
-                                                        intent.putExtra("imageURI",  imageURI);
-                                                        startActivity(intent);
-                                                        finish();
+
+                                                        String[] stringArray = getResources().getStringArray(R.array.blocked_users);
+                                                        Log.e("loginActivity", "onDataChange: "+stringArray[0] );
+                                                        if (Arrays.asList(stringArray).contains(EMAIL)) {
+                                                            // true
+                                                            Toast.makeText(loginActivity.this, "This account is blocked", Toast.LENGTH_LONG).show();
+                                                        } else {
+                                                            Intent intent = new Intent(loginActivity.this, signupActivity.class);
+                                                            intent.putExtra("Email",  Email);
+                                                            intent.putExtra("name",  name);
+                                                            intent.putExtra("password",  password);
+                                                            intent.putExtra("imageURI",  imageURI);
+                                                            startActivity(intent);
+                                                            finish();
+                                                        }
+
+
 
                                                     } else {
 
