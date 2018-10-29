@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Comingoo</string>
+    <!--<string name="app_name">comingouserTwo</string>-->
     <string name="language_value">English</string>
     <string name="Acceuil">Home</string>
     <string name="Historique">History</string>
@@ -90,4 +91,9 @@
     <string name="sinch_app_key">05a626b9-33a4-4b83-b7bc-2d49062ea9ae</string>
     <string name="sinch_app_secret">TfJrquo6qEmkV8DG/EXQPg==</string>
     <string name="sinch_envirentmnet_host">clientapi.sinch.com</string>
+
+    <string-array name="blocked_users" tools:ignore="ExtraTranslation">
+        <item>ujjwal.kumar.bd@gmail.com</item>
+    </string-array>
+
 </resources>
