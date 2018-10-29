@@ -93,7 +93,7 @@
     <string name="sinch_envirentmnet_host">clientapi.sinch.com</string>
 
     <string-array name="blocked_users" tools:ignore="ExtraTranslation">
-        <item>ujjwal.kumar.bd@gmail.com</item>
+        <item>brightgupta18@gmail.com</item>
     </string-array>
 
 </resources>
