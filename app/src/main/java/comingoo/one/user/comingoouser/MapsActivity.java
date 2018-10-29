@@ -186,6 +186,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     static ConstraintLayout rR;
     static ConstraintLayout fR;
 
+    private static final String APP_KEY = "04ae7d45-1084-4fb5-9d7c-08d82527d191";
+    private static final String APP_SECRET = "TfJrquo6qEmkV8DG/EXQPg==";
+    private static final String ENVIRONMENT = "sandbox.sinch.com";
+
 
     private float density;
     private float dpHeight;
@@ -358,6 +362,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private String userName;
+    private Call call;
 
     private class CheckUserTask extends AsyncTask<String, Integer, String> {
         SharedPreferences prefs;
@@ -467,8 +472,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-
-
             // Do things like hide the progress bar or change a TextView
         }
     }
@@ -477,7 +480,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private class SinchCallClientListener implements CallClientListener {
         @Override
         public void onIncomingCall(CallClient callClient, Call incomingCall) {
-            //Pick up the call!
+            call = incomingCall;
+            Toast.makeText(MapsActivity.this, "incoming call", Toast.LENGTH_SHORT).show();
+            call.answer();
+            call.addCallListener(new MapsActivity.SinchCallListener());
         }
     }
 
@@ -1661,6 +1667,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         carButton = (ImageButton) findViewById(R.id.carButton);
         selectCity = (ImageButton) findViewById(R.id.imageButton4);
         destArrow = (ImageView) findViewById(R.id.destArrow);
+
+        if (ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MapsActivity.this,
+                    new String[]{android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.READ_PHONE_STATE},
+                    1);
+        }
+
+        sinchClient = Sinch.getSinchClientBuilder()
+                .context(this)
+                .userId(userId)
+                .applicationKey(APP_KEY)
+                .applicationSecret(APP_SECRET)
+                .environmentHost(ENVIRONMENT)
+                .build();
+
+        sinchClient.setSupportCalling(true);
+        sinchClient.startListeningOnActiveConnection();
+        sinchClient.start();
+
+        sinchClient.getCallClient().addCallClientListener(new MapsActivity.SinchCallClientListener());
 
         price = (TextView) findViewById(R.id.price);
         fixedLocations = new ArrayList<>();
