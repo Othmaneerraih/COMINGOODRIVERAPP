@@ -79,7 +79,7 @@ public class loginActivity extends AppCompatActivity {
         final LoginButton loginButton = findViewById(R.id.login_button);
         loginButton.setReadPermissions(Arrays.asList(EMAIL));
 
-        getDurationForRoute("Pabnartek Rd, Dhaka","Bridge, Z5478");
+//        getDurationForRoute("Pabnartek Rd, Dhaka","Bridge, Z5478");
 
         LoginManager.getInstance().registerCallback(callbackManager,
                 new FacebookCallback<LoginResult>() {
