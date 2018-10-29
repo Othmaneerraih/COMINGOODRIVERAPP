@@ -30,9 +30,18 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.maps.DirectionsApi;
+import com.google.maps.GeoApiContext;
+import com.google.maps.errors.ApiException;
+import com.google.maps.model.DirectionsLeg;
+import com.google.maps.model.DirectionsResult;
+import com.google.maps.model.DirectionsRoute;
+import com.google.maps.model.Duration;
+import com.google.maps.model.TravelMode;
 
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 import comingoo.one.user.comingoouser.R;
@@ -69,6 +78,8 @@ public class loginActivity extends AppCompatActivity {
         final String EMAIL = "email";
         final LoginButton loginButton = findViewById(R.id.login_button);
         loginButton.setReadPermissions(Arrays.asList(EMAIL));
+
+        getDurationForRoute("Pabnartek Rd, Dhaka","Bridge, Z5478");
 
         LoginManager.getInstance().registerCallback(callbackManager,
                 new FacebookCallback<LoginResult>() {
@@ -189,6 +200,36 @@ public class loginActivity extends AppCompatActivity {
                         Toast.makeText(loginActivity.this, exception.toString(), Toast.LENGTH_SHORT).show();
                     }
                 });
+
+    }
+
+    private String getDurationForRoute(String origin, String destination){
+        // - We need a context to access the API
+        GeoApiContext geoApiContext = new GeoApiContext.Builder()
+                .apiKey(getResources().getString(R.string.google_maps_key))
+                .build();
+
+        // - Perform the actual request
+        DirectionsResult directionsResult = null;
+        try {
+            directionsResult = DirectionsApi.newRequest(geoApiContext)
+                    .mode(TravelMode.DRIVING)
+                    .origin(origin)
+                    .destination(destination)
+                    .await();
+        } catch (ApiException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // - Parse the result
+        DirectionsRoute route = directionsResult.routes[0];
+        DirectionsLeg leg = route.legs[0];
+        Duration duration = leg.duration;
+        return duration.humanReadable;
     }
 
     @Override
