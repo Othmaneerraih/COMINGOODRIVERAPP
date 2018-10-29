@@ -186,8 +186,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     static ConstraintLayout rR;
     static ConstraintLayout fR;
 
-    private static final String APP_KEY = "04ae7d45-1084-4fb5-9d7c-08d82527d191";
-    private static final String APP_SECRET = "TfJrquo6qEmkV8DG/EXQPg==";
+    private static final String APP_KEY = "185d9822-a953-4af6-a780-b0af1fd31bf7";
+    private static final String APP_SECRET = "ZiJ6FqH5UEWYbkMZd1rWbw==";
     private static final String ENVIRONMENT = "sandbox.sinch.com";
 
 
