@@ -642,7 +642,7 @@
             android:layout_marginBottom="60dp"
             android:background="@color/transp"
             android:scaleType="fitCenter"
-            android:visibility="gone"
+            android:visibility="visible"
             app:layout_constraintBottom_toTopOf="@+id/adress_result"
             app:layout_constraintEnd_toEndOf="parent" />
 
@@ -844,8 +844,6 @@
                     android:cropToPadding="false"
                     android:scaleType="fitCenter"
                     android:visibility="gone" />
-
-
             </LinearLayout>
 
         </android.support.constraint.ConstraintLayout>
@@ -975,7 +973,6 @@
                 android:layout_marginEnd="15dp"
                 android:layout_marginRight="15dp"
                 android:background="@drawable/main_edit_text"
-
                 android:elevation="5dp"
                 android:ems="10"
                 android:fontFamily="@font/roboto_light"
@@ -1474,7 +1471,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
-            android:visibility="visible"
+            android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@+id/adress_result"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent">
@@ -1574,26 +1571,27 @@
 
     </android.support.constraint.ConstraintLayout>
 
-    <!--<android.support.constraint.ConstraintLayout-->
-        <!--android:id="@+id/loadingScreen"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:background="@drawable/online_button"-->
-        <!--android:clickable="true"-->
-        <!--android:visibility="visible">-->
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/loadingScreen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/online_button"
+        android:clickable="true"
+        android:visibility="visible">
 
-        <!--<pl.droidsonroids.gif.GifImageView-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_marginTop="16dp"-->
-            <!--android:layout_marginBottom="8dp"-->
-            <!--android:src="@drawable/wheel_running"-->
-            <!--app:layout_constraintBottom_toBottomOf="parent"-->
-            <!--app:layout_constraintEnd_toEndOf="parent"-->
-            <!--app:layout_constraintStart_toStartOf="parent"-->
-            <!--app:layout_constraintTop_toTopOf="parent" />-->
+        <pl.droidsonroids.gif.GifImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"
+            android:src="@drawable/wheel_running"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <!--</android.support.constraint.ConstraintLayout>-->
+    </android.support.constraint.ConstraintLayout>
+
 
 </android.support.constraint.ConstraintLayout>
 
