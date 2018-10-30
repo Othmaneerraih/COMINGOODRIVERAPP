@@ -502,6 +502,57 @@
         </android.support.constraint.ConstraintLayout>
 
         <android.support.constraint.ConstraintLayout
+            android:id="@+id/constraintLayout14"
+            android:layout_width="fill_parent"
+            android:layout_height="60dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginStart="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayout13">
+
+            <ImageView
+                android:id="@+id/iv_user_email"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="36dp"
+                android:layout_marginStart="36dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/mail_cnu" />
+
+            <TextView
+                android:id="@+id/tv_user_email_text_profile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="14dp"
+                android:fontFamily="@font/roboto"
+                android:text="Email"
+                android:textColor="#00073b"
+                app:layout_constraintStart_toEndOf="@+id/iv_user_email"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/email_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"
+                android:fontFamily="@font/roboto_light"
+                android:textColor="#00073b"
+                android:textSize="10sp"
+                app:layout_constraintStart_toEndOf="@+id/iv_user_email"
+                app:layout_constraintTop_toBottomOf="@+id/tv_user_email_text_profile" />
+        </android.support.constraint.ConstraintLayout>
+
+        <android.support.constraint.ConstraintLayout
             android:id="@+id/change_password_button"
             android:layout_width="fill_parent"
             android:layout_height="60dp"
@@ -527,7 +578,7 @@
                 app:srcCompat="@drawable/password_cnu" />
 
             <TextView
-                android:id="@+id/textView43"
+                android:id="@+id/tv_user_email_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
