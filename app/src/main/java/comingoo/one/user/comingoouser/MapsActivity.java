@@ -435,6 +435,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 intent.putExtra("image", dataSnapshot.child("image").getValue(String.class));
                                 intent.putExtra("name", dataSnapshot.child("fullName").getValue(String.class));
                                 intent.putExtra("phone", dataSnapshot.child("phoneNumber").getValue(String.class));
+                                intent.putExtra("email", dataSnapshot.child("email").getValue(String.class));
 //                                intent.putExtra("phone", "+212 " + dataSnapshot.child("phoneNumber").getValue(String.class));
                                 startActivity(intent);
                             }
@@ -526,90 +527,94 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // This is run in a background thread
         @Override
         protected String doInBackground(String... params) {
-
-            FirebaseDatabase.getInstance().getReference("COURSES").orderByChild("client").equalTo(userId).addValueEventListener(new ValueEventListener() {
+            FirebaseDatabase.getInstance().getReference("COURSES").orderByChild("client").
+                    equalTo(userId).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
-                        for (final DataSnapshot data : dataSnapshot.getChildren()) {
-                            courseIDT = data.getKey();
-                            statusT = data.child("state").getValue(String.class);
-                            clientIdT = data.child("client").getValue(String.class);
-                            driverIDT = data.child("driver").getValue(String.class);
-                            driverPosT = new LatLng(Double.parseDouble(data.child("driverPosLat").getValue(String.class)),
-                                    Double.parseDouble(data.child("driverPosLong").getValue(String.class)));
-                            startPositionT = new LatLng(Double.parseDouble(data.child("startLat").getValue(String.class)),
-                                    Double.parseDouble(data.child("startLong").getValue(String.class)));
+                        try {
+                            for (final DataSnapshot data : dataSnapshot.getChildren()) {
+                                courseIDT = data.getKey();
+                                statusT = data.child("state").getValue(String.class);
+                                clientIdT = data.child("client").getValue(String.class);
+                                driverIDT = data.child("driver").getValue(String.class);
+                                driverPosT = new LatLng(Double.parseDouble(data.child("driverPosLat").getValue(String.class)),
+                                        Double.parseDouble(data.child("driverPosLong").getValue(String.class)));
+                                startPositionT = new LatLng(Double.parseDouble(data.child("startLat").getValue(String.class)),
+                                        Double.parseDouble(data.child("startLong").getValue(String.class)));
 
 
-                            driverLocT = new Location("");
-                            startLocT = new Location("");
+                                driverLocT = new Location("");
+                                startLocT = new Location("");
 
 
-                            startText = data.child("startAddress").getValue(String.class);
-                            endText = data.child("endAddress").getValue(String.class);
+                                startText = data.child("startAddress").getValue(String.class);
+                                endText = data.child("endAddress").getValue(String.class);
 
-                            driverLocT.setLatitude(driverPosT.latitude);
-                            driverLocT.setLatitude(driverPosT.longitude);
+                                driverLocT.setLatitude(driverPosT.latitude);
+                                driverLocT.setLatitude(driverPosT.longitude);
 
-                            startLocT.setLatitude(startPositionT.latitude);
-                            startLocT.setLatitude(startPositionT.longitude);
+                                startLocT.setLatitude(startPositionT.latitude);
+                                startLocT.setLatitude(startPositionT.longitude);
 
 
-                            FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(driverIDT).addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    if (dataSnapshot.exists()) {
-                                        driverPhone = dataSnapshot.child("phoneNumber").getValue(String.class);
-                                        driverImage = dataSnapshot.child("image").getValue(String.class);
-                                        driverName = dataSnapshot.child("fullName").getValue(String.class);
+                                FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(driverIDT).addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        if (dataSnapshot.exists()) {
+                                            driverPhone = dataSnapshot.child("phoneNumber").getValue(String.class);
+                                            driverImage = dataSnapshot.child("image").getValue(String.class);
+                                            driverName = dataSnapshot.child("fullName").getValue(String.class);
 
-                                        FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(driverIDT).child("CARS").orderByChild("selected").equalTo("1").addListenerForSingleValueEvent(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                if (dataSnapshot.exists()) {
+                                            FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(driverIDT).child("CARS").orderByChild("selected").equalTo("1").addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                    if (dataSnapshot.exists()) {
 
-                                                    for (DataSnapshot data : dataSnapshot.getChildren()) {
-                                                        driverCar = data.child("name").getValue(String.class) + " " + data.child("description").getValue(String.class);
+                                                        for (DataSnapshot data : dataSnapshot.getChildren()) {
+                                                            driverCar = data.child("name").getValue(String.class) + " " + data.child("description").getValue(String.class);
+                                                        }
+                                                    } else {
+                                                        driverCar = "data not available!";
                                                     }
-                                                } else {
-                                                    driverCar = "data not available!";
+
+                                                    FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientIdT).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                        @Override
+                                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                            userLevel = dataSnapshot.child("level").getValue(String.class);
+                                                            handleCourseCallBack();
+
+                                                        }
+
+                                                        @Override
+                                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                        }
+                                                    });
+
                                                 }
 
-                                                FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientIdT).addListenerForSingleValueEvent(new ValueEventListener() {
-                                                    @Override
-                                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                        userLevel = dataSnapshot.child("level").getValue(String.class);
-                                                        handleCourseCallBack();
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                                    }
+                                                }
+                                            });
 
-                                                    @Override
-                                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                        }
 
-                                                    }
-                                                });
-
-                                            }
-
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                            }
-                                        });
 
                                     }
 
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                }
-                            });
+                                    }
+                                });
 
 
+                            }
+                        }catch (NullPointerException e){
+                            e.printStackTrace();
                         }
                     } else {
                         statusT = "4";
@@ -796,14 +801,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 @Override
                 public void onClick(View v) {
                     try {
-
-
                         DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 switch (which) {
                                     case DialogInterface.BUTTON_POSITIVE:
-                                        //Yes button clicked
+
                                         FirebaseDatabase.getInstance().getReference("COURSES").child(courseIDT).child("state").setValue("5");
                                         FirebaseDatabase.getInstance().getReference("COURSES").child(courseIDT).removeValue();
 
@@ -814,7 +817,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                         if (preferenceTask.getCancelNumber() > 3) {
                                             Toast.makeText(MapsActivity.this,
-                                                    "Vous avez annulé beaucoup de fois, l’application va se bloquer pendant 1h", Toast.LENGTH_LONG).show();
+                                                    "Vous avez annulé beaucoup de fois, l’application va se bloquer pendant 1h",
+                                                    Toast.LENGTH_LONG).show();
 
                                             blockingTimeOver = false;
 
@@ -977,23 +981,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         public void onCallEstablished(final Call establishedCall) {
             //incoming call was picked up
             findViewById(R.id.callLayout).setVisibility(View.VISIBLE);
-            Button hangup = findViewById(R.id.hangup);
-            hangup.setText("Hangup");
+//            Button hangup = findViewById(R.id.hangup);
+//            hangup.setText("Hangup");
             setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
-            hangup.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    establishedCall.hangup();
-                }
-            });
+//            hangup.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    establishedCall.hangup();
+//                }
+//            });
         }
 
         @Override
         public void onCallProgressing(Call progressingCall) {
             //call is ringing
             findViewById(R.id.callLayout).setVisibility(View.VISIBLE);
-            Button hangup = (Button) findViewById(R.id.hangup);
-            hangup.setText("RINGING...");
+//            Button hangup = (Button) findViewById(R.id.hangup);
+//            hangup.setText("RINGING...");
         }
 
         @Override
@@ -1631,8 +1635,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             startActivity(intent);
             finish();
         }
-        new CheckUserTask().execute();
-        new checkFinishedCourse().execute();
+
+        try {
+            new CheckUserTask().execute();
+            new checkFinishedCourse().execute();
+        } catch (NullPointerException e){
+            e.printStackTrace();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
 
         setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -1876,9 +1888,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     AnimateConstraint.fadeOut(context, gooButton, 200, 10);
                     //AnimateConstraint.expandCircleAnimation(context, findViewById(R.id.gooLayout), dpHeight, dpWidth);
                     startSearchUI();
-                    new sendRequestsTask().execute();
-                } else
-                    Toast.makeText(MapsActivity.this, "Vous avez annulé beaucoup de fois, l’application va se bloquer pendant 1h", Toast.LENGTH_LONG).show();
+
+                    try {
+                        new sendRequestsTask().execute();
+                    } catch (NullPointerException e) {
+                        e.printStackTrace();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         });
 
@@ -2070,8 +2088,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         findViewById(R.id.x).setVisibility(View.VISIBLE);
         findViewById(R.id.my_position).setVisibility(View.GONE);
         findViewById(R.id.adress_result).setVisibility(View.INVISIBLE);
-
-        // citySelectLayout.setVisibility(View.VISIBLE);
 
 
         //  AnimateConstraint.animate(MapsActivity.this,fR,  fHeight, 1, 1);
@@ -2858,11 +2874,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 getData = true;*/
 
             if (startLatLng != null) {
-                if (driversKeys != null) {
-                    driversKeys.clear();
-                    driversLocations.clear();
-                }
 
+//                if (driversKeys != null) {
+//                    driversKeys.clear();
+//                    driversLocations.clear();
+//                }
 
                 DatabaseReference onlineDrivers = FirebaseDatabase.getInstance().getReference("ONLINEDRIVERS");
                 GeoFire geoFire = new GeoFire(onlineDrivers);
@@ -2894,7 +2910,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             driversLocations.add(distance);
                             driversKeys.add(dataSnapshot.getKey());
                             afterLook();
-
                         }
                     }
 
@@ -2958,8 +2973,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     public void onGeoQueryError(DatabaseError error) {
                     }
                 });
-
-
             }
 
             return "this string is passed to onPostExecute";
@@ -2990,10 +3003,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean courseScreenIsOn = false;
 
     private void afterLook() {
-
         if (driversKeys.size() > 0) {
-
             double distanceKmTime = Math.floor(Double.parseDouble(driversLocations.get(0)));
+
             if (distanceKmTime >= 10) distanceKmTime -= (distanceKmTime * (distanceKmTime / 100));
 
             if (!courseScreenIsOn) {
@@ -3015,7 +3027,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if (orderDriverState == 2) {
                     frameTime.setText("...");
                 }
-
             }
         }
     }
@@ -3034,8 +3045,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
         mMap.getUiSettings().setRotateGesturesEnabled(false);
         mMap.setBuildingsEnabled(false);
-        // mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
-        new checkCourseTask().execute();
+
+       // mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+
+        try {
+            new checkCourseTask().execute();
+        } catch (NullPointerException e){
+            e.printStackTrace();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
 
         if (ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(MapsActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
