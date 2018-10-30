@@ -15,8 +15,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.ScaleDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -43,7 +41,6 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -118,7 +115,6 @@ import com.skyfishjy.library.RippleBackground;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -126,7 +122,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import comingoo.one.user.comingoouser.Database.SharedPreferenceTask;
-import comingoo.one.user.comingoouser.R;
 import de.hdodenhof.circleimageview.CircleImageView;
 import pl.droidsonroids.gif.GifImageButton;
 
@@ -269,9 +264,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     String language;
 
 
+//    private ConstraintLayout driverInfoLayout;
+//    private TextView driverNameL;
+//    private CircleImageView driverImageL;
+
+
+
     private ConstraintLayout driverInfoLayout;
     private TextView driverNameL;
     private CircleImageView driverImageL;
+    private ImageView ivCallDriver;
 
 
     ////////////////////////////////////////////
@@ -1660,9 +1662,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         promoCode = (TextView) findViewById(R.id.promoCode);
 
-        driverInfoLayout = (ConstraintLayout) findViewById(R.id.driverInfoLayout);
-        driverNameL = (TextView) findViewById(R.id.driverName);
-        driverImageL = (CircleImageView) findViewById(R.id.driverImage);
+        driverInfoLayout = (ConstraintLayout) findViewById(R.id.callLayout);
+        driverNameL = (TextView) findViewById(R.id.tv_driver_name);
+        driverImageL = (CircleImageView) findViewById(R.id.iv_driver_image);
+        ivCallDriver = findViewById(R.id.iv_call_driver);
 
         driversKeys = new ArrayList<String>();
         driversLocations = new ArrayList<String>();
@@ -1854,8 +1857,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 showCustomDialog(MapsActivity.this);
             }
         });
-
-        driverInfoLayout.setVisibility(View.GONE);
 
         int fHeight = 170;
         int rHeight = HeightAbsolute - fHeight - 5;
