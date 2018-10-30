@@ -129,6 +129,7 @@ import static com.google.android.gms.location.LocationServices.getFusedLocationP
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
+    private static final String TAG = "MapsActivity";
     static GoogleMap mMap;
     private static EditText searchEditText;
     private static EditText searchDestEditText;
@@ -247,7 +248,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Button passer;
 
     private TextView driverCarDesc;
-    private ImageButton callButton;
+//    private ImageButton callButton;
 
     ////////////////////////////////////////////
 
@@ -264,16 +265,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     String language;
 
 
-//    private ConstraintLayout driverInfoLayout;
+//    private ConstraintLayout callLayout;
 //    private TextView driverNameL;
 //    private CircleImageView driverImageL;
 
 
 
-    private ConstraintLayout driverInfoLayout;
+    private ConstraintLayout callLayout;
     private TextView driverNameL;
     private CircleImageView driverImageL;
     private ImageView ivCallDriver;
+    private CircleImageView ivCross;
 
 
     ////////////////////////////////////////////
@@ -349,7 +351,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         destArrow.setImageBitmap(scaleBitmap(26, 57, R.drawable.arrow));
         menuButton.setImageBitmap(scaleBitmap(45, 45, R.drawable.home_icon));
         positionButton.setImageBitmap(scaleBitmap(40, 37, R.drawable.my_position_icon));
-        X.setImageBitmap(scaleBitmap(30, 35, R.drawable.cancel));
+//        X.setImageBitmap(scaleBitmap(30, 35, R.drawable.cancel));
 //        searchEditText.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) (dpWidth - 30), (int )((dpWidth - 30) / 3.75), R.drawable.search_icon)));
 
         //citySelectLayout.setBackground(new BitmapDrawable(getResources(), scaleBitmap(115, 29, R.drawable.)));
@@ -672,7 +674,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 coverButton.setClickable(true);
             }
 
-//            findViewById(R.id.driverInfoLayout).setVisibility(View.VISIBLE);
+//            findViewById(R.id.callLayout).setVisibility(View.VISIBLE);
             findViewById(R.id.buttonsLayout).setVisibility(View.VISIBLE);
             return;
         }
@@ -703,13 +705,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             findViewById(R.id.pin).setVisibility(View.GONE);
 
-            findViewById(R.id.cancelCourse).setVisibility(View.GONE);
-            findViewById(R.id.cancelCourse).setOnClickListener(null);
+//            findViewById(R.id.cancelCourse).setVisibility(View.GONE);
+//            findViewById(R.id.cancelCourse).setOnClickListener(null);
 
 
             AnimateConstraint.fadeIn(context, bottomMenu, 500, 0);
             AnimateConstraint.fadeIn(context, selectedOpImage, 500, 0);
-            AnimateConstraint.fadeIn(context, driverInfoLayout, 500, 0);
+            AnimateConstraint.fadeIn(context, callLayout, 500, 0);
             findViewById(R.id.gooContent).setVisibility(View.GONE);
             cancelRequest.setVisibility(View.GONE);
 
@@ -727,28 +729,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             }
 
-            if (ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(MapsActivity.this,
+                    android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(MapsActivity.this,
+                            android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(MapsActivity.this,
-                        new String[]{android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.READ_PHONE_STATE},
+                        new String[]{android.Manifest.permission.RECORD_AUDIO,
+                                android.Manifest.permission.READ_PHONE_STATE},
                         1);
             }
 
-            callButton.setOnClickListener(new View.OnClickListener() {
+            ivCallDriver.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Call call = sinchClient.getCallClient().callUser(driverIDT);
                     call.addCallListener(new SinchCallListener());
                 }
             });
-
         }
 
 
         if (statusT.equals("0") && !courseScreenStageZero) {
 
             if (!userLevel.equals("2")) {
-                callButton.setVisibility(View.VISIBLE);
-                callButton.setOnClickListener(new View.OnClickListener() {
+                ivCallDriver.setVisibility(View.VISIBLE);
+                ivCallDriver.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         if (!driverPhone.isEmpty() || driverPhone != null) {
@@ -798,8 +803,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         if (statusT.equals("0")) {
-            findViewById(R.id.cancelCourse).setVisibility(View.VISIBLE);
-            findViewById(R.id.cancelCourse).setOnClickListener(new View.OnClickListener() {
+            ivCross.setVisibility(View.VISIBLE);
+            ivCross.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     try {
@@ -815,7 +820,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                         SharedPreferenceTask preferenceTask = new SharedPreferenceTask(getApplicationContext());
                                         int prevCancel = preferenceTask.getCancelNumber();
                                         preferenceTask.setCancelNumber(prevCancel + 1);
-                                        driverInfoLayout.setVisibility(View.GONE);
+                                        callLayout.setVisibility(View.GONE);
 
                                         if (preferenceTask.getCancelNumber() > 3) {
                                             Toast.makeText(MapsActivity.this,
@@ -879,10 +884,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         if (statusT.equals("1") && !courseScreenStageOne) {
-            findViewById(R.id.cancelCourse).setVisibility(View.GONE);
+            ivCross.setVisibility(View.GONE);
             if (!userLevel.equals("2")) {
-                callButton.setVisibility(View.VISIBLE);
-                findViewById(R.id.call).setOnClickListener(new View.OnClickListener() {
+                ivCallDriver.setVisibility(View.VISIBLE);
+                findViewById(R.id.iv_call_driver).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         if (!driverPhone.isEmpty() || driverPhone != null) {
@@ -948,7 +953,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         }
         if (statusT.equals("2")) {
-            findViewById(R.id.cancelCourse).setVisibility(View.GONE);
+//            findViewById(R.id.cancelCourse).setVisibility(View.GONE);
             mMap.clear();
 
             frameLayout3.setDrawingCacheEnabled(true);
@@ -1662,7 +1667,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         promoCode = (TextView) findViewById(R.id.promoCode);
 
-        driverInfoLayout = (ConstraintLayout) findViewById(R.id.callLayout);
+        callLayout = findViewById(R.id.callLayout);
         driverNameL = (TextView) findViewById(R.id.tv_driver_name);
         driverImageL = (CircleImageView) findViewById(R.id.iv_driver_image);
         ivCallDriver = findViewById(R.id.iv_call_driver);
@@ -1671,7 +1676,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         driversLocations = new ArrayList<String>();
         driversKeysHold = new ArrayList<String>();
 
-        callButton = (ImageButton) findViewById(R.id.call);
+//        callButton = (ImageButton) findViewById(R.id.call);
 
         locationPinDest = (ImageView) findViewById(R.id.locationPinDest);
         locationPinDriver = (ImageView) findViewById(R.id.driver_pin);
@@ -1780,7 +1785,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         favorite = (ConstraintLayout) findViewById(R.id.favorite_recent);
 
-        driverCarDesc = (TextView) findViewById(R.id.driverCarDesc);
+//        driverCarDesc = (TextView) findViewById(R.id.driverCarDesc);
 
         placeData = new ArrayList<>();
         fPlaceData = new ArrayList<>();
@@ -3394,7 +3399,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             final int secondsDelay = 15000; // Time To Wait Before Sending Request To The Next Set O Drivers
 
             driverSize = driversKeys.size();
-            driverSize = driversKeys.size();
+            Log.e(TAG, "doInBackground: driverKeySize: "+driversKeys.size() );
 
             if (driverSize == 0) {
                 finishedSendReq = true;
