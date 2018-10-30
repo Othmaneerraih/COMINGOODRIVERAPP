@@ -430,6 +430,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 intent.putExtra("image", dataSnapshot.child("image").getValue(String.class));
                                 intent.putExtra("name", dataSnapshot.child("fullName").getValue(String.class));
                                 intent.putExtra("phone", dataSnapshot.child("phoneNumber").getValue(String.class));
+                                intent.putExtra("email", dataSnapshot.child("email").getValue(String.class));
 //                                intent.putExtra("phone", "+212 " + dataSnapshot.child("phoneNumber").getValue(String.class));
                                 startActivity(intent);
                             }
@@ -970,23 +971,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         public void onCallEstablished(final Call establishedCall) {
             //incoming call was picked up
             findViewById(R.id.callLayout).setVisibility(View.VISIBLE);
-            Button hangup = findViewById(R.id.hangup);
-            hangup.setText("Hangup");
+//            Button hangup = findViewById(R.id.hangup);
+//            hangup.setText("Hangup");
             setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
-            hangup.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    establishedCall.hangup();
-                }
-            });
+//            hangup.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    establishedCall.hangup();
+//                }
+//            });
         }
 
         @Override
         public void onCallProgressing(Call progressingCall) {
             //call is ringing
             findViewById(R.id.callLayout).setVisibility(View.VISIBLE);
-            Button hangup = (Button) findViewById(R.id.hangup);
-            hangup.setText("RINGING...");
+//            Button hangup = (Button) findViewById(R.id.hangup);
+//            hangup.setText("RINGING...");
         }
 
         @Override
@@ -2843,11 +2844,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 getData = true;*/
 
             if (startLatLng != null) {
-                if (driversKeys != null) {
-                    driversKeys.clear();
-                    driversLocations.clear();
-                }
 
+//                if (driversKeys != null) {
+//                    driversKeys.clear();
+//                    driversLocations.clear();
+//                }
 
                 DatabaseReference onlineDrivers = FirebaseDatabase.getInstance().getReference("ONLINEDRIVERS");
                 GeoFire geoFire = new GeoFire(onlineDrivers);
@@ -2879,7 +2880,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             driversLocations.add(distance);
                             driversKeys.add(dataSnapshot.getKey());
                             afterLook();
-
                         }
                     }
 
@@ -2943,8 +2943,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     public void onGeoQueryError(DatabaseError error) {
                     }
                 });
-
-
             }
 
             return "this string is passed to onPostExecute";
@@ -2975,10 +2973,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean courseScreenIsOn = false;
 
     private void afterLook() {
-
         if (driversKeys.size() > 0) {
-
             double distanceKmTime = Math.floor(Double.parseDouble(driversLocations.get(0)));
+
             if (distanceKmTime >= 10) distanceKmTime -= (distanceKmTime * (distanceKmTime / 100));
 
             if (!courseScreenIsOn) {
@@ -3000,7 +2997,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if (orderDriverState == 2) {
                     frameTime.setText("...");
                 }
-
             }
         }
     }

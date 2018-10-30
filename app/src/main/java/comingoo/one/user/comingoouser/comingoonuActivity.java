@@ -29,8 +29,6 @@ import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
-import comingoo.one.user.comingoouser.R;
-
 public class comingoonuActivity extends AppCompatActivity {
     private int selectedScreen = 0;
     private ConstraintLayout parametreLayout, profileLayout, changePasswordLayout, portFeuilleLayout;
@@ -42,7 +40,7 @@ public class comingoonuActivity extends AppCompatActivity {
     private ImageButton backChangePassword;
 
 
-    private TextView todayEarnings, userName, phoneNumber;
+    private TextView todayEarnings, userName, phoneNumber, emailAddress;
 
     private Button changePassBtn;
 
@@ -99,12 +97,14 @@ public class comingoonuActivity extends AppCompatActivity {
         todayEarnings = (TextView) findViewById(R.id.earnings_value);
         userName = (TextView) findViewById(R.id.name_value);
         phoneNumber = (TextView) findViewById(R.id.phone_value);
+        emailAddress = (TextView) findViewById(R.id.email_value);
+
 
         userName.setText(getIntent().getStringExtra("name"));
         phoneNumber.setText(getIntent().getStringExtra("phone"));
+        emailAddress.setText(getIntent().getStringExtra("email"));
 
         changePassBtn = (Button) findViewById(R.id.change_password_btn);
-
 
         tarifs = (ConstraintLayout) findViewById(R.id.tarifs);
         tarifsLayout = (ConstraintLayout) findViewById(R.id.tarifsLayout);
@@ -338,7 +338,7 @@ public class comingoonuActivity extends AppCompatActivity {
         TextView textView40 = (TextView) findViewById(R.id.textView40);
         TextView textView41 = (TextView) findViewById(R.id.textView41);
         TextView textView42 = (TextView) findViewById(R.id.textView42);
-        TextView textView43= (TextView) findViewById(R.id.textView43);
+        TextView textView43= (TextView) findViewById(R.id.tv_user_email_text);
         TextView textView60 = (TextView) findViewById(R.id.textView60);
         TextView textView55 = (TextView) findViewById(R.id.textView55);
         TextView textView56 = (TextView) findViewById(R.id.textView56);
@@ -355,6 +355,8 @@ public class comingoonuActivity extends AppCompatActivity {
         TextView textView71 = (TextView) findViewById(R.id.textView71);
         TextView textView72 = (TextView) findViewById(R.id.textView72);
         TextView textView76 = (TextView) findViewById(R.id.textView76);
+
+        TextView tvUserEmail = findViewById(R.id.tv_user_email_text);
 
 
         //Set Texts
