@@ -50,7 +50,6 @@ public class loginActivity extends AppCompatActivity {
 
     private EditText phoneNumber;
     private EditText password;
-//    private ImageButton loginBtn;
     private CallbackManager callbackManager;
 
     @Override
