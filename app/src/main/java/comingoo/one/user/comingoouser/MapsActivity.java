@@ -163,6 +163,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private GeoDataClient mGeoDataClient;
 
+    static int state = 0;
+
     private LatLng userLatLng;
     private LatLng startLatLng;
     private LatLng destLatLng;
@@ -212,7 +214,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private String searchLoc;
     private static TextView city;
 
-    private ImageButton menuButton;
+    static ImageButton menuButton;
+    static ImageButton back_btn;
     private FlowingDrawer mDrawer;
 
     private ImageButton gooButton;
@@ -677,6 +680,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 AnimateConstraint.resideAnimation(context, contentConstraint, contentBlocker, (int) dpWidth, (int) dpHeight, 200);
             }
         });
+
+        back_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(state == 1){
+                    showSearchAddressStartUI();
+                }
+
+                if(state == 2){
+                    state = 1;
+                    hideSelectDestUI();
+                }
+            }
+        });
+
+
+
         destArrow.setVisibility(View.VISIBLE);
         if (!courseScreenIsOn) {
             courseScreenIsOn = true;
@@ -1721,6 +1741,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         locationPinStart = (ImageView) findViewById(R.id.locationPin);
 
         menuButton = (ImageButton) findViewById(R.id.menu_button);
+        back_btn = (ImageButton) findViewById(R.id.menu_button);
 
         gooButton = (ImageButton) findViewById(R.id.gooButton);
 
@@ -1881,6 +1902,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
                     AnimateConstraint.fadeOut(context, gooButton, 200, 10);
                     //AnimateConstraint.expandCircleAnimation(context, findViewById(R.id.gooLayout), dpHeight, dpWidth);
+                    back_btn.setVisibility(View.GONE);
+                    back_btn.setEnabled(false);
+                    menuButton.setVisibility(View.VISIBLE);
                     startSearchUI();
 
                     try {
@@ -1979,6 +2003,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if (startPositionIsValid()) {
                     orderDriverState = 1;
                     showSelectDestUI();
+                    menuButton.setVisibility(View.GONE);
+                    back_btn.setVisibility(View.VISIBLE);
+                    state = 1;
+                    back_btn.setEnabled(true);
                 }
             }
         });
@@ -2219,6 +2247,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         shadowBg.setVisibility(View.VISIBLE);
         searchButtonDest.setVisibility(View.VISIBLE);
+        back_btn.setVisibility(View.GONE);
+        menuButton.setVisibility(View.VISIBLE);
+        state = 0;
+        back_btn.setEnabled(false);
 
 
         coverButton.setVisibility(View.VISIBLE);
@@ -2231,7 +2263,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void switchToCommandLayout() {
         orderDriverState = 2;
-
         positionButton.setVisibility(View.GONE);
         AnimateConstraint.animate(context, endConstraint, dpHeight - 20, 180, 500, selectDest, findViewById(R.id.destArrow));
         AnimateConstraint.fadeIn(MapsActivity.this, findViewById(R.id.gooContent), 500, 10);
@@ -2241,6 +2272,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //shadowBg.setVisibility(View.GONE);
         searchButtonDest.setVisibility(View.GONE);
 
+        state = 2;
 
         coverButton.setVisibility(View.GONE);
         searchDestEditText.setEnabled(false);
@@ -2824,6 +2856,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     static void showSearchAddressStartUI() {
+        back_btn.setVisibility(View.GONE);
+        menuButton.setVisibility(View.VISIBLE);
+        back_btn.setEnabled(false);
+        state = 0;
         placeData.clear();
         placeAdapter.notifyDataSetChanged();
         startConstraint.setVisibility(View.VISIBLE);
