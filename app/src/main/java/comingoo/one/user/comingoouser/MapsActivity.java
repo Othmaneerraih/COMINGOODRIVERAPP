@@ -1657,6 +1657,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         promoCode = (TextView) findViewById(R.id.promoCode);
 
         callLayout = findViewById(R.id.callLayout);
+
         driverNameL = (TextView) findViewById(R.id.tv_driver_name);
         driverImageL = (CircleImageView) findViewById(R.id.iv_driver_image);
         iv_car_number = (TextView) findViewById(R.id.iv_car_number);
@@ -3093,20 +3094,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-//        mMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
-//
-//            @Override
-//            public void onMyLocationChange(Location arg0) {
-//                // TODO Auto-generated method stub
-////                mMap.addMarker(new MarkerOptions().position(new LatLng(arg0.getLatitude(), arg0.getLongitude())).title("It's Me!"));
-//                searchEditText.setText(getCompleteAddressString(context, arg0.getLatitude(), arg0.getLongitude()));
-//                CameraPosition cameraPosition = new CameraPosition.Builder()
-//                        .target(new LatLng(arg0.getLatitude(), arg0.getLongitude()))      // Sets the center of the map to Mountain View
-//                        .zoom(17)                   // Sets the zoom
-//                        .build();                   // Creates a CameraPosition from the builder
-//                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-//            }
-//        });
+        mMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
+
+            @Override
+            public void onMyLocationChange(Location arg0) {
+                // TODO Auto-generated method stub
+//                mMap.addMarker(new MarkerOptions().position(new LatLng(arg0.getLatitude(), arg0.getLongitude())).title("It's Me!"));
+                searchEditText.setText(getCompleteAddressString(context, arg0.getLatitude(), arg0.getLongitude()));
+                CameraPosition cameraPosition = new CameraPosition.Builder()
+                        .target(new LatLng(arg0.getLatitude(), arg0.getLongitude()))      // Sets the center of the map to Mountain View
+                        .zoom(17)                   // Sets the zoom
+                        .build();                   // Creates a CameraPosition from the builder
+                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+            }
+        });
 
 
 //        try {
@@ -3188,7 +3189,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            Log.d("MapDemoActivity", "Error trying to get last GPS location");
+//                            Log.d("MapDemoActivity", "Error trying to get last GPS location");
                             e.printStackTrace();
                         }
                     });
@@ -3451,7 +3452,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         geoQuery.setCenter(new GeoLocation(startLatLng.latitude, startLatLng.longitude));
                         counter = 0;
                         stop = 0;
-
                         return;
                     }
 
