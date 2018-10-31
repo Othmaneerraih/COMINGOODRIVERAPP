@@ -67,6 +67,7 @@ import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
 import com.firebase.geofire.GeoQueryDataEventListener;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.location.places.AutocompletePrediction;
 import com.google.android.gms.location.places.AutocompletePredictionBufferResponse;
@@ -2804,6 +2805,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         placeAdapter.notifyDataSetChanged();
         startConstraint.setVisibility(View.VISIBLE);
         searchEditText.clearFocus();
+        searchEditText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
         searchDestEditText.clearFocus();
 
         AnimateConstraint.animate(context, favorite, 1, 1, 1);
@@ -3064,9 +3066,51 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onMapLoaded() {
                 searchEditText.setText(getCompleteAddressString(context, startLatLng.latitude, startLatLng.longitude));
-//                Log.e("MapsActivity", "goToLocation: "+getCompleteAddressString(context, lat, lng) );
             }
         });
+
+        mMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
+
+            @Override
+            public void onMyLocationChange(Location arg0) {
+                // TODO Auto-generated method stub
+//                mMap.addMarker(new MarkerOptions().position(new LatLng(arg0.getLatitude(), arg0.getLongitude())).title("It's Me!"));
+                searchEditText.setText(getCompleteAddressString(context, arg0.getLatitude(), arg0.getLongitude()));
+                CameraPosition cameraPosition = new CameraPosition.Builder()
+                        .target(new LatLng(arg0.getLatitude(), arg0.getLongitude()))      // Sets the center of the map to Mountain View
+                        .zoom(17)                   // Sets the zoom
+                        .build();                   // Creates a CameraPosition from the builder
+                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+            }
+        });
+
+
+//        try {
+////            if (mLocationPermissionGranted) {
+//            // Construct a FusedLocationProviderClient.
+//            FusedLocationProviderClient  mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+//                Task locationResult = mFusedLocationProviderClient.getLastLocation();
+//                locationResult.addOnCompleteListener(this, new OnCompleteListener() {
+//                    @Override
+//                    public void onComplete(@NonNull Task task) {
+//                        if (task.isSuccessful()) {
+//                            // Set the map's camera position to the current location of the device.
+//                           Location mLastKnownLocation = task.getResult();
+//                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+//                                    new LatLng(task.getResult().getLatitude(),
+//                                            mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
+//                        } else {
+//                            Log.d(TAG, "Current location is null. Using defaults.");
+//                            Log.e(TAG, "Exception: %s", task.getException());
+//                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM));
+//                            mMap.getUiSettings().setMyLocationButtonEnabled(false);
+//                        }
+//                    }
+//                });
+////            }
+//        } catch(SecurityException e)  {
+//            Log.e("Exception: %s", e.getMessage());
+//        }
     }
 
     private static String getCompleteAddressString(Context context, double LATITUDE, double LONGITUDE) {
