@@ -247,7 +247,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private Button passer;
 
-    private TextView driverCarDesc;
 //    private ImageButton callButton;
 
     ////////////////////////////////////////////
@@ -272,10 +271,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     private ConstraintLayout callLayout;
-    private TextView driverNameL;
+    private TextView driverNameL,iv_total_ride_number,iv_car_number;
     private CircleImageView driverImageL;
     private ImageView ivCallDriver;
     private CircleImageView ivCross;
+
 
 
     ////////////////////////////////////////////
@@ -395,22 +395,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (userId == null) {
                 userId = "123";
             }
-            sinchClient = Sinch.getSinchClientBuilder()
-                    .context(MapsActivity.this)
-                    .userId(userId)
-                    .applicationKey("04ae7d45-1084-4fb5-9d7c-08d82527d191")
-                    .applicationSecret("TfJrquo6qEmkV8DG/EXQPg==")
-                    .environmentHost("clientapi.sinch.com")
-//                    .applicationKey(resources.getString(R.string.sinch_app_key))
-//                    .applicationSecret(resources.getString(R.string.sinch_app_secret))
-//                    .environmentHost(resources.getString(R.string.sinch_envirentmnet_host))
-                    .build();
-            sinchClient.setSupportCalling(true);
-            sinchClient.start();
-            sinchClient.startListeningOnActiveConnection();
-
-
-            sinchClient.getCallClient().addCallClientListener(new SinchCallClientListener());
 
 
             FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).addValueEventListener(new ValueEventListener() {
@@ -510,7 +494,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private String startText;
     private String endText;
     private String driverName;
-    private String driverCar;
+    private String driverCarName;
+    private String driverCarDescription;
     private boolean finished1 = false;
     private boolean finished2 = false;
 
@@ -576,10 +561,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                     if (dataSnapshot.exists()) {
 
                                                         for (DataSnapshot data : dataSnapshot.getChildren()) {
-                                                            driverCar = data.child("name").getValue(String.class) + " " + data.child("description").getValue(String.class);
+                                                            driverCarName = data.child("name").getValue(String.class);
+                                                            driverCarDescription = data.child("description").getValue(String.class);
                                                         }
                                                     } else {
-                                                        driverCar = "data not available!";
+                                                        driverCarName = "data not available!";
+                                                        driverCarDescription = "data not available!";
                                                     }
 
                                                     FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientIdT).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -722,7 +709,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             findViewById(R.id.buttonsLayout).setVisibility(View.GONE);
 
             driverNameL.setText(driverName);
-            driverCarDesc.setText(driverCar);
+            iv_car_number.setText(driverCarDescription);
+            iv_total_ride_number.setText(driverCarName);
             if (driverImage != null) {
                 if (driverImage.length() > 0) {
                     Picasso.get().load(driverImage).centerCrop().fit().into(driverImageL);
@@ -739,13 +727,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         1);
             }
 
-            ivCallDriver.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Call call = sinchClient.getCallClient().callUser(driverIDT);
-                    call.addCallListener(new SinchCallListener());
-                }
-            });
+//            ivCallDriver.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    Call call = sinchClient.getCallClient().callUser(driverIDT);
+//                    call.addCallListener(new SinchCallListener());
+//                }
+//            });
         }
 
 
@@ -887,9 +875,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             ivCross.setVisibility(View.GONE);
             if (!userLevel.equals("2")) {
                 ivCallDriver.setVisibility(View.VISIBLE);
-                findViewById(R.id.iv_call_driver).setOnClickListener(new View.OnClickListener() {
+                ivCallDriver.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View v) {
+                    public void onClick(View view) {
                         if (!driverPhone.isEmpty() || driverPhone != null) {
                             try {
                                 Intent callIntent = new Intent(Intent.ACTION_CALL);
@@ -1670,6 +1658,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         callLayout = findViewById(R.id.callLayout);
         driverNameL = (TextView) findViewById(R.id.tv_driver_name);
         driverImageL = (CircleImageView) findViewById(R.id.iv_driver_image);
+        iv_car_number = (TextView) findViewById(R.id.iv_car_number);
+        iv_total_ride_number = (TextView) findViewById(R.id.iv_total_ride_number);
         ivCallDriver = findViewById(R.id.iv_call_driver);
 
         driversKeys = new ArrayList<String>();
@@ -1784,8 +1774,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         endConstraint = (ConstraintLayout) findViewById(R.id.dest_edit_text);
 
         favorite = (ConstraintLayout) findViewById(R.id.favorite_recent);
-
-//        driverCarDesc = (TextView) findViewById(R.id.driverCarDesc);
 
         placeData = new ArrayList<>();
         fPlaceData = new ArrayList<>();
