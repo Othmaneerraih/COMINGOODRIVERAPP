@@ -983,7 +983,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-
     private class SinchCallListener implements CallListener {
         @Override
         public void onCallEnded(Call endedCall) {
@@ -3710,16 +3709,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return;
         }
 
-        this.doubleBackToExitPressedOnce = true;
-        Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+        if(state == 1){
+            showSearchAddressStartUI();
+        }
 
-        new Handler().postDelayed(new Runnable() {
+        if(state == 2){
+            state = 1;
+            hideSelectDestUI();
+        }
+        else{
+            this.doubleBackToExitPressedOnce = true;
+            Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
 
-            @Override
-            public void run() {
-                doubleBackToExitPressedOnce = false;
-            }
-        }, 2000);
+            new Handler().postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    doubleBackToExitPressedOnce = false;
+                }
+            }, 2000);
+        }
+
     }
 
 
