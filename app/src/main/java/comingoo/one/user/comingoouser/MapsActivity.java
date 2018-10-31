@@ -3105,20 +3105,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-        mMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
-
-            @Override
-            public void onMyLocationChange(Location arg0) {
-                // TODO Auto-generated method stub
-//                mMap.addMarker(new MarkerOptions().position(new LatLng(arg0.getLatitude(), arg0.getLongitude())).title("It's Me!"));
-                searchEditText.setText(getCompleteAddressString(context, arg0.getLatitude(), arg0.getLongitude()));
-                CameraPosition cameraPosition = new CameraPosition.Builder()
-                        .target(new LatLng(arg0.getLatitude(), arg0.getLongitude()))      // Sets the center of the map to Mountain View
-                        .zoom(17)                   // Sets the zoom
-                        .build();                   // Creates a CameraPosition from the builder
-                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-            }
-        });
+//        mMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
+//
+//            @Override
+//            public void onMyLocationChange(Location arg0) {
+//                // TODO Auto-generated method stub
+////                mMap.addMarker(new MarkerOptions().position(new LatLng(arg0.getLatitude(), arg0.getLongitude())).title("It's Me!"));
+//                searchEditText.setText(getCompleteAddressString(context, arg0.getLatitude(), arg0.getLongitude()));
+//                CameraPosition cameraPosition = new CameraPosition.Builder()
+//                        .target(new LatLng(arg0.getLatitude(), arg0.getLongitude()))      // Sets the center of the map to Mountain View
+//                        .zoom(17)                   // Sets the zoom
+//                        .build();                   // Creates a CameraPosition from the builder
+//                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+//            }
+//        });
 
 
 //        try {
