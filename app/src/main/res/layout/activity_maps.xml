@@ -642,7 +642,7 @@
             android:layout_marginBottom="60dp"
             android:background="@color/transp"
             android:scaleType="fitCenter"
-            android:visibility="gone"
+            android:visibility="visible"
             app:layout_constraintBottom_toTopOf="@+id/adress_result"
             app:layout_constraintEnd_toEndOf="parent" />
 
@@ -673,97 +673,97 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <android.support.constraint.ConstraintLayout
-            android:id="@+id/driverInfoLayout"
-            android:layout_width="match_parent"
-            android:layout_height="110dp"
-            android:background="@drawable/top_border_white"
-            android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@+id/bottomMenu"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent">
+        <!--<android.support.constraint.ConstraintLayout-->
+            <!--android:id="@+id/driverInfoLayout"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="110dp"-->
+            <!--android:background="@drawable/top_border_white"-->
+            <!--android:visibility="gone"-->
+            <!--app:layout_constraintBottom_toTopOf="@+id/bottomMenu"-->
+            <!--app:layout_constraintEnd_toEndOf="parent"-->
+            <!--app:layout_constraintHorizontal_bias="0.0"-->
+            <!--app:layout_constraintStart_toStartOf="parent">-->
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/driverImage"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="12dp"
-                android:src="@color/colorPrimaryDark"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+            <!--<de.hdodenhof.circleimageview.CircleImageView-->
+                <!--android:id="@+id/driverImage"-->
+                <!--android:layout_width="70dp"-->
+                <!--android:layout_height="70dp"-->
+                <!--android:layout_marginStart="16dp"-->
+                <!--android:layout_marginLeft="16dp"-->
+                <!--android:layout_marginTop="12dp"-->
+                <!--android:src="@color/colorPrimaryDark"-->
+                <!--app:layout_constraintStart_toStartOf="parent"-->
+                <!--app:layout_constraintTop_toTopOf="parent" />-->
 
-            <TextView
-                android:id="@+id/driverName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="8dp"
-                android:fontFamily="@font/roboto"
-                android:text="Mohammed"
-                android:textColor="@android:color/black"
-                android:textSize="18sp"
-                app:layout_constraintStart_toEndOf="@+id/driverImage"
-                app:layout_constraintTop_toTopOf="@+id/driverImage" />
+            <!--<TextView-->
+                <!--android:id="@+id/driverName"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_marginStart="8dp"-->
+                <!--android:layout_marginLeft="8dp"-->
+                <!--android:layout_marginTop="8dp"-->
+                <!--android:fontFamily="@font/roboto"-->
+                <!--android:text="Mohammed"-->
+                <!--android:textColor="@android:color/black"-->
+                <!--android:textSize="18sp"-->
+                <!--app:layout_constraintStart_toEndOf="@+id/driverImage"-->
+                <!--app:layout_constraintTop_toTopOf="@+id/driverImage" />-->
 
-            <TextView
-                android:id="@+id/driverCarDesc"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:layout_marginLeft="12dp"
-                android:layout_marginTop="4dp"
-                android:fontFamily="@font/roboto_light"
-                android:text="Renault rouge 220 (Blanche)"
-                app:layout_constraintStart_toEndOf="@+id/driverImage"
-                app:layout_constraintTop_toBottomOf="@+id/driverName" />
+            <!--<TextView-->
+                <!--android:id="@+id/driverCarDesc"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_marginStart="12dp"-->
+                <!--android:layout_marginLeft="12dp"-->
+                <!--android:layout_marginTop="4dp"-->
+                <!--android:fontFamily="@font/roboto_light"-->
+                <!--android:text="Renault rouge 220 (Blanche)"-->
+                <!--app:layout_constraintStart_toEndOf="@+id/driverImage"-->
+                <!--app:layout_constraintTop_toBottomOf="@+id/driverName" />-->
 
-            <ImageButton
-                android:id="@+id/imageButton8"
-                android:layout_width="57dp"
-                android:layout_height="27dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:background="@drawable/rating"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toEndOf="@+id/driverName"
-                app:layout_constraintTop_toTopOf="parent" />
+            <!--<ImageButton-->
+                <!--android:id="@+id/imageButton8"-->
+                <!--android:layout_width="57dp"-->
+                <!--android:layout_height="27dp"-->
+                <!--android:layout_marginStart="8dp"-->
+                <!--android:layout_marginLeft="8dp"-->
+                <!--android:layout_marginTop="20dp"-->
+                <!--android:layout_marginEnd="8dp"-->
+                <!--android:layout_marginRight="8dp"-->
+                <!--android:background="@drawable/rating"-->
+                <!--app:layout_constraintEnd_toEndOf="parent"-->
+                <!--app:layout_constraintHorizontal_bias="0.0"-->
+                <!--app:layout_constraintStart_toEndOf="@+id/driverName"-->
+                <!--app:layout_constraintTop_toTopOf="parent" />-->
 
-            <ImageButton
-                android:id="@+id/call"
-                android:layout_width="35dp"
-                android:layout_height="38dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="8dp"
-                android:background="@drawable/call"
-                android:visibility="visible"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cancelCourse"
-                app:layout_constraintVertical_bias="0.857" />
+            <!--<ImageButton-->
+                <!--android:id="@+id/call"-->
+                <!--android:layout_width="35dp"-->
+                <!--android:layout_height="38dp"-->
+                <!--android:layout_marginTop="8dp"-->
+                <!--android:layout_marginEnd="16dp"-->
+                <!--android:layout_marginBottom="8dp"-->
+                <!--android:background="@drawable/call"-->
+                <!--android:visibility="visible"-->
+                <!--app:layout_constraintBottom_toBottomOf="parent"-->
+                <!--app:layout_constraintEnd_toEndOf="parent"-->
+                <!--app:layout_constraintTop_toBottomOf="@+id/cancelCourse"-->
+                <!--app:layout_constraintVertical_bias="0.857" />-->
 
-            <Button
-                android:id="@+id/cancelCourse"
-                android:layout_width="38dp"
-                android:layout_height="39dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginRight="16dp"
-                android:background="@drawable/cancel_course"
-                android:text="X"
-                android:textColor="@android:color/white"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+            <!--<Button-->
+                <!--android:id="@+id/cancelCourse"-->
+                <!--android:layout_width="38dp"-->
+                <!--android:layout_height="39dp"-->
+                <!--android:layout_marginTop="8dp"-->
+                <!--android:layout_marginEnd="16dp"-->
+                <!--android:layout_marginRight="16dp"-->
+                <!--android:background="@drawable/cancel_course"-->
+                <!--android:text="X"-->
+                <!--android:textColor="@android:color/white"-->
+                <!--app:layout_constraintEnd_toEndOf="parent"-->
+                <!--app:layout_constraintTop_toTopOf="parent" />-->
 
-        </android.support.constraint.ConstraintLayout>
+        <!--</android.support.constraint.ConstraintLayout>-->
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/shadow"
@@ -844,8 +844,6 @@
                     android:cropToPadding="false"
                     android:scaleType="fitCenter"
                     android:visibility="gone" />
-
-
             </LinearLayout>
 
         </android.support.constraint.ConstraintLayout>
@@ -975,7 +973,6 @@
                 android:layout_marginEnd="15dp"
                 android:layout_marginRight="15dp"
                 android:background="@drawable/main_edit_text"
-
                 android:elevation="5dp"
                 android:ems="10"
                 android:fontFamily="@font/roboto_light"
@@ -1467,8 +1464,6 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
-
-
         </android.support.constraint.ConstraintLayout>
 
         <android.support.constraint.ConstraintLayout
@@ -1492,7 +1487,7 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/iv_user_image"
+                    android:id="@+id/iv_driver_image"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
                     android:layout_centerVertical="true"
@@ -1503,13 +1498,13 @@
                     android:src="@drawable/ic_driver" />
 
                 <TextView
-                    android:id="@+id/tv_user_name"
+                    android:id="@+id/tv_driver_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="30dp"
                     android:layout_marginEnd="8dp"
-                    android:layout_toRightOf="@+id/iv_user_image"
+                    android:layout_toRightOf="@+id/iv_driver_image"
                     android:text="User Name"
                     android:textColor="@android:color/black"
                     android:textSize="@dimen/txt_size_large" />
@@ -1518,9 +1513,9 @@
                     android:id="@+id/iv_total_ride_number"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/tv_user_name"
+                    android:layout_below="@+id/tv_driver_name"
                     android:layout_marginStart="8dp"
-                    android:layout_toRightOf="@+id/iv_user_image"
+                    android:layout_toRightOf="@+id/iv_driver_image"
                     android:text="User Name"
                     android:textColor="@android:color/black" />
 
@@ -1529,7 +1524,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="35dp"
-                    android:layout_toRightOf="@+id/tv_user_name"
+                    android:layout_toRightOf="@+id/tv_driver_name"
                     android:background="@drawable/border_box"
                     android:orientation="horizontal"
                     android:padding="5dp">
@@ -1554,6 +1549,7 @@
                 </LinearLayout>
 
                 <ImageView
+                    android:id="@+id/iv_call_driver"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:layout_below="@+id/ll_call"
@@ -1595,6 +1591,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
     </android.support.constraint.ConstraintLayout>
+
 
 </android.support.constraint.ConstraintLayout>
 
