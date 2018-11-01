@@ -12,53 +12,52 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:gravity="center"
-        android:text="Please enter a valid promo code"
+        android:text="Are you sure you want to cancel the ride?"
         android:textColor="@android:color/white"
         android:textSize="18sp" />
 
-    <EditText
-        android:id="@+id/et_promo_code"
+    <TextView
+        android:id="@+id/tv_addition_charge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/tv_sure_text"
         android:layout_centerHorizontal="true"
-        android:backgroundTint="@android:color/white"
-        android:textColorHint="#8af4f1f1"
-        android:gravity="center"
         android:textColor="@android:color/white"
-        android:layout_marginTop="10dp"
-        android:hint="COMINGOO20"
-        android:padding="20dp" />
+        android:layout_margin="10dp"
+        android:text="Addition charges may apply"
+        android:textSize="12sp" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/et_promo_code"
+        android:layout_below="@id/tv_addition_charge"
         android:gravity="center"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="10dp">
 
         <Button
-            android:id="@+id/btn_cancel_promo_code"
+            android:id="@+id/btn_dont_cancel_ride"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cancel"
+            android:text="No, i don't want to Cancel"
+            android:textSize="12sp"
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
-            android:textColor="@color/colorPrimaryDark"
-            android:background="@android:color/white"/>
+            android:textColor="@android:color/white"
+            android:background="@android:color/transparent"/>
 
         <Button
-            android:id="@+id/btn_ok_promo_code"
+            android:id="@+id/btn_yes_cancel_ride"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="30dp"
+            android:layout_marginLeft="10dp"
             android:paddingLeft="20dp"
+            android:textSize="12sp"
             android:paddingRight="20dp"
-            android:layout_toRightOf="@id/btn_cancel_promo_code"
-            android:text="Confirm"
-            android:textColor="@color/colorPrimaryDark"
-            android:background="@android:color/white"/>
+            android:layout_toRightOf="@id/btn_dont_cancel_ride"
+            android:text="Yes, I am sure"
+            android:textColor="@android:color/white"
+            android:background="@android:color/transparent"/>
 
     </RelativeLayout>
 </RelativeLayout>
