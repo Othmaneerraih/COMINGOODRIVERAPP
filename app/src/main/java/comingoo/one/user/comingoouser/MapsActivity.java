@@ -415,9 +415,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 Intent intent = new Intent(MapsActivity.this, comingoonuActivity.class);
                                 intent.putExtra("image", dataSnapshot.child("image").getValue(String.class));
                                 intent.putExtra("name", dataSnapshot.child("fullName").getValue(String.class));
-                                intent.putExtra("phone", dataSnapshot.child("phoneNumber").getValue(String.class));
+//                                intent.putExtra("phone", dataSnapshot.child("phoneNumber").getValue(String.class));
                                 intent.putExtra("email", dataSnapshot.child("email").getValue(String.class));
-//                                intent.putExtra("phone", "+212 " + dataSnapshot.child("phoneNumber").getValue(String.class));
+                                intent.putExtra("phone", "+212 " + dataSnapshot.child("phoneNumber").getValue(String.class));
                                 startActivity(intent);
                             }
                         });
