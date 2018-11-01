@@ -1838,11 +1838,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         findViewById(R.id.logout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SharedPreferences prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
-                prefs.edit().remove("userID");
-                FirebaseAuth.getInstance().signOut();
-                startActivity(new Intent(MapsActivity.this, loginActivity.class));
-                finish();
+//                SharedPreferences prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
+//                prefs.edit().remove("userID");
+//                FirebaseAuth.getInstance().signOut();
+//                startActivity(new Intent(MapsActivity.this, loginActivity.class));
+//                finish();
+
+                String url = "https://www.comingoo.com/driver";
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(url));
+                startActivity(i);
             }
         });
         Inbox.setOnClickListener(new View.OnClickListener() {
