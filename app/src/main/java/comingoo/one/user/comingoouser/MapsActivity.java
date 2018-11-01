@@ -64,7 +64,6 @@ import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
 import com.firebase.geofire.GeoQueryDataEventListener;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.location.places.AutocompletePrediction;
 import com.google.android.gms.location.places.AutocompletePredictionBufferResponse;
@@ -163,7 +162,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ConstraintLayout endConstraint;
 
     private GeoDataClient mGeoDataClient;
-
     static int state = 0;
 
     private LatLng userLatLng;
@@ -266,19 +264,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     Resources resources;
     String language;
 
-
-//    private ConstraintLayout callLayout;
-//    private TextView driverNameL;
-//    private CircleImageView driverImageL;
-
-
-
     private ConstraintLayout callLayout;
-    private TextView driverNameL,iv_total_ride_number,iv_car_number;
+    private TextView driverNameL, iv_total_ride_number, iv_car_number;
     private CircleImageView driverImageL;
     private ImageView ivCallDriver;
     private CircleImageView ivCross;
-
 
 
     ////////////////////////////////////////////
@@ -607,7 +597,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
                             }
-                        }catch (NullPointerException e){
+                        } catch (NullPointerException e) {
                             e.printStackTrace();
                         }
                     } else {
@@ -682,7 +672,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
 
-
         destArrow.setVisibility(View.VISIBLE);
         if (!courseScreenIsOn) {
             courseScreenIsOn = true;
@@ -697,10 +686,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             searchDestEditText.setText(endText);
 
             findViewById(R.id.pin).setVisibility(View.GONE);
-
-//            findViewById(R.id.cancelCourse).setVisibility(View.GONE);
-//            findViewById(R.id.cancelCourse).setOnClickListener(null);
-
 
             AnimateConstraint.fadeIn(context, bottomMenu, 500, 0);
             AnimateConstraint.fadeIn(context, selectedOpImage, 500, 0);
@@ -795,62 +780,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             dialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
         }
 
+        ivCross = findViewById(R.id.iv_cancel_ride);
 
         if (statusT.equals("0")) {
             ivCross.setVisibility(View.VISIBLE);
             ivCross.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    try {
-                        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                switch (which) {
-                                    case DialogInterface.BUTTON_POSITIVE:
-
-                                        FirebaseDatabase.getInstance().getReference("COURSES").child(courseIDT).child("state").setValue("5");
-                                        FirebaseDatabase.getInstance().getReference("COURSES").child(courseIDT).removeValue();
-
-                                        SharedPreferenceTask preferenceTask = new SharedPreferenceTask(getApplicationContext());
-                                        int prevCancel = preferenceTask.getCancelNumber();
-                                        preferenceTask.setCancelNumber(prevCancel + 1);
-                                        callLayout.setVisibility(View.GONE);
-
-                                        if (preferenceTask.getCancelNumber() > 3) {
-                                            Toast.makeText(MapsActivity.this,
-                                                    "Vous avez annulé beaucoup de fois, l’application va se bloquer pendant 1h",
-                                                    Toast.LENGTH_LONG).show();
-
-                                            blockingTimeOver = false;
-
-                                            new CountDownTimer(3600000, 1000) {
-
-                                                public void onTick(long millisUntilFinished) {
-//                                              mTextField.setText("seconds remaining: " + millisUntilFinished / 1000);
-                                                }
-
-                                                public void onFinish() {
-//                                              mTextField.setTextext("done!");
-                                                    blockingTimeOver = true;
-                                                }
-                                            }.start();
-                                        }
-
-                                        break;
-
-                                    case DialogInterface.BUTTON_NEGATIVE:
-                                        //No button clicked
-                                        break;
-                                }
-                            }
-                        };
-                        AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
-                        builder.setTitle("Vous étes sure?").setMessage("Voulez-vous annuler la course?\n Additional charge may apply").setPositiveButton("Yes", dialogClickListener)
-                                .setNegativeButton("No", dialogClickListener).show();
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    rideCancelDialog();
                 }
             });
 
@@ -967,6 +904,69 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         }
 
+    }
+
+    private void rideCancelDialog() {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        final AlertDialog alertDialog = dialogBuilder.create();
+        alertDialog.show();
+        alertDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        LayoutInflater inflater = this.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.content_cancel_ride_dialog, null);
+        alertDialog.getWindow().setContentView(dialogView);
+
+        final Button btnYesCancelRide = dialogView.findViewById(R.id.btn_yes_cancel_ride);
+        final Button btnNoDontCancelRide = dialogView.findViewById(R.id.btn_dont_cancel_ride);
+
+        btnYesCancelRide.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                btnYesCancelRide.setBackgroundColor(Color.WHITE);
+                btnYesCancelRide.setTextColor(getApplicationContext().getColor(R.color.primaryLight));
+
+                btnNoDontCancelRide.setBackgroundColor(Color.TRANSPARENT);
+                btnNoDontCancelRide.setTextColor(Color.WHITE);
+
+
+                FirebaseDatabase.getInstance().getReference("COURSES").child(courseIDT).child("state").setValue("5");
+                FirebaseDatabase.getInstance().getReference("COURSES").child(courseIDT).removeValue();
+
+                SharedPreferenceTask preferenceTask = new SharedPreferenceTask(getApplicationContext());
+                int prevCancel = preferenceTask.getCancelNumber();
+                preferenceTask.setCancelNumber(prevCancel + 1);
+                callLayout.setVisibility(View.GONE);
+
+                if (preferenceTask.getCancelNumber() > 3) {
+                    Toast.makeText(MapsActivity.this,
+                            "Vous avez annulé beaucoup de fois, l’application va se bloquer pendant 1h",
+                            Toast.LENGTH_LONG).show();
+
+                    blockingTimeOver = false;
+
+                    new CountDownTimer(3600000, 1000) {
+
+                        public void onTick(long millisUntilFinished) {
+                        }
+
+                        public void onFinish() {
+                            blockingTimeOver = true;
+                        }
+                    }.start();
+                }
+            }
+        });
+
+        btnNoDontCancelRide.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.dismiss();
+                btnYesCancelRide.setBackgroundColor(Color.TRANSPARENT);
+                btnYesCancelRide.setTextColor(Color.WHITE);
+
+                btnNoDontCancelRide.setBackgroundColor(Color.WHITE);
+                btnNoDontCancelRide.setTextColor(getApplicationContext().getColor(R.color.primaryLight));
+            }
+        });
     }
 
     private class SinchCallListener implements CallListener {
@@ -1456,12 +1456,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private MediaRecorder myAudioRecorder;
     private String outputeFile;
     private boolean audioRecorded;
+    private ImageButton recordButton;
+    private ImageButton playAudio, pauseAudio, deleteAudio;
+    private MediaPlayer mediaPlayer;
+    private Dialog newDialog;
 
     private void showVoiceDialog() {
 
         audioRecorded = false;
 
-        final Dialog newDialog = new Dialog(context);
+        newDialog = new Dialog(context);
         newDialog.setContentView(R.layout.voice_record);
 
 
@@ -1480,11 +1484,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         TextView name = (TextView) newDialog.findViewById(R.id.textView17);
 
 
-        final ImageButton recordButton = (ImageButton) newDialog.findViewById(R.id.recordAudio);
-        final ImageButton playAudio = (ImageButton) newDialog.findViewById(R.id.playAudio);
-        final ImageButton pauseAudio = (ImageButton) newDialog.findViewById(R.id.pauseAudio);
-        final ImageButton deleteAudio = (ImageButton) newDialog.findViewById(R.id.deleteAudio);
-        final MediaPlayer mediaPlayer = new MediaPlayer();
+        recordButton = (ImageButton) newDialog.findViewById(R.id.recordAudio);
+        playAudio = (ImageButton) newDialog.findViewById(R.id.playAudio);
+        pauseAudio = (ImageButton) newDialog.findViewById(R.id.pauseAudio);
+        deleteAudio = (ImageButton) newDialog.findViewById(R.id.deleteAudio);
+        mediaPlayer = new MediaPlayer();
 
 
         outputeFile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/recording.3gp";
@@ -1509,30 +1513,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 myAudioRecorder.start();
 
                             } catch (Exception e) {
-
+                                Log.e(TAG, "onTouch:111 " + e.getMessage());
                             }
                             break;
                         case MotionEvent.ACTION_UP:
-                            audioRecorded = true;
-                            recordButton.setScaleX((float) 1);
-                            recordButton.setScaleY((float) 1);
+                            try {
+                                audioRecorded = true;
+                                recordButton.setScaleX((float) 1);
+                                recordButton.setScaleY((float) 1);
 
-                            deleteAudio.setVisibility(View.VISIBLE);
-                            deleteAudio.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    showVoiceDialog();
-                                    newDialog.dismiss();
+                                deleteAudio.setVisibility(View.VISIBLE);
+                                deleteAudio.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+//                                        showVoiceDialog();
+                                        newDialog.dismiss();
+                                    }
+                                });
+                                if (myAudioRecorder != null) {
+                                    myAudioRecorder.stop();
+                                    myAudioRecorder.release();
+                                    myAudioRecorder = null;
                                 }
-                            });
 
-                            myAudioRecorder.stop();
-                            myAudioRecorder.release();
-                            myAudioRecorder = null;
-
-                            recordButton.setVisibility(View.GONE);
-                            playAudio.setVisibility(View.VISIBLE);
-                            setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
+                                recordButton.setVisibility(View.GONE);
+                                playAudio.setVisibility(View.VISIBLE);
+                                setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
+                            } catch (Exception e) {
+                                Log.e(TAG, "onTouch:222 " + e.getMessage());
+                            }
                             break;
                     }
                     return false;
@@ -1639,9 +1648,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         try {
             new CheckUserTask().execute();
             new checkFinishedCourse().execute();
-        } catch (NullPointerException e){
+        } catch (NullPointerException e) {
             e.printStackTrace();
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -1661,18 +1670,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         promoCode = (TextView) findViewById(R.id.promoCode);
 
         callLayout = findViewById(R.id.callLayout);
+        ivCallDriver = findViewById(R.id.iv_call_driver);
 
         driverNameL = (TextView) findViewById(R.id.tv_driver_name);
         driverImageL = (CircleImageView) findViewById(R.id.iv_driver_image);
         iv_car_number = (TextView) findViewById(R.id.iv_car_number);
         iv_total_ride_number = (TextView) findViewById(R.id.iv_total_ride_number);
-        ivCallDriver = findViewById(R.id.iv_call_driver);
 
         driversKeys = new ArrayList<String>();
         driversLocations = new ArrayList<String>();
         driversKeysHold = new ArrayList<String>();
-
-//        callButton = (ImageButton) findViewById(R.id.call);
 
         locationPinDest = (ImageView) findViewById(R.id.locationPinDest);
         locationPinDriver = (ImageView) findViewById(R.id.driver_pin);
@@ -1866,6 +1873,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         loadImages();
         updateViews();
+
         gooButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -2011,9 +2019,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.content_promo_code, null, false);
-        final EditText etPromoCode = view.findViewById(R.id.et_user_promo_code);
-        Button btnOk = view.findViewById(R.id.btn_promo_code_ok);
-        Button btnCancel = view.findViewById(R.id.btn_promo_code_cancel);
+        final EditText etPromoCode = view.findViewById(R.id.et_promo_code);
+        Button btnOk = view.findViewById(R.id.btn_ok_promo_code);
+        Button btnCancel = view.findViewById(R.id.btn_cancel_promo_code);
 
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -2257,6 +2265,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         searchDestEditText.setEnabled(false);
 
         findViewById(R.id.locationPinDest).setVisibility(View.GONE);
+
+
 
 
         if (destLatLng != null) {
@@ -2660,7 +2670,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 public void onComplete(@NonNull Task<PlaceBufferResponse> task) {
                                     if (task.isSuccessful() && task.getResult().getCount() > 0) {
                                         for (Place gotPlace : task.getResult()) {
-                                            place Place = new place(gotPlace.getName().toString(), gotPlace.getAddress().toString(), "" + gotPlace.getLatLng().latitude, "" + gotPlace.getLatLng().longitude, R.drawable.lieux_proches);
+                                            place Place = new place(gotPlace.getName().toString(),
+                                                    gotPlace.getAddress().toString(), "" + gotPlace.getLatLng().latitude,
+                                                    "" + gotPlace.getLatLng().longitude, R.drawable.lieux_proches);
                                             placeData.add(Place);
                                         }
                                         placeAdapter.notifyDataSetChanged();
@@ -2917,8 +2929,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                             driversLocations.add(distance);
                             driversKeys.add(dataSnapshot.getKey());
-                            afterLook();
                         }
+                        afterLook();
                     }
 
                     @Override
@@ -2984,15 +2996,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
 
             return "this string is passed to onPostExecute";
-
-
         }
 
         // This is called from background thread but runs in UI
         @Override
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
-
             // Do things like update the progress bar
         }
 
@@ -3000,9 +3009,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            //afterLook(getData);
-
-
+            // afterLook(getData);
             // Do things like hide the progress bar or change a TextView
         }
     }
@@ -3027,13 +3034,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         } else {
             if (!courseScreenIsOn) {
-                closestDriverText.setText("\n...");
 
+                closestDriverText.setText("4\nmin");
+                frameTime.setText("4\nMin");
                 if (orderDriverState == 1) {
-                    frameTime.setText("...");
+//                    frameTime.setText("...");
+                    closestDriverText.setText("4\nmin");
+                    frameTime.setText("4\nMin");
                 }
                 if (orderDriverState == 2) {
-                    frameTime.setText("...");
+//                    frameTime.setText("...");
+                closestDriverText.setText("4\nmin");
+                    frameTime.setText("4\nMin");
                 }
             }
         }
@@ -3043,10 +3055,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         for (int i = 0; i < sList.size(); i++) {
             if (sList.get(i).equals(element)) return i;
         }
-
         return -1;
     }
-
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -3054,13 +3064,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.getUiSettings().setRotateGesturesEnabled(false);
         mMap.setBuildingsEnabled(false);
 
-       // mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+        // mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
 
         try {
             new checkCourseTask().execute();
-        } catch (NullPointerException e){
+        } catch (NullPointerException e) {
             e.printStackTrace();
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -3078,7 +3088,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onCameraIdle() {
                 if (orderDriverState == 0) {
-
                     if (geoQuery != null) {
                         geoQuery.setCenter(new GeoLocation(startLatLng.latitude, startLatLng.longitude));
                     }
@@ -3105,20 +3114,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-        mMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
-
-            @Override
-            public void onMyLocationChange(Location arg0) {
-                // TODO Auto-generated method stub
-//                mMap.addMarker(new MarkerOptions().position(new LatLng(arg0.getLatitude(), arg0.getLongitude())).title("It's Me!"));
-                searchEditText.setText(getCompleteAddressString(context, arg0.getLatitude(), arg0.getLongitude()));
-                CameraPosition cameraPosition = new CameraPosition.Builder()
-                        .target(new LatLng(arg0.getLatitude(), arg0.getLongitude()))      // Sets the center of the map to Mountain View
-                        .zoom(17)                   // Sets the zoom
-                        .build();                   // Creates a CameraPosition from the builder
-                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-            }
-        });
+//        mMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
+//
+//            @Override
+//            public void onMyLocationChange(Location arg0) {
+//                // TODO Auto-generated method stub
+////                mMap.addMarker(new MarkerOptions().position(new LatLng(arg0.getLatitude(), arg0.getLongitude())).title("It's Me!"));
+//                searchEditText.setText(getCompleteAddressString(context, arg0.getLatitude(), arg0.getLongitude()));
+//                CameraPosition cameraPosition = new CameraPosition.Builder()
+//                        .target(new LatLng(arg0.getLatitude(), arg0.getLongitude()))      // Sets the center of the map to Mountain View
+//                        .zoom(17)                   // Sets the zoom
+//                        .build();                   // Creates a CameraPosition from the builder
+//                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+//            }
+//        });
 
 
 //        try {
@@ -3213,6 +3222,55 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (grantResult.length > 0 && grantResult[0] == PackageManager.PERMISSION_GRANTED) {
             getLastLocation();
+
+            recordButton.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    int eventaction = event.getAction();
+                    switch (eventaction) {
+                        case MotionEvent.ACTION_DOWN:
+                            try {
+                                recordButton.setScaleX((float) 1.3);
+                                recordButton.setScaleY((float) 1.3);
+                                myAudioRecorder.prepare();
+                                myAudioRecorder.start();
+
+                            } catch (Exception e) {
+                                Log.e(TAG, "onTouch:111 " + e.getMessage());
+                            }
+                            break;
+                        case MotionEvent.ACTION_UP:
+                            try {
+                                audioRecorded = true;
+                                recordButton.setScaleX((float) 1);
+                                recordButton.setScaleY((float) 1);
+
+                                deleteAudio.setVisibility(View.VISIBLE);
+                                deleteAudio.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+//                                        showVoiceDialog();
+                                        newDialog.dismiss();
+                                    }
+                                });
+                                if (myAudioRecorder != null) {
+                                    myAudioRecorder.stop();
+                                    myAudioRecorder.release();
+                                    myAudioRecorder = null;
+                                }
+
+                                recordButton.setVisibility(View.GONE);
+                                playAudio.setVisibility(View.VISIBLE);
+                                setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
+                            } catch (Exception e) {
+                                Log.e(TAG, "onTouch:222 " + e.getMessage());
+                            }
+                            break;
+                    }
+                    return false;
+                }
+
+            });
         }
 
     }
@@ -3344,17 +3402,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         builder.include(arrival);
                         int padding = 200;
                         LatLngBounds bounds = builder.build();
-                        mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding), 1000, new GoogleMap.CancelableCallback() {
-                            @Override
-                            public void onFinish() {
-                                gooButton.setVisibility(View.VISIBLE);
-                            }
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding)
+                                , 1000, new GoogleMap.CancelableCallback() {
+                                    @Override
+                                    public void onFinish() {
+                                        gooButton.setVisibility(View.VISIBLE);
+                                    }
 
-                            @Override
-                            public void onCancel() {
+                                    @Override
+                                    public void onCancel() {
 
-                            }
-                        });
+                                    }
+                                });
                     }
 
                 } else {
@@ -3443,7 +3502,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             final int secondsDelay = 15000; // Time To Wait Before Sending Request To The Next Set O Drivers
 
             driverSize = driversKeys.size();
-            Log.e(TAG, "doInBackground: driverKeySize: "+driversKeys.size() );
+            Log.e(TAG, "doInBackground: driverKeySize: " + driversKeys.size());
 
             if (driverSize == 0) {
                 finishedSendReq = true;
@@ -3729,18 +3788,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return;
         }
 
-        if(state == 1){
+        if (state == 1) {
             state = 0;
             hideSelectDestUI();
             return;
         }
 
-        if(state == 2){
+        if (state == 2) {
             state = 1;
             cancelCommandLayout();
             return;
         }
-        if(state != 1 && state != 2){
+        if (state != 1 && state != 2) {
             this.doubleBackToExitPressedOnce = true;
             Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
 
