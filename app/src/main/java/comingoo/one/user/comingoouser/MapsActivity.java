@@ -742,6 +742,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 if (ActivityCompat.checkSelfPermission(getBaseContext(), Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
                                     startActivity(callIntent);
                                 }
+                            } catch (NullPointerException e) {
+                                e.printStackTrace();
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -828,6 +830,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 if (ActivityCompat.checkSelfPermission(getBaseContext(), Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
                                     startActivity(callIntent);
                                 }
+                            } catch (NullPointerException e) {
+                                e.printStackTrace();
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -1512,8 +1516,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 myAudioRecorder.prepare();
                                 myAudioRecorder.start();
 
+                            } catch (NullPointerException e) {
+                                e.printStackTrace();
                             } catch (Exception e) {
-                                Log.e(TAG, "onTouch:111 " + e.getMessage());
+                                e.printStackTrace();
                             }
                             break;
                         case MotionEvent.ACTION_UP:
@@ -1539,7 +1545,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 recordButton.setVisibility(View.GONE);
                                 playAudio.setVisibility(View.VISIBLE);
                                 setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
-                            } catch (Exception e) {
+                            } catch (NullPointerException e) {
                                 Log.e(TAG, "onTouch:222 " + e.getMessage());
                             }
                             break;
@@ -1619,7 +1625,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
                 } catch (Exception e) {
-
+                    e.printStackTrace();
                 }
             }
         });
@@ -3178,6 +3184,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 strAdd = strReturnedAddress.toString();
             } else {
             }
+        }catch (NullPointerException e) {
+            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -3242,7 +3250,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                         myAudioRecorder.prepare();
                                         myAudioRecorder.start();
 
+                                    } catch (NullPointerException e) {
+                                        e.printStackTrace();
                                     } catch (Exception e) {
+                                        e.printStackTrace();
                                     }
                                     break;
                                 case MotionEvent.ACTION_UP:
@@ -3267,7 +3278,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                         recordButton.setVisibility(View.GONE);
                                         playAudio.setVisibility(View.VISIBLE);
                                         setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
+                                    } catch (NullPointerException e) {
+                                        e.printStackTrace();
                                     } catch (Exception e) {
+                                        e.printStackTrace();
                                     }
                                     break;
                             }
@@ -3276,7 +3290,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     });
                 }
-            }catch (Exception e){
+            }catch (NullPointerException e){
                 e.printStackTrace();
             }
         }
@@ -3364,6 +3378,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 }
             } catch (Exception ex) {
+                ex.printStackTrace();
             }
 
             return "this string is passed to onPostExecute";
