@@ -742,6 +742,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 if (ActivityCompat.checkSelfPermission(getBaseContext(), Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
                                     startActivity(callIntent);
                                 }
+                            } catch (NullPointerException e) {
+                                e.printStackTrace();
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -828,6 +830,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 if (ActivityCompat.checkSelfPermission(getBaseContext(), Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
                                     startActivity(callIntent);
                                 }
+                            } catch (NullPointerException e) {
+                                e.printStackTrace();
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -1512,8 +1516,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 myAudioRecorder.prepare();
                                 myAudioRecorder.start();
 
+                            } catch (NullPointerException e) {
+                                e.printStackTrace();
                             } catch (Exception e) {
-                                Log.e(TAG, "onTouch:111 " + e.getMessage());
+                                e.printStackTrace();
                             }
                             break;
                         case MotionEvent.ACTION_UP:
@@ -1539,7 +1545,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 recordButton.setVisibility(View.GONE);
                                 playAudio.setVisibility(View.VISIBLE);
                                 setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
-                            } catch (Exception e) {
+                            } catch (NullPointerException e) {
                                 Log.e(TAG, "onTouch:222 " + e.getMessage());
                             }
                             break;
@@ -1619,7 +1625,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
                 } catch (Exception e) {
-
+                    e.printStackTrace();
                 }
             }
         });
@@ -3178,6 +3184,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 strAdd = strReturnedAddress.toString();
             } else {
             }
+        }catch (NullPointerException e) {
+            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -3228,54 +3236,63 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (grantResult.length > 0 && grantResult[0] == PackageManager.PERMISSION_GRANTED) {
             getLastLocation();
 
-            recordButton.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    int eventaction = event.getAction();
-                    switch (eventaction) {
-                        case MotionEvent.ACTION_DOWN:
-                            try {
-                                recordButton.setScaleX((float) 1.3);
-                                recordButton.setScaleY((float) 1.3);
-                                myAudioRecorder.prepare();
-                                myAudioRecorder.start();
+            try {
+                if (recordButton != null) {
+                    recordButton.setOnTouchListener(new View.OnTouchListener() {
+                        @Override
+                        public boolean onTouch(View v, MotionEvent event) {
+                            int eventaction = event.getAction();
+                            switch (eventaction) {
+                                case MotionEvent.ACTION_DOWN:
+                                    try {
+                                        recordButton.setScaleX((float) 1.3);
+                                        recordButton.setScaleY((float) 1.3);
+                                        myAudioRecorder.prepare();
+                                        myAudioRecorder.start();
 
-                            } catch (Exception e) {
-                                Log.e(TAG, "onTouch:111 " + e.getMessage());
-                            }
-                            break;
-                        case MotionEvent.ACTION_UP:
-                            try {
-                                audioRecorded = true;
-                                recordButton.setScaleX((float) 1);
-                                recordButton.setScaleY((float) 1);
-
-                                deleteAudio.setVisibility(View.VISIBLE);
-                                deleteAudio.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-//                                        showVoiceDialog();
-                                        newDialog.dismiss();
+                                    } catch (NullPointerException e) {
+                                        e.printStackTrace();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
                                     }
-                                });
-                                if (myAudioRecorder != null) {
-                                    myAudioRecorder.stop();
-                                    myAudioRecorder.release();
-                                    myAudioRecorder = null;
-                                }
+                                    break;
+                                case MotionEvent.ACTION_UP:
+                                    try {
+                                        audioRecorded = true;
+                                        recordButton.setScaleX((float) 1);
+                                        recordButton.setScaleY((float) 1);
 
-                                recordButton.setVisibility(View.GONE);
-                                playAudio.setVisibility(View.VISIBLE);
-                                setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
-                            } catch (Exception e) {
-                                Log.e(TAG, "onTouch:222 " + e.getMessage());
+                                        deleteAudio.setVisibility(View.VISIBLE);
+                                        deleteAudio.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                newDialog.dismiss();
+                                            }
+                                        });
+                                        if (myAudioRecorder != null) {
+                                            myAudioRecorder.stop();
+                                            myAudioRecorder.release();
+                                            myAudioRecorder = null;
+                                        }
+
+                                        recordButton.setVisibility(View.GONE);
+                                        playAudio.setVisibility(View.VISIBLE);
+                                        setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
+                                    } catch (NullPointerException e) {
+                                        e.printStackTrace();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                    break;
                             }
-                            break;
-                    }
-                    return false;
-                }
+                            return false;
+                        }
 
-            });
+                    });
+                }
+            }catch (NullPointerException e){
+                e.printStackTrace();
+            }
         }
 
     }
@@ -3361,6 +3378,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 }
             } catch (Exception ex) {
+                ex.printStackTrace();
             }
 
             return "this string is passed to onPostExecute";
