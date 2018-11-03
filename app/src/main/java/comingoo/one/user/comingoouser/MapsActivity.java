@@ -13,6 +13,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Address;
@@ -23,6 +24,7 @@ import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.Handler;
@@ -41,6 +43,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -54,6 +57,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -94,6 +98,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.gson.Gson;
 import com.google.maps.DirectionsApi;
 import com.google.maps.DirectionsApiRequest;
 import com.google.maps.GeoApiContext;
@@ -264,10 +269,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     Resources resources;
     String language;
 
-    private ConstraintLayout callLayout;
+    private RelativeLayout callLayout;
     private TextView driverNameL, iv_total_ride_number, iv_car_number;
     private CircleImageView driverImageL;
-    private ImageView ivCallDriver;
+    private ImageView ivCallDriver,close_button;
     private CircleImageView ivCross;
 
 
@@ -341,7 +346,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         deleviryButton.setImageBitmap(scaleBitmap((int) (dpWidth / 2), 55, R.drawable.delivery_icon));
         carButton.setImageBitmap(scaleBitmap((int) (dpWidth / 2), 55, R.drawable.car_icon));
         selectCity.setImageBitmap(scaleBitmap(10, 15, R.drawable.city_arrow));
-        destArrow.setImageBitmap(scaleBitmap(26, 57, R.drawable.arrow));
+        destArrow.setImageBitmap(scaleBitmap(26, 200, R.drawable.arrow));
         menuButton.setImageBitmap(scaleBitmap(45, 45, R.drawable.home_icon));
         positionButton.setImageBitmap(scaleBitmap(40, 37, R.drawable.my_position_icon));
 //        X.setImageBitmap(scaleBitmap(30, 35, R.drawable.cancel));
@@ -423,7 +428,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         });
                         AnimateConstraint.fadeOut(context, findViewById(R.id.loadingScreen), 500, 10);
                         new Handler().postDelayed(new Runnable() {
-
                             @Override
                             public void run() {
                                 findViewById(R.id.loadingScreen).setVisibility(View.GONE);
@@ -464,10 +468,166 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         public void onIncomingCall(CallClient callClient, Call incomingCall) {
             call = incomingCall;
             Toast.makeText(MapsActivity.this, "incoming call", Toast.LENGTH_SHORT).show();
-            call.answer();
-            call.addCallListener(new MapsActivity.SinchCallListener());
+            showDialog(MapsActivity.this,call);
         }
     }
+
+
+    public void showDialog(final Context context, final Call call) {
+        final Dialog dialog = new Dialog(context);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.activity_incomming_call, null, false);
+//        ((Activity) context).getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE |
+//                WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        dialog.setContentView(view);
+
+        final MediaPlayer mp;
+         final TextView callState,caller_name,tv_name_voip_one;
+         final CircleImageView iv_user_image_voip_one,iv_cancel_call_voip_one,iv_mute,iv_loud,iv_recv_call_voip_one;
+
+        iv_user_image_voip_one = (CircleImageView)dialog.findViewById(R.id.iv_user_image_voip_one);
+        iv_cancel_call_voip_one = (CircleImageView)dialog.findViewById(R.id.iv_cancel_call_voip_one);
+        iv_recv_call_voip_one = (CircleImageView)dialog.findViewById(R.id.iv_recv_call_voip_one);
+        caller_name = (TextView)dialog.findViewById(R.id.callerName);
+        callState = (TextView)dialog.findViewById(R.id.callState);
+
+        iv_mute = (CircleImageView)dialog.findViewById(R.id.iv_mute);
+        iv_loud = (CircleImageView)dialog.findViewById(R.id.iv_loud);
+        tv_name_voip_one = (TextView)dialog.findViewById(R.id.tv_name_voip_one);
+
+
+        iv_mute.setVisibility(View.GONE);
+        iv_loud.setVisibility(View.GONE);
+
+        mp = MediaPlayer.create(this, R.raw.ring);
+        mp.setLooping(false);
+        mp.start();
+
+        driverName = getIntent().getStringExtra("driverName");
+        driverImage = getIntent().getStringExtra("driverImage");
+
+        if (ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MapsActivity.this,
+                    new String[]{android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.READ_PHONE_STATE},
+                    1);
+        }
+
+        caller_name.setVisibility(View.VISIBLE);
+        caller_name.setTextSize(TypedValue.COMPLEX_UNIT_SP,16);
+        caller_name.setTypeface(null, Typeface.NORMAL);      // for Normal Text
+
+        caller_name.setText(driverName+ " vous appelle");
+        tv_name_voip_one.setText(driverName);
+        if(driverImage != null){
+            Picasso.get().load(driverImage).fit().centerCrop().into(iv_user_image_voip_one);
+        }
+
+
+        iv_cancel_call_voip_one.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                call.hangup();
+                mp.stop();
+                dialog.dismiss();
+            }
+        });
+
+        iv_recv_call_voip_one.setOnClickListener(new View.OnClickListener() {
+
+
+            class SinchCallListener implements CallListener {
+                @Override
+                public void onCallEnded(Call endedCall) {
+                    //call ended by either party
+                    dialog.findViewById(R.id.incoming_call_view).setVisibility(View.GONE);
+                    setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
+
+                    mp.stop();
+                    iv_mute.setVisibility(View.GONE);
+                    iv_loud.setVisibility(View.GONE);
+                    caller_name.setVisibility(View.GONE);
+                    callState.setText("");
+                    dialog.dismiss();
+                }
+
+                @Override
+                public void onCallEstablished(final Call establishedCall) {
+                    //incoming call was picked up
+                    dialog.findViewById(R.id.incoming_call_view).setVisibility(View.VISIBLE);
+                    setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
+                    callState.setText("connected");
+                    iv_mute.setVisibility(View.VISIBLE);
+                    iv_loud.setVisibility(View.VISIBLE);
+                    mp.stop();
+                }
+
+                @Override
+                public void onCallProgressing(Call progressingCall) {
+                    //call is ringing
+                    dialog.findViewById(R.id.incoming_call_view).setVisibility(View.VISIBLE);
+                    caller_name.setText(progressingCall.getDetails().getDuration()+"");
+                    caller_name.setTextSize(TypedValue.COMPLEX_UNIT_SP,20);
+                    iv_mute.setVisibility(View.VISIBLE);
+                    iv_loud.setVisibility(View.VISIBLE);
+                    caller_name.setTypeface(null, Typeface.BOLD);
+                    callState.setText("ringing");
+                    mp.stop();
+                }
+
+                @Override
+                public void onShouldSendPushNotification(Call call, List<PushPair> pushPairs) {
+                    //don't worry about this right now
+                }
+            }
+
+
+            @Override
+            public void onClick(View v) {
+                if(call !=null){
+                    mp.stop();
+                    call.answer();
+                    call.addCallListener(new SinchCallListener());
+                }
+            }
+        });
+
+        iv_loud.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AudioManager audioManager =  (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+                audioManager.setMode(AudioManager.MODE_IN_CALL);
+                audioManager.setSpeakerphoneOn(true);
+            }
+        });
+
+        iv_mute.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AudioManager audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+                audioManager.setMode(AudioManager.MODE_IN_CALL);
+                if (audioManager.isMicrophoneMute() == false) {
+                    audioManager.setMicrophoneMute(true);
+
+                } else {
+                    audioManager.setMicrophoneMute(false);
+
+                }
+            }
+        });
+
+
+
+        final Window window = dialog.getWindow();
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+        window.setGravity(Gravity.CENTER);
+        dialog.show();
+
+
+    }
+
+
+
 
     ///////////////////////////////////////////////////
     private String courseIDT;
@@ -633,7 +793,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-
     private boolean courseScreenStageZero = false;
     private boolean courseScreenStageOne = false;
     private Marker driverPosMarker;
@@ -654,7 +813,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 coverButton.setClickable(true);
             }
 
-//            findViewById(R.id.callLayout).setVisibility(View.VISIBLE);
             findViewById(R.id.buttonsLayout).setVisibility(View.VISIBLE);
             return;
         }
@@ -711,10 +869,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (ContextCompat.checkSelfPermission(MapsActivity.this,
                     android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED ||
                     ContextCompat.checkSelfPermission(MapsActivity.this,
-                            android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                            android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED||
+                    ContextCompat.checkSelfPermission(MapsActivity.this,
+                            Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
                 ActivityCompat.requestPermissions(MapsActivity.this,
                         new String[]{android.Manifest.permission.RECORD_AUDIO,
-                                android.Manifest.permission.READ_PHONE_STATE},
+                                android.Manifest.permission.READ_PHONE_STATE,
+                                Manifest.permission.ACCESS_FINE_LOCATION},
                         1);
             }
 
@@ -735,18 +897,41 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 ivCallDriver.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (!driverPhone.isEmpty() || driverPhone != null) {
+
+                        close_button.setVisibility(View.VISIBLE);
+                        ivCallDriver.setVisibility(View.GONE);
+                        voip_view.setVisibility(View.VISIBLE);
+                    }
+                });
+
+
+                tv_appelle_telephone.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (driverPhone != null) {
                             try {
-                                Intent callIntent = new Intent(Intent.ACTION_CALL);
-                                callIntent.setData(Uri.parse("tel:" + driverPhone));
-                                if (ActivityCompat.checkSelfPermission(getBaseContext(), Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
-                                    startActivity(callIntent);
-                                }
+                                Intent intent = new Intent(Intent.ACTION_DIAL);
+                                intent.setData(Uri.parse("tel:"+ driverPhone));
+                                startActivity(intent);
                             } catch (NullPointerException e) {
                                 e.printStackTrace();
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
+                        }
+                    }
+                });
+
+                tv_appelle_voip.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (!driverIDT.isEmpty()) {
+                            Intent intent = new Intent(MapsActivity.this, VoipCallingActivity.class);
+                            intent.putExtra("driverId", driverIDT);
+                            intent.putExtra("clientId", clientID);
+                            intent.putExtra("driverName", driverName);
+                            intent.putExtra("driverImage", driverImage);
+                            startActivity(intent);
                         }
                     }
                 });
@@ -823,18 +1008,39 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 ivCallDriver.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if (!driverPhone.isEmpty() || driverPhone != null) {
+                        close_button.setVisibility(View.VISIBLE);
+                        ivCallDriver.setVisibility(View.GONE);
+                        voip_view.setVisibility(View.VISIBLE);
+                    }
+                });
+
+                tv_appelle_telephone.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (driverPhone != null) {
                             try {
-                                Intent callIntent = new Intent(Intent.ACTION_CALL);
-                                callIntent.setData(Uri.parse("tel:" + driverPhone));
-                                if (ActivityCompat.checkSelfPermission(getBaseContext(), Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
-                                    startActivity(callIntent);
-                                }
+                                Intent intent = new Intent(Intent.ACTION_DIAL);
+                                intent.setData(Uri.parse("tel:"+ driverPhone));
+                                startActivity(intent);
                             } catch (NullPointerException e) {
                                 e.printStackTrace();
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
+                        }
+                    }
+                });
+
+                tv_appelle_voip.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (!driverIDT.isEmpty()) {
+                            Intent intent = new Intent(MapsActivity.this, VoipCallingActivity.class);
+                            intent.putExtra("driverId", driverIDT);
+                            intent.putExtra("clientId", clientID);
+                            intent.putExtra("driverName", driverName);
+                            intent.putExtra("driverImage", driverImage);
+                            startActivity(intent);
                         }
                     }
                 });
@@ -926,7 +1132,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view) {
                 btnYesCancelRide.setBackgroundColor(Color.WHITE);
-                btnYesCancelRide.setTextColor(getApplicationContext().getColor(R.color.primaryLight));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    btnYesCancelRide.setTextColor(getApplicationContext().getColor(R.color.primaryLight));
+                }else{
+                    btnYesCancelRide.setTextColor(getApplicationContext().getResources().getColor(R.color.primaryLight));
+                }
 
                 btnNoDontCancelRide.setBackgroundColor(Color.TRANSPARENT);
                 btnNoDontCancelRide.setTextColor(Color.WHITE);
@@ -957,6 +1167,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         }
                     }.start();
                 }
+                alertDialog.dismiss();
+                ivCross.setVisibility(View.GONE);
             }
         });
 
@@ -968,47 +1180,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 btnYesCancelRide.setTextColor(Color.WHITE);
 
                 btnNoDontCancelRide.setBackgroundColor(Color.WHITE);
-                btnNoDontCancelRide.setTextColor(getApplicationContext().getColor(R.color.primaryLight));
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    btnNoDontCancelRide.setTextColor(getApplicationContext().getColor(R.color.primaryLight));
+                }else{
+                    btnNoDontCancelRide.setTextColor(getApplicationContext().getResources().getColor(R.color.primaryLight));
+                }
             }
         });
     }
 
-    private class SinchCallListener implements CallListener {
-        @Override
-        public void onCallEnded(Call endedCall) {
-            //call ended by either party
-            findViewById(R.id.callLayout).setVisibility(View.GONE);
-            setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
-        }
 
-        @Override
-        public void onCallEstablished(final Call establishedCall) {
-            //incoming call was picked up
-            findViewById(R.id.callLayout).setVisibility(View.VISIBLE);
-//            Button hangup = findViewById(R.id.hangup);
-//            hangup.setText("Hangup");
-            setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
-//            hangup.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    establishedCall.hangup();
-//                }
-//            });
-        }
-
-        @Override
-        public void onCallProgressing(Call progressingCall) {
-            //call is ringing
-            findViewById(R.id.callLayout).setVisibility(View.VISIBLE);
-//            Button hangup = (Button) findViewById(R.id.hangup);
-//            hangup.setText("RINGING...");
-        }
-
-        @Override
-        public void onShouldSendPushNotification(Call call, List<PushPair> pushPairs) {
-            //don't worry about this right now
-        }
-    }
 
 
     ////////////////////////////////////////////////////
@@ -1037,7 +1219,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         @Override
         protected String doInBackground(String... params) {
 
-//            userId = "123";
             FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("COURSE").addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
@@ -1247,153 +1428,152 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                 showVoiceDialog();
                                             } else {
 
-                                                final Dialog newDialog = new Dialog(context);
-                                                newDialog.setContentView(R.layout.finished_course_2);
-                                                choseBox = null;
+                                                try {
+                                                    final Dialog newDialog = new Dialog(context);
+                                                    newDialog.setContentView(R.layout.finished_course_2);
+                                                    choseBox = null;
 
-                                                TextView textView15 = (TextView) dialog.findViewById(R.id.textView15);
-                                                TextView textView16 = (TextView) dialog.findViewById(R.id.textView16);
-                                                Button button5 = (Button) dialog.findViewById(R.id.button5);
-                                                Button button7 = (Button) dialog.findViewById(R.id.button7);
-                                                Button button8 = (Button) dialog.findViewById(R.id.button8);
-                                                Button button9 = (Button) dialog.findViewById(R.id.button9);
-                                                Button button10 = (Button) dialog.findViewById(R.id.button10);
-
-
-                                                //Set Texts
-                                                textView15.setText(resources.getString(R.string.Noussommesdésolé));
-                                                textView16.setText(resources.getString(R.string.whatswrong));
-                                                button5.setText(resources.getString(R.string.Heuredarrivée));
-                                                button7.setText(resources.getString(R.string.Etatdelavoiture));
-                                                button8.setText(resources.getString(R.string.Conduite));
-                                                button9.setText(resources.getString(R.string.Itinéraire));
-                                                button10.setText(resources.getString(R.string.Autre));
-
-                                                RelativeLayout body = (RelativeLayout) newDialog.findViewById(R.id.body);
-                                                body.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) dpWidth, (int) dpWidth, R.drawable.finished_bg)));
-
-                                                final Button opt1 = (Button) newDialog.findViewById(R.id.button5);
-                                                final Button opt2 = (Button) newDialog.findViewById(R.id.button6);
-                                                final Button opt3 = (Button) newDialog.findViewById(R.id.button7);
-                                                final Button opt4 = (Button) newDialog.findViewById(R.id.button8);
-                                                final Button opt5 = (Button) newDialog.findViewById(R.id.button9);
-                                                final Button opt6 = (Button) newDialog.findViewById(R.id.button10);
-
-                                                final EditText messageText = (EditText) newDialog.findViewById(R.id.editText);
-
-                                                opt1.setOnClickListener(new View.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View v) {
-                                                        opt1.setBackgroundResource(R.drawable.box_shadow);
-                                                        opt2.setBackgroundResource(R.drawable.select_box);
-                                                        opt3.setBackgroundResource(R.drawable.select_box);
-                                                        opt4.setBackgroundResource(R.drawable.select_box);
-                                                        opt5.setBackgroundResource(R.drawable.select_box);
-                                                        opt6.setBackgroundResource(R.drawable.select_box);
-
-                                                        choseBox = "Heure d'arrivée";
-                                                    }
-                                                });
-                                                opt2.setOnClickListener(new View.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View v) {
-                                                        opt1.setBackgroundResource(R.drawable.select_box);
-                                                        opt2.setBackgroundResource(R.drawable.box_shadow);
-                                                        opt3.setBackgroundResource(R.drawable.select_box);
-                                                        opt4.setBackgroundResource(R.drawable.select_box);
-                                                        opt5.setBackgroundResource(R.drawable.select_box);
-                                                        opt6.setBackgroundResource(R.drawable.select_box);
-
-                                                        choseBox = "Service";
-                                                    }
-                                                });
-                                                opt3.setOnClickListener(new View.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View v) {
-                                                        opt1.setBackgroundResource(R.drawable.select_box);
-                                                        opt2.setBackgroundResource(R.drawable.select_box);
-                                                        opt3.setBackgroundResource(R.drawable.box_shadow);
-                                                        opt4.setBackgroundResource(R.drawable.select_box);
-                                                        opt5.setBackgroundResource(R.drawable.select_box);
-                                                        opt6.setBackgroundResource(R.drawable.select_box);
-
-                                                        choseBox = "Etat de la voiture";
-                                                    }
-                                                });
-                                                opt4.setOnClickListener(new View.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View v) {
-                                                        opt1.setBackgroundResource(R.drawable.select_box);
-                                                        opt2.setBackgroundResource(R.drawable.select_box);
-                                                        opt3.setBackgroundResource(R.drawable.select_box);
-                                                        opt4.setBackgroundResource(R.drawable.box_shadow);
-                                                        opt5.setBackgroundResource(R.drawable.select_box);
-                                                        opt6.setBackgroundResource(R.drawable.select_box);
-
-                                                        choseBox = "Conduite";
-                                                    }
-                                                });
-                                                opt5.setOnClickListener(new View.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View v) {
-                                                        opt1.setBackgroundResource(R.drawable.select_box);
-                                                        opt2.setBackgroundResource(R.drawable.select_box);
-                                                        opt3.setBackgroundResource(R.drawable.select_box);
-                                                        opt4.setBackgroundResource(R.drawable.select_box);
-                                                        opt5.setBackgroundResource(R.drawable.box_shadow);
-                                                        opt6.setBackgroundResource(R.drawable.select_box);
-
-                                                        choseBox = "Itinéraire";
-                                                    }
-                                                });
-                                                opt6.setOnClickListener(new View.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View v) {
-                                                        opt1.setBackgroundResource(R.drawable.select_box);
-                                                        opt2.setBackgroundResource(R.drawable.select_box);
-                                                        opt3.setBackgroundResource(R.drawable.select_box);
-                                                        opt4.setBackgroundResource(R.drawable.select_box);
-                                                        opt5.setBackgroundResource(R.drawable.select_box);
-                                                        opt6.setBackgroundResource(R.drawable.box_shadow);
-
-                                                        choseBox = "Autre";
-                                                    }
-                                                });
+                                                    TextView textView15 = (TextView) dialog.findViewById(R.id.textView15);
+                                                    TextView textView16 = (TextView) dialog.findViewById(R.id.textView16);
+                                                    Button button5 = (Button) dialog.findViewById(R.id.button5);
+                                                    Button button7 = (Button) dialog.findViewById(R.id.button7);
+                                                    Button button8 = (Button) dialog.findViewById(R.id.button8);
+                                                    Button button9 = (Button) dialog.findViewById(R.id.button9);
+                                                    Button button10 = (Button) dialog.findViewById(R.id.button10);
 
 
-                                                ImageButton nextBtn = (ImageButton) newDialog.findViewById(R.id.imageButton3);
+                                                    //Set Texts
+                                                    textView15.setText(resources.getString(R.string.Noussommesdésolé));
+                                                    textView16.setText(resources.getString(R.string.whatswrong));
+                                                    button5.setText(resources.getString(R.string.Heuredarrivée));
+                                                    button7.setText(resources.getString(R.string.Etatdelavoiture));
+                                                    button8.setText(resources.getString(R.string.Conduite));
+                                                    button9.setText(resources.getString(R.string.Itinéraire));
+                                                    button10.setText(resources.getString(R.string.Autre));
 
+                                                    RelativeLayout body = (RelativeLayout) newDialog.findViewById(R.id.body);
+                                                    body.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) dpWidth, (int) dpWidth, R.drawable.finished_bg)));
 
-                                                newDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                                                    @Override
-                                                    public void onDismiss(DialogInterface dialog) {
-                                                        showVoiceDialog();
-                                                    }
-                                                });
-                                                nextBtn.setOnClickListener(new View.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View v) {
-                                                        if (choseBox != null) {
-                                                            final String message = messageText.getText().toString();
-                                                            Map<String, String> data = new HashMap<>();
-                                                            data.put("complaint", choseBox);
-                                                            data.put("message", message);
-                                                            FirebaseDatabase.getInstance().getReference("COURSECOMPLAINT").child(COURSE).setValue(data);
+                                                    final Button opt1 = (Button) newDialog.findViewById(R.id.button5);
+                                                    final Button opt2 = (Button) newDialog.findViewById(R.id.button6);
+                                                    final Button opt3 = (Button) newDialog.findViewById(R.id.button7);
+                                                    final Button opt4 = (Button) newDialog.findViewById(R.id.button8);
+                                                    final Button opt5 = (Button) newDialog.findViewById(R.id.button9);
+                                                    final Button opt6 = (Button) newDialog.findViewById(R.id.button10);
+
+                                                    final EditText messageText = (EditText) newDialog.findViewById(R.id.editText);
+
+                                                    opt1.setOnClickListener(new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View v) {
+                                                            opt1.setBackgroundResource(R.drawable.box_shadow);
+                                                            opt2.setBackgroundResource(R.drawable.select_box);
+                                                            opt3.setBackgroundResource(R.drawable.select_box);
+                                                            opt4.setBackgroundResource(R.drawable.select_box);
+                                                            opt5.setBackgroundResource(R.drawable.select_box);
+                                                            opt6.setBackgroundResource(R.drawable.select_box);
+
+                                                            choseBox = "Heure d'arrivée";
                                                         }
-                                                        newDialog.dismiss();
-                                                    }
-                                                });
+                                                    });
+                                                    opt2.setOnClickListener(new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View v) {
+                                                            opt1.setBackgroundResource(R.drawable.select_box);
+                                                            opt2.setBackgroundResource(R.drawable.box_shadow);
+                                                            opt3.setBackgroundResource(R.drawable.select_box);
+                                                            opt4.setBackgroundResource(R.drawable.select_box);
+                                                            opt5.setBackgroundResource(R.drawable.select_box);
+                                                            opt6.setBackgroundResource(R.drawable.select_box);
 
-                                                newDialog.findViewById(R.id.body).getLayoutParams().width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) (dpWidth), context.getResources().getDisplayMetrics());
+                                                            choseBox = "Service";
+                                                        }
+                                                    });
+                                                    opt3.setOnClickListener(new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View v) {
+                                                            opt1.setBackgroundResource(R.drawable.select_box);
+                                                            opt2.setBackgroundResource(R.drawable.select_box);
+                                                            opt3.setBackgroundResource(R.drawable.box_shadow);
+                                                            opt4.setBackgroundResource(R.drawable.select_box);
+                                                            opt5.setBackgroundResource(R.drawable.select_box);
+                                                            opt6.setBackgroundResource(R.drawable.select_box);
 
-                                                WindowManager.LayoutParams lp = newDialog.getWindow().getAttributes();
-                                                lp.dimAmount = 0.5f;
-                                                newDialog.getWindow().setAttributes(lp);
-                                                newDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                                                newDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+                                                            choseBox = "Etat de la voiture";
+                                                        }
+                                                    });
+                                                    opt4.setOnClickListener(new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View v) {
+                                                            opt1.setBackgroundResource(R.drawable.select_box);
+                                                            opt2.setBackgroundResource(R.drawable.select_box);
+                                                            opt3.setBackgroundResource(R.drawable.select_box);
+                                                            opt4.setBackgroundResource(R.drawable.box_shadow);
+                                                            opt5.setBackgroundResource(R.drawable.select_box);
+                                                            opt6.setBackgroundResource(R.drawable.select_box);
+                                                            choseBox = "Conduite";
+                                                        }
+                                                    });
+                                                    opt5.setOnClickListener(new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View v) {
+                                                            opt1.setBackgroundResource(R.drawable.select_box);
+                                                            opt2.setBackgroundResource(R.drawable.select_box);
+                                                            opt3.setBackgroundResource(R.drawable.select_box);
+                                                            opt4.setBackgroundResource(R.drawable.select_box);
+                                                            opt5.setBackgroundResource(R.drawable.box_shadow);
+                                                            opt6.setBackgroundResource(R.drawable.select_box);
+                                                            choseBox = "Itinéraire";
+                                                        }
+                                                    });
+                                                    opt6.setOnClickListener(new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View v) {
+                                                            opt1.setBackgroundResource(R.drawable.select_box);
+                                                            opt2.setBackgroundResource(R.drawable.select_box);
+                                                            opt3.setBackgroundResource(R.drawable.select_box);
+                                                            opt4.setBackgroundResource(R.drawable.select_box);
+                                                            opt5.setBackgroundResource(R.drawable.select_box);
+                                                            opt6.setBackgroundResource(R.drawable.box_shadow);
+                                                            choseBox = "Autre";
+                                                        }
+                                                    });
 
-                                                newDialog.show();
 
+                                                    ImageButton nextBtn = (ImageButton) newDialog.findViewById(R.id.imageButton3);
+
+
+                                                    newDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                                                        @Override
+                                                        public void onDismiss(DialogInterface dialog) {
+                                                            showVoiceDialog();
+                                                        }
+                                                    });
+                                                    nextBtn.setOnClickListener(new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View v) {
+                                                            if (choseBox != null) {
+                                                                final String message = messageText.getText().toString();
+                                                                Map<String, String> data = new HashMap<>();
+                                                                data.put("complaint", choseBox);
+                                                                data.put("message", message);
+                                                                FirebaseDatabase.getInstance().getReference("COURSECOMPLAINT").child(COURSE).setValue(data);
+                                                            }
+                                                            newDialog.dismiss();
+                                                        }
+                                                    });
+
+                                                    newDialog.findViewById(R.id.body).getLayoutParams().width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) (dpWidth), context.getResources().getDisplayMetrics());
+
+                                                    WindowManager.LayoutParams lp = newDialog.getWindow().getAttributes();
+                                                    lp.dimAmount = 0.5f;
+                                                    newDialog.getWindow().setAttributes(lp);
+                                                    newDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                                                    newDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+                                                    newDialog.show();
+                                                }catch (Exception e){
+                                                    e.printStackTrace();
+                                                }
                                             }
                                         }
                                     }
@@ -1546,7 +1726,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 playAudio.setVisibility(View.VISIBLE);
                                 setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
                             } catch (NullPointerException e) {
-                                Log.e(TAG, "onTouch:222 " + e.getMessage());
+
                             }
                             break;
                     }
@@ -1595,7 +1775,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
-    private void setupPlayAudio(final String outputeFile, final View playAudio, final View pauseAudio, final MediaPlayer mediaPlayer) {
+    private void setupPlayAudio(final String outputeFile,
+                                final View playAudio, final View pauseAudio, final MediaPlayer mediaPlayer) {
         playAudio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -1634,6 +1815,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     private SinchClient sinchClient;
+    private TextView tv_appelle_voip, tv_appelle_telephone;
+    LinearLayout voip_view;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -1649,6 +1833,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Intent intent = new Intent(MapsActivity.this, loginActivity.class);
             startActivity(intent);
             finish();
+        }
+
+        if (ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MapsActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         }
 
         try {
@@ -1682,6 +1870,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         driverImageL = (CircleImageView) findViewById(R.id.iv_driver_image);
         iv_car_number = (TextView) findViewById(R.id.iv_car_number);
         iv_total_ride_number = (TextView) findViewById(R.id.iv_total_ride_number);
+        voip_view = findViewById(R.id.voip_view);
+        tv_appelle_voip = (TextView) findViewById(R.id.tv_appelle_voip);
+        tv_appelle_telephone = (TextView) findViewById(R.id.tv_appelle_telephone);
+
+        close_button = findViewById(R.id.close_button);
+
+        close_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                close_button.setVisibility(View.GONE);
+                ivCallDriver.setVisibility(View.VISIBLE);
+                voip_view.setVisibility(View.GONE);
+            }
+        });
+
+
 
         driversKeys = new ArrayList<String>();
         driversLocations = new ArrayList<String>();
@@ -1702,6 +1906,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     new String[]{android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.READ_PHONE_STATE},
                     1);
         }
+        
 
         sinchClient = Sinch.getSinchClientBuilder()
                 .context(this)
@@ -1828,6 +2033,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Aide = (ConstraintLayout) findViewById(R.id.aide);
         logout = (ConstraintLayout) findViewById(R.id.logout);
 
+        ivCallDriver.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                close_button.setVisibility(View.VISIBLE);
+                ivCallDriver.setVisibility(View.GONE);
+                voip_view.setVisibility(View.VISIBLE);
+            }
+        });
 
         Historique.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -2024,6 +2238,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         setSearchFunc();
     }
+
 
     public void showCustomDialog(final Context context) {
         final Dialog dialog = new Dialog(context);
@@ -2584,6 +2799,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if (i == EditorInfo.IME_ACTION_DONE) {
                     hideKeyboard(MapsActivity.this);
                     searchEditText.clearFocus();
+                    searchEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
                     //lookForAddress();
                     return true;
                 }
@@ -3077,22 +3293,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
 
-        try {
-            new checkCourseTask().execute();
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
 
         if (ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(MapsActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         } else {
+            mMap.setMyLocationEnabled(true);
+            mMap.getUiSettings().setMyLocationButtonEnabled(false);
             getLastLocation();
             if (userLatLng != null)
                 startLatLng = userLatLng;
-            mMap.setMyLocationEnabled(true);
-            mMap.getUiSettings().setMyLocationButtonEnabled(false);
         }
 
         mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
@@ -3140,6 +3350,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //            }
 //        });
 
+        try {
+            new checkCourseTask().execute();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 //        try {
 ////            if (mLocationPermissionGranted) {
