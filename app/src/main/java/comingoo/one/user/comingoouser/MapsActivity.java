@@ -428,7 +428,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         });
                         AnimateConstraint.fadeOut(context, findViewById(R.id.loadingScreen), 500, 10);
                         new Handler().postDelayed(new Runnable() {
-
                             @Override
                             public void run() {
                                 findViewById(R.id.loadingScreen).setVisibility(View.GONE);
@@ -1168,6 +1167,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         }
                     }.start();
                 }
+                alertDialog.dismiss();
+                ivCross.setVisibility(View.GONE);
             }
         });
 
@@ -1218,7 +1219,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         @Override
         protected String doInBackground(String... params) {
 
-//            userId = "123";
             FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("COURSE").addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
@@ -1428,153 +1428,152 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                 showVoiceDialog();
                                             } else {
 
-                                                final Dialog newDialog = new Dialog(context);
-                                                newDialog.setContentView(R.layout.finished_course_2);
-                                                choseBox = null;
+                                                try {
+                                                    final Dialog newDialog = new Dialog(context);
+                                                    newDialog.setContentView(R.layout.finished_course_2);
+                                                    choseBox = null;
 
-                                                TextView textView15 = (TextView) dialog.findViewById(R.id.textView15);
-                                                TextView textView16 = (TextView) dialog.findViewById(R.id.textView16);
-                                                Button button5 = (Button) dialog.findViewById(R.id.button5);
-                                                Button button7 = (Button) dialog.findViewById(R.id.button7);
-                                                Button button8 = (Button) dialog.findViewById(R.id.button8);
-                                                Button button9 = (Button) dialog.findViewById(R.id.button9);
-                                                Button button10 = (Button) dialog.findViewById(R.id.button10);
-
-
-                                                //Set Texts
-                                                textView15.setText(resources.getString(R.string.Noussommesdésolé));
-                                                textView16.setText(resources.getString(R.string.whatswrong));
-                                                button5.setText(resources.getString(R.string.Heuredarrivée));
-                                                button7.setText(resources.getString(R.string.Etatdelavoiture));
-                                                button8.setText(resources.getString(R.string.Conduite));
-                                                button9.setText(resources.getString(R.string.Itinéraire));
-                                                button10.setText(resources.getString(R.string.Autre));
-
-                                                RelativeLayout body = (RelativeLayout) newDialog.findViewById(R.id.body);
-                                                body.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) dpWidth, (int) dpWidth, R.drawable.finished_bg)));
-
-                                                final Button opt1 = (Button) newDialog.findViewById(R.id.button5);
-                                                final Button opt2 = (Button) newDialog.findViewById(R.id.button6);
-                                                final Button opt3 = (Button) newDialog.findViewById(R.id.button7);
-                                                final Button opt4 = (Button) newDialog.findViewById(R.id.button8);
-                                                final Button opt5 = (Button) newDialog.findViewById(R.id.button9);
-                                                final Button opt6 = (Button) newDialog.findViewById(R.id.button10);
-
-                                                final EditText messageText = (EditText) newDialog.findViewById(R.id.editText);
-
-                                                opt1.setOnClickListener(new View.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View v) {
-                                                        opt1.setBackgroundResource(R.drawable.box_shadow);
-                                                        opt2.setBackgroundResource(R.drawable.select_box);
-                                                        opt3.setBackgroundResource(R.drawable.select_box);
-                                                        opt4.setBackgroundResource(R.drawable.select_box);
-                                                        opt5.setBackgroundResource(R.drawable.select_box);
-                                                        opt6.setBackgroundResource(R.drawable.select_box);
-
-                                                        choseBox = "Heure d'arrivée";
-                                                    }
-                                                });
-                                                opt2.setOnClickListener(new View.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View v) {
-                                                        opt1.setBackgroundResource(R.drawable.select_box);
-                                                        opt2.setBackgroundResource(R.drawable.box_shadow);
-                                                        opt3.setBackgroundResource(R.drawable.select_box);
-                                                        opt4.setBackgroundResource(R.drawable.select_box);
-                                                        opt5.setBackgroundResource(R.drawable.select_box);
-                                                        opt6.setBackgroundResource(R.drawable.select_box);
-
-                                                        choseBox = "Service";
-                                                    }
-                                                });
-                                                opt3.setOnClickListener(new View.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View v) {
-                                                        opt1.setBackgroundResource(R.drawable.select_box);
-                                                        opt2.setBackgroundResource(R.drawable.select_box);
-                                                        opt3.setBackgroundResource(R.drawable.box_shadow);
-                                                        opt4.setBackgroundResource(R.drawable.select_box);
-                                                        opt5.setBackgroundResource(R.drawable.select_box);
-                                                        opt6.setBackgroundResource(R.drawable.select_box);
-
-                                                        choseBox = "Etat de la voiture";
-                                                    }
-                                                });
-                                                opt4.setOnClickListener(new View.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View v) {
-                                                        opt1.setBackgroundResource(R.drawable.select_box);
-                                                        opt2.setBackgroundResource(R.drawable.select_box);
-                                                        opt3.setBackgroundResource(R.drawable.select_box);
-                                                        opt4.setBackgroundResource(R.drawable.box_shadow);
-                                                        opt5.setBackgroundResource(R.drawable.select_box);
-                                                        opt6.setBackgroundResource(R.drawable.select_box);
-
-                                                        choseBox = "Conduite";
-                                                    }
-                                                });
-                                                opt5.setOnClickListener(new View.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View v) {
-                                                        opt1.setBackgroundResource(R.drawable.select_box);
-                                                        opt2.setBackgroundResource(R.drawable.select_box);
-                                                        opt3.setBackgroundResource(R.drawable.select_box);
-                                                        opt4.setBackgroundResource(R.drawable.select_box);
-                                                        opt5.setBackgroundResource(R.drawable.box_shadow);
-                                                        opt6.setBackgroundResource(R.drawable.select_box);
-
-                                                        choseBox = "Itinéraire";
-                                                    }
-                                                });
-                                                opt6.setOnClickListener(new View.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View v) {
-                                                        opt1.setBackgroundResource(R.drawable.select_box);
-                                                        opt2.setBackgroundResource(R.drawable.select_box);
-                                                        opt3.setBackgroundResource(R.drawable.select_box);
-                                                        opt4.setBackgroundResource(R.drawable.select_box);
-                                                        opt5.setBackgroundResource(R.drawable.select_box);
-                                                        opt6.setBackgroundResource(R.drawable.box_shadow);
-
-                                                        choseBox = "Autre";
-                                                    }
-                                                });
+                                                    TextView textView15 = (TextView) dialog.findViewById(R.id.textView15);
+                                                    TextView textView16 = (TextView) dialog.findViewById(R.id.textView16);
+                                                    Button button5 = (Button) dialog.findViewById(R.id.button5);
+                                                    Button button7 = (Button) dialog.findViewById(R.id.button7);
+                                                    Button button8 = (Button) dialog.findViewById(R.id.button8);
+                                                    Button button9 = (Button) dialog.findViewById(R.id.button9);
+                                                    Button button10 = (Button) dialog.findViewById(R.id.button10);
 
 
-                                                ImageButton nextBtn = (ImageButton) newDialog.findViewById(R.id.imageButton3);
+                                                    //Set Texts
+                                                    textView15.setText(resources.getString(R.string.Noussommesdésolé));
+                                                    textView16.setText(resources.getString(R.string.whatswrong));
+                                                    button5.setText(resources.getString(R.string.Heuredarrivée));
+                                                    button7.setText(resources.getString(R.string.Etatdelavoiture));
+                                                    button8.setText(resources.getString(R.string.Conduite));
+                                                    button9.setText(resources.getString(R.string.Itinéraire));
+                                                    button10.setText(resources.getString(R.string.Autre));
 
+                                                    RelativeLayout body = (RelativeLayout) newDialog.findViewById(R.id.body);
+                                                    body.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) dpWidth, (int) dpWidth, R.drawable.finished_bg)));
 
-                                                newDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                                                    @Override
-                                                    public void onDismiss(DialogInterface dialog) {
-                                                        showVoiceDialog();
-                                                    }
-                                                });
-                                                nextBtn.setOnClickListener(new View.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View v) {
-                                                        if (choseBox != null) {
-                                                            final String message = messageText.getText().toString();
-                                                            Map<String, String> data = new HashMap<>();
-                                                            data.put("complaint", choseBox);
-                                                            data.put("message", message);
-                                                            FirebaseDatabase.getInstance().getReference("COURSECOMPLAINT").child(COURSE).setValue(data);
+                                                    final Button opt1 = (Button) newDialog.findViewById(R.id.button5);
+                                                    final Button opt2 = (Button) newDialog.findViewById(R.id.button6);
+                                                    final Button opt3 = (Button) newDialog.findViewById(R.id.button7);
+                                                    final Button opt4 = (Button) newDialog.findViewById(R.id.button8);
+                                                    final Button opt5 = (Button) newDialog.findViewById(R.id.button9);
+                                                    final Button opt6 = (Button) newDialog.findViewById(R.id.button10);
+
+                                                    final EditText messageText = (EditText) newDialog.findViewById(R.id.editText);
+
+                                                    opt1.setOnClickListener(new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View v) {
+                                                            opt1.setBackgroundResource(R.drawable.box_shadow);
+                                                            opt2.setBackgroundResource(R.drawable.select_box);
+                                                            opt3.setBackgroundResource(R.drawable.select_box);
+                                                            opt4.setBackgroundResource(R.drawable.select_box);
+                                                            opt5.setBackgroundResource(R.drawable.select_box);
+                                                            opt6.setBackgroundResource(R.drawable.select_box);
+
+                                                            choseBox = "Heure d'arrivée";
                                                         }
-                                                        newDialog.dismiss();
-                                                    }
-                                                });
+                                                    });
+                                                    opt2.setOnClickListener(new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View v) {
+                                                            opt1.setBackgroundResource(R.drawable.select_box);
+                                                            opt2.setBackgroundResource(R.drawable.box_shadow);
+                                                            opt3.setBackgroundResource(R.drawable.select_box);
+                                                            opt4.setBackgroundResource(R.drawable.select_box);
+                                                            opt5.setBackgroundResource(R.drawable.select_box);
+                                                            opt6.setBackgroundResource(R.drawable.select_box);
 
-                                                newDialog.findViewById(R.id.body).getLayoutParams().width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) (dpWidth), context.getResources().getDisplayMetrics());
+                                                            choseBox = "Service";
+                                                        }
+                                                    });
+                                                    opt3.setOnClickListener(new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View v) {
+                                                            opt1.setBackgroundResource(R.drawable.select_box);
+                                                            opt2.setBackgroundResource(R.drawable.select_box);
+                                                            opt3.setBackgroundResource(R.drawable.box_shadow);
+                                                            opt4.setBackgroundResource(R.drawable.select_box);
+                                                            opt5.setBackgroundResource(R.drawable.select_box);
+                                                            opt6.setBackgroundResource(R.drawable.select_box);
 
-                                                WindowManager.LayoutParams lp = newDialog.getWindow().getAttributes();
-                                                lp.dimAmount = 0.5f;
-                                                newDialog.getWindow().setAttributes(lp);
-                                                newDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                                                newDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+                                                            choseBox = "Etat de la voiture";
+                                                        }
+                                                    });
+                                                    opt4.setOnClickListener(new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View v) {
+                                                            opt1.setBackgroundResource(R.drawable.select_box);
+                                                            opt2.setBackgroundResource(R.drawable.select_box);
+                                                            opt3.setBackgroundResource(R.drawable.select_box);
+                                                            opt4.setBackgroundResource(R.drawable.box_shadow);
+                                                            opt5.setBackgroundResource(R.drawable.select_box);
+                                                            opt6.setBackgroundResource(R.drawable.select_box);
+                                                            choseBox = "Conduite";
+                                                        }
+                                                    });
+                                                    opt5.setOnClickListener(new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View v) {
+                                                            opt1.setBackgroundResource(R.drawable.select_box);
+                                                            opt2.setBackgroundResource(R.drawable.select_box);
+                                                            opt3.setBackgroundResource(R.drawable.select_box);
+                                                            opt4.setBackgroundResource(R.drawable.select_box);
+                                                            opt5.setBackgroundResource(R.drawable.box_shadow);
+                                                            opt6.setBackgroundResource(R.drawable.select_box);
+                                                            choseBox = "Itinéraire";
+                                                        }
+                                                    });
+                                                    opt6.setOnClickListener(new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View v) {
+                                                            opt1.setBackgroundResource(R.drawable.select_box);
+                                                            opt2.setBackgroundResource(R.drawable.select_box);
+                                                            opt3.setBackgroundResource(R.drawable.select_box);
+                                                            opt4.setBackgroundResource(R.drawable.select_box);
+                                                            opt5.setBackgroundResource(R.drawable.select_box);
+                                                            opt6.setBackgroundResource(R.drawable.box_shadow);
+                                                            choseBox = "Autre";
+                                                        }
+                                                    });
 
-                                                newDialog.show();
 
+                                                    ImageButton nextBtn = (ImageButton) newDialog.findViewById(R.id.imageButton3);
+
+
+                                                    newDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                                                        @Override
+                                                        public void onDismiss(DialogInterface dialog) {
+                                                            showVoiceDialog();
+                                                        }
+                                                    });
+                                                    nextBtn.setOnClickListener(new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View v) {
+                                                            if (choseBox != null) {
+                                                                final String message = messageText.getText().toString();
+                                                                Map<String, String> data = new HashMap<>();
+                                                                data.put("complaint", choseBox);
+                                                                data.put("message", message);
+                                                                FirebaseDatabase.getInstance().getReference("COURSECOMPLAINT").child(COURSE).setValue(data);
+                                                            }
+                                                            newDialog.dismiss();
+                                                        }
+                                                    });
+
+                                                    newDialog.findViewById(R.id.body).getLayoutParams().width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) (dpWidth), context.getResources().getDisplayMetrics());
+
+                                                    WindowManager.LayoutParams lp = newDialog.getWindow().getAttributes();
+                                                    lp.dimAmount = 0.5f;
+                                                    newDialog.getWindow().setAttributes(lp);
+                                                    newDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                                                    newDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+                                                    newDialog.show();
+                                                }catch (Exception e){
+                                                    e.printStackTrace();
+                                                }
                                             }
                                         }
                                     }
@@ -2800,6 +2799,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if (i == EditorInfo.IME_ACTION_DONE) {
                     hideKeyboard(MapsActivity.this);
                     searchEditText.clearFocus();
+                    searchEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
                     //lookForAddress();
                     return true;
                 }
