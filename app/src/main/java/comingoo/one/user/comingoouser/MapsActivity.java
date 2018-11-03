@@ -23,6 +23,7 @@ import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.Handler;
@@ -54,6 +55,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -264,10 +266,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     Resources resources;
     String language;
 
-    private ConstraintLayout callLayout;
+    private RelativeLayout callLayout;
     private TextView driverNameL, iv_total_ride_number, iv_car_number;
     private CircleImageView driverImageL;
-    private ImageView ivCallDriver;
+    private ImageView ivCallDriver,close_button;
     private CircleImageView ivCross;
 
 
@@ -735,18 +737,41 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 ivCallDriver.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (!driverPhone.isEmpty() || driverPhone != null) {
+
+                        close_button.setVisibility(View.VISIBLE);
+                        ivCallDriver.setVisibility(View.GONE);
+                        voip_view.setVisibility(View.VISIBLE);
+                    }
+                });
+
+
+                tv_appelle_telephone.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (driverPhone != null) {
                             try {
-                                Intent callIntent = new Intent(Intent.ACTION_CALL);
-                                callIntent.setData(Uri.parse("tel:" + driverPhone));
-                                if (ActivityCompat.checkSelfPermission(getBaseContext(), Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
-                                    startActivity(callIntent);
-                                }
+                                Intent intent = new Intent(Intent.ACTION_DIAL);
+                                intent.setData(Uri.parse("tel:"+ driverPhone));
+                                startActivity(intent);
                             } catch (NullPointerException e) {
                                 e.printStackTrace();
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
+                        }
+                    }
+                });
+
+                tv_appelle_voip.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (!driverIDT.isEmpty()) {
+                            Intent intent = new Intent(MapsActivity.this, VoipCallingActivity.class);
+                            intent.putExtra("driverId", driverIDT);
+                            intent.putExtra("clientId", clientID);
+                            intent.putExtra("driverName", driverName);
+                            intent.putExtra("driverImage", driverImage);
+                            startActivity(intent);
                         }
                     }
                 });
@@ -823,18 +848,39 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 ivCallDriver.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if (!driverPhone.isEmpty() || driverPhone != null) {
+                        close_button.setVisibility(View.VISIBLE);
+                        ivCallDriver.setVisibility(View.GONE);
+                        voip_view.setVisibility(View.VISIBLE);
+                    }
+                });
+
+                tv_appelle_telephone.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (driverPhone != null) {
                             try {
-                                Intent callIntent = new Intent(Intent.ACTION_CALL);
-                                callIntent.setData(Uri.parse("tel:" + driverPhone));
-                                if (ActivityCompat.checkSelfPermission(getBaseContext(), Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
-                                    startActivity(callIntent);
-                                }
+                                Intent intent = new Intent(Intent.ACTION_DIAL);
+                                intent.setData(Uri.parse("tel:"+ driverPhone));
+                                startActivity(intent);
                             } catch (NullPointerException e) {
                                 e.printStackTrace();
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
+                        }
+                    }
+                });
+
+                tv_appelle_voip.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (!driverIDT.isEmpty()) {
+                            Intent intent = new Intent(MapsActivity.this, VoipCallingActivity.class);
+                            intent.putExtra("driverId", driverIDT);
+                            intent.putExtra("clientId", clientID);
+                            intent.putExtra("driverName", driverName);
+                            intent.putExtra("driverImage", driverImage);
+                            startActivity(intent);
                         }
                     }
                 });
@@ -926,7 +972,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view) {
                 btnYesCancelRide.setBackgroundColor(Color.WHITE);
-                btnYesCancelRide.setTextColor(getApplicationContext().getColor(R.color.primaryLight));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    btnYesCancelRide.setTextColor(getApplicationContext().getColor(R.color.primaryLight));
+                }else{
+                    btnYesCancelRide.setTextColor(getApplicationContext().getResources().getColor(R.color.primaryLight));
+                }
 
                 btnNoDontCancelRide.setBackgroundColor(Color.TRANSPARENT);
                 btnNoDontCancelRide.setTextColor(Color.WHITE);
@@ -968,7 +1018,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 btnYesCancelRide.setTextColor(Color.WHITE);
 
                 btnNoDontCancelRide.setBackgroundColor(Color.WHITE);
-                btnNoDontCancelRide.setTextColor(getApplicationContext().getColor(R.color.primaryLight));
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    btnNoDontCancelRide.setTextColor(getApplicationContext().getColor(R.color.primaryLight));
+                }else{
+                    btnNoDontCancelRide.setTextColor(getApplicationContext().getResources().getColor(R.color.primaryLight));
+                }
             }
         });
     }
@@ -1634,6 +1689,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     private SinchClient sinchClient;
+    private TextView tv_appelle_voip, tv_appelle_telephone;
+    LinearLayout voip_view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -1682,6 +1739,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         driverImageL = (CircleImageView) findViewById(R.id.iv_driver_image);
         iv_car_number = (TextView) findViewById(R.id.iv_car_number);
         iv_total_ride_number = (TextView) findViewById(R.id.iv_total_ride_number);
+        voip_view = findViewById(R.id.voip_view);
+        tv_appelle_voip = (TextView) findViewById(R.id.tv_appelle_voip);
+        tv_appelle_telephone = (TextView) findViewById(R.id.tv_appelle_telephone);
+
+        close_button = findViewById(R.id.close_button);
+
+        close_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                close_button.setVisibility(View.GONE);
+                ivCallDriver.setVisibility(View.VISIBLE);
+                voip_view.setVisibility(View.GONE);
+            }
+        });
+
+
 
         driversKeys = new ArrayList<String>();
         driversLocations = new ArrayList<String>();
@@ -1702,6 +1775,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     new String[]{android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.READ_PHONE_STATE},
                     1);
         }
+        
 
         sinchClient = Sinch.getSinchClientBuilder()
                 .context(this)
@@ -1828,6 +1902,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Aide = (ConstraintLayout) findViewById(R.id.aide);
         logout = (ConstraintLayout) findViewById(R.id.logout);
 
+        ivCallDriver.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                close_button.setVisibility(View.VISIBLE);
+                ivCallDriver.setVisibility(View.GONE);
+                voip_view.setVisibility(View.VISIBLE);
+            }
+        });
 
         Historique.setOnClickListener(new View.OnClickListener() {
             @Override

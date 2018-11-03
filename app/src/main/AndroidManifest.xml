@@ -101,6 +101,11 @@
             android:name=".signupInfoActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
+
+        <activity android:name=".VoipCallingActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"></activity>
+
         <activity
             android:name=".loginActivity"
             android:configChanges="orientation"
