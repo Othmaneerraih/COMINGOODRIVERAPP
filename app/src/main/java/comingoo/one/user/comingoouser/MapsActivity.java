@@ -13,6 +13,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Address;
@@ -466,8 +467,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         public void onIncomingCall(CallClient callClient, Call incomingCall) {
             call = incomingCall;
             Toast.makeText(MapsActivity.this, "incoming call", Toast.LENGTH_SHORT).show();
-            call.answer();
-            call.addCallListener(new MapsActivity.SinchCallListener());
         }
     }
 
@@ -1034,31 +1033,37 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         @Override
         public void onCallEnded(Call endedCall) {
             //call ended by either party
-            findViewById(R.id.callLayout).setVisibility(View.GONE);
+            findViewById(R.id.incoming_call_view).setVisibility(View.GONE);
             setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
+
+
+            iv_mute.setVisibility(View.GONE);
+            iv_loud.setVisibility(View.GONE);
+            caller_name.setVisibility(View.GONE);
+            callState.setText("");
+            mute();
         }
 
         @Override
         public void onCallEstablished(final Call establishedCall) {
             //incoming call was picked up
-            findViewById(R.id.callLayout).setVisibility(View.VISIBLE);
-//            Button hangup = findViewById(R.id.hangup);
-//            hangup.setText("Hangup");
+            findViewById(R.id.incoming_call_view).setVisibility(View.VISIBLE);
             setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
-//            hangup.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    establishedCall.hangup();
-//                }
-//            });
+            callState.setText("connected");
+            iv_mute.setVisibility(View.VISIBLE);
+            iv_loud.setVisibility(View.VISIBLE);
         }
 
         @Override
         public void onCallProgressing(Call progressingCall) {
             //call is ringing
-            findViewById(R.id.callLayout).setVisibility(View.VISIBLE);
-//            Button hangup = (Button) findViewById(R.id.hangup);
-//            hangup.setText("RINGING...");
+            findViewById(R.id.incoming_call_view).setVisibility(View.VISIBLE);
+            caller_name.setText(progressingCall.getDetails().getDuration()+"");
+            caller_name.setTextSize(TypedValue.COMPLEX_UNIT_SP,20);
+            iv_mute.setVisibility(View.VISIBLE);
+            iv_loud.setVisibility(View.VISIBLE);
+            caller_name.setTypeface(null, Typeface.BOLD);
+            callState.setText("ringing");
         }
 
         @Override
@@ -1694,6 +1699,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private SinchClient sinchClient;
     private TextView tv_appelle_voip, tv_appelle_telephone;
     LinearLayout voip_view;
+    private AudioManager audioManager;
+    private TextView callState,caller_name,tv_name_voip_one;
+    private CircleImageView iv_user_image_voip_one,iv_cancel_call_voip_one,iv_mute,iv_loud,iv_recv_call_voip_one;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -1777,6 +1786,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         selectCity = (ImageButton) findViewById(R.id.imageButton4);
         destArrow = (ImageView) findViewById(R.id.destArrow);
 
+        iv_user_image_voip_one = (CircleImageView)findViewById(R.id.iv_user_image_voip_one);
+        iv_cancel_call_voip_one = (CircleImageView)findViewById(R.id.iv_cancel_call_voip_one);
+        iv_recv_call_voip_one = (CircleImageView)findViewById(R.id.iv_recv_call_voip_one);
+        caller_name = (TextView)findViewById(R.id.callerName);
+        callState = (TextView)findViewById(R.id.callState);
+
+        iv_mute = (CircleImageView)findViewById(R.id.iv_mute);
+        iv_loud = (CircleImageView)findViewById(R.id.iv_loud);
+        tv_name_voip_one = (TextView)findViewById(R.id.tv_name_voip_one);
+
+
+        iv_mute.setVisibility(View.GONE);
+        iv_loud.setVisibility(View.GONE);
+
         if (ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(MapsActivity.this,
                     new String[]{android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.READ_PHONE_STATE},
@@ -1797,6 +1820,51 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         sinchClient.start();
 
         sinchClient.getCallClient().addCallClientListener(new MapsActivity.SinchCallClientListener());
+
+        caller_name.setVisibility(View.VISIBLE);
+        caller_name.setTextSize(TypedValue.COMPLEX_UNIT_SP,16);
+        caller_name.setTypeface(null, Typeface.NORMAL);      // for Normal Text
+
+        caller_name.setText(driverName+ " vous appelle");
+        tv_name_voip_one.setText(driverName);
+        if(driverImage != null){
+            Picasso.get().load(driverImage).fit().centerCrop().into(iv_user_image_voip_one);
+        }
+
+
+        iv_cancel_call_voip_one.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                call.hangup();
+
+            }
+        });
+
+        iv_recv_call_voip_one.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(call !=null){
+                    call.answer();
+                    call.addCallListener(new MapsActivity.SinchCallListener());
+                }
+            }
+        });
+
+        iv_loud.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AudioManager audioManager =  (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+                audioManager.setMode(AudioManager.MODE_IN_CALL);
+                audioManager.setSpeakerphoneOn(true);
+            }
+        });
+
+        iv_mute.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mute();
+            }
+        });
 
         price = (TextView) findViewById(R.id.price);
         fixedLocations = new ArrayList<>();
@@ -2113,6 +2181,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
         setSearchFunc();
+    }
+
+    private void mute(){
+        audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+        audioManager.setMode(AudioManager.MODE_IN_CALL);
+        if (audioManager.isMicrophoneMute() == false) {
+            audioManager.setMicrophoneMute(true);
+
+        } else {
+            audioManager.setMicrophoneMute(false);
+
+        }
     }
 
     public void showCustomDialog(final Context context) {
