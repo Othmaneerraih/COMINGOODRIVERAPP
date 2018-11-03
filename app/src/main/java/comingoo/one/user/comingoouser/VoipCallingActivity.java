@@ -73,6 +73,7 @@ public class VoipCallingActivity extends AppCompatActivity {
 
         driverId = getIntent().getStringExtra("driverId");
         clientId = getIntent().getStringExtra("clientId");//"RHiU2GIxm2ZIlU4GBGgKFZWxk4J3";//getIntent().getStringExtra("clientId");
+//        clientId = "-LPkiWQ0Msiwlx3Qrocn";
         callerName = getIntent().getStringExtra("driverName");
         clientImage = getIntent().getStringExtra("driverImage");
 
@@ -163,7 +164,7 @@ public class VoipCallingActivity extends AppCompatActivity {
     }
 
     private void startTimer() {
-        countDownTimer = new CountDownTimer(1000, 1000) {
+        countDownTimer = new CountDownTimer(2000, 1000) {
             // 500 means, onTick function will be called at every 500 milliseconds
 
             @Override
