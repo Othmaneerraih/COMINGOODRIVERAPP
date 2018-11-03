@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.media.AudioManager;
+import android.os.CountDownTimer;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -41,6 +42,7 @@ public class VoipCallingActivity extends AppCompatActivity {
     private AudioManager audioManager;
     private SinchClient sinchClient;
     private ImageView iv_back_voip_one;
+    private CountDownTimer countDownTimer;
     private TextView callState,caller_name,tv_name_voip_one;
     private CircleImageView iv_user_image_voip_one,iv_cancel_call_voip_one,iv_mute,iv_loud,iv_recv_call_voip_one;
 
@@ -156,16 +158,34 @@ public class VoipCallingActivity extends AppCompatActivity {
             }
         });
 
-        if(!clientId.isEmpty()){
-            if (call == null) {
-                call = sinchClient.getCallClient().callUser(driverId);
-                call.addCallListener(new VoipCallingActivity.SinchCallListener());
-//                        button.setText("Hang Up");
-                iv_cancel_call_voip_one.setEnabled(true);
-            } else {
-                call.hangup();
+        startTimer();
+
+    }
+
+    private void startTimer() {
+        countDownTimer = new CountDownTimer(1000, 1000) {
+            // 500 means, onTick function will be called at every 500 milliseconds
+
+            @Override
+            public void onTick(long leftTimeInMilliseconds) {
+
             }
-        }
+            @Override
+            public void onFinish() {
+                if(sinchClient != null){
+                    if(!clientId.isEmpty()){
+                        if (call == null) {
+                            call = sinchClient.getCallClient().callUser(clientId);
+                            call.addCallListener(new VoipCallingActivity.SinchCallListener());
+//                        button.setText("Hang Up");
+                            iv_cancel_call_voip_one.setEnabled(true);
+                        } else {
+                            call.hangup();
+                        }
+                    }
+                }
+            }
+        }.start();
 
     }
 
