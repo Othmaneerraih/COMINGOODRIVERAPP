@@ -426,7 +426,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         });
                         AnimateConstraint.fadeOut(context, findViewById(R.id.loadingScreen), 500, 10);
                         new Handler().postDelayed(new Runnable() {
-
                             @Override
                             public void run() {
                                 findViewById(R.id.loadingScreen).setVisibility(View.GONE);
