@@ -717,7 +717,7 @@
             android:layout_height="55dp"
             android:background="@android:color/white"
             android:elevation="20dp"
-            android:visibility="invisible"
+            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -740,7 +740,7 @@
                     android:background="@drawable/ripple_effect"
                     android:cropToPadding="false"
                     android:scaleType="fitCenter"
-                    android:visibility="visible" />
+                    android:visibility="invisible" />
 
                 <ImageButton
                     android:id="@+id/carButton"
@@ -751,7 +751,7 @@
                     android:background="@drawable/ripple_effect"
                     android:cropToPadding="false"
                     android:scaleType="fitCenter"
-                    android:visibility="visible" />
+                    android:visibility="invisible" />
             </LinearLayout>
 
         </android.support.constraint.ConstraintLayout>
@@ -864,7 +864,7 @@
             android:id="@+id/dest_edit_text"
             android:layout_width="match_parent"
             android:layout_height="180dp"
-            android:layout_marginBottom="3dp"
+            android:layout_marginBottom="20dp"
             android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@+id/adress_result"
             app:layout_constraintEnd_toEndOf="parent"
@@ -1230,8 +1230,7 @@
         <ImageView
             android:id="@+id/destArrow"
             android:layout_width="26dp"
-            android:layout_height="57dp"
-            android:layout_marginTop="80dp"
+            android:layout_height="190dp"
             android:layout_marginEnd="5dp"
             android:layout_marginRight="5dp"
             android:visibility="invisible"
