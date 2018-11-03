@@ -47,7 +47,6 @@ import java.util.Arrays;
 import comingoo.one.user.comingoouser.R;
 
 public class loginActivity extends AppCompatActivity {
-
     private EditText phoneNumber;
     private EditText password;
     private CallbackManager callbackManager;
