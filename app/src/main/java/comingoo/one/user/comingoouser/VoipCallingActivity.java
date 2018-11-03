@@ -206,7 +206,7 @@ public class VoipCallingActivity extends AppCompatActivity {
 
         @Override
         public void onCallProgressing(Call progressingCall) {
-            caller_name.setText(progressingCall.getDetails().getDuration()+"");
+            caller_name.setText("0 : "+progressingCall.getDetails().getDuration()+"");
             caller_name.setTextSize(TypedValue.COMPLEX_UNIT_SP,20);
             iv_mute.setVisibility(View.VISIBLE);
             iv_loud.setVisibility(View.VISIBLE);
