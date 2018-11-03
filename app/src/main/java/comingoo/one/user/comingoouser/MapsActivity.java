@@ -343,7 +343,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         deleviryButton.setImageBitmap(scaleBitmap((int) (dpWidth / 2), 55, R.drawable.delivery_icon));
         carButton.setImageBitmap(scaleBitmap((int) (dpWidth / 2), 55, R.drawable.car_icon));
         selectCity.setImageBitmap(scaleBitmap(10, 15, R.drawable.city_arrow));
-        destArrow.setImageBitmap(scaleBitmap(26, 57, R.drawable.arrow));
+        destArrow.setImageBitmap(scaleBitmap(26, 200, R.drawable.arrow));
         menuButton.setImageBitmap(scaleBitmap(45, 45, R.drawable.home_icon));
         positionButton.setImageBitmap(scaleBitmap(40, 37, R.drawable.my_position_icon));
 //        X.setImageBitmap(scaleBitmap(30, 35, R.drawable.cancel));
@@ -635,7 +635,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-
     private boolean courseScreenStageZero = false;
     private boolean courseScreenStageOne = false;
     private Marker driverPosMarker;
@@ -656,7 +655,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 coverButton.setClickable(true);
             }
 
-//            findViewById(R.id.callLayout).setVisibility(View.VISIBLE);
             findViewById(R.id.buttonsLayout).setVisibility(View.VISIBLE);
             return;
         }
@@ -713,10 +711,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (ContextCompat.checkSelfPermission(MapsActivity.this,
                     android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED ||
                     ContextCompat.checkSelfPermission(MapsActivity.this,
-                            android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                            android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED||
+                    ContextCompat.checkSelfPermission(MapsActivity.this,
+                            Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
                 ActivityCompat.requestPermissions(MapsActivity.this,
                         new String[]{android.Manifest.permission.RECORD_AUDIO,
-                                android.Manifest.permission.READ_PHONE_STATE},
+                                android.Manifest.permission.READ_PHONE_STATE,
+                                Manifest.permission.ACCESS_FINE_LOCATION},
                         1);
             }
 
@@ -1601,7 +1603,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 playAudio.setVisibility(View.VISIBLE);
                                 setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
                             } catch (NullPointerException e) {
-                                Log.e(TAG, "onTouch:222 " + e.getMessage());
+
                             }
                             break;
                     }
@@ -1650,7 +1652,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
-    private void setupPlayAudio(final String outputeFile, final View playAudio, final View pauseAudio, final MediaPlayer mediaPlayer) {
+    private void setupPlayAudio(final String outputeFile,
+                                final View playAudio, final View pauseAudio, final MediaPlayer mediaPlayer) {
         playAudio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -1706,6 +1709,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Intent intent = new Intent(MapsActivity.this, loginActivity.class);
             startActivity(intent);
             finish();
+        }
+
+        if (ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MapsActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         }
 
         try {
@@ -3160,22 +3167,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
 
-        try {
-            new checkCourseTask().execute();
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
 
         if (ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(MapsActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         } else {
+            mMap.setMyLocationEnabled(true);
+            mMap.getUiSettings().setMyLocationButtonEnabled(false);
             getLastLocation();
             if (userLatLng != null)
                 startLatLng = userLatLng;
-            mMap.setMyLocationEnabled(true);
-            mMap.getUiSettings().setMyLocationButtonEnabled(false);
         }
 
         mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
@@ -3223,6 +3224,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //            }
 //        });
 
+        try {
+            new checkCourseTask().execute();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 //        try {
 ////            if (mLocationPermissionGranted) {
