@@ -141,8 +141,6 @@ public class VoipCallingActivity extends AppCompatActivity {
                             call.hangup();
                         }
                     }
-
-
                 }
             });
 

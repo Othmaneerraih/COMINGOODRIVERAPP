@@ -715,8 +715,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                             driverCarDescription = data.child("description").getValue(String.class);
                                                         }
                                                     } else {
-                                                        driverCarName = "data not available!";
-                                                        driverCarDescription = "data not available!";
+                                                        driverCarName = "Renault Clio 4(Rouge)";
+                                                        driverCarDescription = "1359 A 4";
                                                     }
 
                                                     FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientIdT).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -2701,7 +2701,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .icon(BitmapDescriptorFactory.fromBitmap(bm)));
 
         menuButton.setVisibility(View.VISIBLE);
-        menuButton.setImageBitmap(scaleBitmap(45, 45, R.drawable.back_arrow));
+        menuButton.setImageBitmap(scaleBitmap(35, 35, R.drawable.back_arrow));
         menuButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
