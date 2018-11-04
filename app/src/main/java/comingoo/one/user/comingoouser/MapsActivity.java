@@ -478,8 +478,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.activity_incomming_call, null, false);
-//        ((Activity) context).getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE |
-//                WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         dialog.setContentView(view);
 
         final MediaPlayer mp;
@@ -1861,6 +1859,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         promoCode = (TextView) findViewById(R.id.promoCode);
 
         callLayout = findViewById(R.id.callLayout);
+
         ivCallDriver = findViewById(R.id.iv_call_driver);
 
         driverNameL = (TextView) findViewById(R.id.tv_driver_name);
@@ -2701,7 +2700,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .icon(BitmapDescriptorFactory.fromBitmap(bm)));
 
         menuButton.setVisibility(View.VISIBLE);
-        menuButton.setImageBitmap(scaleBitmap(35, 35, R.drawable.back_arrow));
+        menuButton.setImageBitmap(scaleBitmap(30, 30, R.drawable.back_arrow));
         menuButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
