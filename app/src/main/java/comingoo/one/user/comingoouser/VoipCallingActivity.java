@@ -126,6 +126,7 @@ public class VoipCallingActivity extends AppCompatActivity {
                     iv_recv_call_voip_one.setVisibility(View.VISIBLE);
                     RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) iv_cancel_call_voip_one.getLayoutParams();
                     params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
+                    params.setMargins(0,0,150,60);
                 }
             }
         });
@@ -144,6 +145,7 @@ public class VoipCallingActivity extends AppCompatActivity {
                         iv_recv_call_voip_one.setVisibility(View.VISIBLE);
                         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) iv_cancel_call_voip_one.getLayoutParams();
                         params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
+                        params.setMargins(0,0,150,60);
                     }
                 }
 
@@ -195,6 +197,7 @@ public class VoipCallingActivity extends AppCompatActivity {
                                 iv_recv_call_voip_one.setVisibility(View.VISIBLE);
                                 RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) iv_cancel_call_voip_one.getLayoutParams();
                                 params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
+                                params.setMargins(0,0,150,60);
                             }
                         }
                     }
@@ -230,10 +233,13 @@ public class VoipCallingActivity extends AppCompatActivity {
             iv_loud.setVisibility(View.GONE);
             caller_name.setVisibility(View.GONE);
             iv_cancel_call_voip_one.setEnabled(false);
-            call.hangup();
+            if(call != null){
+                call.hangup();
+            }
             iv_recv_call_voip_one.setVisibility(View.VISIBLE);
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) iv_cancel_call_voip_one.getLayoutParams();
             params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
+            params.setMargins(0,0,150,60);
             callState.setText("");
             setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
             mute();
