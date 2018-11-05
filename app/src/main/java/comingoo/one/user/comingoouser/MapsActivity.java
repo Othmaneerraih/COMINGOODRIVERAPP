@@ -905,8 +905,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     public void onClick(View v) {
                         if (driverPhone != null) {
                             try {
+                                String callNumber = driverPhone;
+                                if(callNumber.contains("+212")){
+                                    callNumber.replace("+212","");
+                                }
                                 Intent intent = new Intent(Intent.ACTION_DIAL);
-                                intent.setData(Uri.parse("tel:"+ driverPhone));
+                                intent.setData(Uri.parse("tel:"+ callNumber));
                                 startActivity(intent);
                             } catch (NullPointerException e) {
                                 e.printStackTrace();
@@ -1014,8 +1018,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     public void onClick(View v) {
                         if (driverPhone != null) {
                             try {
+                                String callNumber = driverPhone;
+                                if(callNumber.contains("+212")){
+                                    callNumber.replace("+212","");
+                                }
                                 Intent intent = new Intent(Intent.ACTION_DIAL);
-                                intent.setData(Uri.parse("tel:"+ driverPhone));
+                                intent.setData(Uri.parse("tel:"+ callNumber));
                                 startActivity(intent);
                             } catch (NullPointerException e) {
                                 e.printStackTrace();
