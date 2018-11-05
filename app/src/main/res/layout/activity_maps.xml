@@ -349,8 +349,6 @@
             tools:context=".MapsActivity" />
 
 
-
-
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -377,7 +375,6 @@
             </com.skyfishjy.library.RippleBackground>
 
         </android.support.constraint.ConstraintLayout>
-
 
 
         <FrameLayout
@@ -1487,9 +1484,9 @@
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:layout_below="@+id/ll_call"
-                        android:visibility="gone"
                         android:layout_toRightOf="@id/ll_call"
-                        android:src="@drawable/delete_button" />
+                        android:src="@drawable/delete_button"
+                        android:visibility="gone" />
 
 
                 </RelativeLayout>
@@ -1506,33 +1503,33 @@
                 android:layout_marginLeft="70dp"
                 android:layout_marginEnd="70dp"
                 android:layout_marginRight="70dp"
+                android:background="@drawable/layout_background_rounded_corner"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:paddingTop="20dp"
-                android:paddingBottom="20dp"
                 android:visibility="gone"
-                android:background="@drawable/layout_background_rounded_corner"
                 app:layout_constraintStart_toStartOf="parent">
 
                 <TextView
                     android:id="@+id/tv_appelle_telephone"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="40dp"
+                    android:layout_marginBottom="5dp"
+                    android:gravity="center"
                     android:text="Appelle telephonique"
                     android:textSize="14sp" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_marginTop="10dp"
                     android:background="@android:color/black" />
 
 
                 <TextView
                     android:id="@+id/tv_appelle_voip"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="5dp"
+                    android:gravity="center"
                     android:text="Appelle VOIP"
                     android:textSize="14sp" />
 
