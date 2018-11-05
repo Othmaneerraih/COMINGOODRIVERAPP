@@ -1,4 +1,4 @@
-package comingoo.one.user.comingoouser;
+package com.comingoo.user.comingoo;
 
 import android.Manifest;
 import android.content.Context;

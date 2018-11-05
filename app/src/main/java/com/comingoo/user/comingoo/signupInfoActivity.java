@@ -1,4 +1,4 @@
-package comingoo.one.user.comingoouser;
+package com.comingoo.user.comingoo;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
