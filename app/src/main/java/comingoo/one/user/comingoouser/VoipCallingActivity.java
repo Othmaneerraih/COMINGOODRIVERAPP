@@ -109,7 +109,7 @@ public class VoipCallingActivity extends AppCompatActivity {
 
         sinchClient.getCallClient().addCallClientListener(new VoipCallingActivity.SinchCallClientListener());
 
-        iv_cancel_call_voip_one.setEnabled(false);
+//        iv_cancel_call_voip_one.setEnabled(false);
 
         iv_back_voip_one.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -139,7 +139,7 @@ public class VoipCallingActivity extends AppCompatActivity {
                         call = sinchClient.getCallClient().callUser(driverId);
                         call.addCallListener(new VoipCallingActivity.SinchCallListener());
 //                        button.setText("Hang Up");
-                        iv_cancel_call_voip_one.setEnabled(true);
+//                        iv_cancel_call_voip_one.setEnabled(true);
                     } else {
                         call.hangup();
                         iv_recv_call_voip_one.setVisibility(View.VISIBLE);
@@ -191,7 +191,7 @@ public class VoipCallingActivity extends AppCompatActivity {
                                 call = sinchClient.getCallClient().callUser(clientId);
                                 call.addCallListener(new VoipCallingActivity.SinchCallListener());
 //                        button.setText("Hang Up");
-                                iv_cancel_call_voip_one.setEnabled(true);
+//                                iv_cancel_call_voip_one.setEnabled(true);
                             } else {
                                 call.hangup();
                                 iv_recv_call_voip_one.setVisibility(View.VISIBLE);
@@ -232,7 +232,7 @@ public class VoipCallingActivity extends AppCompatActivity {
             iv_mute.setVisibility(View.GONE);
             iv_loud.setVisibility(View.GONE);
             caller_name.setVisibility(View.GONE);
-            iv_cancel_call_voip_one.setEnabled(false);
+//            iv_cancel_call_voip_one.setEnabled(false);
             if(call != null){
                 call.hangup();
             }
@@ -276,7 +276,7 @@ public class VoipCallingActivity extends AppCompatActivity {
             call.answer();
             call.addCallListener(new VoipCallingActivity.SinchCallListener());
 //            button.setText("Hang Up");
-            iv_cancel_call_voip_one.setEnabled(true);
+//            iv_cancel_call_voip_one.setEnabled(true);
         }
     }
 }
