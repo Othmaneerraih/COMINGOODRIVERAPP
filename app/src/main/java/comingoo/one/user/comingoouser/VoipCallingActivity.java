@@ -109,7 +109,7 @@ public class VoipCallingActivity extends AppCompatActivity {
 
         sinchClient.getCallClient().addCallClientListener(new VoipCallingActivity.SinchCallClientListener());
 
-        iv_cancel_call_voip_one.setEnabled(false);
+//        iv_cancel_call_voip_one.setEnabled(false);
 
         iv_back_voip_one.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -126,6 +126,7 @@ public class VoipCallingActivity extends AppCompatActivity {
                     iv_recv_call_voip_one.setVisibility(View.VISIBLE);
                     RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) iv_cancel_call_voip_one.getLayoutParams();
                     params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
+                    params.setMargins(0,0,150,60);
                 }
             }
         });
@@ -138,12 +139,13 @@ public class VoipCallingActivity extends AppCompatActivity {
                         call = sinchClient.getCallClient().callUser(driverId);
                         call.addCallListener(new VoipCallingActivity.SinchCallListener());
 //                        button.setText("Hang Up");
-                        iv_cancel_call_voip_one.setEnabled(true);
+//                        iv_cancel_call_voip_one.setEnabled(true);
                     } else {
                         call.hangup();
                         iv_recv_call_voip_one.setVisibility(View.VISIBLE);
                         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) iv_cancel_call_voip_one.getLayoutParams();
                         params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
+                        params.setMargins(0,0,150,60);
                     }
                 }
 
@@ -189,12 +191,13 @@ public class VoipCallingActivity extends AppCompatActivity {
                                 call = sinchClient.getCallClient().callUser(clientId);
                                 call.addCallListener(new VoipCallingActivity.SinchCallListener());
 //                        button.setText("Hang Up");
-                                iv_cancel_call_voip_one.setEnabled(true);
+//                                iv_cancel_call_voip_one.setEnabled(true);
                             } else {
                                 call.hangup();
                                 iv_recv_call_voip_one.setVisibility(View.VISIBLE);
                                 RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) iv_cancel_call_voip_one.getLayoutParams();
                                 params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
+                                params.setMargins(0,0,150,60);
                             }
                         }
                     }
@@ -229,11 +232,14 @@ public class VoipCallingActivity extends AppCompatActivity {
             iv_mute.setVisibility(View.GONE);
             iv_loud.setVisibility(View.GONE);
             caller_name.setVisibility(View.GONE);
-            iv_cancel_call_voip_one.setEnabled(false);
-            call.hangup();
+//            iv_cancel_call_voip_one.setEnabled(false);
+            if(call != null){
+                call.hangup();
+            }
             iv_recv_call_voip_one.setVisibility(View.VISIBLE);
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) iv_cancel_call_voip_one.getLayoutParams();
             params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
+            params.setMargins(0,0,150,60);
             callState.setText("");
             setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
             mute();
@@ -270,7 +276,7 @@ public class VoipCallingActivity extends AppCompatActivity {
             call.answer();
             call.addCallListener(new VoipCallingActivity.SinchCallListener());
 //            button.setText("Hang Up");
-            iv_cancel_call_voip_one.setEnabled(true);
+//            iv_cancel_call_voip_one.setEnabled(true);
         }
     }
 }
