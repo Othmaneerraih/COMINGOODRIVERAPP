@@ -2121,14 +2121,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     menuButton.setVisibility(View.VISIBLE);
                     startSearchUI();
 
-//                    try {
+                    try {
                         new LookForDriverTask().execute();
                         new sendRequestsTask().execute();
-//                    } catch (NullPointerException e) {
-//                        e.printStackTrace();
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
+                    } catch (NullPointerException e) {
+                        Log.e(TAG, "onClick: excp111"+e.getMessage() );
+                        e.printStackTrace();
+                    } catch (Exception e) {
+                        Log.e(TAG, "onClick: excp222"+e.getMessage() );
+                        e.printStackTrace();
+                    }
                 }
             }
         });
@@ -3201,10 +3203,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     @Override
                     public void onDataChanged(DataSnapshot dataSnapshot, GeoLocation location) {
-                        driversKeys.clear();
-                        driversLocations.clear();
-                        geoQuery.removeAllListeners();
-                        geoQuery.addGeoQueryDataEventListener(this);
+//                        driversKeys.clear();
+//                        driversLocations.clear();
+//                        geoQuery.removeAllListeners();
+//                        geoQuery.addGeoQueryDataEventListener(this);
                     }
 
                     @Override
@@ -3716,7 +3718,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SharedPreferences prefs;
         String userId;
         String image;
-        boolean finishedSendReq;
+        boolean finishedSendReq = false;
 
         // Runs in UI before background thread is called
         @Override
@@ -3731,15 +3733,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // This is run in a background thread
         @Override
         protected String doInBackground(String... params) {
-
-//            SharedPreferences prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
-//            final String userId = prefs.getString("userID", null);
+            SharedPreferences prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
+            final String userId = prefs.getString("userID", null);
 
             final int Step = 3; //Number Of Drivers To Call Every Time
-            final int secondsDelay = 15000; // Time To Wait Before Sending Request To The Next Set O Drivers
+//            final int secondsDelay = 15000; // Time To Wait Before Sending Request To The Next Set O Drivers
 
             driverSize = driversKeys.size();
-            Log.e(TAG, "doInBackground: driverKeySize: " + driversKeys.size());
+            Log.e(TAG, "doInBackground: driverKeySize: " + driverSize);
 
             if (driverSize == 0) {
                 finishedSendReq = true;
@@ -3750,7 +3751,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 @Override
                 public void run() {
-                    Log.e(TAG, "doInBackground: runnnnnnn driverKeySize: " + driversKeys.size());
                     // Do the task...
 //                    if (stop == 1 || counter >= driversKeys.size() || idInList(driversKeys.get(counter), driversKeysHold)) {
 //                        finishedSendReq = true;
@@ -3771,7 +3771,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         driversKeysHold.clear();
                         for (int j = counter; j < (counter + Step) && j < driversKeys.size(); j++) {
                             if (driversKeys.get(j) != null) {
-                                Log.e(TAG, "run: if driverSize: not null " + driverSize);
                                 final DatabaseReference pickupRequest =
                                         FirebaseDatabase.getInstance().getReference("PICKUPREQUEST").
                                                 child(driversKeys.get(j)).child(userId);
@@ -3837,8 +3836,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                             courseScreenIsOn = false;
                                                             finishedSendReq = true;
                                                             handler.removeCallbacks(runnable);
-                                                            driversKeys.clear();
-                                                            driversKeysHold.clear();
+//                                                            driversKeys.clear();
+//                                                            driversKeysHold.clear();
                                                             geoQuery.setCenter(new GeoLocation(startLatLng.latitude, startLatLng.longitude));
                                                             counter = 0;
                                                             stop = 0;
