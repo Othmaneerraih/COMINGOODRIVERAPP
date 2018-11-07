@@ -74,7 +74,7 @@ public class VoipCallingActivity extends AppCompatActivity {
 
         driverId = getIntent().getStringExtra("driverId");
         clientId = getIntent().getStringExtra("clientId");//"RHiU2GIxm2ZIlU4GBGgKFZWxk4J3";//getIntent().getStringExtra("clientId");
-//        clientId = "-LPkiWQ0Msiwlx3Qrocn";
+//        driverId = "-LPkiWQ0Msiwlx3Qrocn";
         callerName = getIntent().getStringExtra("driverName");
         clientImage = getIntent().getStringExtra("driverImage");
 
@@ -134,18 +134,24 @@ public class VoipCallingActivity extends AppCompatActivity {
         iv_recv_call_voip_one.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!clientId.isEmpty()){
-                    if (call == null) {
-                        call = sinchClient.getCallClient().callUser(driverId);
-                        call.addCallListener(new VoipCallingActivity.SinchCallListener());
+                if(!clientId.isEmpty() && !driverId.isEmpty()){
+                    try{
+                        if (call == null) {
+                            call = sinchClient.getCallClient().callUser(driverId);
+                            call.addCallListener(new VoipCallingActivity.SinchCallListener());
 //                        button.setText("Hang Up");
 //                        iv_cancel_call_voip_one.setEnabled(true);
-                    } else {
-                        call.hangup();
-                        iv_recv_call_voip_one.setVisibility(View.VISIBLE);
-                        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) iv_cancel_call_voip_one.getLayoutParams();
-                        params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
-                        params.setMargins(0,0,150,60);
+                        } else {
+                            call.hangup();
+                            iv_recv_call_voip_one.setVisibility(View.VISIBLE);
+                            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) iv_cancel_call_voip_one.getLayoutParams();
+                            params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
+                            params.setMargins(0,0,150,60);
+                        }
+                    } catch(NullPointerException e){
+                        e.printStackTrace();
+                    } catch(Exception e){
+                        e.printStackTrace();
                     }
                 }
 
@@ -186,9 +192,9 @@ public class VoipCallingActivity extends AppCompatActivity {
             public void onFinish() {
                 try{
                     if (sinchClient != null) {
-                        if (!clientId.isEmpty()) {
+                        if (!clientId.isEmpty() && !driverId.isEmpty()) {
                             if (call == null) {
-                                call = sinchClient.getCallClient().callUser(clientId);
+                                call = sinchClient.getCallClient().callUser(driverId);
                                 call.addCallListener(new VoipCallingActivity.SinchCallListener());
 //                        button.setText("Hang Up");
 //                                iv_cancel_call_voip_one.setEnabled(true);
@@ -254,7 +260,9 @@ public class VoipCallingActivity extends AppCompatActivity {
             setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
 
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) iv_cancel_call_voip_one.getLayoutParams();
-            params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+            params.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
+            params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+            params.setMargins(0,0,450,60);
         }
 
         @Override
@@ -267,7 +275,11 @@ public class VoipCallingActivity extends AppCompatActivity {
             iv_recv_call_voip_one.setVisibility(View.GONE);
 
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) iv_cancel_call_voip_one.getLayoutParams();
-            params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+            params.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
+            params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+            params.setMargins(0,0,450,60);
+
+
             callState.setText("ringing");
         }
 

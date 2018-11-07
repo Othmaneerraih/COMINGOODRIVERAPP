@@ -553,6 +553,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     callState.setText("connected");
                     iv_mute.setVisibility(View.VISIBLE);
                     iv_loud.setVisibility(View.VISIBLE);
+
+                    iv_recv_call_voip_one.setVisibility(View.GONE);
+                    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) iv_cancel_call_voip_one.getLayoutParams();
+                    params.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
+                    params.setMargins(0,0,250,60);
                     mp.stop();
                 }
 
@@ -566,6 +571,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     iv_loud.setVisibility(View.VISIBLE);
                     caller_name.setTypeface(null, Typeface.BOLD);
                     callState.setText("ringing");
+                    iv_recv_call_voip_one.setVisibility(View.GONE);
+                    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) iv_cancel_call_voip_one.getLayoutParams();
+                    params.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
+                    params.setMargins(0,0,250,60);
                     mp.stop();
                 }
 
@@ -1904,6 +1913,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     1);
         }
 
+//        callLayout.setVisibility(View.VISIBLE);
+
 
         sinchClient = Sinch.getSinchClientBuilder()
                 .context(this)
@@ -1966,6 +1977,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         userLatLng = null;
         startLatLng = null;
         destLatLng = null;
+
+//        tv_appelle_voip.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(MapsActivity.this, VoipCallingActivity.class);
+//                intent.putExtra("driverId", driverIDT);
+//                intent.putExtra("clientId", clientID);
+//                intent.putExtra("driverName", driverName);
+//                intent.putExtra("driverImage", driverImage);
+//                startActivity(intent);
+//            }
+//        });
 
         mGeoDataClient = Places.getGeoDataClient(this);
 
