@@ -91,7 +91,7 @@ public class VoipCallingActivity extends AppCompatActivity {
 
         caller_name.setText(callerName+ " vous appelle");
         tv_name_voip_one.setText(callerName);
-        if(clientImage != null){
+        if(clientImage != null && iv_user_image_voip_one != null){
             Picasso.get().load(clientImage).fit().centerCrop().into(iv_user_image_voip_one);
         }
 
