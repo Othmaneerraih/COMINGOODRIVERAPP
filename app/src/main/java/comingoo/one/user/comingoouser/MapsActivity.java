@@ -334,7 +334,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return BitmapFactory.decodeResource(getResources(), resId, bOptions);
     }
 
-
     private void loadImages() {
         locationStartPin.setImageBitmap(scaleBitmap(76, 56, R.drawable.depart_pin));
         locationDestPin.setImageBitmap(scaleBitmap(76, 56, R.drawable.destination_pin));
@@ -513,7 +512,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         caller_name.setText(driverName + " vous appelle");
         tv_name_voip_one.setText(driverName);
-        if (driverImage != null) {
+        if (!driverImage.isEmpty()) {
             Picasso.get().load(driverImage).fit().centerCrop().into(iv_user_image_voip_one);
         }
 
