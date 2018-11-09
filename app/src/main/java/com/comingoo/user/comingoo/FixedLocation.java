@@ -1,4 +1,4 @@
-package comingoo.one.user.comingoouser;
+package com.comingoo.user.comingoo;
 
 public class FixedLocation {
 

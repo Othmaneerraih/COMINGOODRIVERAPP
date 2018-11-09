@@ -1,4 +1,4 @@
-package comingoo.one.user.comingoouser;
+package com.comingoo.user.comingoo;
 
 import android.Manifest;
 import android.app.Activity;
@@ -98,7 +98,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.gson.Gson;
 import com.google.maps.DirectionsApi;
 import com.google.maps.DirectionsApiRequest;
 import com.google.maps.GeoApiContext;
@@ -126,7 +125,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import comingoo.one.user.comingoouser.Database.SharedPreferenceTask;
 import de.hdodenhof.circleimageview.CircleImageView;
 import pl.droidsonroids.gif.GifImageButton;
 

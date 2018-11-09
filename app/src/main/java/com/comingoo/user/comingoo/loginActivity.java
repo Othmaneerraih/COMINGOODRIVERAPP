@@ -1,4 +1,4 @@
-package comingoo.one.user.comingoouser;
+package com.comingoo.user.comingoo;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -6,9 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.facebook.CallbackManager;
@@ -44,7 +42,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.Arrays;
 
-import comingoo.one.user.comingoouser.R;
 
 public class loginActivity extends AppCompatActivity {
     private EditText phoneNumber;

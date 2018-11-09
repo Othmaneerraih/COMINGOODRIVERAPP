@@ -1,4 +1,4 @@
-package comingoo.one.user.comingoouser;
+package com.comingoo.user.comingoo;
 
 import android.content.pm.PackageManager;
 import android.media.AudioManager;

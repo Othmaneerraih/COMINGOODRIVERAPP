@@ -1,4 +1,4 @@
-package comingoo.one.user.comingoouser;
+package com.comingoo.user.comingoo;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;

@@ -1,4 +1,4 @@
-package comingoo.one.user.comingoouser;
+package com.comingoo.user.comingoo;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -21,7 +21,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.concurrent.TimeUnit;
 
-import comingoo.one.user.comingoouser.R;
 
 public class signupActivity extends AppCompatActivity {
     private String TAG = "signupActivity";

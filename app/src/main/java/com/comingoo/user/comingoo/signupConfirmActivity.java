@@ -1,4 +1,4 @@
-package comingoo.one.user.comingoouser;
+package com.comingoo.user.comingoo;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -27,7 +27,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.HashMap;
 import java.util.Map;
 
-import comingoo.one.user.comingoouser.R;
 
 public class signupConfirmActivity extends AppCompatActivity {
     private String phoneNumber;
