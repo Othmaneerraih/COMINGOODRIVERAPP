@@ -42,7 +42,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.Arrays;
 
-import comingoo.one.user.comingoouser.R;
 
 public class loginActivity extends AppCompatActivity {
     private EditText phoneNumber;

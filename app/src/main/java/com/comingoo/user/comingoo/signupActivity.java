@@ -21,7 +21,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.concurrent.TimeUnit;
 
-import comingoo.one.user.comingoouser.R;
 
 public class signupActivity extends AppCompatActivity {
     private String TAG = "signupActivity";

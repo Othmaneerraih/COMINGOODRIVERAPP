@@ -32,7 +32,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import comingoo.one.user.comingoouser.R;
 
 import static android.widget.Toast.makeText;
 

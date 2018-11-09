@@ -10,7 +10,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import comingoo.one.user.comingoouser.R;
 
 public class inviteActivity extends AppCompatActivity {
 

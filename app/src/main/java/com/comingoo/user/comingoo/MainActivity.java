@@ -8,7 +8,6 @@ import android.widget.Button;
 
 import com.google.firebase.auth.FirebaseAuth;
 
-import comingoo.one.user.comingoouser.R;
 
 public class MainActivity extends AppCompatActivity {
 
