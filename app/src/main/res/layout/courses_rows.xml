@@ -393,8 +393,6 @@
             </android.support.constraint.ConstraintLayout>
 
         </FrameLayout>
-        ​
-
         <FrameLayout
             android:id="@+id/cell_title_view"
             android:layout_width="match_parent"
