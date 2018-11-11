@@ -151,14 +151,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     static RecyclerView mLocationView;
     static MyPlaceAdapter placeAdapter;
-    static List<place> placeData;
+    static ArrayList<place> placeData;
 
     static RecyclerView fLocationView;
     static RecyclerView rLocationView;
     static MyPlaceAdapter fPlaceAdapter;
     static MyPlaceAdapter rPlaceAdapter;
-    static List<place> fPlaceData;
-    static List<place> rPlaceData;
+    static ArrayList<place> fPlaceData;
+    static ArrayList<place> rPlaceData;
 
     private static ConstraintLayout startConstraint;
     private ConstraintLayout endConstraint;
@@ -225,7 +225,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private String startCity;
     private String destCity;
 
-    private List<FixedLocation> fixedLocations;
+    private ArrayList<FixedLocation> fixedLocations;
 
     private float distance;
     private TextView price;
@@ -276,9 +276,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     ////////////////////////////////////////////
 
 
-    private List<String> driversKeys;
-    private List<String> driversLocations;
-    private List<String> driversKeysHold;
+    private ArrayList<String> driversKeys;
+    private ArrayList<String> driversLocations;
+    private ArrayList<String> driversKeysHold;
 
     private GeoQuery geoQuery;
 
@@ -554,7 +554,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     iv_recv_call_voip_one.setVisibility(View.GONE);
                     RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) iv_cancel_call_voip_one.getLayoutParams();
                     params.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
-                    params.setMargins(0,0,250,60);
+                    params.setMargins(0, 0, 250, 60);
                     mp.stop();
                 }
 
@@ -571,7 +571,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     iv_recv_call_voip_one.setVisibility(View.GONE);
                     RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) iv_cancel_call_voip_one.getLayoutParams();
                     params.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
-                    params.setMargins(0,0,250,60);
+                    params.setMargins(0, 0, 250, 60);
                     mp.stop();
                 }
 
@@ -1428,7 +1428,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                             });
                                             FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("COURSE").removeValue();
                                             if (RATE > 3) {
-                                                showVoiceDialog();
+                                                if (ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.RECORD_AUDIO)
+                                                        != PackageManager.PERMISSION_GRANTED) {
+                                                    ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.RECORD_AUDIO},
+                                                            10);
+                                                } else {
+                                                    showVoiceDialog();
+                                                }
                                             } else {
 
                                                 try {
@@ -1549,7 +1555,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                     newDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                                                         @Override
                                                         public void onDismiss(DialogInterface dialog) {
-                                                            showVoiceDialog();
+                                                            if (ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.RECORD_AUDIO)
+                                                                    != PackageManager.PERMISSION_GRANTED) {
+                                                                ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.RECORD_AUDIO},
+                                                                        10);
+                                                            } else {
+                                                                showVoiceDialog();
+                                                            }
                                                         }
                                                     });
                                                     nextBtn.setOnClickListener(new View.OnClickListener() {
@@ -2145,10 +2157,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         new LookForDriverTask().execute();
                         new sendRequestsTask().execute();
                     } catch (NullPointerException e) {
-                        Log.e(TAG, "onClick: excp111"+e.getMessage() );
+                        Log.e(TAG, "onClick: excp111" + e.getMessage());
                         e.printStackTrace();
                     } catch (Exception e) {
-                        Log.e(TAG, "onClick: excp222"+e.getMessage() );
+                        Log.e(TAG, "onClick: excp222" + e.getMessage());
                         e.printStackTrace();
                     }
                 }
@@ -2237,12 +2249,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view) {
                 //Begin Selecting Destination Phase
-                if (startPositionIsValid()) {
-                    orderDriverState = 1;
-                    showSelectDestUI();
+                try {
+                    if (startPositionIsValid()) {
+                        orderDriverState = 1;
+                        showSelectDestUI();
 //                    menuButton.setVisibility(View.GONE);
 
-                    state = 1;
+                        state = 1;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         });
@@ -3530,6 +3546,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
 
+        if (requestCode == 10) {
+            if (grantResult[0] == PackageManager.PERMISSION_GRANTED) {
+                showVoiceDialog();
+            }else{
+                //User denied Permission.
+            }
+        }
     }
 
     private class DrawRouteTask extends AsyncTask<LatLng, Integer, String> {
@@ -3765,7 +3788,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (driverSize == 0) {
                 finishedSendReq = true;
             }
-             handler = new Handler(Looper.getMainLooper());
+            handler = new Handler(Looper.getMainLooper());
             runnable = new Runnable() {
                 int counter = 0;
 
