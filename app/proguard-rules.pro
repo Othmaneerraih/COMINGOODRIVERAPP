@@ -19,3 +19,30 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+-dontwarn okio.**
+-dontwarn okhttp3.**
+-dontwarn com.squareup.okhttp.**
+-dontwarn com.google.appengine.**
+-dontwarn javax.servlet.**
+# Support classes for compatibility with older API versions
+-dontwarn android.support.**
+-dontnote android.support.**
+ -dontwarn com.squareup.picasso.**
+ -dontwarn com.squareup.okhttp.internal.**
+ -dontwarn org.apache.commons.logging.**
+ -dontwarn org.joda.convert.**
+ -dontwarn com.firebase.**
+ -keep class com.firebase.** { *; }
+ -keep interface com.firebase.** { *; }
+
+ -dontwarn javax.management.**
+ -dontwarn javax.xml.**
+ -dontwarn org.apache.**
+ -dontwarn org.slf4j.**
+
+     -ignorewarnings
+-keep class * {
+public private protected *;
+}
+

@@ -97,7 +97,7 @@ public class signupActivity extends AppCompatActivity {
                             Toast.makeText(signupActivity.this, "Number Already in Database", Toast.LENGTH_SHORT).show();
                             registerButton.setVisibility(View.VISIBLE);
                         }else {
-                            String phoneNumber = phoneNumberField.getText().toString();//"+212" + phoneNumberField.getText();
+                            String phoneNumber = "+212" + phoneNumberField.getText();
                             PhoneAuthProvider.getInstance().verifyPhoneNumber(
                                     phoneNumber,        // Phone number to verify
                                     120,                 // Timeout duration
