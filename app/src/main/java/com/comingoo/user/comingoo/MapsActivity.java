@@ -1056,33 +1056,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             mMap.clear();
             courseScreenStageOne = true;
-            final Dialog dialog = new Dialog(context);
-            dialog.setContentView(R.layout.custom2);
 
-
-            TextView textView8 = (TextView) dialog.findViewById(R.id.textView8);
-            Button ddd = (Button) dialog.findViewById(R.id.button);
-
-
-            //Set Texts
-            textView8.setText(resources.getString(R.string.Votrechauffeurestarrivé));
-            ddd.setText(resources.getString(R.string.Daccord));
-
-
-            Button dialogButton = (Button) dialog.findViewById(R.id.button);
-            dialogButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    dialog.dismiss();
-                }
-            });
-            dialog.show();
-
-            WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
-            lp.dimAmount = 0.5f;
-            dialog.getWindow().setAttributes(lp);
-            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-            dialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
+            try {
+                final Dialog dialog = new Dialog(context);
+                dialog.setContentView(R.layout.custom2);
+                TextView textView8 = (TextView) dialog.findViewById(R.id.textView8);
+                Button ddd = (Button) dialog.findViewById(R.id.button);
+                //Set Texts
+                textView8.setText(resources.getString(R.string.Votrechauffeurestarrivé));
+                ddd.setText(resources.getString(R.string.Daccord));
+                Button dialogButton = (Button) dialog.findViewById(R.id.button);
+                dialogButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
+                WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
+                lp.dimAmount = 0.5f;
+                dialog.getWindow().setAttributes(lp);
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                dialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
             frameLayout.setDrawingCacheEnabled(true);
             frameLayout.buildDrawingCache();
@@ -4038,7 +4036,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         driversKeysHold.clear();
         if (startLatLng != null)
             geoQuery.setCenter(new GeoLocation(startLatLng.latitude, startLatLng.longitude));
-
     }
 
 
