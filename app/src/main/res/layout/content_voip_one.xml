@@ -86,7 +86,7 @@
            android:layout_width="50dp"
            android:layout_height="50dp"
            android:layout_marginRight="20dp"
-           android:src="@drawable/clicked_mute"
+           android:src="@drawable/mute_bt"
            app:civ_border_color="@android:color/darker_gray"
            app:civ_border_width="5dp"
            android:layout_alignParentBottom="true"/>
@@ -96,7 +96,7 @@
            android:layout_width="50dp"
            android:layout_height="50dp"
            android:layout_marginLeft="20dp"
-           android:src="@drawable/clicked_speaker_bt"
+           android:src="@drawable/speaker_bt"
            app:civ_border_color="@android:color/darker_gray"
            app:civ_border_width="5dp" />
    </LinearLayout>
