@@ -464,7 +464,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         public void onIncomingCall(CallClient callClient, Call incomingCall) {
             call = incomingCall;
             Toast.makeText(MapsActivity.this, "incoming call", Toast.LENGTH_SHORT).show();
-            showDialog(MapsActivity.this, call);
+            try {
+                showDialog(MapsActivity.this, call);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -1597,7 +1601,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                 dialog.show();
 
-                                dialog.findViewById(R.id.body).getLayoutParams().width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) (dpWidth), context.getResources().getDisplayMetrics());
+                                dialog.findViewById(R.id.body).getLayoutParams().width = (int)
+                                        TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) (dpWidth), context.getResources().getDisplayMetrics());
 
 
                                 WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
@@ -3549,7 +3554,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (requestCode == 10) {
             if (grantResult[0] == PackageManager.PERMISSION_GRANTED) {
                 showVoiceDialog();
-            }else{
+            } else {
                 //User denied Permission.
             }
         }
