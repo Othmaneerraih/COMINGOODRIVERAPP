@@ -399,7 +399,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         FirebaseAuth.getInstance().signOut();
                         Intent intent = new Intent(MapsActivity.this, loginActivity.class);
                         startActivity(intent);
-                        finish();
+//                        finish();
                         return;
                     } else {
                         userName = dataSnapshot.child("fullName").getValue(String.class);
@@ -464,17 +464,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         public void onIncomingCall(CallClient callClient, Call incomingCall) {
             call = incomingCall;
             Toast.makeText(MapsActivity.this, "incoming call", Toast.LENGTH_SHORT).show();
-            try {
-                showDialog(MapsActivity.this, call);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+//            try {
+                showDialog(getApplicationContext(), call);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
         }
     }
 
     public void showDialog(final Context context, final Call call) {
         final Dialog dialog = new Dialog(context);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+//        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.activity_incomming_call, null, false);
         dialog.setContentView(view);
@@ -514,7 +514,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         caller_name.setText(driverName + " vous appelle");
         tv_name_voip_one.setText(driverName);
         if (!driverImage.isEmpty()) {
-            Picasso.get().load(driverImage).fit().centerCrop().into(iv_user_image_voip_one);
+            Picasso.get().load(driverImage).into(iv_user_image_voip_one);
         }
 
 
@@ -1973,7 +1973,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         sinchClient.startListeningOnActiveConnection();
         sinchClient.start();
 
-        sinchClient.getCallClient().addCallClientListener(new MapsActivity.SinchCallClientListener());
+        sinchClient.getCallClient().addCallClientListener(new SinchCallClientListener());
 
         price = (TextView) findViewById(R.id.price);
         fixedLocations = new ArrayList<>();
