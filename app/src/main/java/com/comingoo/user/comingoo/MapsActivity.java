@@ -416,9 +416,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 Intent intent = new Intent(MapsActivity.this, comingoonuActivity.class);
                                 intent.putExtra("image", dataSnapshot.child("image").getValue(String.class));
                                 intent.putExtra("name", dataSnapshot.child("fullName").getValue(String.class));
-                                intent.putExtra("phone", dataSnapshot.child("phoneNumber").getValue(String.class));
+//                                intent.putExtra("phone", dataSnapshot.child("phoneNumber").getValue(String.class));
                                 intent.putExtra("email", dataSnapshot.child("email").getValue(String.class));
-//                                intent.putExtra("phone", "+212 " + dataSnapshot.child("phoneNumber").getValue(String.class));
+                                intent.putExtra("phone", "+212 " + dataSnapshot.child("phoneNumber").getValue(String.class));
                                 startActivity(intent);
                             }
                         });
@@ -554,7 +554,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     iv_recv_call_voip_one.setVisibility(View.GONE);
                     RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) iv_cancel_call_voip_one.getLayoutParams();
                     params.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
-                    params.setMargins(0,0,250,60);
+                    params.setMargins(0, 0, 250, 60);
                     mp.stop();
                 }
 
@@ -571,7 +571,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     iv_recv_call_voip_one.setVisibility(View.GONE);
                     RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) iv_cancel_call_voip_one.getLayoutParams();
                     params.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
-                    params.setMargins(0,0,250,60);
+                    params.setMargins(0, 0, 250, 60);
                     mp.stop();
                 }
 
@@ -1053,33 +1053,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             mMap.clear();
             courseScreenStageOne = true;
-            final Dialog dialog = new Dialog(context);
-            dialog.setContentView(R.layout.custom2);
 
-
-            TextView textView8 = (TextView) dialog.findViewById(R.id.textView8);
-            Button ddd = (Button) dialog.findViewById(R.id.button);
-
-
-            //Set Texts
-            textView8.setText(resources.getString(R.string.Votrechauffeurestarrivé));
-            ddd.setText(resources.getString(R.string.Daccord));
-
-
-            Button dialogButton = (Button) dialog.findViewById(R.id.button);
-            dialogButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    dialog.dismiss();
-                }
-            });
-            dialog.show();
-
-            WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
-            lp.dimAmount = 0.5f;
-            dialog.getWindow().setAttributes(lp);
-            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-            dialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
+            try {
+                final Dialog dialog = new Dialog(context);
+                dialog.setContentView(R.layout.custom2);
+                TextView textView8 = (TextView) dialog.findViewById(R.id.textView8);
+                Button ddd = (Button) dialog.findViewById(R.id.button);
+                //Set Texts
+                textView8.setText(resources.getString(R.string.Votrechauffeurestarrivé));
+                ddd.setText(resources.getString(R.string.Daccord));
+                Button dialogButton = (Button) dialog.findViewById(R.id.button);
+                dialogButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
+                WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
+                lp.dimAmount = 0.5f;
+                dialog.getWindow().setAttributes(lp);
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                dialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
             frameLayout.setDrawingCacheEnabled(true);
             frameLayout.buildDrawingCache();
@@ -2145,10 +2143,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         new LookForDriverTask().execute();
                         new sendRequestsTask().execute();
                     } catch (NullPointerException e) {
-                        Log.e(TAG, "onClick: excp111"+e.getMessage() );
+                        Log.e(TAG, "onClick: excp111" + e.getMessage());
                         e.printStackTrace();
                     } catch (Exception e) {
-                        Log.e(TAG, "onClick: excp222"+e.getMessage() );
+                        Log.e(TAG, "onClick: excp222" + e.getMessage());
                         e.printStackTrace();
                     }
                 }
@@ -3765,7 +3763,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (driverSize == 0) {
                 finishedSendReq = true;
             }
-             handler = new Handler(Looper.getMainLooper());
+            handler = new Handler(Looper.getMainLooper());
             runnable = new Runnable() {
                 int counter = 0;
 
@@ -4011,7 +4009,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         driversKeysHold.clear();
         if (startLatLng != null)
             geoQuery.setCenter(new GeoLocation(startLatLng.latitude, startLatLng.longitude));
-
     }
 
 
