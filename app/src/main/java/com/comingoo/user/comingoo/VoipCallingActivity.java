@@ -160,16 +160,43 @@ public class VoipCallingActivity extends AppCompatActivity {
         iv_loud.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AudioManager audioManager =  (AudioManager)getSystemService(Context.AUDIO_SERVICE);
-                audioManager.setMode(AudioManager.MODE_IN_CALL);
-                audioManager.setSpeakerphoneOn(true);
+                if(iv_loud.getTag().toString().trim().equals("on"))
+                {
+                    iv_loud.setTag("off");
+                    AudioManager audioManager =  (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+                    audioManager.setMode(AudioManager.MODE_IN_CALL);
+                    audioManager.setSpeakerphoneOn(true);
+                    iv_loud.setImageResource(R.drawable.clicked_speaker_bt);
+                    //And your neceaasary code
+                }
+                else if(iv_loud.getTag().toString().trim().equals("off"))
+                {
+                    iv_loud.setTag("on");
+                    iv_loud.setImageResource(R.drawable.speaker_bt);
+                    AudioManager audioManager =  (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+                    audioManager.setMode(AudioManager.MODE_IN_CALL);
+                    audioManager.setSpeakerphoneOn(false);
+                }
             }
         });
 
         iv_mute.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mute();
+
+                if(iv_mute.getTag().toString().trim().equals("on"))
+                {
+                    iv_mute.setTag("off");
+                    mute();
+                    iv_mute.setImageResource(R.drawable.clicked_mute);
+                    //And your neceaasary code
+                }
+                else if(iv_mute.getTag().toString().trim().equals("off"))
+                {
+                    iv_mute.setTag("on");
+                    iv_mute.setImageResource(R.drawable.mute_bt);
+                    mute();
+                }
             }
         });
 
