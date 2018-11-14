@@ -1,5 +1,6 @@
 package com.comingoo.user.comingoo;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
@@ -31,7 +32,7 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class VoipCallingActivity extends AppCompatActivity {
-
+    public static Activity activity;
     String driverId = "";
     String clientId = "";
     String callerName = "";
@@ -53,6 +54,7 @@ public class VoipCallingActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_voip_one);
+        activity = this;
 
         iv_back_voip_one = (ImageView) findViewById(R.id.iv_back_voip_one);
         iv_user_image_voip_one = (CircleImageView) findViewById(R.id.iv_user_image_voip_one);
@@ -133,8 +135,8 @@ public class VoipCallingActivity extends AppCompatActivity {
         iv_recv_call_voip_one.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!clientId.isEmpty() && !driverId.isEmpty()) {
-                    try {
+//                if (!clientId.isEmpty() && !driverId.isEmpty()) {
+//                    try {
                         if (call == null) {
                             call = sinchClient.getCallClient().callUser(driverId);
                             call.addCallListener(new VoipCallingActivity.SinchCallListener());
@@ -145,12 +147,12 @@ public class VoipCallingActivity extends AppCompatActivity {
                             params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
                             params.setMargins(0, 0, 150, 60);
                         }
-                    } catch (NullPointerException e) {
-                        e.printStackTrace();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
+//                    } catch (NullPointerException e) {
+//                        e.printStackTrace();
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                }
 
 
             }
@@ -179,15 +181,7 @@ public class VoipCallingActivity extends AppCompatActivity {
         iv_mute.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                if (iv_mute.getTag().toString().trim().equals("on")) {
-//                    iv_mute.setTag("off");
-//                    mute();
-//                    iv_mute.setBackgroundResource(R.drawable.clicked_mute);
-//                } else if (iv_mute.getTag().toString().trim().equals("off")) {
-//                    iv_mute.setTag("on");
-//                    iv_mute.setBackgroundResource(R.drawable.mute_bt);
                     mute();
-//                }
             }
         });
 
