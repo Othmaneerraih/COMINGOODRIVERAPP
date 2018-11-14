@@ -464,25 +464,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         public void onIncomingCall(CallClient callClient, Call incomingCall) {
             call = incomingCall;
             Toast.makeText(MapsActivity.this, "incoming call", Toast.LENGTH_SHORT).show();
-//            try {
-                showDialog(getApplicationContext(), call);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
+            try {
+                if (VoipCallingActivity.activity != null)
+                    if (!VoipCallingActivity.activity.isFinishing())
+                        VoipCallingActivity.activity.finish();
+                showDialog(MapsActivity.this, call);
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
+    AudioManager audioManager;
+    boolean isLoud = false;
+    MediaPlayer mp;
+    TextView callState, caller_name, tv_name_voip_one;
+    CircleImageView iv_user_image_voip_one, iv_cancel_call_voip_one, iv_mute, iv_loud, iv_recv_call_voip_one;
+    RelativeLayout relativeLayout;
+    RelativeLayout.LayoutParams params;
+
     public void showDialog(final Context context, final Call call) {
         final Dialog dialog = new Dialog(context);
-//        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.activity_incomming_call, null, false);
         dialog.setContentView(view);
 
-        final MediaPlayer mp;
-        final TextView callState, caller_name, tv_name_voip_one;
-        final CircleImageView iv_user_image_voip_one, iv_cancel_call_voip_one, iv_mute, iv_loud, iv_recv_call_voip_one;
-
+        relativeLayout = dialog.findViewById(R.id.incoming_call_view);
         iv_user_image_voip_one = (CircleImageView) dialog.findViewById(R.id.iv_user_image_voip_one);
         iv_cancel_call_voip_one = (CircleImageView) dialog.findViewById(R.id.iv_cancel_call_voip_one);
         iv_recv_call_voip_one = (CircleImageView) dialog.findViewById(R.id.iv_recv_call_voip_one);
@@ -527,9 +537,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
+        params = (RelativeLayout.LayoutParams) iv_cancel_call_voip_one.getLayoutParams();
+        params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        iv_cancel_call_voip_one.setLayoutParams(params);
+
         iv_recv_call_voip_one.setOnClickListener(new View.OnClickListener() {
-
-
             class SinchCallListener implements CallListener {
                 @Override
                 public void onCallEnded(Call endedCall) {
@@ -555,9 +567,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     iv_loud.setVisibility(View.VISIBLE);
 
                     iv_recv_call_voip_one.setVisibility(View.GONE);
-                    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) iv_cancel_call_voip_one.getLayoutParams();
-                    params.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
-                    params.setMargins(0, 0, 250, 60);
+
+                    params.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                    params.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                    iv_cancel_call_voip_one.setLayoutParams(params);
                     mp.stop();
                 }
 
@@ -572,9 +585,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     caller_name.setTypeface(null, Typeface.BOLD);
                     callState.setText("ringing");
                     iv_recv_call_voip_one.setVisibility(View.GONE);
-                    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) iv_cancel_call_voip_one.getLayoutParams();
-                    params.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
-                    params.setMargins(0, 0, 250, 60);
+
+                    params.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                    params.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                    iv_cancel_call_voip_one.setLayoutParams(params);
                     mp.stop();
                 }
 
@@ -595,25 +609,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
+
         iv_loud.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(iv_loud.getTag().toString().trim().equals("on"))
-                {
-                    iv_loud.setTag("off");
-                    AudioManager audioManager =  (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+                if (!isLoud) {
+                    AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
                     audioManager.setMode(AudioManager.MODE_IN_CALL);
                     audioManager.setSpeakerphoneOn(true);
                     iv_loud.setImageResource(R.drawable.clicked_speaker_bt);
-                    //And your neceaasary code
-                }
-                else if(iv_loud.getTag().toString().trim().equals("off"))
-                {
-                    iv_loud.setTag("on");
+                    isLoud = true;
+                } else {
                     iv_loud.setImageResource(R.drawable.speaker_bt);
-                    AudioManager audioManager =  (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+                    AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
                     audioManager.setMode(AudioManager.MODE_IN_CALL);
                     audioManager.setSpeakerphoneOn(false);
+                    isLoud = false;
                 }
             }
         });
@@ -621,38 +632,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         iv_mute.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(iv_mute.getTag().toString().trim().equals("on"))
-                {
-                    iv_mute.setTag("off");
-
-                    iv_mute.setImageResource(R.drawable.clicked_mute);
-                    AudioManager audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
-                    audioManager.setMode(AudioManager.MODE_IN_CALL);
-                    if (audioManager.isMicrophoneMute() == false) {
-                        audioManager.setMicrophoneMute(true);
-
-                    } else {
-                        audioManager.setMicrophoneMute(false);
-
-                    }
-                }
-                else if(iv_mute.getTag().toString().trim().equals("off"))
-                {
-                    iv_mute.setTag("on");
-                    iv_mute.setImageResource(R.drawable.mute_bt);
-                    AudioManager audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
-                    audioManager.setMode(AudioManager.MODE_IN_CALL);
-                    if (audioManager.isMicrophoneMute() == false) {
-                        audioManager.setMicrophoneMute(true);
-
-                    } else {
-                        audioManager.setMicrophoneMute(false);
-
-                    }
-                }
+                mute();
             }
         });
-
 
         final Window window = dialog.getWindow();
         window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
@@ -662,6 +644,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+    private void mute() {
+        audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+        audioManager.setMode(AudioManager.MODE_IN_CALL);
+        if (audioManager.isMicrophoneMute() == false) {
+            audioManager.setMicrophoneMute(true);
+
+            iv_mute.setImageResource(R.drawable.clicked_mute);
+        } else {
+            audioManager.setMicrophoneMute(false);
+            iv_mute.setImageResource(R.drawable.mute_bt);
+        }
+    }
 
     ///////////////////////////////////////////////////
     private String courseIDT;
@@ -1784,7 +1778,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
 
                 });
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
