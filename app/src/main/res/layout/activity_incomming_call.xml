@@ -16,7 +16,6 @@
         android:textSize="@dimen/txt_size_large"
         android:textStyle="bold" />
 
-
     <TextView
         android:id="@+id/callerName"
         android:layout_width="wrap_content"
@@ -49,7 +48,6 @@
                 android:src="@drawable/name_cnu"
                 app:civ_border_color="#85050c61"
                 app:civ_border_width="10dp" />
-
         </RelativeLayout>
 
     </RelativeLayout>

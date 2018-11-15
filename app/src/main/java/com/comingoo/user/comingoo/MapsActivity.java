@@ -527,7 +527,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Picasso.get().load(driverImage).into(iv_user_image_voip_one);
         }
 
-
         iv_cancel_call_voip_one.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

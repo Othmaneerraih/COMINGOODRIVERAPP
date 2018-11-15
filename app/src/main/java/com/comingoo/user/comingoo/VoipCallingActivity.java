@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.media.AudioManager;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -49,6 +50,8 @@ public class VoipCallingActivity extends AppCompatActivity {
     private static final String APP_KEY = "185d9822-a953-4af6-a780-b0af1fd31bf7";
     private static final String APP_SECRET = "ZiJ6FqH5UEWYbkMZd1rWbw==";
     private static final String ENVIRONMENT = "sandbox.sinch.com";
+    int mHour, mMinute;
+    private Handler mHandler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -178,15 +181,46 @@ public class VoipCallingActivity extends AppCompatActivity {
             }
         });
 
-        iv_mute.setOnClickListener(new View.OnClickListener() {
+
+        iv_loud.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    mute();
+                if (!isLoud) {
+                    AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+                    audioManager.setMode(AudioManager.MODE_IN_CALL);
+                    audioManager.setSpeakerphoneOn(true);
+                    iv_loud.setImageResource(R.drawable.clicked_speaker_bt);
+                    isLoud = true;
+                } else {
+                    iv_loud.setImageResource(R.drawable.speaker_bt);
+                    AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+                    audioManager.setMode(AudioManager.MODE_IN_CALL);
+                    audioManager.setSpeakerphoneOn(false);
+                    isLoud = false;
+                }
             }
         });
 
         startTimer();
-
+//        // Count down start
+//
+//        Runnable mUpdate = new Runnable() {
+//            @Override
+//            public void run() {
+//                mMinute += 1;
+//                // just some checks to keep everything in order
+//                if (mMinute >= 60) {
+//                    mMinute = 0;
+//                    mHour += 1;
+//                }
+//                if (mHour >= 24) {
+//                    mHour = 0;
+//                }
+//                // or call your method
+//                caller_name.setText(mHour + ":" + mMinute);
+//                mHandler.postDelayed(this, 60000);
+//            }
+//        };
     }
 
     private void startTimer() {
@@ -273,11 +307,12 @@ public class VoipCallingActivity extends AppCompatActivity {
             params.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
             params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
             params.setMargins(0, 0, 450, 60);
+
         }
 
         @Override
         public void onCallProgressing(Call progressingCall) {
-            caller_name.setText("0 : " + progressingCall.getDetails().getDuration() + "");
+//            caller_name.setText("0 : " + progressingCall.getDetails().getDuration() + "");
             caller_name.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
             iv_mute.setVisibility(View.VISIBLE);
             iv_loud.setVisibility(View.VISIBLE);
@@ -289,8 +324,26 @@ public class VoipCallingActivity extends AppCompatActivity {
             params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
             params.setMargins(0, 0, 450, 60);
 
-
             callState.setText("ringing");
+
+            // Count down start
+
+            Runnable mUpdate = new Runnable() {
+                @Override
+                public void run() {
+                    mMinute += 1;
+                    if (mMinute >= 60) {
+                        mMinute = 0;
+                        mHour += 1;
+                    }
+                    if (mHour >= 24) {
+                        mHour = 0;
+                    }
+                    // or call your method
+                    caller_name.setText(mHour + " : " + mMinute);
+                    mHandler.postDelayed(this, 60000);
+                }
+            };
         }
 
         @Override
@@ -304,7 +357,7 @@ public class VoipCallingActivity extends AppCompatActivity {
             call = incomingCall;
             Toast.makeText(VoipCallingActivity.this, "incoming call", Toast.LENGTH_SHORT).show();
             call.answer();
-            call.addCallListener(new VoipCallingActivity.SinchCallListener());
+            call.addCallListener(new SinchCallListener());
 //            button.setText("Hang Up");
 //            iv_cancel_call_voip_one.setEnabled(true);
         }

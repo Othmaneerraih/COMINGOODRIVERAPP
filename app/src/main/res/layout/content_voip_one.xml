@@ -22,7 +22,6 @@
         android:layout_centerHorizontal="true"
         android:layout_margin="@dimen/place_autocomplete_button_padding" />
 
-
     <TextView
         android:id="@+id/callerName"
         android:layout_width="wrap_content"
@@ -32,7 +31,6 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="20dp"
         android:text="" />
-
 
     <RelativeLayout
         android:id="@+id/image_layout"
