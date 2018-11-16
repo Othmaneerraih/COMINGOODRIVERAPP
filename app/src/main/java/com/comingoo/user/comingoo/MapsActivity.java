@@ -63,6 +63,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.comingoo.user.comingoo.Others.HttpConnection;
+import com.comingoo.user.comingoo.Others.PathJSONParser;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
@@ -75,6 +77,7 @@ import com.google.android.gms.location.places.GeoDataClient;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceBufferResponse;
 import com.google.android.gms.location.places.Places;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -117,6 +120,8 @@ import com.sinch.android.rtc.calling.CallClientListener;
 import com.sinch.android.rtc.calling.CallListener;
 import com.skyfishjy.library.RippleBackground;
 import com.squareup.picasso.Picasso;
+
+import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -1908,6 +1913,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         promoCode = (TextView) findViewById(R.id.promoCode);
+        promoCode.setText("PROMO CODE");
 
         callLayout = findViewById(R.id.callLayout);
 
@@ -2339,6 +2345,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                         price.setText(dataSnapshot.getValue() + " MAD");
+                                        promoCode.setText(etPromoCode.getText().toString());
                                     }
 
                                     @Override
@@ -3400,20 +3407,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-//        mMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
-//
-//            @Override
-//            public void onMyLocationChange(Location arg0) {
-//                // TODO Auto-generated method stub
-////                mMap.addMarker(new MarkerOptions().position(new LatLng(arg0.getLatitude(), arg0.getLongitude())).title("It's Me!"));
-//                searchEditText.setText(getCompleteAddressString(context, arg0.getLatitude(), arg0.getLongitude()));
-//                CameraPosition cameraPosition = new CameraPosition.Builder()
-//                        .target(new LatLng(arg0.getLatitude(), arg0.getLongitude()))      // Sets the center of the map to Mountain View
-//                        .zoom(17)                   // Sets the zoom
-//                        .build();                   // Creates a CameraPosition from the builder
-//                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-//            }
-//        });
 
         try {
             new checkCourseTask().execute();
@@ -3709,8 +3702,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         }
                         distance /= 1000;
                         getPrice();
-                        //drawPolyGradiant(thePath, "#f9ad81" ,"#aba100",9, 6);
-                        drawPolyGradiant(thePath, "#76b5f9", "#1c549d", 9, 4);
+//                        drawPolyGradiant(thePath, "#f9ad81" ,"#aba100",9, 6);
+//                        drawPolyGradiant(thePath, "#76b5f9", "#1c549d", 9, 4);
+                        drawPolyLineOnMap(start, arrival);
                         builder.include(arrival);
                         int padding = 200;
                         LatLngBounds bounds = builder.build();
@@ -3782,7 +3776,108 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    public void drawPolyLineOnMap(LatLng currentLatitude, LatLng currentLongitude) {
+        Log.e(TAG, "drawPolyLineOnMap:lat "+currentLatitude.latitude );
+        Log.e(TAG, "drawPolyLineOnMap:lat "+currentLatitude.longitude );
+        Log.e(TAG, "drawPolyLineOnMap:lng "+currentLongitude.toString() );
+        String url = getMapsApiDirectionsUrl(currentLatitude, currentLongitude);
+        Log.e(TAG, "drawPolyLineOnMap:url "+url.toString() );
+        ReadTask downloadTask = new ReadTask();
+        downloadTask.execute(url);
+    }
 
+    private String getMapsApiDirectionsUrl(LatLng origin, LatLng dest) {
+        // Origin of route
+        String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
+
+        // Destination of route
+        String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
+
+        // Sensor enabled
+        String sensor = "sensor=false";
+
+        // Building the parameters to the web service
+        String parameters = str_origin + "&" + str_dest + "&" + sensor;
+
+        // Output format
+        String output = "json";
+//        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters;
+//        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters;
+        String url = "https://maps.googleapis.com/maps/api/directions/"+output+"?"+parameters + "&key="
+                + getResources().getString(R.string.google_maps_key)+"&sensor=true";
+
+        return url;
+    }
+
+    private class ReadTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... url) {
+            String data = "";
+            try {
+                HttpConnection http = new HttpConnection();
+                data = http.readUrl(url[0]);
+            } catch (Exception e) {
+            }
+            return data;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            new ReadTask.ParserTask().execute(s);
+        }
+
+        private class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String, String>>>> {
+
+            @Override
+            protected List<List<HashMap<String, String>>> doInBackground(String... jsonData) {
+
+                JSONObject jObject;
+                List<List<HashMap<String, String>>> routes = null;
+
+                try {
+                    jObject = new JSONObject(jsonData[0]);
+                    PathJSONParser parser = new PathJSONParser();
+                    routes = parser.parse(jObject);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return routes;
+            }
+
+            @Override
+            protected void onPostExecute(List<List<HashMap<String, String>>> routes) {
+                ArrayList<LatLng> points = null;
+                PolylineOptions polyLineOptions = null;
+
+                // traversing through routes
+                for (int i = 0; i < routes.size(); i++) {
+                    points = new ArrayList<>();
+                    polyLineOptions = new PolylineOptions();
+                    List<HashMap<String, String>> path = routes.get(i);
+
+                    for (int j = 0; j < path.size(); j++) {
+                        HashMap<String, String> point = path.get(j);
+
+                        double lat = Double.parseDouble(point.get("lat"));
+                        double lng = Double.parseDouble(point.get("lng"));
+                        LatLng position = new LatLng(lat, lng);
+                        points.add(position);
+                    }
+
+                    polyLineOptions.addAll(points);
+                    polyLineOptions.color(Color.BLUE);
+
+                }
+                if (polyLineOptions == null) {
+                    Toast.makeText(getApplicationContext(), "Something went wrong to draw path", Toast.LENGTH_LONG).show();
+                } else {
+                    mMap.addPolyline(polyLineOptions);
+                }
+            }
+        }
+
+    }
     private int driverSize;
     private Runnable runnable;
     private Handler handler;
