@@ -936,7 +936,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 });
 
-
                 tv_appelle_telephone.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -944,8 +943,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             try {
                                 String callNumber = driverPhone;
                                 if (callNumber.contains("+212")) {
-                                    callNumber.replace("+212", "");
+                                    callNumber = callNumber.replace("+212", "");
                                 }
+
                                 Intent intent = new Intent(Intent.ACTION_DIAL);
                                 intent.setData(Uri.parse("tel:" + callNumber));
                                 startActivity(intent);
@@ -1057,9 +1057,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             try {
                                 String callNumber = driverPhone;
                                 if (callNumber.contains("+212")) {
-                                    callNumber.replace("+212", "");
+                                   callNumber = callNumber.replace("+212", "");
                                 }
                                 Intent intent = new Intent(Intent.ACTION_DIAL);
+                                Log.e(TAG, "onClick: "+callNumber );
                                 intent.setData(Uri.parse("tel:" + callNumber));
                                 startActivity(intent);
                             } catch (NullPointerException e) {
@@ -1263,6 +1264,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         FirebaseDatabase.getInstance().getReference("CLIENTFINISHEDCOURSES").child(userId).child(dataSnapshot.getValue(String.class)).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshott) {
+                                callLayout.setVisibility(View.GONE);
                                 final Dialog dialog = new Dialog(context);
                                 dialogDriverId = dataSnapshott.child("driver").getValue(String.class);
                                 dialog.setContentView(R.layout.finished_course);
@@ -1302,6 +1304,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                 dialog.setCancelable(false);
                                 dialog.setCanceledOnTouchOutside(false);
+
+                                star1.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
+                                star2.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
+                                star3.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
+                                star4.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.selected_star)));
+                                imot.setImageBitmap(scaleBitmap(150, 150, R.drawable.four_stars));
 
 
                                 im1.setOnClickListener(new View.OnClickListener() {
@@ -3510,7 +3518,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (grantResult.length > 0 && grantResult[0] == PackageManager.PERMISSION_GRANTED) {
             getLastLocation();
-
             try {
                 if (recordButton != null) {
                     recordButton.setOnTouchListener(new View.OnTouchListener() {
@@ -3524,7 +3531,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                         recordButton.setScaleY((float) 1.3);
                                         myAudioRecorder.prepare();
                                         myAudioRecorder.start();
-
                                     } catch (NullPointerException e) {
                                         e.printStackTrace();
                                     } catch (Exception e) {
@@ -3549,7 +3555,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                             myAudioRecorder.release();
                                             myAudioRecorder = null;
                                         }
-
                                         recordButton.setVisibility(View.GONE);
                                         playAudio.setVisibility(View.VISIBLE);
                                         setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
@@ -3580,7 +3585,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private class DrawRouteTask extends AsyncTask<LatLng, Integer, String> {
-
         LatLng start;
         LatLng arrival;
         List<LatLng> thePath;
@@ -3804,7 +3808,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters;
 //        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters;
         String url = "https://maps.googleapis.com/maps/api/directions/"+output+"?"+parameters + "&key="
-                + getResources().getString(R.string.google_maps_key)+"&sensor=true";
+                + "AIzaSyA69yMLMZGzJzaa1pHoNIk9yGYqyhsa_lw"+"&sensor=true";
 
         return url;
     }
