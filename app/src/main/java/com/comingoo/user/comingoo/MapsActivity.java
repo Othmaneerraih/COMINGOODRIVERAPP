@@ -614,20 +614,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
 
+        iv_loud.setBackgroundColor(Color.WHITE);
+        iv_loud.setCircleBackgroundColor(Color.WHITE);
+        iv_mute.setBackgroundColor(Color.WHITE);
+        iv_mute.setCircleBackgroundColor(Color.WHITE);
         iv_loud.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!isLoud) {
+                    iv_loud.setCircleBackgroundColor(Color.WHITE);
                     AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
                     audioManager.setMode(AudioManager.MODE_IN_CALL);
                     audioManager.setSpeakerphoneOn(true);
                     iv_loud.setImageResource(R.drawable.clicked_speaker_bt);
                     isLoud = true;
                 } else {
-                    iv_loud.setImageResource(R.drawable.speaker_bt);
+                    iv_loud.setCircleBackgroundColor(Color.WHITE);
                     AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
                     audioManager.setMode(AudioManager.MODE_IN_CALL);
                     audioManager.setSpeakerphoneOn(false);
+                    iv_loud.setImageResource(R.drawable.speaker_bt);
                     isLoud = false;
                 }
             }
@@ -1057,10 +1063,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             try {
                                 String callNumber = driverPhone;
                                 if (callNumber.contains("+212")) {
-                                   callNumber = callNumber.replace("+212", "");
+                                    callNumber = callNumber.replace("+212", "");
                                 }
                                 Intent intent = new Intent(Intent.ACTION_DIAL);
-                                Log.e(TAG, "onClick: "+callNumber );
+                                Log.e(TAG, "onClick: " + callNumber);
                                 intent.setData(Uri.parse("tel:" + callNumber));
                                 startActivity(intent);
                             } catch (NullPointerException e) {
@@ -1305,10 +1311,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 dialog.setCancelable(false);
                                 dialog.setCanceledOnTouchOutside(false);
 
+                                // defaul rate
+                                RATE = 4;
                                 star1.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
                                 star2.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
                                 star3.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
                                 star4.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.selected_star)));
+                                star5.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
                                 imot.setImageBitmap(scaleBitmap(150, 150, R.drawable.four_stars));
 
 
@@ -1371,11 +1380,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 });
 
 
-                                star1.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
-                                star2.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
-                                star3.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
-                                star4.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
-                                star5.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
+//                                star1.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
+//                                star2.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
+//                                star3.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
+//                                star4.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
+//                                star5.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
 
 
                                 star1.setOnClickListener(new View.OnClickListener() {
@@ -1737,8 +1746,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
         myAudioRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
         myAudioRecorder.setOutputFile(outputeFile);
+
+
         if (ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 55);
+            ActivityCompat.requestPermissions(MapsActivity.this, new String[]{android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 55);
+            ActivityCompat.requestPermissions(MapsActivity.this, new String[]{android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.READ_PHONE_STATE}, 1);
         } else {
             try {
                 recordButton.setOnTouchListener(new View.OnTouchListener() {
@@ -1794,16 +1806,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 e.printStackTrace();
             }
         }
+        if (ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MapsActivity.this, new String[]{android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 55);
+            ActivityCompat.requestPermissions(MapsActivity.this, new String[]{android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.READ_PHONE_STATE}, 1);
+        } else {
+            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    pauseAudio.setVisibility(View.GONE);
+                    playAudio.setVisibility(View.VISIBLE);
+                    mediaPlayer.reset();
+                    setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
+                }
+            });
+        }
 
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                pauseAudio.setVisibility(View.GONE);
-                playAudio.setVisibility(View.VISIBLE);
-                mediaPlayer.reset();
-                setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
-            }
-        });
 
         name.setText(userName);
         nextBtn.setOnClickListener(new View.OnClickListener() {
@@ -2807,7 +2824,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 selectedOp.setVisibility(View.GONE);
                 selectDest.setVisibility(View.GONE);
                 findViewById(R.id.coverButton).setVisibility(View.GONE);
-
+                state = -1;
                 showFavoritsAndRecents();
             }
         });
@@ -3781,11 +3798,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void drawPolyLineOnMap(LatLng currentLatitude, LatLng currentLongitude) {
-        Log.e(TAG, "drawPolyLineOnMap:lat "+currentLatitude.latitude );
-        Log.e(TAG, "drawPolyLineOnMap:lat "+currentLatitude.longitude );
-        Log.e(TAG, "drawPolyLineOnMap:lng "+currentLongitude.toString() );
         String url = getMapsApiDirectionsUrl(currentLatitude, currentLongitude);
-        Log.e(TAG, "drawPolyLineOnMap:url "+url.toString() );
         ReadTask downloadTask = new ReadTask();
         downloadTask.execute(url);
     }
@@ -3807,8 +3820,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         String output = "json";
 //        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters;
 //        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters;
-        String url = "https://maps.googleapis.com/maps/api/directions/"+output+"?"+parameters + "&key="
-                + "AIzaSyA69yMLMZGzJzaa1pHoNIk9yGYqyhsa_lw"+"&sensor=true";
+        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters + "&key="
+                + "AIzaSyA69yMLMZGzJzaa1pHoNIk9yGYqyhsa_lw" + "&sensor=true";
 
         return url;
     }
@@ -3882,6 +3895,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
     }
+
     private int driverSize;
     private Runnable runnable;
     private Handler handler;
@@ -3974,6 +3988,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 driversKeysHold.add(driversKeys.get(j));
 
                                 pickupRequest.onDisconnect().removeValue();
+
+
                                 pickupRequest.addValueEventListener(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -3982,6 +3998,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                             counter += Step;
                                             if (driverSize == 0) {
 
+                                                stopSearchUI();
                                                 finishedSendReq = true;
                                                 FirebaseDatabase.getInstance().getReference("COURSES").orderByChild("client").equalTo(userId).addListenerForSingleValueEvent(new ValueEventListener() {
                                                     @Override
@@ -3989,6 +4006,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                         for (DataSnapshot data : dataSnapshot.getChildren()) {
                                                             //findViewById(R.id.commander).setVisibility(View.GONE);
                                                             //selectDest.setVisibility(View.GONE);
+
+
                                                         }
                                                     }
 
@@ -4050,7 +4069,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                             }
                                             if (counter <= driversKeys.size())
                                                 handler.postDelayed(runnable, 0);
-
+                                            stopSearchUI();
                                             pickupRequest.removeEventListener(this);
                                         }
                                     }
@@ -4063,9 +4082,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             }
                         }
                     } else {
-                        Log.e(TAG, "run: else 111111111 ");
                         if (counter < driversKeys.size()) {
-                            Log.e(TAG, "run: else size: " + driversKeys.size());
                             final DatabaseReference pickupRequest = FirebaseDatabase.getInstance().getReference("PICKUPREQUEST").child(driversKeys.get(counter)).child(userId);
                             String level = FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("level").toString();
                             Map<String, String> data = new HashMap<>();
@@ -4111,8 +4128,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             });
 
                         } else {
-                            Log.e(TAG, "run: else return ");
-//                            return;
+                            return;
                         }
 
                     }
@@ -4203,7 +4219,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return;
         }
 
-        if (state == 1) {
+        if (state == 1 || state == -1) {
             state = 0;
             hideSelectDestUI();
             return;

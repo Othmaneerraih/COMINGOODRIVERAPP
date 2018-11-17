@@ -3,6 +3,7 @@ package com.comingoo.user.comingoo;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.media.AudioManager;
 import android.os.CountDownTimer;
@@ -162,42 +163,35 @@ public class VoipCallingActivity extends AppCompatActivity {
         });
 
 
+        iv_loud.setBackgroundColor(Color.WHITE);
+        iv_loud.setCircleBackgroundColor(Color.WHITE);
+        iv_mute.setBackgroundColor(Color.WHITE);
+        iv_mute.setCircleBackgroundColor(Color.WHITE);
         iv_loud.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!isLoud) {
+                    iv_loud.setCircleBackgroundColor(Color.WHITE);
                     AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
                     audioManager.setMode(AudioManager.MODE_IN_CALL);
                     audioManager.setSpeakerphoneOn(true);
                     iv_loud.setImageResource(R.drawable.clicked_speaker_bt);
                     isLoud = true;
                 } else {
-                    iv_loud.setImageResource(R.drawable.speaker_bt);
+                    iv_loud.setCircleBackgroundColor(Color.WHITE);
                     AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
                     audioManager.setMode(AudioManager.MODE_IN_CALL);
                     audioManager.setSpeakerphoneOn(false);
+                    iv_loud.setImageResource(R.drawable.speaker_bt);
                     isLoud = false;
                 }
             }
         });
 
-
-        iv_loud.setOnClickListener(new View.OnClickListener() {
+        iv_mute.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!isLoud) {
-                    AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-                    audioManager.setMode(AudioManager.MODE_IN_CALL);
-                    audioManager.setSpeakerphoneOn(true);
-                    iv_loud.setImageResource(R.drawable.clicked_speaker_bt);
-                    isLoud = true;
-                } else {
-                    iv_loud.setImageResource(R.drawable.speaker_bt);
-                    AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-                    audioManager.setMode(AudioManager.MODE_IN_CALL);
-                    audioManager.setSpeakerphoneOn(false);
-                    isLoud = false;
-                }
+                mute();
             }
         });
 
