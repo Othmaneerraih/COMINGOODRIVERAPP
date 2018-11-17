@@ -1299,6 +1299,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 dialog.setCancelable(false);
                                 dialog.setCanceledOnTouchOutside(false);
 
+                                // defaul rate
+                                RATE = 4;
+                                star1.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
+                                star2.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
+                                star3.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
+                                star4.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.selected_star)));
+                                star5.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
+                                imot.setImageBitmap(scaleBitmap(150, 150, R.drawable.four_stars));
+
 
                                 im1.setOnClickListener(new View.OnClickListener() {
                                     @Override
