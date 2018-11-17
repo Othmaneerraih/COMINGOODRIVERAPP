@@ -2801,7 +2801,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 selectedOp.setVisibility(View.GONE);
                 selectDest.setVisibility(View.GONE);
                 findViewById(R.id.coverButton).setVisibility(View.GONE);
-
+                state = -1;
                 showFavoritsAndRecents();
             }
         });
@@ -4113,7 +4113,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return;
         }
 
-        if (state == 1) {
+        if (state == 1 || state == -1) {
             state = 0;
             hideSelectDestUI();
             return;
