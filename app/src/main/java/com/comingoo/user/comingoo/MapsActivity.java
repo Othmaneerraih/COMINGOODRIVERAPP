@@ -125,6 +125,7 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -426,10 +427,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 intent.putExtra("name", dataSnapshot.child("fullName").getValue(String.class));
 //                                intent.putExtra("phone", dataSnapshot.child("phoneNumber").getValue(String.class));
                                 intent.putExtra("email", dataSnapshot.child("email").getValue(String.class));
-                                intent.putExtra("phone", "+212 " + dataSnapshot.child("phoneNumber").getValue(String.class));
+                                String callNumber = dataSnapshot.child("phoneNumber").getValue(String.class);
+                                if (callNumber.contains("+212")) {
+                                    callNumber = callNumber.replace("+212", "");
+                                }
+                                intent.putExtra("phone", callNumber);
                                 startActivity(intent);
                             }
                         });
+
                         AnimateConstraint.fadeOut(context, findViewById(R.id.loadingScreen), 500, 10);
                         new Handler().postDelayed(new Runnable() {
                             @Override
@@ -531,8 +537,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         caller_name = (TextView) dialog.findViewById(R.id.callerName);
         callState = (TextView) dialog.findViewById(R.id.callState);
 
-        iv_mute = (CircleImageView) dialog.findViewById(R.id.iv_mute);
-        iv_loud = (CircleImageView) dialog.findViewById(R.id.iv_loud);
+        iv_mute =  dialog.findViewById(R.id.iv_mute);
+        iv_loud =  dialog.findViewById(R.id.iv_loud);
         tv_name_voip_one = (TextView) dialog.findViewById(R.id.tv_name_voip_one);
 
 
@@ -1813,14 +1819,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                         public void onClick(View v) {
 //                                        showVoiceDialog();
 //                                            newDialog.dismiss();
+                                            if (myAudioRecorder != null) {
+                                                myAudioRecorder.stop();
+                                                myAudioRecorder.release();
+                                                myAudioRecorder = null;
+                                            }
                                         }
                                     });
-
-                                    if (myAudioRecorder != null) {
-                                        myAudioRecorder.stop();
-                                        myAudioRecorder.release();
-                                        myAudioRecorder = null;
-                                    }
 
                                     recordButton.setVisibility(View.GONE);
                                     playAudio.setVisibility(View.VISIBLE);
@@ -1847,9 +1852,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
+                    mediaPlayer.reset();
                     pauseAudio.setVisibility(View.GONE);
                     playAudio.setVisibility(View.VISIBLE);
-                    mediaPlayer.reset();
                     setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
                 }
             });
@@ -1890,10 +1895,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         playAudio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
+//                try {
                     playAudio.setVisibility(View.GONE);
+                try {
                     mediaPlayer.setDataSource(outputeFile);
                     mediaPlayer.prepare();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                     mediaPlayer.start();
 
                     pauseAudio.setVisibility(View.VISIBLE);
@@ -1914,10 +1923,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         }
                     });
 
+                    if (!mediaPlayer.isPlaying()){
+                        pauseAudio.setVisibility(View.GONE);
+                        playAudio.setVisibility(View.VISIBLE);
+                    }
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
             }
         });
     }
