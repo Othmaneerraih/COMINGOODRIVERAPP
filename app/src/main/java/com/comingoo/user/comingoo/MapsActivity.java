@@ -1746,23 +1746,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Dialog newDialog;
 
     private void showVoiceDialog() {
-
         audioRecorded = false;
 
         newDialog = new Dialog(context);
         newDialog.setContentView(R.layout.voice_record);
 
-
-        TextView textView18 = (TextView) newDialog.findViewById(R.id.textView18);
-        TextView textView19 = (TextView) newDialog.findViewById(R.id.textView19);
-        TextView textView20 = (TextView) newDialog.findViewById(R.id.textView20);
-
+        TextView textView18 = newDialog.findViewById(R.id.textView18);
+        TextView textView19 = newDialog.findViewById(R.id.textView19);
+        TextView textView20 = newDialog.findViewById(R.id.textView20);
 
         //Set Texts
         textView18.setText(resources.getString(R.string.Appreciate));
         textView19.setText(resources.getString(R.string.PS));
         textView20.setText(resources.getString(R.string.Record));
-
 
         ImageButton nextBtn = (ImageButton) newDialog.findViewById(R.id.imageButton6);
         TextView name = (TextView) newDialog.findViewById(R.id.textView17);
@@ -1817,7 +1813,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                         public void onClick(View v) {
 //                                        showVoiceDialog();
 //                                            newDialog.dismiss();
-
                                         }
                                     });
 
