@@ -110,6 +110,7 @@ import com.google.maps.model.DirectionsResult;
 import com.google.maps.model.DirectionsRoute;
 import com.google.maps.model.DirectionsStep;
 import com.google.maps.model.EncodedPolyline;
+import com.mikhaellopez.circularimageview.CircularImageView;
 import com.mxn.soul.flowingdrawer_core.FlowingDrawer;
 import com.sinch.android.rtc.PushPair;
 import com.sinch.android.rtc.Sinch;
@@ -125,6 +126,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -271,9 +273,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     Resources resources;
     String language;
 
-    private RelativeLayout callLayout;
+    private ConstraintLayout callLayout;
     private TextView driverNameL, iv_total_ride_number, iv_car_number;
-    private CircleImageView driverImageL;
+//    private CircleImageView driverImageL;
+    private CircularImageView driverImageL;
     private ImageView ivCallDriver, close_button;
     private CircleImageView ivCross;
 
@@ -468,6 +471,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         @Override
         public void onIncomingCall(CallClient callClient, Call incomingCall) {
             call = incomingCall;
+
             Toast.makeText(MapsActivity.this, "incoming call", Toast.LENGTH_SHORT).show();
             try {
                 if (VoipCallingActivity.activity != null)
@@ -480,6 +484,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 e.printStackTrace();
             }
         }
+
+
     }
 
     AudioManager audioManager;
@@ -489,6 +495,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     CircleImageView iv_user_image_voip_one, iv_cancel_call_voip_one, iv_mute, iv_loud, iv_recv_call_voip_one;
     RelativeLayout relativeLayout;
     RelativeLayout.LayoutParams params;
+
+    private Handler mHandler = new Handler();
+    private int mHour, mMinute; // variables holding the hour and minute
+    private Runnable mUpdate = new Runnable() {
+
+        @Override
+        public void run() {
+            mMinute += 1;
+            // just some checks to keep everything in order
+            if (mMinute >= 60) {
+                mMinute = 0;
+                mHour += 1;
+            }
+            if (mHour >= 24) {
+                mHour = 0;
+            }
+            // or call your method
+            caller_name.setText(mHour + ":" + mMinute);
+            mHandler.postDelayed(this, 1000);
+        }
+    };
 
     public void showDialog(final Context context, final Call call) {
         final Dialog dialog = new Dialog(context);
@@ -511,6 +538,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         iv_mute.setVisibility(View.GONE);
         iv_loud.setVisibility(View.GONE);
+
+
+        audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+        audioManager.setMode(AudioManager.MODE_IN_CALL);
+        audioManager.setMicrophoneMute(false);
+        audioManager.setSpeakerphoneOn(false);
 
         mp = MediaPlayer.create(this, R.raw.ring);
         mp.setLooping(false);
@@ -558,6 +591,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     iv_loud.setVisibility(View.GONE);
                     caller_name.setVisibility(View.GONE);
                     callState.setText("");
+                    mHandler.removeCallbacks(mUpdate);// we need to remove our updates if the activity isn't focused(or even destroyed) or we could get in trouble
                     dialog.dismiss();
                 }
 
@@ -576,6 +610,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     params.addRule(RelativeLayout.CENTER_HORIZONTAL);
                     iv_cancel_call_voip_one.setLayoutParams(params);
                     mp.stop();
+
+//                    Calendar c = Calendar.getInstance();
+                    mHour = 00;//c.get(Calendar.HOUR_OF_DAY);
+                    mMinute = 00;//c.get(Calendar.MINUTE);
+                    caller_name.setText(mHour + ":" + mMinute);
+                    mHandler.postDelayed(mUpdate, 1000); // 60000 a minute
                 }
 
                 @Override
@@ -589,7 +629,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     caller_name.setTypeface(null, Typeface.BOLD);
                     callState.setText("ringing");
                     iv_recv_call_voip_one.setVisibility(View.GONE);
-
                     params.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
                     params.addRule(RelativeLayout.CENTER_HORIZONTAL);
                     iv_cancel_call_voip_one.setLayoutParams(params);
@@ -609,6 +648,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     mp.stop();
                     call.answer();
                     call.addCallListener(new SinchCallListener());
+                    audioManager.setMicrophoneMute(false);
+                    audioManager.setSpeakerphoneOn(false);
                 }
             }
         });
@@ -623,15 +664,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View v) {
                 if (!isLoud) {
                     iv_loud.setCircleBackgroundColor(Color.WHITE);
-                    AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-                    audioManager.setMode(AudioManager.MODE_IN_CALL);
                     audioManager.setSpeakerphoneOn(true);
                     iv_loud.setImageResource(R.drawable.clicked_speaker_bt);
                     isLoud = true;
                 } else {
                     iv_loud.setCircleBackgroundColor(Color.WHITE);
-                    AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-                    audioManager.setMode(AudioManager.MODE_IN_CALL);
                     audioManager.setSpeakerphoneOn(false);
                     iv_loud.setImageResource(R.drawable.speaker_bt);
                     isLoud = false;
@@ -650,13 +687,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
         window.setGravity(Gravity.CENTER);
         dialog.show();
-
-
     }
 
     private void mute() {
-        audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
-        audioManager.setMode(AudioManager.MODE_IN_CALL);
         if (audioManager.isMicrophoneMute() == false) {
             audioManager.setMicrophoneMute(true);
 
@@ -704,7 +737,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             // Do something like display a progress bar
         }
 
-        // This is run in a background thread
+
         @Override
         protected String doInBackground(String... params) {
             FirebaseDatabase.getInstance().getReference("COURSES").orderByChild("client").
@@ -889,9 +922,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             findViewById(R.id.gooContent).setVisibility(View.GONE);
             cancelRequest.setVisibility(View.GONE);
 
+            searchEditText.setCompoundDrawables(null, null, null, null);
+            searchDestEditText.setCompoundDrawables(null, null, null, null);
 
-            AnimateConstraint.animate(MapsActivity.this, startConstraint, (dpHeight - 80), 100, 0);
-            AnimateConstraint.animate(MapsActivity.this, endConstraint, dpHeight - 70, 180, 0);
+            AnimateConstraint.animate(MapsActivity.this, startConstraint, (dpHeight - 135), 100, 0);
+            AnimateConstraint.animate(MapsActivity.this, endConstraint, dpHeight - 110, 180, 0);
 
             findViewById(R.id.buttonsLayout).setVisibility(View.GONE);
 
@@ -900,7 +935,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             iv_total_ride_number.setText(driverCarName);
             if (driverImage != null) {
                 if (driverImage.length() > 0) {
-                    Picasso.get().load(driverImage).centerCrop().fit().into(driverImageL);
+                    Picasso.get().load(driverImage).into(driverImageL);
                 }
             }
 
@@ -1945,7 +1980,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         ivCallDriver = findViewById(R.id.iv_call_driver);
 
         driverNameL = (TextView) findViewById(R.id.tv_driver_name);
-        driverImageL = (CircleImageView) findViewById(R.id.iv_driver_image);
+        driverImageL = findViewById(R.id.iv_driver_image);
         iv_car_number = (TextView) findViewById(R.id.iv_car_number);
         iv_total_ride_number = (TextView) findViewById(R.id.iv_total_ride_number);
         voip_view = findViewById(R.id.voip_view);
@@ -4190,11 +4225,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 stopSearchUI();
                 stop = 1;
                 for (int h = (counter - Step); h < (counter + Step) && h < driversKeys.size(); h++) {
-                    //The Driver Has Not Answered The Pickup Call(Refused)
-                    if (h >= 0) {
-                        DatabaseReference pickupRequest = FirebaseDatabase.getInstance().getReference("PICKUPREQUEST").child(driversKeys.get(h)).child(userId);
+//                    //The Driver Has Not Answered The Pickup Call(Refused)
+//                    if (h >= 0) {
+                        DatabaseReference pickupRequest = FirebaseDatabase.getInstance().
+                                getReference("PICKUPREQUEST")/*.child(driversKeys.get(h)).child(userId)*/;
                         pickupRequest.removeValue();
-                    }
+//                    }
                 }
             }
         });

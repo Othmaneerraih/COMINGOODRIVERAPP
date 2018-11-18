@@ -1373,19 +1373,20 @@
             app:layout_constraintStart_toStartOf="parent"></android.support.constraint.ConstraintLayout>
 
         <RelativeLayout
-            android:id="@+id/callLayout"
             android:layout_width="match_parent"
             android:layout_height="220dp"
-            android:visibility="gone"
+            android:visibility="visible"
             app:layout_constraintBottom_toTopOf="@+id/adress_result"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent">
 
             <android.support.constraint.ConstraintLayout
+                android:id="@+id/callLayout"
                 android:layout_width="match_parent"
                 android:layout_height="170dp"
                 android:layout_alignParentBottom="true"
                 android:background="@android:color/white"
+                android:layout_margin="@dimen/margin_normal"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent">
@@ -1400,16 +1401,28 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
-                    <de.hdodenhof.circleimageview.CircleImageView
+                    <!--<de.hdodenhof.circleimageview.CircleImageView-->
+                    <!--android:id="@+id/iv_driver_image"-->
+                    <!--android:layout_width="100dp"-->
+                    <!--android:layout_height="100dp"-->
+                    <!--android:layout_centerVertical="true"-->
+                    <!--android:layout_marginStart="8dp"-->
+                    <!--android:layout_marginEnd="8dp"-->
+                    <!--android:layout_marginRight="8dp"-->
+                    <!--android:layout_marginBottom="30dp"-->
+                    <!--android:src="@drawable/ic_driver" />-->
+
+                    <com.mikhaellopez.circularimageview.CircularImageView
                         android:id="@+id/iv_driver_image"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:layout_centerVertical="true"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:layout_marginRight="8dp"
-                        android:layout_marginBottom="30dp"
-                        android:src="@drawable/ic_driver" />
+                        android:layout_width="90dp"
+                        android:layout_height="90dp"
+                        android:src="@drawable/ic_driver"
+                        app:civ_border_width="1dp"
+                        app:civ_shadow="true"
+                        app:civ_shadow_radius="2"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
                         android:id="@+id/tv_driver_name"
