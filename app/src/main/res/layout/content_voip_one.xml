@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
+    android:background="@android:color/white"
     android:layout_height="match_parent">
 
     <ImageView
@@ -22,6 +23,12 @@
         android:textSize="@dimen/txt_size_large"
         android:textStyle="bold" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Appel"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/tv_name_voip_one"/>
 
     <TextView
         android:id="@+id/callerName"
@@ -32,7 +39,6 @@
         android:layout_marginBottom="20dp"
         android:text=""
         android:textSize="16sp" />
-
 
     <RelativeLayout
         android:id="@+id/image_layout"
@@ -79,7 +85,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/image_layout"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="55dp"
+        android:background="@android:color/transparent"
+        android:layout_marginTop="35dp"
         android:orientation="horizontal">
 
         <de.hdodenhof.circleimageview.CircleImageView
@@ -91,16 +98,16 @@
             android:background="@android:color/transparent"
             android:src="@drawable/mute_bt"
             app:civ_border_color="@android:color/darker_gray"
-            app:civ_border_width="5dp" />
+            app:civ_border_width="0dp" />
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/iv_loud"
+            android:background="@android:color/transparent"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:background="@android:color/transparent"
             android:src="@drawable/speaker_bt"
             app:civ_border_color="@android:color/darker_gray"
-            app:civ_border_width="5dp" />
+            app:civ_border_width="0dp" />
     </LinearLayout>
 
     <de.hdodenhof.circleimageview.CircleImageView
@@ -109,11 +116,10 @@
         android:layout_height="50dp"
         android:layout_alignParentBottom="true"
         android:layout_marginLeft="50dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="@dimen/margin_xxlarge"
         android:src="@drawable/answer"
         android:visibility="gone"
-        app:civ_border_color="@android:color/holo_green_dark"
-        app:civ_border_width="5dp" />
+        app:civ_border_width="0dp" />
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/iv_cancel_call_voip_one"
@@ -121,9 +127,8 @@
         android:layout_height="50dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="@dimen/margin_xxlarge"
         android:src="@drawable/decline_call"
-        app:civ_border_color="@android:color/holo_green_dark"
-        app:civ_border_width="5dp" />
+        app:civ_border_width="0dp" />
 
 </RelativeLayout>
