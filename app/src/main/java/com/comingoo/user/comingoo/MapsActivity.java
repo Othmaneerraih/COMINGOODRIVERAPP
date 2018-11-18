@@ -3397,10 +3397,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (!courseScreenIsOn) {
                 closestDriverText.setText((int) distanceKmTime + "\nmin");
                 if (orderDriverState == 1) {
-                    frameTime.setText(closestDriverText.getText());
+                    if(closestDriverText.getText().toString().startsWith("-")) {
+                        frameTime.setText(closestDriverText.getText().toString().substring(1));
+                    }else{
+                        frameTime.setText(closestDriverText.getText());
+                    }
                 }
                 if (orderDriverState == 2) {
-                    frameTime.setText(closestDriverText.getText());
+                    if(closestDriverText.getText().toString().startsWith("-")) {
+                        frameTime.setText(closestDriverText.getText().toString().substring(1));
+                    }else{
+                        frameTime.setText(closestDriverText.getText());
+                    }
                 }
             }
         } else {
