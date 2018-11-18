@@ -275,7 +275,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private ConstraintLayout callLayout;
     private TextView driverNameL, iv_total_ride_number, iv_car_number;
-//    private CircleImageView driverImageL;
+    //    private CircleImageView driverImageL;
     private CircularImageView driverImageL;
     private ImageView ivCallDriver, close_button;
     private CircleImageView ivCross;
@@ -1101,7 +1101,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     callNumber = callNumber.replace("+212", "");
                                 }
                                 Intent intent = new Intent(Intent.ACTION_DIAL);
-                                Log.e(TAG, "onClick: " + callNumber);
                                 intent.setData(Uri.parse("tel:" + callNumber));
                                 startActivity(intent);
                             } catch (NullPointerException e) {
@@ -1174,7 +1173,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         }
         if (statusT.equals("2")) {
-//            findViewById(R.id.cancelCourse).setVisibility(View.GONE);
             mMap.clear();
 
             frameLayout3.setDrawingCacheEnabled(true);
@@ -1229,6 +1227,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 int prevCancel = preferenceTask.getCancelNumber();
                 preferenceTask.setCancelNumber(prevCancel + 1);
                 callLayout.setVisibility(View.GONE);
+                voip_view.setVisibility(View.GONE);
 
                 if (preferenceTask.getCancelNumber() > 3) {
                     Toast.makeText(MapsActivity.this,
@@ -1306,6 +1305,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshott) {
                                 callLayout.setVisibility(View.GONE);
+                                voip_view.setVisibility(View.GONE);
                                 final Dialog dialog = new Dialog(context);
                                 dialogDriverId = dataSnapshott.child("driver").getValue(String.class);
                                 dialog.setContentView(R.layout.finished_course);
@@ -1634,7 +1634,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                     });
 
 
-                                                    ImageButton nextBtn = (ImageButton) newDialog.findViewById(R.id.imageButton3);
+                                                    ImageButton nextBtn = newDialog.findViewById(R.id.imageButton3);
 
 
                                                     newDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
@@ -1816,9 +1816,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                         @Override
                                         public void onClick(View v) {
 //                                        showVoiceDialog();
-                                            newDialog.dismiss();
+//                                            newDialog.dismiss();
+
                                         }
                                     });
+
                                     if (myAudioRecorder != null) {
                                         myAudioRecorder.stop();
                                         myAudioRecorder.release();
@@ -1829,7 +1831,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     playAudio.setVisibility(View.VISIBLE);
                                     setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
                                 } catch (NullPointerException e) {
-
+                                    e.printStackTrace();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
                                 }
                                 break;
                         }
@@ -3834,6 +3838,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void drawPolyLineOnMap(LatLng currentLatitude, LatLng currentLongitude) {
         String url = getMapsApiDirectionsUrl(currentLatitude, currentLongitude);
+        Log.e(TAG, "drawPolyLineOnMap: " + url);
         ReadTask downloadTask = new ReadTask();
         downloadTask.execute(url);
     }
@@ -4227,9 +4232,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 for (int h = (counter - Step); h < (counter + Step) && h < driversKeys.size(); h++) {
 //                    //The Driver Has Not Answered The Pickup Call(Refused)
 //                    if (h >= 0) {
-                        DatabaseReference pickupRequest = FirebaseDatabase.getInstance().
-                                getReference("PICKUPREQUEST")/*.child(driversKeys.get(h)).child(userId)*/;
-                        pickupRequest.removeValue();
+                    DatabaseReference pickupRequest = FirebaseDatabase.getInstance().
+                            getReference("PICKUPREQUEST")/*.child(driversKeys.get(h)).child(userId)*/;
+                    pickupRequest.removeValue();
 //                    }
                 }
             }
