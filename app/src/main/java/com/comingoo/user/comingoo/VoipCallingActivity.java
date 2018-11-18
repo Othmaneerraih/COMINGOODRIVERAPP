@@ -264,24 +264,23 @@ public class VoipCallingActivity extends AppCompatActivity {
         }
     }
 
-
     private class SinchCallListener implements CallListener {
         @Override
         public void onCallEnded(Call endedCall) {
             call = null;
             SinchError a = endedCall.getDetails().getError();
-//            iv_mute.setVisibility(View.GONE);
-//            iv_loud.setVisibility(View.GONE);
-//            caller_name.setVisibility(View.GONE);
-//            callState.setText("");
-//            iv_recv_call_voip_one.setVisibility(View.VISIBLE);
-//            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) iv_cancel_call_voip_one.getLayoutParams();
-//            params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
-//            params.setMargins(0,0,150,60);
-//            setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
-//            mute();
+            iv_mute.setVisibility(View.GONE);
+            iv_loud.setVisibility(View.GONE);
+            caller_name.setVisibility(View.GONE);
+            callState.setText("");
+            iv_recv_call_voip_one.setVisibility(View.VISIBLE);
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) iv_cancel_call_voip_one.getLayoutParams();
+            params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
+            params.setMargins(0,0,150,60);
+            setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
+            mute();
             mHandler.removeCallbacks(mUpdate);
-            finish();
+//            finish();
         }
 
         @Override

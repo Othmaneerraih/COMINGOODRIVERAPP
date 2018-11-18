@@ -3834,6 +3834,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void drawPolyLineOnMap(LatLng currentLatitude, LatLng currentLongitude) {
         String url = getMapsApiDirectionsUrl(currentLatitude, currentLongitude);
+        Log.e(TAG, "drawPolyLineOnMap: "+url);
         ReadTask downloadTask = new ReadTask();
         downloadTask.execute(url);
     }
