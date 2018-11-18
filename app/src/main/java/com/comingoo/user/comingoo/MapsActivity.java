@@ -537,8 +537,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         caller_name = (TextView) dialog.findViewById(R.id.callerName);
         callState = (TextView) dialog.findViewById(R.id.callState);
 
-        iv_mute =  dialog.findViewById(R.id.iv_mute);
-        iv_loud =  dialog.findViewById(R.id.iv_loud);
+        iv_mute = dialog.findViewById(R.id.iv_mute);
+        iv_loud = dialog.findViewById(R.id.iv_loud);
         tv_name_voip_one = (TextView) dialog.findViewById(R.id.tv_name_voip_one);
 
 
@@ -1777,74 +1777,79 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mediaPlayer = new MediaPlayer();
 
 
-        outputeFile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/recording.3gp";
-        myAudioRecorder = new MediaRecorder();
-        myAudioRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        myAudioRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
-        myAudioRecorder.setOutputFile(outputeFile);
+
 
 
         if (ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(MapsActivity.this, new String[]{android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 55);
             ActivityCompat.requestPermissions(MapsActivity.this, new String[]{android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.READ_PHONE_STATE}, 1);
         } else {
-            try {
-                recordButton.setOnTouchListener(new View.OnTouchListener() {
-                    @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        int eventaction = event.getAction();
-                        switch (eventaction) {
-                            case MotionEvent.ACTION_DOWN:
-                                try {
-                                    recordButton.setScaleX((float) 1.3);
-                                    recordButton.setScaleY((float) 1.3);
-                                    myAudioRecorder.prepare();
-                                    myAudioRecorder.start();
-                                } catch (NullPointerException e) {
-                                    e.printStackTrace();
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                                break;
-                            case MotionEvent.ACTION_UP:
-                                try {
-                                    audioRecorded = true;
-                                    recordButton.setScaleX((float) 1);
-                                    recordButton.setScaleY((float) 1);
+//            try {
+            recordButton.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    int eventaction = event.getAction();
+                    switch (eventaction) {
+                        case MotionEvent.ACTION_DOWN:
+                            try {
+                                outputeFile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/recording.3gp";
+                                myAudioRecorder = new MediaRecorder();
+                                myAudioRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+                                myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+                                myAudioRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
+                                myAudioRecorder.setOutputFile(outputeFile);
+                                recordButton.setScaleX((float) 1.3);
+                                recordButton.setScaleY((float) 1.3);
+                                myAudioRecorder.prepare();
+                                myAudioRecorder.start();
+                            } catch (NullPointerException e) {
+                                e.printStackTrace();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            break;
+                        case MotionEvent.ACTION_UP:
+                            try {
+                                audioRecorded = true;
+                                recordButton.setScaleX((float) 1);
+                                recordButton.setScaleY((float) 1);
 
-                                    deleteAudio.setVisibility(View.VISIBLE);
-                                    deleteAudio.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-//                                        showVoiceDialog();
-//                                            newDialog.dismiss();
-                                            if (myAudioRecorder != null) {
-                                                myAudioRecorder.stop();
-                                                myAudioRecorder.release();
-                                                myAudioRecorder = null;
-                                            }
-                                        }
-                                    });
-
-                                    recordButton.setVisibility(View.GONE);
-                                    playAudio.setVisibility(View.VISIBLE);
-                                    setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
-                                } catch (NullPointerException e) {
-                                    e.printStackTrace();
-                                } catch (Exception e) {
-                                    e.printStackTrace();
+                                deleteAudio.setVisibility(View.VISIBLE);
+                                deleteAudio.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        File file = new File(outputeFile);
+                                        file.delete();
+                                        recordButton.setVisibility(View.VISIBLE);
+                                        playAudio.setVisibility(View.GONE);
+                                        pauseAudio.setVisibility(View.GONE);
+                                        deleteAudio.setVisibility(View.GONE);
+                                    }
+                                });
+                                if (myAudioRecorder != null) {
+                                    myAudioRecorder.stop();
+                                    myAudioRecorder.release();
+                                    myAudioRecorder = null;
                                 }
-                                break;
-                        }
-                        return false;
+                                recordButton.setVisibility(View.GONE);
+                                playAudio.setVisibility(View.VISIBLE);
+                                setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
+                            } catch (NullPointerException e) {
+                                e.printStackTrace();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            break;
                     }
+                    return false;
+                }
 
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            });
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
         }
+
         if (ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(MapsActivity.this, new String[]{android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 55);
             ActivityCompat.requestPermissions(MapsActivity.this, new String[]{android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.READ_PHONE_STATE}, 1);
@@ -1855,7 +1860,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     mediaPlayer.reset();
                     pauseAudio.setVisibility(View.GONE);
                     playAudio.setVisibility(View.VISIBLE);
-                    setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
+//                    setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
                 }
             });
         }
@@ -1889,6 +1894,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         newDialog.show();
     }
 
+    boolean isPlaying = false;
 
     private void setupPlayAudio(final String outputeFile,
                                 final View playAudio, final View pauseAudio, final MediaPlayer mediaPlayer) {
@@ -1896,43 +1902,68 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View v) {
 //                try {
-                    playAudio.setVisibility(View.GONE);
+                playAudio.setVisibility(View.GONE);
                 try {
                     mediaPlayer.setDataSource(outputeFile);
                     mediaPlayer.prepare();
+                    mediaPlayer.start();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                    mediaPlayer.start();
 
-                    pauseAudio.setVisibility(View.VISIBLE);
-                    pauseAudio.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            pauseAudio.setVisibility(View.GONE);
-                            playAudio.setVisibility(View.VISIBLE);
-                            mediaPlayer.pause();
-                            playAudio.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    pauseAudio.setVisibility(View.VISIBLE);
-                                    playAudio.setVisibility(View.GONE);
-                                    mediaPlayer.start();
-                                }
-                            });
-                        }
-                    });
-
-                    if (!mediaPlayer.isPlaying()){
+                pauseAudio.setVisibility(View.VISIBLE);
+                pauseAudio.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
                         pauseAudio.setVisibility(View.GONE);
                         playAudio.setVisibility(View.VISIBLE);
+                        mediaPlayer.pause();
+                        playAudio.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                pauseAudio.setVisibility(View.VISIBLE);
+                                playAudio.setVisibility(View.GONE);
+                                mediaPlayer.start();
+                            }
+                        });
                     }
+                });
+
+//                    if (!mediaPlayer.isPlaying()){
+//                        pauseAudio.setVisibility(View.GONE);
+//                        playAudio.setVisibility(View.VISIBLE);
+//                    }
+
 
 //                } catch (Exception e) {
 //                    e.printStackTrace();
 //                }
             }
         });
+
+
+//        playAudio.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if (!isPlaying) {
+//                    try {
+//                        mediaPlayer.setDataSource(outputeFile);
+//                        mediaPlayer.prepare();
+//                        mediaPlayer.start();
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                    playAudio.setBackgroundResource(R.drawable.pause_record);
+//                    isPlaying = true;
+//                } else {
+//                    isPlaying = false;
+//                    mediaPlayer.stop();
+//                    mediaPlayer.release();
+//                    playAudio.setBackgroundResource(R.drawable.play_record);
+//                }
+//            }
+//        });
+
     }
     //////////////////////////////////////////////////////
 
@@ -3397,16 +3428,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (!courseScreenIsOn) {
                 closestDriverText.setText((int) distanceKmTime + "\nmin");
                 if (orderDriverState == 1) {
-                    if(closestDriverText.getText().toString().startsWith("-")) {
+                    if (closestDriverText.getText().toString().startsWith("-")) {
                         frameTime.setText(closestDriverText.getText().toString().substring(1));
-                    }else{
+                    } else {
                         frameTime.setText(closestDriverText.getText());
                     }
                 }
                 if (orderDriverState == 2) {
-                    if(closestDriverText.getText().toString().startsWith("-")) {
+                    if (closestDriverText.getText().toString().startsWith("-")) {
                         frameTime.setText(closestDriverText.getText().toString().substring(1));
-                    }else{
+                    } else {
                         frameTime.setText(closestDriverText.getText());
                     }
                 }
