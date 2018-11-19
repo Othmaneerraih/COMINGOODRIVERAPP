@@ -3885,6 +3885,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void drawPolyLineOnMap1(LatLng currentLatitude, LatLng currentLongitude) {
+        LatLng barcelona = currentLatitude;
+
+        LatLng madrid = currentLongitude;
+
         //Define list to get all latlng for the route
         List<LatLng> path = new ArrayList();
 
@@ -3894,7 +3898,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .apiKey(getResources().getString(R.string.google_maps_key))
                 .build();
         DirectionsApiRequest req = DirectionsApi.getDirections(context,
-                "41.385064,2.173403", "40.416775,-3.70379");
+                String.valueOf(barcelona.latitude) +","+ String.valueOf(barcelona.longitude),
+                String.valueOf(madrid.latitude)+","+ String.valueOf(madrid.longitude));
         try {
             DirectionsResult res = req.await();
 
