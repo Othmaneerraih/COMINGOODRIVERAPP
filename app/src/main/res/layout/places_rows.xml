@@ -2,14 +2,15 @@
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent" android:layout_height="60dp"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:layout_marginTop="0dp"
+    android:layout_marginBottom="0dp"
+    android:elevation="0dp"
     android:paddingLeft="20dp"
     android:paddingRight="20dp"
     app:cardBackgroundColor="@android:color/transparent"
-    android:elevation="0dp"
-    app:cardElevation="0dp"
-    android:layout_marginBottom="0dp"
-    android:layout_marginTop="0dp">
+    app:cardElevation="0dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,52 +19,63 @@
         android:layout_marginLeft="5dp"
         android:layout_marginEnd="10dp"
         android:layout_marginRight="10dp"
-        android:layout_marginBottom="0dp"
-        android:layout_marginTop="0dp"
-        android:gravity="center"
         android:background="@android:color/transparent"
-        android:orientation="horizontal">
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:weightSum="1">
 
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="53dp"
-            android:layout_height="30dp"
-            android:layout_marginBottom="5dp"
-            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
+            android:layout_marginLeft="10dp"
             android:layout_marginTop="8dp"
-            android:layout_weight="1"
+            android:layout_marginBottom="5dp"
+            android:layout_weight=".1"
             android:scaleType="fitXY"
             app:srcCompat="@drawable/lieux_proches" />
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
             android:layout_marginStart="20dp"
-            android:layout_marginBottom="2dp"
+            android:layout_marginLeft="20dp"
             android:layout_marginTop="5dp"
-            android:layout_weight="1"
+            android:layout_marginBottom="2dp"
+            android:layout_weight=".8"
             android:orientation="vertical">
 
             <TextView
                 android:id="@+id/title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Travaille"
                 android:fontFamily="@font/roboto"
-                android:textSize="12sp"
-                android:textColor="@color/purpleColor"/>
+                android:text="Travaille"
+                android:textColor="@color/purpleColor"
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/address"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Café le Visar"
                 android:fontFamily="@font/roboto"
+                android:text="Café le Visar"
                 android:textColor="@color/colorAddress"
                 android:textSize="10sp" />
         </LinearLayout>
+
+        <ImageView
+            android:id="@+id/add_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="5dp"
+            android:layout_weight=".1"
+            android:scaleType="fitXY"
+            app:srcCompat="@drawable/add_icon" />
 
     </LinearLayout>
 
