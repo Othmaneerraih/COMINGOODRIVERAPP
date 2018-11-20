@@ -63,6 +63,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.akexorcist.googledirection.DirectionCallback;
+import com.akexorcist.googledirection.GoogleDirection;
+import com.akexorcist.googledirection.constant.AvoidType;
+import com.akexorcist.googledirection.model.Direction;
 import com.comingoo.user.comingoo.Others.HttpConnection;
 import com.comingoo.user.comingoo.Others.PathJSONParser;
 import com.firebase.geofire.GeoFire;
@@ -132,6 +136,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import pl.droidsonroids.gif.GifImageButton;
@@ -1777,9 +1782,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mediaPlayer = new MediaPlayer();
 
 
-
-
-
         if (ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(MapsActivity.this, new String[]{android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 55);
             ActivityCompat.requestPermissions(MapsActivity.this, new String[]{android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.READ_PHONE_STATE}, 1);
@@ -2245,6 +2247,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 startActivity(new Intent(MapsActivity.this, notificationActivity.class));
             }
         });
+
         Aide.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -2252,7 +2255,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-        gooBox.setOnClickListener(new View.OnClickListener() {
+        promoCode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 showCustomDialog(MapsActivity.this);
@@ -2669,6 +2672,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         findViewById(R.id.locationPinDest).setVisibility(View.GONE);
 
+        price.setText("Cash");
 
         if (destLatLng != null) {
             new DrawRouteTask().execute(startLatLng, destLatLng);
@@ -3813,6 +3817,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //                        drawPolyGradiant(thePath, "#76b5f9", "#1c549d", 9, 4);
 //                        drawPolyLineOnMap(start, arrival);
                         drawPolyLineOnMap1(start, arrival);
+
                         builder.include(arrival);
                         int padding = 200;
                         LatLngBounds bounds = builder.build();
@@ -3884,7 +3889,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    public void drawPolyLineOnMap1(LatLng currentLatitude, LatLng currentLongitude) {
+    public void drawPolyLineOnMap(LatLng currentLatitude, LatLng currentLongitude) {
         LatLng barcelona = currentLatitude;
 
         LatLng madrid = currentLongitude;
@@ -3898,8 +3903,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .apiKey(getResources().getString(R.string.google_maps_key))
                 .build();
         DirectionsApiRequest req = DirectionsApi.getDirections(context,
-                String.valueOf(barcelona.latitude) +","+ String.valueOf(barcelona.longitude),
-                String.valueOf(madrid.latitude)+","+ String.valueOf(madrid.longitude));
+                String.valueOf(barcelona.latitude) + "," + String.valueOf(barcelona.longitude),
+                String.valueOf(madrid.latitude) + "," + String.valueOf(madrid.longitude));
         try {
             DirectionsResult res = req.await();
 
@@ -3907,14 +3912,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (res.routes != null && res.routes.length > 0) {
                 DirectionsRoute route = res.routes[0];
 
-                if (route.legs !=null) {
-                    for(int i=0; i<route.legs.length; i++) {
+                if (route.legs != null) {
+                    for (int i = 0; i < route.legs.length; i++) {
                         DirectionsLeg leg = route.legs[i];
                         if (leg.steps != null) {
-                            for (int j=0; j<leg.steps.length;j++){
+                            for (int j = 0; j < leg.steps.length; j++) {
                                 DirectionsStep step = leg.steps[j];
-                                if (step.steps != null && step.steps.length >0) {
-                                    for (int k=0; k<step.steps.length;k++){
+                                if (step.steps != null && step.steps.length > 0) {
+                                    for (int k = 0; k < step.steps.length; k++) {
                                         DirectionsStep step1 = step.steps[k];
                                         EncodedPolyline points1 = step1.polyline;
                                         if (points1 != null) {
@@ -3940,7 +3945,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 }
             }
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             Log.e(TAG, ex.getLocalizedMessage());
         }
 
@@ -3951,12 +3956,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         mMap.getUiSettings().setZoomControlsEnabled(true);
-        LatLng zaragoza = new LatLng(41.648823,-0.889085);
+        LatLng zaragoza = new LatLng(41.648823, -0.889085);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(zaragoza, 6));
 
     }
 
-    public void drawPolyLineOnMap(LatLng currentLatitude, LatLng currentLongitude) {
+    public void drawPolyLineOnMap1(LatLng currentLatitude, LatLng currentLongitude) {
         String url = getMapsApiDirectionsUrl(currentLatitude, currentLongitude);
         Log.e(TAG, "drawPolyLineOnMap: " + url);
         ReadTask downloadTask = new ReadTask();
@@ -3980,8 +3985,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         String output = "json";
 //        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters;
 //        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters;
+
         String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters + "&key="
                 + "AIzaSyA69yMLMZGzJzaa1pHoNIk9yGYqyhsa_lw" + "&sensor=true";
+//   String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters + "&key="
+//                + getResources().getString(R.string.google_maps_key) + "&sensor=true";
 
         return url;
     }
@@ -4055,6 +4063,39 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
     }
+
+//    private GeoApiContext getGeoContext() {
+////        GeoApiContext geoApiContext = new GeoApiContext();
+//        return new GeoApiContext().setApiKey(getString(R.string.directionsApiKey)).setConnectTimeout(1, TimeUnit.SECONDS)                .setReadTimeout(1, TimeUnit.SECONDS)                .setWriteTimeout(1, TimeUnit.SECONDS);
+//    }
+
+//    public void drawPolyLineOnMap(LatLng start, LatLng end) {
+//        GoogleDirection.withServerKey(getResources().getString(R.string.google_maps_key))
+//                .from(new LatLng(start.latitude, start.longitude))
+//                .to(new LatLng(end.latitude,end.longitude))
+////                .avoid(AvoidType.FERRIES)
+////                .avoid(AvoidType.HIGHWAYS)
+//                .execute(new DirectionCallback() {
+//                    @Override
+//                    public void onDirectionSuccess(Direction direction, String rawBody) {
+//                        if(direction.isOK()) {
+//                            // Do something
+//                            Toast.makeText(MapsActivity.this, "Direction Okay", Toast.LENGTH_SHORT).show();
+//                        } else {
+//                            // Do something
+//                            Log.e(TAG, "onDirectionSuccess: Not rawBody: "+rawBody );
+//                            Log.e(TAG, "onDirectionSuccess: Not "+ direction.getErrorMessage());
+//                            Toast.makeText(MapsActivity.this, "Direction No Okay", Toast.LENGTH_SHORT).show();
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onDirectionFailure(Throwable t) {
+//                        // Do something
+//                        Log.e(TAG, "onDirectionFailure: "+ t.getMessage());
+//                    }
+//                });
+//    }
 
     private int driverSize;
     private Runnable runnable;
