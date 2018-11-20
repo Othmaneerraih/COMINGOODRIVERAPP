@@ -23,7 +23,7 @@ public class MyPlaceAdapter extends RecyclerView.Adapter<MyPlaceAdapter.ViewHold
 
         public View h;
         public TextView title, address;
-        public ImageView image;
+        public ImageView image,addBtn;
         public ViewHolder(View v) {
             super(v);
             h = v;
@@ -31,6 +31,7 @@ public class MyPlaceAdapter extends RecyclerView.Adapter<MyPlaceAdapter.ViewHold
             image = v.findViewById(R.id.imageView);
             title = v.findViewById(R.id.title);
             address = v.findViewById(R.id.address);
+            addBtn = v.findViewById(R.id.add_btn);
         }
     }
 
@@ -69,6 +70,12 @@ public class MyPlaceAdapter extends RecyclerView.Adapter<MyPlaceAdapter.ViewHold
         holder.title.setText(newPlace.getName());
         holder.address.setText(newPlace.getAddress());
         holder.image.setImageResource(newPlace.getImage());
+        holder.addBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                
+            }
+        });
     }
 
     // Return the size of your dataset (invoked by the layout manager)
