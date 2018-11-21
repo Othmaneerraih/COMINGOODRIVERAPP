@@ -126,12 +126,14 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import pl.droidsonroids.gif.GifImageButton;
@@ -275,7 +277,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     String language;
 
     private ConstraintLayout callLayout;
-    private TextView driverNameL, iv_total_ride_number, iv_car_number;
+    private TextView driverNameL, iv_total_ride_number, iv_car_number,iv_total_rating_number;
     //    private CircleImageView driverImageL;
     private CircularImageView driverImageL;
     private ImageView ivCallDriver, close_button;
@@ -784,6 +786,39 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                             driverPhone = dataSnapshot.child("phoneNumber").getValue(String.class);
                                             driverImage = dataSnapshot.child("image").getValue(String.class);
                                             driverName = dataSnapshot.child("fullName").getValue(String.class);
+
+
+
+                                            FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(driverIDT).child("rating").addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                    int oneStarPerson = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("1").getValue(String.class)));
+                                                    int one = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("1").getValue(String.class)));
+                                                    int twoStarPerson = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("2").getValue(String.class)));
+                                                    int two = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("2").getValue(String.class)))*2;
+                                                    int threeStarPerson = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("3").getValue(String.class)));
+                                                    int three = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("3").getValue(String.class)))*3;
+                                                    int fourStarPerson = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("4").getValue(String.class)));
+                                                    int four = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("4").getValue(String.class)))*4;
+                                                    int fiveStarPerson = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("5").getValue(String.class)));
+                                                    int five = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("5").getValue(String.class)))*5;
+
+                                                    double totalRating = one+two+three+four+five;
+                                                    double totalRatingPerson = oneStarPerson+twoStarPerson+threeStarPerson+fourStarPerson+fiveStarPerson;
+
+                                                    double avgRating = totalRating/totalRatingPerson;
+                                                    String avg = String.format("%.2f", avgRating);
+                                                    iv_total_rating_number.setText(avg);
+
+//                                                    int rating = Integer.parseInt(dataSnapshot.getValue(String.class)) + 1;
+//                                                    FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientId).child("rating").child(Integer.toString(RATE)).setValue("" + rating);
+                                                }
+
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                                    iv_total_rating_number.setText(4.5+"");
+                                                }
+                                            });
 
                                             FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(driverIDT).child("CARS").orderByChild("selected").equalTo("1").addListenerForSingleValueEvent(new ValueEventListener() {
                                                 @Override
@@ -2023,6 +2058,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         ivCallDriver = findViewById(R.id.iv_call_driver);
 
         driverNameL = (TextView) findViewById(R.id.tv_driver_name);
+        iv_total_rating_number = (TextView) findViewById(R.id.iv_total_rating_number);
         driverImageL = findViewById(R.id.iv_driver_image);
         iv_car_number = (TextView) findViewById(R.id.iv_car_number);
         iv_total_ride_number = (TextView) findViewById(R.id.iv_total_ride_number);
