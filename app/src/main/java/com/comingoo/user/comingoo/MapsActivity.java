@@ -664,11 +664,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-
         iv_loud.setBackgroundColor(Color.WHITE);
         iv_loud.setCircleBackgroundColor(Color.WHITE);
         iv_mute.setBackgroundColor(Color.WHITE);
         iv_mute.setCircleBackgroundColor(Color.WHITE);
+
         iv_loud.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
