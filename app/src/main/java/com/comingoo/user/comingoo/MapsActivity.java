@@ -199,6 +199,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final String APP_SECRET = "ZiJ6FqH5UEWYbkMZd1rWbw==";
     private static final String ENVIRONMENT = "sandbox.sinch.com";
 
+
     private float density;
     private float dpHeight;
     private float dpWidth;
