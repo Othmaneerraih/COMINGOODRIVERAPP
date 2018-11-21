@@ -63,7 +63,7 @@ public class MyPlaceAdapter extends RecyclerView.Adapter<MyPlaceAdapter.ViewHold
             @Override
             public void onClick(View view) {
                         MapsActivity.showSearchAddressStartUI();
-                            MapsActivity.goToLocation(context, Double.parseDouble(newPlace.getLat()), Double.parseDouble(newPlace.getLng())/*,newPlace*/);
+                            MapsActivity.goToLocation(context, Double.parseDouble(newPlace.getLat()), Double.parseDouble(newPlace.getLng()),newPlace);
             }
         });
         //holder.image.setImageResource(newPlace.getImage());
