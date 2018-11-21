@@ -144,7 +144,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     static GoogleMap mMap;
     private static EditText searchEditText;
     private static EditText searchDestEditText;
-    private ImageButton searchButton;
+//    private ImageButton searchButton;
     private ImageButton searchButtonDest;
 
     static ConstraintLayout bottomMenu;
@@ -157,6 +157,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     static ProgressBar searchProgBarDest;
 
     static TextView promoCode;
+    private ImageView ivPromoCode;
 
     static RecyclerView mLocationView;
     static MyPlaceAdapter placeAdapter;
@@ -585,6 +586,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
         iv_cancel_call_voip_one.setLayoutParams(params);
 
+        setMaximumVoluem();
+
         iv_recv_call_voip_one.setOnClickListener(new View.OnClickListener() {
             class SinchCallListener implements CallListener {
                 @Override
@@ -694,6 +697,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
         window.setGravity(Gravity.CENTER);
         dialog.show();
+    }
+
+    private void setMaximumVoluem(){
+        int origionalVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
     }
 
     private void mute() {
@@ -2026,6 +2034,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         promoCode = (TextView) findViewById(R.id.promoCode);
         promoCode.setText("PROMO CODE");
+        ivPromoCode = findViewById(R.id.iv_promo_code);
 
         callLayout = findViewById(R.id.callLayout);
 
@@ -2156,7 +2165,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         closestDriverText = (TextView) findViewById(R.id.closestDriver);
 
         searchEditText = (EditText) findViewById(R.id.search_edit_text);
-        searchButton = (ImageButton) findViewById(R.id.search_address_button);
+//        searchButton = (ImageButton) findViewById(R.id.search_address_button);
         searchButtonDest = (ImageButton) findViewById(R.id.search_dest_address_button);
 
         searchDestEditText = (EditText) findViewById(R.id.search_dest_edit_text);
@@ -2473,6 +2482,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                         price.setText(dataSnapshot.getValue() + " MAD");
                                         promoCode.setText(etPromoCode.getText().toString());
+                                        ivPromoCode.setImageResource(R.drawable.ic_promo_code_applied);
                                     }
 
                                     @Override
@@ -2666,7 +2676,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         startConstraint.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) (dpHeight - 42), context.getResources().getDisplayMetrics());
 
         shadowBg.setVisibility(View.VISIBLE);
-        searchButtonDest.setVisibility(View.VISIBLE);
+//        searchButtonDest.setVisibility(View.VISIBLE);
         menuButton.setVisibility(View.VISIBLE);
 
         coverButton.setVisibility(View.VISIBLE);
@@ -2836,7 +2846,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         bottomMenu.setVisibility(View.VISIBLE);
         selectedOp.setVisibility(View.VISIBLE);
         shadowBg.setVisibility(View.VISIBLE);
-        searchButton.setVisibility(View.VISIBLE);
+//        searchButton.setVisibility(View.VISIBLE);
 
         endConstraint.setVisibility(View.GONE);
         selectDest.setVisibility(View.GONE);
@@ -2875,7 +2885,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         bottomMenu.setVisibility(View.GONE);
         selectedOp.setVisibility(View.GONE);
         shadowBg.setVisibility(View.GONE);
-        searchButton.setVisibility(View.GONE);
+//        searchButton.setVisibility(View.GONE);
 
         searchEditText.setEnabled(false);
 
@@ -3020,16 +3030,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 return false;
             }
         });
-        searchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                hideKeyboard(MapsActivity.this);
-                searchEditText.clearFocus();
-                searchButton.setVisibility(View.GONE);
-                searchProgBar.setVisibility(View.VISIBLE);
-                lookForAddress();
-            }
-        });
+//        searchButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                hideKeyboard(MapsActivity.this);
+//                searchEditText.clearFocus();
+//                searchButton.setVisibility(View.GONE);
+//                searchProgBar.setVisibility(View.VISIBLE);
+//                lookForAddress();
+//            }
+//        });
         searchButtonDest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -3136,7 +3146,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             AnimateConstraint.animate(context, aR, HeightAbsolute, HeightAbsolute, 1);
             AnimateConstraint.animate(context, favorite, 1, 1, 1);
             if (orderDriverState == 0) {
-                searchButton.setVisibility(View.VISIBLE);
+//                searchButton.setVisibility(View.VISIBLE);
                 findViewById(R.id.imageView111).setVisibility(View.VISIBLE);
                 aR.setVisibility(View.VISIBLE);
                 //if(Height > (dpHeight - (270)))
@@ -3149,7 +3159,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             }
             if (orderDriverState == 1) {
-                searchButtonDest.setVisibility(View.VISIBLE);
+//                searchButtonDest.setVisibility(View.VISIBLE);
                 aR.setVisibility(View.VISIBLE);
                 //if(Height > (dpHeight - (270)))
                 getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
