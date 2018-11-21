@@ -1,3 +1,4 @@
+
 package com.comingoo.user.comingoo;
 
 import android.Manifest;
@@ -2305,10 +2306,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         new LookForDriverTask().execute();
                         new sendRequestsTask().execute();
                     } catch (NullPointerException e) {
-                        Log.e(TAG, "onClick: excp111" + e.getMessage());
                         e.printStackTrace();
                     } catch (Exception e) {
-                        Log.e(TAG, "onClick: excp222" + e.getMessage());
                         e.printStackTrace();
                     }
                 }

@@ -63,11 +63,24 @@ public class MyPlaceAdapter extends RecyclerView.Adapter<MyPlaceAdapter.ViewHold
             @Override
             public void onClick(View view) {
                         MapsActivity.showSearchAddressStartUI();
-                            MapsActivity.goToLocation(context, Double.parseDouble(newPlace.getLat()), Double.parseDouble(newPlace.getLng()));
+                            MapsActivity.goToLocation(context, Double.parseDouble(newPlace.getLat()), Double.parseDouble(newPlace.getLng())/*,newPlace*/);
             }
         });
         //holder.image.setImageResource(newPlace.getImage());
+//        if(newPlace.getName() == null){
+//            holder.title.setText("No Data Available");
+//        }else{
+//            holder.title.setText(newPlace.getName());
+//        }
         holder.title.setText(newPlace.getName());
+
+//        if(newPlace.getAddress()==null){
+//            holder.title.setText("");
+//        }else{
+//            holder.title.setText(newPlace.getName());
+//        }
+        holder.title.setText(newPlace.getName());
+
         holder.address.setText(newPlace.getAddress());
         holder.image.setImageResource(newPlace.getImage());
         holder.addBtn.setOnClickListener(new View.OnClickListener() {
