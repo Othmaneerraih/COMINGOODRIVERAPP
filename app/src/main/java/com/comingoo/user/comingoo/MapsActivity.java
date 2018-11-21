@@ -2446,6 +2446,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             }
         });
+
+        //This change is for making conflict
     }
 
     private void initialize() {
