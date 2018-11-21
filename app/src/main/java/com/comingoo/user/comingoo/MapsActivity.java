@@ -29,6 +29,7 @@ import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
@@ -101,6 +102,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.gson.Gson;
 import com.google.maps.DirectionsApi;
 import com.google.maps.DirectionsApiRequest;
 import com.google.maps.GeoApiContext;
@@ -786,8 +788,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                             driverPhone = dataSnapshot.child("phoneNumber").getValue(String.class);
                                             driverImage = dataSnapshot.child("image").getValue(String.class);
                                             driverName = dataSnapshot.child("fullName").getValue(String.class);
-
-
 
                                             FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(driverIDT).child("rating").addListenerForSingleValueEvent(new ValueEventListener() {
                                                 @Override
@@ -2452,6 +2452,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setSearchFunc();
     }
 
+    public static place getRecentPlaces(Context context) {
+
+        SharedPreferences appSharedPrefs = PreferenceManager
+                .getDefaultSharedPreferences(context.getApplicationContext());
+        Gson gson = new Gson();
+        String json = appSharedPrefs.getString("recent_places", "");
+
+
+        place rPlace = gson.fromJson(json, place.class);
+        place Place = new place("Travail", "", "33.5725155", "-7.5962637", R.drawable.lieux_proches);
+
+        if(rPlace == null){
+            return Place;
+        }else{
+            return rPlace;
+        }
+    }
+
     private void hideAllUI(){
         startConstraint.setVisibility(View.INVISIBLE);
         searchDestEditText.setVisibility(View.INVISIBLE);
@@ -2531,7 +2549,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void showFavoritsAndRecents() {
         fPlaceData.clear();
-        rPlaceData.clear();
+//        rPlaceData.clear();
         place Place = new place("Travail", "This feature is not yet available", "33.5725155", "-7.5962637", R.drawable.lieux_proches);
         place Place2 = new place("Maison", "This feature is not yet available", "33.5725155", "-7.5962637", R.drawable.lieux_proches);
 //        place Place = new place("Home", "", "", "", R.drawable.mdaison_con);
@@ -2539,11 +2557,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         fPlaceData.add(Place);
         fPlaceData.add(Place2);
 
-        Place = new place("Location", "This feature is not yet available", "33.5725155", "-7.5962637 ", R.drawable.lieux_recent);
-        rPlaceData.add(Place);
-        rPlaceData.add(Place);
-        rPlaceData.add(Place);
-        rPlaceData.add(Place);
+//        Place = new place("Location", "This feature is not yet available", "33.5725155", "-7.5962637 ", R.drawable.lieux_recent);
+//        rPlaceData.add(Place);
+//        rPlaceData.add(Place);
+//        rPlaceData.add(Place);
+//        rPlaceData.add(Place);
+        rPlaceData.add(getRecentPlaces(context));
+//        if(!getRecentPlaces(context).lat.equals(null)){
+//
+//        }
+
 
         fPlaceAdapter.notifyDataSetChanged();
         rPlaceAdapter.notifyDataSetChanged();
@@ -3129,6 +3152,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                     gotPlace.getAddress().toString(), "" + gotPlace.getLatLng().latitude,
                                                     "" + gotPlace.getLatLng().longitude, R.drawable.lieux_proches);
                                             placeData.add(Place);
+
                                         }
                                         placeAdapter.notifyDataSetChanged();
                                         finished = true;
@@ -3185,6 +3209,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             searchProgBarDest.setVisibility(View.GONE);
             // Do things like hide the progress bar or change a TextView
         }
+    }
+
+    public static void saveRecentPlaces(Context context, place rplace) {
+        SharedPreferences appSharedPrefs = PreferenceManager
+                .getDefaultSharedPreferences(context.getApplicationContext());
+        SharedPreferences.Editor prefsEditor = appSharedPrefs.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(rplace);
+        prefsEditor.putString("recent_places", json);
+        prefsEditor.commit();
     }
 
     private class ReverseGeocodingTask extends AsyncTask<LatLng, Void, String> {
@@ -3250,9 +3284,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    static boolean contains(ArrayList<place> list, String name) {
+        for (place item : list) {
+            if (item.getName().equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-    static void goToLocation(Context context, Double lat, Double lng) {
+    static void goToLocation(Context context, Double lat, Double lng,place rPlace) {
         // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), 17));
+        if(rPlace != null){
+            if (contains(rPlaceData, rPlace.name)) {
+                rPlaceData.add(rPlace);
+                saveRecentPlaces(context, rPlace);
+                rPlaceAdapter.notifyDataSetChanged();
+            }
+        }
         image1.setVisibility(View.INVISIBLE);
         image2.setVisibility(View.INVISIBLE);
         positionButton.setVisibility(View.VISIBLE);
@@ -3654,7 +3703,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             // GPS location can be null if GPS is switched off
                             if (location != null) {
                                 userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-                                goToLocation(getApplicationContext(), userLatLng.latitude, userLatLng.longitude);
+                                goToLocation(getApplicationContext(), userLatLng.latitude, userLatLng.longitude,null);
                             }
                         }
                     })
