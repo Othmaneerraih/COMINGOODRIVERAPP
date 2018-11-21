@@ -1,4 +1,3 @@
-
 package com.comingoo.user.comingoo;
 
 import android.Manifest;
@@ -1530,9 +1529,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                         star3.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
                                         star4.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
                                         star5.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.selected_star)));
+
                                         imot.setImageBitmap(scaleBitmap(150, 150, R.drawable.five_stars));
                                     }
                                 });
+
 
                                 nextButton.setOnClickListener(new View.OnClickListener() {
                                     @Override
@@ -2306,8 +2307,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         new LookForDriverTask().execute();
                         new sendRequestsTask().execute();
                     } catch (NullPointerException e) {
+                        Log.e(TAG, "onClick: excp111" + e.getMessage());
                         e.printStackTrace();
                     } catch (Exception e) {
+                        Log.e(TAG, "onClick: excp222" + e.getMessage());
                         e.printStackTrace();
                     }
                 }
@@ -2400,6 +2403,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     if (startPositionIsValid()) {
                         orderDriverState = 1;
                         showSelectDestUI();
+//                    menuButton.setVisibility(View.GONE);
+
                         state = 1;
                     }
                 } catch (Exception e) {
