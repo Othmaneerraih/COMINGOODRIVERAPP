@@ -777,6 +777,7 @@
                 android:layout_marginRight="15dp"
                 android:background="@drawable/main_edit_text"
                 android:drawableRight="@drawable/ic_search_map"
+                android:drawablePadding="30dp"
                 android:elevation="5dp"
                 android:ems="10"
                 android:fontFamily="@font/roboto_light"
@@ -784,7 +785,7 @@
                 android:imeOptions="actionDone"
                 android:inputType="textPersonName"
                 android:paddingLeft="35dp"
-                android:paddingRight="15dp"
+                android:paddingRight="50dp"
                 android:selectAllOnFocus="true"
                 android:textColor="@color/purpleColor"
                 android:textSize="14sp"
@@ -807,20 +808,20 @@
                 app:layout_constraintStart_toStartOf="@+id/search_edit_text"
                 app:layout_constraintTop_toTopOf="@+id/search_edit_text" />
 
-            <!--<ImageButton-->
-                <!--android:id="@+id/search_address_button"-->
-                <!--android:layout_width="30dp"-->
-                <!--android:layout_height="30dp"-->
-                <!--android:layout_marginEnd="8dp"-->
-                <!--android:layout_marginRight="8dp"-->
-                <!--android:layout_marginBottom="8dp"-->
-                <!--android:background="@android:color/white"-->
-                <!--android:elevation="5dp"-->
-                <!--android:scaleType="centerInside"-->
-                <!--app:layout_constraintBottom_toBottomOf="@+id/search_edit_text"-->
-                <!--app:layout_constraintEnd_toEndOf="@+id/search_edit_text"-->
-                <!--app:layout_constraintTop_toTopOf="@+id/search_edit_text"-->
-                <!--app:layout_constraintVertical_bias="1.0" />-->
+            <ImageButton
+                android:id="@+id/search_address_button"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginBottom="8dp"
+                android:background="@android:color/white"
+                android:elevation="5dp"
+                android:scaleType="centerInside"
+                app:layout_constraintBottom_toBottomOf="@+id/search_edit_text"
+                app:layout_constraintEnd_toEndOf="@+id/search_edit_text"
+                app:layout_constraintTop_toTopOf="@+id/search_edit_text"
+                app:layout_constraintVertical_bias="1.0" />
 
             <ProgressBar
                 android:id="@+id/search_prog_bar"
@@ -1243,7 +1244,7 @@
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/gooBox"
-                android:layout_width="match_parent"
+                android:layout_width="fill_parent"
                 android:layout_height="1dp"
                 android:layout_marginStart="15dp"
                 android:layout_marginEnd="15dp"
@@ -1254,26 +1255,13 @@
                 app:layout_constraintStart_toStartOf="parent">
 
                 <TextView
-                    android:id="@+id/tv_payment_type"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="70dp"
-                    android:layout_marginLeft="70dp"
-                    android:layout_marginBottom="18dp"
-                    android:text="Cash"
-                    android:textColor="@android:color/black"
-                    android:textSize="12sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintStart_toStartOf="parent" />
-
-                <TextView
                     android:id="@+id/price"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="65dp"
                     android:layout_marginRight="65dp"
                     android:layout_marginBottom="18dp"
+                    android:text=""
                     android:textColor="@color/colorPrimaryDark"
                     android:textSize="12sp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -1292,16 +1280,6 @@
                     android:textSize="12sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
-
-                <ImageView
-                    android:id="@+id/iv_promo_code"
-                    android:layout_width="40dp"
-                    android:layout_height="30dp"
-                    android:src="@drawable/ic_promo_code"
-                    android:layout_marginBottom="13dp"
-                    app:layout_constraintEnd_toStartOf="@+id/promoCode"
-                    app:layout_constraintBottom_toTopOf="@+id/price"/>
-
             </android.support.constraint.ConstraintLayout>
 
             <android.support.constraint.ConstraintLayout
@@ -1313,6 +1291,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/none">
+
+
             </android.support.constraint.ConstraintLayout>
 
             <ImageButton
@@ -1390,7 +1370,7 @@
             android:background="@android:color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent"></android.support.constraint.ConstraintLayout>
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -1617,3 +1597,4 @@
         app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>
+

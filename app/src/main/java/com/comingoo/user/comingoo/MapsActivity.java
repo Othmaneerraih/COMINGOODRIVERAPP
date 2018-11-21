@@ -1812,6 +1812,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mediaPlayer = new MediaPlayer();
 
 
+
+
+
         if (ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(MapsActivity.this, new String[]{android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 55);
             ActivityCompat.requestPermissions(MapsActivity.this, new String[]{android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.READ_PHONE_STATE}, 1);
@@ -2474,7 +2477,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         destArrow.setVisibility(View.INVISIBLE);
     }
 
-    private void showAllUI() {
+    private void showAllUI(){
         startConstraint.setVisibility(View.VISIBLE);
         searchDestEditText.setVisibility(View.VISIBLE);
         gooBox.setVisibility(View.VISIBLE);
@@ -2546,9 +2549,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void showFavoritsAndRecents() {
         fPlaceData.clear();
-        rPlaceData.clear();
-        place Place = new place("Home", "", "33.5725155", "-7.5962637", R.drawable.lieux_proches);
-        place Place2 = new place("Work", "", "33.5725155", "-7.5962637", R.drawable.lieux_proches);
+//        rPlaceData.clear();
+        place Place = new place("Travail", "This feature is not yet available", "33.5725155", "-7.5962637", R.drawable.lieux_proches);
+        place Place2 = new place("Maison", "This feature is not yet available", "33.5725155", "-7.5962637", R.drawable.lieux_proches);
 //        place Place = new place("Home", "", "", "", R.drawable.mdaison_con);
 //        place Place2 = new place("Work", "", "", "", R.drawable.work_icon);
         fPlaceData.add(Place);
@@ -3652,29 +3655,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //        } catch(SecurityException e)  {
 //            Log.e("Exception: %s", e.getMessage());
 //        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        FirebaseDatabase.getInstance().getReference("FevPlace").child(clientID).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (!dataSnapshot.exists()) {
-                    fPlaceData.clear();
-                    place Place = new place("Home", dataSnapshot.child("Home").child("address").getValue(String.class), dataSnapshot.child("Home").child("lat").getValue(String.class), dataSnapshot.child("Home").child("long").getValue(String.class), R.drawable.mdaison_con);
-                    place Place2 = new place("Work", dataSnapshot.child("Work").child("address").getValue(String.class), dataSnapshot.child("Home").child("lat").getValue(String.class), dataSnapshot.child("Home").child("long").getValue(String.class), R.drawable.work_icon);
-                    fPlaceData.add(Place);
-                    fPlaceData.add(Place2);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
     }
 
     private static String getCompleteAddressString(Context context, double LATITUDE, double LONGITUDE) {
