@@ -2400,8 +2400,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     if (startPositionIsValid()) {
                         orderDriverState = 1;
                         showSelectDestUI();
-//                    menuButton.setVisibility(View.GONE);
-
                         state = 1;
                     }
                 } catch (Exception e) {
