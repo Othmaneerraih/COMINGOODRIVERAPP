@@ -126,13 +126,14 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
+import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import pl.droidsonroids.gif.GifImageButton;
@@ -144,7 +145,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     static GoogleMap mMap;
     private static EditText searchEditText;
     private static EditText searchDestEditText;
-//    private ImageButton searchButton;
+    //    private ImageButton searchButton;
     private ImageButton searchButtonDest;
 
     static ConstraintLayout bottomMenu;
@@ -157,7 +158,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     static ProgressBar searchProgBarDest;
 
     static TextView promoCode;
-    private ImageView ivPromoCode;
 
     static RecyclerView mLocationView;
     static MyPlaceAdapter placeAdapter;
@@ -277,7 +277,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     String language;
 
     private ConstraintLayout callLayout;
-    private TextView driverNameL, iv_total_ride_number, iv_car_number;
+    private TextView driverNameL, iv_total_ride_number, iv_car_number, iv_total_rating_number;
     //    private CircleImageView driverImageL;
     private CircularImageView driverImageL;
     private ImageView ivCallDriver, close_button;
@@ -586,8 +586,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
         iv_cancel_call_voip_one.setLayoutParams(params);
 
-        setMaximumVoluem();
-
         iv_recv_call_voip_one.setOnClickListener(new View.OnClickListener() {
             class SinchCallListener implements CallListener {
                 @Override
@@ -664,11 +662,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
+
         iv_loud.setBackgroundColor(Color.WHITE);
         iv_loud.setCircleBackgroundColor(Color.WHITE);
         iv_mute.setBackgroundColor(Color.WHITE);
         iv_mute.setCircleBackgroundColor(Color.WHITE);
-
         iv_loud.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -697,11 +695,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
         window.setGravity(Gravity.CENTER);
         dialog.show();
-    }
-
-    private void setMaximumVoluem(){
-        int origionalVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
     }
 
     private void mute() {
@@ -793,6 +786,38 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                             driverPhone = dataSnapshot.child("phoneNumber").getValue(String.class);
                                             driverImage = dataSnapshot.child("image").getValue(String.class);
                                             driverName = dataSnapshot.child("fullName").getValue(String.class);
+
+
+                                            FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(driverIDT).child("rating").addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                    int oneStarPerson = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("1").getValue(String.class)));
+                                                    int one = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("1").getValue(String.class)));
+                                                    int twoStarPerson = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("2").getValue(String.class)));
+                                                    int two = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("2").getValue(String.class))) * 2;
+                                                    int threeStarPerson = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("3").getValue(String.class)));
+                                                    int three = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("3").getValue(String.class))) * 3;
+                                                    int fourStarPerson = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("4").getValue(String.class)));
+                                                    int four = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("4").getValue(String.class))) * 4;
+                                                    int fiveStarPerson = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("5").getValue(String.class)));
+                                                    int five = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("5").getValue(String.class))) * 5;
+
+                                                    double totalRating = one + two + three + four + five;
+                                                    double totalRatingPerson = oneStarPerson + twoStarPerson + threeStarPerson + fourStarPerson + fiveStarPerson;
+
+                                                    double avgRating = totalRating / totalRatingPerson;
+                                                    String avg = String.format("%.2f", avgRating);
+                                                    iv_total_rating_number.setText(avg);
+                                                    Log.e(TAG, "onDataChange: Driver Rate: " + avg);
+//                                                    int rating = Integer.parseInt(dataSnapshot.getValue(String.class)) + 1;
+//                                                    FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientId).child("rating").child(Integer.toString(RATE)).setValue("" + rating);
+                                                }
+
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                                    iv_total_rating_number.setText(4.5 + "");
+                                                }
+                                            });
 
                                             FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(driverIDT).child("CARS").orderByChild("selected").equalTo("1").addListenerForSingleValueEvent(new ValueEventListener() {
                                                 @Override
@@ -975,6 +1000,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //                    call.addCallListener(new SinchCallListener());
 //                }
 //            });
+
         }
 
 
@@ -1182,9 +1208,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
             Bitmap bm = frameLayout3.getDrawingCache();
-//            startPositionMarker = mMap.addMarker(new MarkerOptions()
-//                    .position(startPositionT)
-//                    .icon(BitmapDescriptorFactory.fromBitmap(bm)));
+            startPositionMarker = mMap.addMarker(new MarkerOptions()
+                    .position(startPositionT)
+                    .icon(BitmapDescriptorFactory.fromBitmap(bm)));
 
         }
         if (statusT.equals("2")) {
@@ -1503,200 +1529,191 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                         star3.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
                                         star4.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
                                         star5.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.selected_star)));
-
                                         imot.setImageBitmap(scaleBitmap(150, 150, R.drawable.five_stars));
                                     }
                                 });
 
-
                                 nextButton.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
-                                        try {
-                                            if (RATE > 0) {
-                                                dialog.dismiss();
-                                                FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(dialogDriverId).child("rating").child(Integer.toString(RATE)).addListenerForSingleValueEvent(new ValueEventListener() {
-                                                    @Override
-                                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                        int Rating = (Integer.parseInt(dataSnapshot.getValue(String.class)) + 1);
-                                                        FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(dialogDriverId).child("rating").child(Integer.toString(RATE)).setValue("" + Rating);
-                                                    }
+                                        if (RATE > 0) {
+                                            dialog.dismiss();
+                                            FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(dialogDriverId).child("rating").child(Integer.toString(RATE)).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                    int Rating = Integer.parseInt(dataSnapshot.getValue(String.class)) + 1;
+                                                    FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(dialogDriverId).child("rating").child(Integer.toString(RATE)).setValue("" + Rating);
+                                                }
 
-                                                    @Override
-                                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                                    }
-                                                });
-                                                FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("COURSE").removeValue();
-                                                if (RATE > 3) {
-                                                    if (ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.RECORD_AUDIO)
-                                                            != PackageManager.PERMISSION_GRANTED) {
-                                                        ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.RECORD_AUDIO},
-                                                                10);
-                                                    } else {
-                                                        showVoiceDialog();
-                                                    }
+                                                }
+                                            });
+                                            FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("COURSE").removeValue();
+                                            if (RATE > 3) {
+                                                if (ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.RECORD_AUDIO)
+                                                        != PackageManager.PERMISSION_GRANTED) {
+                                                    ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.RECORD_AUDIO},
+                                                            10);
                                                 } else {
-                                                    try {
-                                                        final Dialog newDialog = new Dialog(context);
-                                                        newDialog.setContentView(R.layout.finished_course_2);
-                                                        choseBox = null;
+                                                    showVoiceDialog();
+                                                }
+                                            } else {
 
-                                                        TextView textView15 = (TextView) dialog.findViewById(R.id.textView15);
-                                                        TextView textView16 = (TextView) dialog.findViewById(R.id.textView16);
-                                                        Button button5 = (Button) dialog.findViewById(R.id.button5);
-                                                        Button button7 = (Button) dialog.findViewById(R.id.button7);
-                                                        Button button8 = (Button) dialog.findViewById(R.id.button8);
-                                                        Button button9 = (Button) dialog.findViewById(R.id.button9);
-                                                        Button button10 = (Button) dialog.findViewById(R.id.button10);
+                                                try {
+                                                    final Dialog newDialog = new Dialog(context);
+                                                    newDialog.setContentView(R.layout.finished_course_2);
+                                                    choseBox = null;
+
+                                                    TextView textView15 = (TextView) dialog.findViewById(R.id.textView15);
+                                                    TextView textView16 = (TextView) dialog.findViewById(R.id.textView16);
+                                                    Button button5 = (Button) dialog.findViewById(R.id.button5);
+                                                    Button button7 = (Button) dialog.findViewById(R.id.button7);
+                                                    Button button8 = (Button) dialog.findViewById(R.id.button8);
+                                                    Button button9 = (Button) dialog.findViewById(R.id.button9);
+                                                    Button button10 = (Button) dialog.findViewById(R.id.button10);
 
 
-                                                        //Set Texts
-                                                        textView15.setText(resources.getString(R.string.Noussommesdésolé));
-                                                        textView16.setText(resources.getString(R.string.whatswrong));
-                                                        button5.setText(resources.getString(R.string.Heuredarrivée));
-                                                        button7.setText(resources.getString(R.string.Etatdelavoiture));
-                                                        button8.setText(resources.getString(R.string.Conduite));
-                                                        button9.setText(resources.getString(R.string.Itinéraire));
-                                                        button10.setText(resources.getString(R.string.Autre));
+                                                    //Set Texts
+                                                    textView15.setText(resources.getString(R.string.Noussommesdésolé));
+                                                    textView16.setText(resources.getString(R.string.whatswrong));
+                                                    button5.setText(resources.getString(R.string.Heuredarrivée));
+                                                    button7.setText(resources.getString(R.string.Etatdelavoiture));
+                                                    button8.setText(resources.getString(R.string.Conduite));
+                                                    button9.setText(resources.getString(R.string.Itinéraire));
+                                                    button10.setText(resources.getString(R.string.Autre));
 
-                                                        RelativeLayout body = (RelativeLayout) newDialog.findViewById(R.id.body);
-                                                        body.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) dpWidth, (int) dpWidth, R.drawable.finished_bg)));
+                                                    RelativeLayout body = (RelativeLayout) newDialog.findViewById(R.id.body);
+                                                    body.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) dpWidth, (int) dpWidth, R.drawable.finished_bg)));
 
-                                                        final Button opt1 = (Button) newDialog.findViewById(R.id.button5);
-                                                        final Button opt2 = (Button) newDialog.findViewById(R.id.button6);
-                                                        final Button opt3 = (Button) newDialog.findViewById(R.id.button7);
-                                                        final Button opt4 = (Button) newDialog.findViewById(R.id.button8);
-                                                        final Button opt5 = (Button) newDialog.findViewById(R.id.button9);
-                                                        final Button opt6 = (Button) newDialog.findViewById(R.id.button10);
+                                                    final Button opt1 = (Button) newDialog.findViewById(R.id.button5);
+                                                    final Button opt2 = (Button) newDialog.findViewById(R.id.button6);
+                                                    final Button opt3 = (Button) newDialog.findViewById(R.id.button7);
+                                                    final Button opt4 = (Button) newDialog.findViewById(R.id.button8);
+                                                    final Button opt5 = (Button) newDialog.findViewById(R.id.button9);
+                                                    final Button opt6 = (Button) newDialog.findViewById(R.id.button10);
 
-                                                        final EditText messageText = (EditText) newDialog.findViewById(R.id.editText);
+                                                    final EditText messageText = (EditText) newDialog.findViewById(R.id.editText);
 
-                                                        opt1.setOnClickListener(new View.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(View v) {
-                                                                opt1.setBackgroundResource(R.drawable.box_shadow);
-                                                                opt2.setBackgroundResource(R.drawable.select_box);
-                                                                opt3.setBackgroundResource(R.drawable.select_box);
-                                                                opt4.setBackgroundResource(R.drawable.select_box);
-                                                                opt5.setBackgroundResource(R.drawable.select_box);
-                                                                opt6.setBackgroundResource(R.drawable.select_box);
+                                                    opt1.setOnClickListener(new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View v) {
+                                                            opt1.setBackgroundResource(R.drawable.box_shadow);
+                                                            opt2.setBackgroundResource(R.drawable.select_box);
+                                                            opt3.setBackgroundResource(R.drawable.select_box);
+                                                            opt4.setBackgroundResource(R.drawable.select_box);
+                                                            opt5.setBackgroundResource(R.drawable.select_box);
+                                                            opt6.setBackgroundResource(R.drawable.select_box);
 
-                                                                choseBox = "Heure d'arrivée";
+                                                            choseBox = "Heure d'arrivée";
+                                                        }
+                                                    });
+                                                    opt2.setOnClickListener(new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View v) {
+                                                            opt1.setBackgroundResource(R.drawable.select_box);
+                                                            opt2.setBackgroundResource(R.drawable.box_shadow);
+                                                            opt3.setBackgroundResource(R.drawable.select_box);
+                                                            opt4.setBackgroundResource(R.drawable.select_box);
+                                                            opt5.setBackgroundResource(R.drawable.select_box);
+                                                            opt6.setBackgroundResource(R.drawable.select_box);
+
+                                                            choseBox = "Service";
+                                                        }
+                                                    });
+                                                    opt3.setOnClickListener(new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View v) {
+                                                            opt1.setBackgroundResource(R.drawable.select_box);
+                                                            opt2.setBackgroundResource(R.drawable.select_box);
+                                                            opt3.setBackgroundResource(R.drawable.box_shadow);
+                                                            opt4.setBackgroundResource(R.drawable.select_box);
+                                                            opt5.setBackgroundResource(R.drawable.select_box);
+                                                            opt6.setBackgroundResource(R.drawable.select_box);
+
+                                                            choseBox = "Etat de la voiture";
+                                                        }
+                                                    });
+                                                    opt4.setOnClickListener(new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View v) {
+                                                            opt1.setBackgroundResource(R.drawable.select_box);
+                                                            opt2.setBackgroundResource(R.drawable.select_box);
+                                                            opt3.setBackgroundResource(R.drawable.select_box);
+                                                            opt4.setBackgroundResource(R.drawable.box_shadow);
+                                                            opt5.setBackgroundResource(R.drawable.select_box);
+                                                            opt6.setBackgroundResource(R.drawable.select_box);
+                                                            choseBox = "Conduite";
+                                                        }
+                                                    });
+                                                    opt5.setOnClickListener(new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View v) {
+                                                            opt1.setBackgroundResource(R.drawable.select_box);
+                                                            opt2.setBackgroundResource(R.drawable.select_box);
+                                                            opt3.setBackgroundResource(R.drawable.select_box);
+                                                            opt4.setBackgroundResource(R.drawable.select_box);
+                                                            opt5.setBackgroundResource(R.drawable.box_shadow);
+                                                            opt6.setBackgroundResource(R.drawable.select_box);
+                                                            choseBox = "Itinéraire";
+                                                        }
+                                                    });
+                                                    opt6.setOnClickListener(new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View v) {
+                                                            opt1.setBackgroundResource(R.drawable.select_box);
+                                                            opt2.setBackgroundResource(R.drawable.select_box);
+                                                            opt3.setBackgroundResource(R.drawable.select_box);
+                                                            opt4.setBackgroundResource(R.drawable.select_box);
+                                                            opt5.setBackgroundResource(R.drawable.select_box);
+                                                            opt6.setBackgroundResource(R.drawable.box_shadow);
+                                                            choseBox = "Autre";
+                                                        }
+                                                    });
+
+
+                                                    ImageButton nextBtn = newDialog.findViewById(R.id.imageButton3);
+
+
+                                                    newDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                                                        @Override
+                                                        public void onDismiss(DialogInterface dialog) {
+                                                            if (ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.RECORD_AUDIO)
+                                                                    != PackageManager.PERMISSION_GRANTED) {
+                                                                ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.RECORD_AUDIO},
+                                                                        10);
+                                                            } else {
+                                                                showVoiceDialog();
                                                             }
-                                                        });
-                                                        opt2.setOnClickListener(new View.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(View v) {
-                                                                opt1.setBackgroundResource(R.drawable.select_box);
-                                                                opt2.setBackgroundResource(R.drawable.box_shadow);
-                                                                opt3.setBackgroundResource(R.drawable.select_box);
-                                                                opt4.setBackgroundResource(R.drawable.select_box);
-                                                                opt5.setBackgroundResource(R.drawable.select_box);
-                                                                opt6.setBackgroundResource(R.drawable.select_box);
-
-                                                                choseBox = "Service";
+                                                        }
+                                                    });
+                                                    nextBtn.setOnClickListener(new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View v) {
+                                                            if (choseBox != null) {
+                                                                final String message = messageText.getText().toString();
+                                                                Map<String, String> data = new HashMap<>();
+                                                                data.put("complaint", choseBox);
+                                                                data.put("message", message);
+                                                                FirebaseDatabase.getInstance().getReference("COURSECOMPLAINT").child(COURSE).setValue(data);
                                                             }
-                                                        });
-                                                        opt3.setOnClickListener(new View.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(View v) {
-                                                                opt1.setBackgroundResource(R.drawable.select_box);
-                                                                opt2.setBackgroundResource(R.drawable.select_box);
-                                                                opt3.setBackgroundResource(R.drawable.box_shadow);
-                                                                opt4.setBackgroundResource(R.drawable.select_box);
-                                                                opt5.setBackgroundResource(R.drawable.select_box);
-                                                                opt6.setBackgroundResource(R.drawable.select_box);
+                                                            newDialog.dismiss();
+                                                        }
+                                                    });
 
-                                                                choseBox = "Etat de la voiture";
-                                                            }
-                                                        });
-                                                        opt4.setOnClickListener(new View.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(View v) {
-                                                                opt1.setBackgroundResource(R.drawable.select_box);
-                                                                opt2.setBackgroundResource(R.drawable.select_box);
-                                                                opt3.setBackgroundResource(R.drawable.select_box);
-                                                                opt4.setBackgroundResource(R.drawable.box_shadow);
-                                                                opt5.setBackgroundResource(R.drawable.select_box);
-                                                                opt6.setBackgroundResource(R.drawable.select_box);
-                                                                choseBox = "Conduite";
-                                                            }
-                                                        });
-                                                        opt5.setOnClickListener(new View.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(View v) {
-                                                                opt1.setBackgroundResource(R.drawable.select_box);
-                                                                opt2.setBackgroundResource(R.drawable.select_box);
-                                                                opt3.setBackgroundResource(R.drawable.select_box);
-                                                                opt4.setBackgroundResource(R.drawable.select_box);
-                                                                opt5.setBackgroundResource(R.drawable.box_shadow);
-                                                                opt6.setBackgroundResource(R.drawable.select_box);
-                                                                choseBox = "Itinéraire";
-                                                            }
-                                                        });
-                                                        opt6.setOnClickListener(new View.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(View v) {
-                                                                opt1.setBackgroundResource(R.drawable.select_box);
-                                                                opt2.setBackgroundResource(R.drawable.select_box);
-                                                                opt3.setBackgroundResource(R.drawable.select_box);
-                                                                opt4.setBackgroundResource(R.drawable.select_box);
-                                                                opt5.setBackgroundResource(R.drawable.select_box);
-                                                                opt6.setBackgroundResource(R.drawable.box_shadow);
-                                                                choseBox = "Autre";
-                                                            }
-                                                        });
+                                                    newDialog.findViewById(R.id.body).getLayoutParams().width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) (dpWidth), context.getResources().getDisplayMetrics());
 
-
-                                                        ImageButton nextBtn = newDialog.findViewById(R.id.imageButton3);
-
-
-                                                        newDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                                                            @Override
-                                                            public void onDismiss(DialogInterface dialog) {
-                                                                if (ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.RECORD_AUDIO)
-                                                                        != PackageManager.PERMISSION_GRANTED) {
-                                                                    ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.RECORD_AUDIO},
-                                                                            10);
-                                                                } else {
-                                                                    showVoiceDialog();
-                                                                }
-                                                            }
-                                                        });
-                                                        nextBtn.setOnClickListener(new View.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(View v) {
-                                                                if (choseBox != null) {
-                                                                    final String message = messageText.getText().toString();
-                                                                    Map<String, String> data = new HashMap<>();
-                                                                    data.put("complaint", choseBox);
-                                                                    data.put("message", message);
-                                                                    FirebaseDatabase.getInstance().getReference("COURSECOMPLAINT").child(COURSE).setValue(data);
-                                                                }
-                                                                newDialog.dismiss();
-                                                            }
-                                                        });
-
-                                                        newDialog.findViewById(R.id.body).getLayoutParams().width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) (dpWidth), context.getResources().getDisplayMetrics());
-
-                                                        WindowManager.LayoutParams lp = newDialog.getWindow().getAttributes();
-                                                        lp.dimAmount = 0.5f;
-                                                        newDialog.getWindow().setAttributes(lp);
-                                                        newDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                                                        newDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-                                                        newDialog.show();
-                                                    } catch (Exception e) {
-                                                        e.printStackTrace();
-                                                    }
+                                                    WindowManager.LayoutParams lp = newDialog.getWindow().getAttributes();
+                                                    lp.dimAmount = 0.5f;
+                                                    newDialog.getWindow().setAttributes(lp);
+                                                    newDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                                                    newDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+                                                    newDialog.show();
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
                                                 }
                                             }
-                                        } catch (NumberFormatException e) {
-                                            e.printStackTrace();
-                                        } catch (NullPointerException e) {
-                                            e.printStackTrace();
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
                                         }
                                     }
                                 });
@@ -1798,66 +1815,66 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             ActivityCompat.requestPermissions(MapsActivity.this, new String[]{android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.READ_PHONE_STATE}, 1);
         } else {
             try {
-                recordButton.setOnTouchListener(new View.OnTouchListener() {
-                    @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        int eventaction = event.getAction();
-                        switch (eventaction) {
-                            case MotionEvent.ACTION_DOWN:
-                                try {
-                                    outputeFile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/recording.3gp";
-                                    myAudioRecorder = new MediaRecorder();
-                                    myAudioRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-                                    myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-                                    myAudioRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
-                                    myAudioRecorder.setOutputFile(outputeFile);
-                                    recordButton.setScaleX((float) 1.3);
-                                    recordButton.setScaleY((float) 1.3);
-                                    myAudioRecorder.prepare();
-                                    myAudioRecorder.start();
-                                } catch (NullPointerException e) {
-                                    e.printStackTrace();
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                                break;
-                            case MotionEvent.ACTION_UP:
-                                try {
-                                    audioRecorded = true;
-                                    recordButton.setScaleX((float) 1);
-                                    recordButton.setScaleY((float) 1);
+            recordButton.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    int eventaction = event.getAction();
+                    switch (eventaction) {
+                        case MotionEvent.ACTION_DOWN:
+                            try {
+                                outputeFile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/recording.3gp";
+                                myAudioRecorder = new MediaRecorder();
+                                myAudioRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+                                myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+                                myAudioRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
+                                myAudioRecorder.setOutputFile(outputeFile);
+                                recordButton.setScaleX((float) 1.3);
+                                recordButton.setScaleY((float) 1.3);
+                                myAudioRecorder.prepare();
+                                myAudioRecorder.start();
+                            } catch (NullPointerException e) {
+                                e.printStackTrace();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            break;
+                        case MotionEvent.ACTION_UP:
+                            try {
+                                audioRecorded = true;
+                                recordButton.setScaleX((float) 1);
+                                recordButton.setScaleY((float) 1);
 
-                                    deleteAudio.setVisibility(View.VISIBLE);
-                                    deleteAudio.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            File file = new File(outputeFile);
-                                            file.delete();
-                                            recordButton.setVisibility(View.VISIBLE);
-                                            playAudio.setVisibility(View.GONE);
-                                            pauseAudio.setVisibility(View.GONE);
-                                            deleteAudio.setVisibility(View.GONE);
-                                        }
-                                    });
-                                    if (myAudioRecorder != null) {
-                                        myAudioRecorder.stop();
-                                        myAudioRecorder.release();
-                                        myAudioRecorder = null;
+                                deleteAudio.setVisibility(View.VISIBLE);
+                                deleteAudio.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        File file = new File(outputeFile);
+                                        file.delete();
+                                        recordButton.setVisibility(View.VISIBLE);
+                                        playAudio.setVisibility(View.GONE);
+                                        pauseAudio.setVisibility(View.GONE);
+                                        deleteAudio.setVisibility(View.GONE);
                                     }
-                                    recordButton.setVisibility(View.GONE);
-                                    playAudio.setVisibility(View.VISIBLE);
-                                    setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
-                                } catch (NullPointerException e) {
-                                    e.printStackTrace();
-                                } catch (Exception e) {
-                                    e.printStackTrace();
+                                });
+                                if (myAudioRecorder != null) {
+                                    myAudioRecorder.stop();
+                                    myAudioRecorder.release();
+                                    myAudioRecorder = null;
                                 }
-                                break;
-                        }
-                        return false;
+                                recordButton.setVisibility(View.GONE);
+                                playAudio.setVisibility(View.VISIBLE);
+                                setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
+                            } catch (NullPointerException e) {
+                                e.printStackTrace();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            break;
                     }
+                    return false;
+                }
 
-                });
+            });
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -1914,37 +1931,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         playAudio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+//                try {
+                playAudio.setVisibility(View.GONE);
                 try {
-                    playAudio.setVisibility(View.GONE);
-                    try {
-                        mediaPlayer.setDataSource(outputeFile);
-                        mediaPlayer.prepare();
-                        mediaPlayer.start();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (NullPointerException e) {
-                        e.printStackTrace();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    mediaPlayer.setDataSource(outputeFile);
+                    mediaPlayer.prepare();
+                    mediaPlayer.start();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
-                    pauseAudio.setVisibility(View.VISIBLE);
-                    pauseAudio.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            pauseAudio.setVisibility(View.GONE);
-                            playAudio.setVisibility(View.VISIBLE);
-                            mediaPlayer.pause();
-                            playAudio.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    pauseAudio.setVisibility(View.VISIBLE);
-                                    playAudio.setVisibility(View.GONE);
-                                    mediaPlayer.start();
-                                }
-                            });
-                        }
-                    });
+                pauseAudio.setVisibility(View.VISIBLE);
+                pauseAudio.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        pauseAudio.setVisibility(View.GONE);
+                        playAudio.setVisibility(View.VISIBLE);
+                        mediaPlayer.pause();
+                        playAudio.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                pauseAudio.setVisibility(View.VISIBLE);
+                                playAudio.setVisibility(View.GONE);
+                                mediaPlayer.start();
+                            }
+                        });
+                    }
+                });
 
 //                    if (!mediaPlayer.isPlaying()){
 //                        pauseAudio.setVisibility(View.GONE);
@@ -1952,9 +1965,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //                    }
 
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
             }
         });
 
@@ -2034,13 +2047,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         promoCode = (TextView) findViewById(R.id.promoCode);
         promoCode.setText("PROMO CODE");
-        ivPromoCode = findViewById(R.id.iv_promo_code);
 
         callLayout = findViewById(R.id.callLayout);
 
         ivCallDriver = findViewById(R.id.iv_call_driver);
 
         driverNameL = (TextView) findViewById(R.id.tv_driver_name);
+        iv_total_rating_number = (TextView) findViewById(R.id.iv_total_rating_number);
         driverImageL = findViewById(R.id.iv_driver_image);
         iv_car_number = (TextView) findViewById(R.id.iv_car_number);
         iv_total_ride_number = (TextView) findViewById(R.id.iv_total_ride_number);
@@ -2121,6 +2134,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         menuButton = (ImageButton) findViewById(R.id.menu_button);
 
+
         gooButton = (ImageButton) findViewById(R.id.gooButton);
 
         searchLoc = "Casablanca";
@@ -2158,33 +2172,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         mGeoDataClient = Places.getGeoDataClient(this);
 
-        frameLayout = (FrameLayout) findViewById(R.id.framelayout);
-        frameLayout2 = (FrameLayout) findViewById(R.id.framelayout2);
-        frameLayout3 = (FrameLayout) findViewById(R.id.framelayout3);
-        frameTime = (TextView) findViewById(R.id.closestDriverPin);
-        closestDriverText = (TextView) findViewById(R.id.closestDriver);
-
-        searchEditText = (EditText) findViewById(R.id.search_edit_text);
-//        searchButton = (ImageButton) findViewById(R.id.search_address_button);
-        searchButtonDest = (ImageButton) findViewById(R.id.search_dest_address_button);
-
-        searchDestEditText = (EditText) findViewById(R.id.search_dest_edit_text);
-
-        searchProgBar = (ProgressBar) findViewById(R.id.search_prog_bar);
-        searchProgBarDest = (ProgressBar) findViewById(R.id.search_dest_prog_bar);
-
-        bottomMenu = (ConstraintLayout) findViewById(R.id.bottomMenu);
-        selectedOp = (CircleImageView) findViewById(R.id.selectedOperation);
-        shadowBg = (ImageView) findViewById(R.id.shadow_bg);
-        selectStart = (ConstraintLayout) findViewById(R.id.select_start);
-        selectDest = (ConstraintLayout) findViewById(R.id.select_dest);
-        confirmStart = (Button) findViewById(R.id.confirm_start);
-        confirmDest = (Button) findViewById(R.id.confirm_dest);
-
-        startConstraint = (ConstraintLayout) findViewById(R.id.start_edit_text);
-        endConstraint = (ConstraintLayout) findViewById(R.id.dest_edit_text);
-
-        favorite = (ConstraintLayout) findViewById(R.id.favorite_recent);
+        initialize();
 
         placeData = new ArrayList<>();
         fPlaceData = new ArrayList<>();
@@ -2235,12 +2223,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 startActivity(new Intent(MapsActivity.this, historiqueActivity.class));
             }
         });
+
         findViewById(R.id.invite).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MapsActivity.this, inviteActivity.class));
             }
         });
+
         findViewById(R.id.logout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -2262,7 +2252,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 startActivity(new Intent(MapsActivity.this, notificationActivity.class));
             }
         });
-
         Aide.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -2270,7 +2259,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-        promoCode.setOnClickListener(new View.OnClickListener() {
+        gooBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 showCustomDialog(MapsActivity.this);
@@ -2310,7 +2299,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     //AnimateConstraint.expandCircleAnimation(context, findViewById(R.id.gooLayout), dpHeight, dpWidth);
                     menuButton.setVisibility(View.VISIBLE);
                     startSearchUI();
-//                    hideAllUI();
+                    hideAllUI();
 
                     try {
                         new LookForDriverTask().execute();
@@ -2432,22 +2421,74 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
         setSearchFunc();
+
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientID);
+        rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.hasChild("rating")) {
+                    // run some code
+                } else {
+                    Map<String, String> dataRating = new HashMap();
+                    dataRating.put("1", "0");
+                    dataRating.put("2", "0");
+                    dataRating.put("3", "0");
+                    dataRating.put("4", "0");
+                    dataRating.put("5", "0");
+                    FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientID).child("rating").setValue(dataRating);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
-//    private void hideAllUI(){
-//        startConstraint.setVisibility(View.INVISIBLE);
-//        searchDestEditText.setVisibility(View.INVISIBLE);
-//        gooBox.setVisibility(View.INVISIBLE);
-//        destArrow.setVisibility(View.INVISIBLE);
-//    }
-//
-//    private void showAllUI(){
-//        startConstraint.setVisibility(View.VISIBLE);
-//        searchDestEditText.setVisibility(View.VISIBLE);
-//        gooBox.setVisibility(View.VISIBLE);
-//        destArrow.setVisibility(View.VISIBLE);
-//    }
+    private void initialize() {
+        frameLayout = findViewById(R.id.framelayout);
+        frameLayout2 = findViewById(R.id.framelayout2);
+        frameLayout3 = findViewById(R.id.framelayout3);
+        frameTime = findViewById(R.id.closestDriverPin);
+        closestDriverText = findViewById(R.id.closestDriver);
 
+        searchEditText = (EditText) findViewById(R.id.search_edit_text);
+//        searchButton = (ImageButton) findViewById(R.id.search_address_button);
+        searchButtonDest = (ImageButton) findViewById(R.id.search_dest_address_button);
+
+        searchDestEditText = (EditText) findViewById(R.id.search_dest_edit_text);
+
+        searchProgBar = (ProgressBar) findViewById(R.id.search_prog_bar);
+        searchProgBarDest = (ProgressBar) findViewById(R.id.search_dest_prog_bar);
+
+        bottomMenu = (ConstraintLayout) findViewById(R.id.bottomMenu);
+        selectedOp = (CircleImageView) findViewById(R.id.selectedOperation);
+        shadowBg = (ImageView) findViewById(R.id.shadow_bg);
+        selectStart = (ConstraintLayout) findViewById(R.id.select_start);
+        selectDest = (ConstraintLayout) findViewById(R.id.select_dest);
+        confirmStart = (Button) findViewById(R.id.confirm_start);
+        confirmDest = (Button) findViewById(R.id.confirm_dest);
+
+        startConstraint = (ConstraintLayout) findViewById(R.id.start_edit_text);
+        endConstraint = (ConstraintLayout) findViewById(R.id.dest_edit_text);
+
+        favorite = (ConstraintLayout) findViewById(R.id.favorite_recent);
+    }
+
+    private void hideAllUI() {
+        startConstraint.setVisibility(View.INVISIBLE);
+        searchDestEditText.setVisibility(View.INVISIBLE);
+        gooBox.setVisibility(View.INVISIBLE);
+        destArrow.setVisibility(View.INVISIBLE);
+    }
+
+    private void showAllUI() {
+        startConstraint.setVisibility(View.VISIBLE);
+        searchDestEditText.setVisibility(View.VISIBLE);
+        gooBox.setVisibility(View.VISIBLE);
+        destArrow.setVisibility(View.VISIBLE);
+    }
 
     public void showCustomDialog(final Context context) {
         final Dialog dialog = new Dialog(context);
@@ -2482,7 +2523,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                         price.setText(dataSnapshot.getValue() + " MAD");
                                         promoCode.setText(etPromoCode.getText().toString());
-                                        ivPromoCode.setImageResource(R.drawable.ic_promo_code_applied);
                                     }
 
                                     @Override
@@ -2490,7 +2530,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                     }
                                 });
-                                dialog.dismiss();
+
                             } else
                                 Toast.makeText(getApplicationContext(), "Promo Code is expired", Toast.LENGTH_LONG).show();
                         }
@@ -2510,7 +2550,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         dialog.show();
     }
-
 
     public void showFavoritsAndRecents() {
         fPlaceData.clear();
@@ -2676,7 +2715,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         startConstraint.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) (dpHeight - 42), context.getResources().getDisplayMetrics());
 
         shadowBg.setVisibility(View.VISIBLE);
-//        searchButtonDest.setVisibility(View.VISIBLE);
+        searchButtonDest.setVisibility(View.VISIBLE);
         menuButton.setVisibility(View.VISIBLE);
 
         coverButton.setVisibility(View.VISIBLE);
@@ -2705,7 +2744,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         findViewById(R.id.locationPinDest).setVisibility(View.GONE);
 
-        price.setText("Cash");
 
         if (destLatLng != null) {
             new DrawRouteTask().execute(startLatLng, destLatLng);
@@ -3159,7 +3197,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             }
             if (orderDriverState == 1) {
-//                searchButtonDest.setVisibility(View.VISIBLE);
+                searchButtonDest.setVisibility(View.VISIBLE);
                 aR.setVisibility(View.VISIBLE);
                 //if(Height > (dpHeight - (270)))
                 getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
@@ -3848,9 +3886,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         getPrice();
 //                        drawPolyGradiant(thePath, "#f9ad81" ,"#aba100",9, 6);
 //                        drawPolyGradiant(thePath, "#76b5f9", "#1c549d", 9, 4);
-//                        drawPolyLineOnMap(start, arrival);
-                        drawPolyLineOnMap1(start, arrival);
-
+                        drawPolyLineOnMap(start, arrival);
                         builder.include(arrival);
                         int padding = 200;
                         LatLngBounds bounds = builder.build();
@@ -3923,78 +3959,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void drawPolyLineOnMap(LatLng currentLatitude, LatLng currentLongitude) {
-        LatLng barcelona = currentLatitude;
-
-        LatLng madrid = currentLongitude;
-
-        //Define list to get all latlng for the route
-        List<LatLng> path = new ArrayList();
-
-
-        //Execute Directions API request
-        GeoApiContext context = new GeoApiContext.Builder()
-                .apiKey(getResources().getString(R.string.google_maps_key))
-                .build();
-        DirectionsApiRequest req = DirectionsApi.getDirections(context,
-                String.valueOf(barcelona.latitude) + "," + String.valueOf(barcelona.longitude),
-                String.valueOf(madrid.latitude) + "," + String.valueOf(madrid.longitude));
-        try {
-            DirectionsResult res = req.await();
-
-            //Loop through legs and steps to get encoded polylines of each step
-            if (res.routes != null && res.routes.length > 0) {
-                DirectionsRoute route = res.routes[0];
-
-                if (route.legs != null) {
-                    for (int i = 0; i < route.legs.length; i++) {
-                        DirectionsLeg leg = route.legs[i];
-                        if (leg.steps != null) {
-                            for (int j = 0; j < leg.steps.length; j++) {
-                                DirectionsStep step = leg.steps[j];
-                                if (step.steps != null && step.steps.length > 0) {
-                                    for (int k = 0; k < step.steps.length; k++) {
-                                        DirectionsStep step1 = step.steps[k];
-                                        EncodedPolyline points1 = step1.polyline;
-                                        if (points1 != null) {
-                                            //Decode polyline and add points to list of route coordinates
-                                            List<com.google.maps.model.LatLng> coords1 = points1.decodePath();
-                                            for (com.google.maps.model.LatLng coord1 : coords1) {
-                                                path.add(new LatLng(coord1.lat, coord1.lng));
-                                            }
-                                        }
-                                    }
-                                } else {
-                                    EncodedPolyline points = step.polyline;
-                                    if (points != null) {
-                                        //Decode polyline and add points to list of route coordinates
-                                        List<com.google.maps.model.LatLng> coords = points.decodePath();
-                                        for (com.google.maps.model.LatLng coord : coords) {
-                                            path.add(new LatLng(coord.lat, coord.lng));
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (Exception ex) {
-            Log.e(TAG, ex.getLocalizedMessage());
-        }
-
-        //Draw the polyline
-        if (path.size() > 0) {
-            PolylineOptions opts = new PolylineOptions().addAll(path).color(Color.BLUE).width(5);
-            mMap.addPolyline(opts);
-        }
-
-        mMap.getUiSettings().setZoomControlsEnabled(true);
-        LatLng zaragoza = new LatLng(41.648823, -0.889085);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(zaragoza, 6));
-
-    }
-
-    public void drawPolyLineOnMap1(LatLng currentLatitude, LatLng currentLongitude) {
         String url = getMapsApiDirectionsUrl(currentLatitude, currentLongitude);
         Log.e(TAG, "drawPolyLineOnMap: " + url);
         ReadTask downloadTask = new ReadTask();
@@ -4018,11 +3982,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         String output = "json";
 //        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters;
 //        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters;
-
         String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters + "&key="
                 + "AIzaSyA69yMLMZGzJzaa1pHoNIk9yGYqyhsa_lw" + "&sensor=true";
-//   String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters + "&key="
-//                + getResources().getString(R.string.google_maps_key) + "&sensor=true";
 
         return url;
     }
@@ -4096,39 +4057,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
     }
-
-//    private GeoApiContext getGeoContext() {
-////        GeoApiContext geoApiContext = new GeoApiContext();
-//        return new GeoApiContext().setApiKey(getString(R.string.directionsApiKey)).setConnectTimeout(1, TimeUnit.SECONDS)                .setReadTimeout(1, TimeUnit.SECONDS)                .setWriteTimeout(1, TimeUnit.SECONDS);
-//    }
-
-//    public void drawPolyLineOnMap(LatLng start, LatLng end) {
-//        GoogleDirection.withServerKey(getResources().getString(R.string.google_maps_key))
-//                .from(new LatLng(start.latitude, start.longitude))
-//                .to(new LatLng(end.latitude,end.longitude))
-////                .avoid(AvoidType.FERRIES)
-////                .avoid(AvoidType.HIGHWAYS)
-//                .execute(new DirectionCallback() {
-//                    @Override
-//                    public void onDirectionSuccess(Direction direction, String rawBody) {
-//                        if(direction.isOK()) {
-//                            // Do something
-//                            Toast.makeText(MapsActivity.this, "Direction Okay", Toast.LENGTH_SHORT).show();
-//                        } else {
-//                            // Do something
-//                            Log.e(TAG, "onDirectionSuccess: Not rawBody: "+rawBody );
-//                            Log.e(TAG, "onDirectionSuccess: Not "+ direction.getErrorMessage());
-//                            Toast.makeText(MapsActivity.this, "Direction No Okay", Toast.LENGTH_SHORT).show();
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onDirectionFailure(Throwable t) {
-//                        // Do something
-//                        Log.e(TAG, "onDirectionFailure: "+ t.getMessage());
-//                    }
-//                });
-//    }
 
     private int driverSize;
     private Runnable runnable;
@@ -4423,7 +4351,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View v) {
                 stopSearchUI();
                 stop = 1;
-//                showAllUI();
+                showAllUI();
                 for (int h = (counter - Step); h < (counter + Step) && h < driversKeys.size(); h++) {
 //                    //The Driver Has Not Answered The Pickup Call(Refused)
 //                    if (h >= 0) {
@@ -4518,7 +4446,4 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         confirm_dest.setText(resources.getString(R.string.Ajouterladestination));
         passer.setText(resources.getString(R.string.passer));
     }
-
 }
-
-
