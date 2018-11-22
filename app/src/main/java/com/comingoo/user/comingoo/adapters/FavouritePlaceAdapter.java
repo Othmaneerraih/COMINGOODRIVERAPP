@@ -1,6 +1,5 @@
 package com.comingoo.user.comingoo.adapters;
 
-
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
@@ -9,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -20,12 +18,12 @@ import com.comingoo.user.comingoo.place;
 
 import java.util.List;
 
-public class MyPlaceAdapter extends RecyclerView.Adapter<MyPlaceAdapter.ViewHolder> {
+public class FavouritePlaceAdapter  extends RecyclerView.Adapter<FavouritePlaceAdapter.ViewHolder> {
     private List<place> mDataset;
     private Context context;
     private boolean isAddButtonNeed;
 
-    public MyPlaceAdapter(Context context, List<place> myDataset, boolean isAddNeed) {
+    public FavouritePlaceAdapter(Context context, List<place> myDataset, boolean isAddNeed) {
         this.mDataset = myDataset;
         this.context = context;
         this.isAddButtonNeed = isAddNeed;
@@ -67,9 +65,6 @@ public class MyPlaceAdapter extends RecyclerView.Adapter<MyPlaceAdapter.ViewHold
                 context.startActivity(intent);
             }
         });
-
-        Log.e("MyPlace", "onCreateViewHolder: ");
-
     }
 
     // Return the size of your dataset (invoked by the layout manager)
@@ -97,4 +92,3 @@ public class MyPlaceAdapter extends RecyclerView.Adapter<MyPlaceAdapter.ViewHold
     }
 
 }
-

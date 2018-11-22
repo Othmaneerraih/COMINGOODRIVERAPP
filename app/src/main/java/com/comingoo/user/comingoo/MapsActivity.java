@@ -40,6 +40,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.ArrayMap;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
@@ -63,7 +64,8 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.comingoo.user.comingoo.MyPlaceAdapter;
+
+import com.comingoo.user.comingoo.adapters.MyPlaceAdapter;
 
 import com.comingoo.user.comingoo.others.HttpConnection;
 import com.comingoo.user.comingoo.others.PathJSONParser;
@@ -160,15 +162,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     static TextView promoCode;
 
     static RecyclerView mLocationView;
-    static MyPlaceAdapter placeAdapter;
-    static ArrayList<place> placeData;
+    public static MyPlaceAdapter placeAdapter;
 
     static RecyclerView fLocationView;
     static RecyclerView rLocationView;
-    static com.comingoo.user.comingoo.MyPlaceAdapter fPlaceAdapter;
-    static com.comingoo.user.comingoo.MyPlaceAdapter rPlaceAdapter;
-    static ArrayList<place> fPlaceData;
-    static ArrayList<place> rPlaceData;
+    public static MyPlaceAdapter fPlaceAdapter;
+    public static MyPlaceAdapter rPlaceAdapter;
+    static ArrayList<place> placeDataList;
+    static ArrayList<place> fPlaceDataList;
+    static ArrayList<place> rPlaceDataList;
 
     private static ConstraintLayout startConstraint;
     private ConstraintLayout endConstraint;
@@ -1817,66 +1819,66 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             ActivityCompat.requestPermissions(MapsActivity.this, new String[]{android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.READ_PHONE_STATE}, 1);
         } else {
             try {
-            recordButton.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    int eventaction = event.getAction();
-                    switch (eventaction) {
-                        case MotionEvent.ACTION_DOWN:
-                            try {
-                                outputeFile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/recording.3gp";
-                                myAudioRecorder = new MediaRecorder();
-                                myAudioRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-                                myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-                                myAudioRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
-                                myAudioRecorder.setOutputFile(outputeFile);
-                                recordButton.setScaleX((float) 1.3);
-                                recordButton.setScaleY((float) 1.3);
-                                myAudioRecorder.prepare();
-                                myAudioRecorder.start();
-                            } catch (NullPointerException e) {
-                                e.printStackTrace();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                            break;
-                        case MotionEvent.ACTION_UP:
-                            try {
-                                audioRecorded = true;
-                                recordButton.setScaleX((float) 1);
-                                recordButton.setScaleY((float) 1);
-
-                                deleteAudio.setVisibility(View.VISIBLE);
-                                deleteAudio.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        File file = new File(outputeFile);
-                                        file.delete();
-                                        recordButton.setVisibility(View.VISIBLE);
-                                        playAudio.setVisibility(View.GONE);
-                                        pauseAudio.setVisibility(View.GONE);
-                                        deleteAudio.setVisibility(View.GONE);
-                                    }
-                                });
-                                if (myAudioRecorder != null) {
-                                    myAudioRecorder.stop();
-                                    myAudioRecorder.release();
-                                    myAudioRecorder = null;
+                recordButton.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        int eventaction = event.getAction();
+                        switch (eventaction) {
+                            case MotionEvent.ACTION_DOWN:
+                                try {
+                                    outputeFile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/recording.3gp";
+                                    myAudioRecorder = new MediaRecorder();
+                                    myAudioRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+                                    myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+                                    myAudioRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
+                                    myAudioRecorder.setOutputFile(outputeFile);
+                                    recordButton.setScaleX((float) 1.3);
+                                    recordButton.setScaleY((float) 1.3);
+                                    myAudioRecorder.prepare();
+                                    myAudioRecorder.start();
+                                } catch (NullPointerException e) {
+                                    e.printStackTrace();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
                                 }
-                                recordButton.setVisibility(View.GONE);
-                                playAudio.setVisibility(View.VISIBLE);
-                                setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
-                            } catch (NullPointerException e) {
-                                e.printStackTrace();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                            break;
-                    }
-                    return false;
-                }
+                                break;
+                            case MotionEvent.ACTION_UP:
+                                try {
+                                    audioRecorded = true;
+                                    recordButton.setScaleX((float) 1);
+                                    recordButton.setScaleY((float) 1);
 
-            });
+                                    deleteAudio.setVisibility(View.VISIBLE);
+                                    deleteAudio.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            File file = new File(outputeFile);
+                                            file.delete();
+                                            recordButton.setVisibility(View.VISIBLE);
+                                            playAudio.setVisibility(View.GONE);
+                                            pauseAudio.setVisibility(View.GONE);
+                                            deleteAudio.setVisibility(View.GONE);
+                                        }
+                                    });
+                                    if (myAudioRecorder != null) {
+                                        myAudioRecorder.stop();
+                                        myAudioRecorder.release();
+                                        myAudioRecorder = null;
+                                    }
+                                    recordButton.setVisibility(View.GONE);
+                                    playAudio.setVisibility(View.VISIBLE);
+                                    setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
+                                } catch (NullPointerException e) {
+                                    e.printStackTrace();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                                break;
+                        }
+                        return false;
+                    }
+
+                });
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -2176,9 +2178,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         initialize();
 
-        placeData = new ArrayList<>();
-        fPlaceData = new ArrayList<>();
-        rPlaceData = new ArrayList<>();
+        placeDataList = new ArrayList<>();
+        fPlaceDataList = new ArrayList<>();
+        rPlaceDataList = new ArrayList<>();
 
         mLocationView = (RecyclerView) findViewById(R.id.my_recycler_view);
         mLocationView.setHasFixedSize(true);
@@ -2192,22 +2194,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         rLocationView.setHasFixedSize(true);
         rLocationView.setLayoutManager(new LinearLayoutManager(this));
 
-        placeAdapter = new MyPlaceAdapter(getApplicationContext(), placeData);
+        placeAdapter = new MyPlaceAdapter(getApplicationContext(), placeDataList, false);
         mLocationView.setAdapter(placeAdapter);
 
-        fPlaceAdapter = new MyPlaceAdapter(getApplicationContext(), fPlaceData);
+        fPlaceAdapter = new MyPlaceAdapter(getApplicationContext(), fPlaceDataList, true);
         fLocationView.setAdapter(fPlaceAdapter);
 
-        rPlaceAdapter = new MyPlaceAdapter(getApplicationContext(), rPlaceData);
+        rPlaceAdapter = new MyPlaceAdapter(getApplicationContext(), rPlaceDataList, false);
         rLocationView.setAdapter(rPlaceAdapter);
 
 
-        Acceuil = (ConstraintLayout) findViewById(R.id.acceuil);
-        Historique = (ConstraintLayout) findViewById(R.id.historique);
-        Inbox = (ConstraintLayout) findViewById(R.id.inbox);
-        ComingoonYou = (ConstraintLayout) findViewById(R.id.comingoonyou);
-        Aide = (ConstraintLayout) findViewById(R.id.aide);
-        logout = (ConstraintLayout) findViewById(R.id.logout);
+        Acceuil = findViewById(R.id.acceuil);
+        Historique =  findViewById(R.id.historique);
+        Inbox = findViewById(R.id.inbox);
+        ComingoonYou = findViewById(R.id.comingoonyou);
+        Aide = findViewById(R.id.aide);
+        logout = findViewById(R.id.logout);
 
         ivCallDriver.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -2447,6 +2449,46 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
+
+        DatabaseReference rootFavPlace = FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientID);
+        rootFavPlace.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.hasChild("favouritePlace")) {
+                    // run some code
+                } else {
+                    Map<String, String> dataFavPlace = new HashMap();
+                    dataFavPlace.put("Home", "");
+                    dataFavPlace.put("Work", "");
+                    FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientID).child("favouritePlace").setValue(dataFavPlace);
+
+                    Map<String, String> homeSt = new HashMap();
+                    homeSt.put("Lat", "");
+                    homeSt.put("Long", "");
+                    homeSt.put("Address", "");
+
+                    Map<String, String> workSt = new HashMap();
+                    workSt.put("Lat", "");
+                    workSt.put("Long", "");
+                    workSt.put("Address", "");
+
+                    FirebaseDatabase.getInstance().
+                            getReference("clientUSERS").child(clientID)
+                            .child("favouritePlace").child("Home").setValue(homeSt);
+
+                    FirebaseDatabase.getInstance().
+                            getReference("clientUSERS").child(clientID)
+                            .child("favouritePlace").child("Work").setValue(workSt);
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         //This change is for making conflict
     }
 
@@ -2491,9 +2533,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         place rPlace = gson.fromJson(json, place.class);
         place Place = new place("Travail", "", "33.5725155", "-7.5962637", R.drawable.lieux_proches);
 
-        if(rPlace == null){
+        if (rPlace == null) {
             return Place;
-        }else{
+        } else {
             return rPlace;
         }
     }
@@ -2574,21 +2616,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void showFavoritsAndRecents() {
-        fPlaceData.clear();
-//        rPlaceData.clear();
+        fPlaceDataList.clear();
+//        rPlaceDataList.clear();
         place Place = new place("Travail", "This feature is not yet available", "33.5725155", "-7.5962637", R.drawable.lieux_proches);
         place Place2 = new place("Maison", "This feature is not yet available", "33.5725155", "-7.5962637", R.drawable.lieux_proches);
 //        place Place = new place("Home", "", "", "", R.drawable.mdaison_con);
 //        place Place2 = new place("Work", "", "", "", R.drawable.work_icon);
-        fPlaceData.add(Place);
-        fPlaceData.add(Place2);
+        fPlaceDataList.add(Place);
+        fPlaceDataList.add(Place2);
 
         // Place = new place("Location", "This feature is not yet available", "33.5725155", "-7.5962637 ", R.drawable.lieux_recent);
-// rPlaceData.add(Place);
-// rPlaceData.add(Place);
-// rPlaceData.add(Place);
-// rPlaceData.add(Place);
-        rPlaceData.add(getRecentPlaces(context));
+// rPlaceDataList.add(Place);
+// rPlaceDataList.add(Place);
+// rPlaceDataList.add(Place);
+// rPlaceDataList.add(Place);
+        rPlaceDataList.add(getRecentPlaces(context));
 // if(!getRecentPlaces(context).lat.equals(null)){
 //
 // }
@@ -3142,7 +3184,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            placeData.clear();
+            placeDataList.clear();
             finished = false;
             if (orderDriverState == 0)
                 searchText = searchEditText.getText().toString();
@@ -3160,6 +3202,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
                     .setCountry("MA")
                     .build();
+
             mGeoDataClient.getAutocompletePredictions(searchText + " " + searchLoc, null,
                     typeFilter).addOnCompleteListener(new OnCompleteListener<AutocompletePredictionBufferResponse>() {
                 @Override
@@ -3176,7 +3219,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                             place Place = new place(gotPlace.getName().toString(),
                                                     gotPlace.getAddress().toString(), "" + gotPlace.getLatLng().latitude,
                                                     "" + gotPlace.getLatLng().longitude, R.drawable.lieux_proches);
-                                            placeData.add(Place);
+                                            placeDataList.add(Place);
                                         }
                                         placeAdapter.notifyDataSetChanged();
                                         finished = true;
@@ -3201,12 +3244,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             // Do things like update the progress bar
         }
 
-        // This runs in UI when background thread finishes
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-
-            int Height = 67 * placeData.size();
+            int Height = 67 * placeDataList.size();
             AnimateConstraint.animate(context, aR, HeightAbsolute, HeightAbsolute, 1);
             AnimateConstraint.animate(context, favorite, 1, 1, 1);
             if (orderDriverState == 0) {
@@ -3219,9 +3260,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 selectedOp.setVisibility(View.GONE);
                 bottomMenu.setVisibility(View.GONE);
                 findViewById(R.id.shadow).setVisibility(View.GONE);
-
-
             }
+
             if (orderDriverState == 1) {
                 searchButtonDest.setVisibility(View.VISIBLE);
                 aR.setVisibility(View.VISIBLE);
@@ -3231,7 +3271,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
             searchProgBar.setVisibility(View.GONE);
             searchProgBarDest.setVisibility(View.GONE);
-            // Do things like hide the progress bar or change a TextView
         }
     }
 
@@ -3297,6 +3336,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         }
     }
+
     public static void saveRecentPlaces(Context context, place rplace) {
         SharedPreferences appSharedPrefs = PreferenceManager
                 .getDefaultSharedPreferences(context.getApplicationContext());
@@ -3309,9 +3349,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public static void goToLocation(Context context, Double lat, Double lng, place rPlace) {
         // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), 17));
-        if(rPlace != null){
-            if (contains(rPlaceData, rPlace.name)) {
-                rPlaceData.add(rPlace);
+        if (rPlace != null) {
+            if (contains(rPlaceDataList, rPlace.name)) {
+                rPlaceDataList.add(rPlace);
                 saveRecentPlaces(context, rPlace);
                 rPlaceAdapter.notifyDataSetChanged();
             }
@@ -3343,7 +3383,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void hideSearchAddressStartUI() {
         //bottomMenu.setVisibility(View.GONE);
         //selectedOp.setVisibility(View.GONE);
-        placeData.clear();
+        placeDataList.clear();
         placeAdapter.notifyDataSetChanged();
         findViewById(R.id.imageView7).setVisibility(View.INVISIBLE);
         findViewById(R.id.imageView8).setVisibility(View.INVISIBLE);
@@ -3375,7 +3415,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public static void showSearchAddressStartUI() {
         menuButton.setVisibility(View.VISIBLE);
         state = 0;
-        placeData.clear();
+        placeDataList.clear();
         placeAdapter.notifyDataSetChanged();
         startConstraint.setVisibility(View.VISIBLE);
         searchEditText.clearFocus();
@@ -3725,7 +3765,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             // GPS location can be null if GPS is switched off
                             if (location != null) {
                                 userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-                                goToLocation(getApplicationContext(), userLatLng.latitude, userLatLng.longitude,null);
+                                goToLocation(getApplicationContext(), userLatLng.latitude, userLatLng.longitude, null);
                             }
                         }
                     })

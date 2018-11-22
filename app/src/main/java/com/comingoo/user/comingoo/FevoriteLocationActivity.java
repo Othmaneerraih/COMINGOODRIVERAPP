@@ -63,8 +63,7 @@ public class FevoriteLocationActivity extends AppCompatActivity
     private PlaceAutocompleteFragment autocompleteFragment;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fevorite_location);
 
@@ -72,33 +71,31 @@ public class FevoriteLocationActivity extends AppCompatActivity
 
         mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFrag.getMapAsync(this);
-        searchEt = (EditText)findViewById(R.id.search_edit_text);
+        searchEt = (EditText) findViewById(R.id.search_edit_text);
         confirmBtn = (Button) findViewById(R.id.confirm_btn);
 
         autocompleteFragment = (PlaceAutocompleteFragment)
                 getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
 
-        position = getIntent().getIntExtra("position",0);
+        position = getIntent().getIntExtra("position", 0);
         userId = getIntent().getStringExtra("userId");
 
-        if(position == 0){
+        if (position == 0) {
             febPlaceName = "Home";
-        }else{
+        } else {
             febPlaceName = "Work";
         }
 
         confirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!febPlaceAddress.isEmpty() && febPlaceLat !=0.0 && febPlacelong != 0.0){
-
+                if (!febPlaceAddress.isEmpty() && febPlaceLat != 0.0 && febPlacelong != 0.0) {
                     DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("FevPlace");
-
                     mDatabase.child(userId).child(febPlaceName).child("lat").setValue(febPlaceLat);
                     mDatabase.child(userId).child(febPlaceName).child("long").setValue(febPlacelong);
                     mDatabase.child(userId).child(febPlaceName).child("address").setValue(febPlaceAddress);
                     onBackPressed();
-                }else{
+                } else {
                     Toast.makeText(FevoriteLocationActivity.this, "Please set ", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -128,9 +125,8 @@ public class FevoriteLocationActivity extends AppCompatActivity
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap)
-    {
-        mGoogleMap=googleMap;
+    public void onMapReady(GoogleMap googleMap) {
+        mGoogleMap = googleMap;
         mGoogleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
         //Initialize Google Play Services
@@ -145,22 +141,31 @@ public class FevoriteLocationActivity extends AppCompatActivity
                 //Request Location Permission
                 checkLocationPermission();
             }
-        }
-        else {
+        } else {
             buildGoogleApiClient();
             mGoogleMap.setMyLocationEnabled(true);
         }
     }
 
-    private void setAutocompleteFragmentAction(){
+    private void setAutocompleteFragmentAction() {
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
                 mGoogleMap.clear();
                 // here is all data
-                mGoogleMap.addMarker(new MarkerOptions().position(place.getLatLng()).title(place.getName().toString()));
+//                mGoogleMap.addMarker(new MarkerOptions().position(place.getLatLng()).title(place.getName().toString()));
                 mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
                 mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 12.0f));
+
+//                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                MarkerOptions markerOptions = new MarkerOptions();
+                markerOptions.position(place.getLatLng());
+//                markerOptions.title("Current Position");
+                markerOptions.icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons("depart_pin", 56, 76)));
+                mCurrLocationMarker = mGoogleMap.addMarker(markerOptions);
+
+
+
                 searchEt.setText(place.getName().toString());
                 febPlaceLat = place.getLatLng().latitude;
                 febPlacelong = place.getLatLng().longitude;
@@ -197,14 +202,15 @@ public class FevoriteLocationActivity extends AppCompatActivity
     }
 
     @Override
-    public void onConnectionSuspended(int i) {}
+    public void onConnectionSuspended(int i) {
+    }
 
     @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {}
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+    }
 
     @Override
-    public void onLocationChanged(Location location)
-    {
+    public void onLocationChanged(Location location) {
         mLastLocation = location;
         if (mCurrLocationMarker != null) {
             mCurrLocationMarker.remove();
@@ -218,15 +224,16 @@ public class FevoriteLocationActivity extends AppCompatActivity
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
         markerOptions.title("Current Position");
-        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons("depart_pin",56,76)));
+        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons("depart_pin", 56, 76)));
         mCurrLocationMarker = mGoogleMap.addMarker(markerOptions);
 
         //move map camera
-        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,11));
+        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 11));
 
     }
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
+
     private void checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -247,7 +254,7 @@ public class FevoriteLocationActivity extends AppCompatActivity
                                 //Prompt the user once explanation has been shown
                                 ActivityCompat.requestPermissions(FevoriteLocationActivity.this,
                                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                                        MY_PERMISSIONS_REQUEST_LOCATION );
+                                        MY_PERMISSIONS_REQUEST_LOCATION);
                             }
                         })
                         .create()
@@ -258,7 +265,7 @@ public class FevoriteLocationActivity extends AppCompatActivity
                 // No explanation needed, we can request the permission.
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        MY_PERMISSIONS_REQUEST_LOCATION );
+                        MY_PERMISSIONS_REQUEST_LOCATION);
             }
         }
     }
@@ -285,9 +292,6 @@ public class FevoriteLocationActivity extends AppCompatActivity
                     }
 
                 } else {
-
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
                     Toast.makeText(this, "permission denied", Toast.LENGTH_LONG).show();
                 }
                 return;
@@ -298,8 +302,8 @@ public class FevoriteLocationActivity extends AppCompatActivity
         }
     }
 
-    public Bitmap resizeMapIcons(String iconName,int width, int height){
-        Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(),getResources().getIdentifier(iconName, "drawable", getPackageName()));
+    public Bitmap resizeMapIcons(String iconName, int width, int height) {
+        Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(), getResources().getIdentifier(iconName, "drawable", getPackageName()));
         Bitmap resizedBitmap = Bitmap.createScaledBitmap(imageBitmap, width, height, false);
         return resizedBitmap;
     }
