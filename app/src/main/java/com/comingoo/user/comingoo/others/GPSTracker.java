@@ -1,4 +1,4 @@
-package com.comingoo.user.comingoo.Others;
+package com.comingoo.user.comingoo.others;
 
 import android.app.Activity;
 import android.app.AlertDialog;

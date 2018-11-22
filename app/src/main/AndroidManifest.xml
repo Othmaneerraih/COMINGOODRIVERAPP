@@ -82,6 +82,11 @@
             android:label="Comingoo"
             android:screenOrientation="portrait"></activity>
 
+        <activity android:name=".FevoriteLocationActivity"
+            android:configChanges="orientation"
+            android:label="Comingoo"
+            android:screenOrientation="portrait"/>
+
         <activity
             android:name="com.comingoo.user.comingoo.CallActivity"
             android:configChanges="orientation"
