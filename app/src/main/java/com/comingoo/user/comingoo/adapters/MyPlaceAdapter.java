@@ -1,17 +1,16 @@
-package com.comingoo.user.comingoo.adapters;
+package com.comingoo.user.comingoo;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import com.comingoo.user.comingoo.MapsActivity;
-import com.comingoo.user.comingoo.R;
-import com.comingoo.user.comingoo.place;
 
 import java.util.List;
 
@@ -25,10 +24,12 @@ public class MyPlaceAdapter extends RecyclerView.Adapter<MyPlaceAdapter.ViewHold
     public class ViewHolder extends RecyclerView.ViewHolder {
         // each data item is just a string in this case
 
-        public View h;
+        View h;
         public TextView title, address;
-        public ImageView image,addBtn;
-        public ViewHolder(View v) {
+        ImageView image,addBtn;
+        RelativeLayout clickView;
+
+        ViewHolder(View v) {
             super(v);
             h = v;
 
@@ -36,6 +37,7 @@ public class MyPlaceAdapter extends RecyclerView.Adapter<MyPlaceAdapter.ViewHold
             title = v.findViewById(R.id.title);
             address = v.findViewById(R.id.address);
             addBtn = v.findViewById(R.id.add_btn);
+            clickView = v.findViewById(R.id.click_view);
         }
     }
 
@@ -58,12 +60,12 @@ public class MyPlaceAdapter extends RecyclerView.Adapter<MyPlaceAdapter.ViewHold
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         final place newPlace = mDataset.get(position);
 
-        holder.h.setOnClickListener(new View.OnClickListener() {
+        holder.clickView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                         MapsActivity.showSearchAddressStartUI();
@@ -90,7 +92,9 @@ public class MyPlaceAdapter extends RecyclerView.Adapter<MyPlaceAdapter.ViewHold
         holder.addBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                
+                Intent intent = new Intent(context,FevoriteLocationActivity.class);
+                intent.putExtra("position",position);
+                context.startActivity(intent);
             }
         });
     }

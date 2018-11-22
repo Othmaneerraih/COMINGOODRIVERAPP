@@ -63,9 +63,9 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.comingoo.user.comingoo.MyPlaceAdapter;
 
 import com.comingoo.user.comingoo.others.HttpConnection;
-import com.comingoo.user.comingoo.adapters.MyPlaceAdapter;
 import com.comingoo.user.comingoo.others.PathJSONParser;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
@@ -165,8 +165,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     static RecyclerView fLocationView;
     static RecyclerView rLocationView;
-    static MyPlaceAdapter fPlaceAdapter;
-    static MyPlaceAdapter rPlaceAdapter;
+    static com.comingoo.user.comingoo.MyPlaceAdapter fPlaceAdapter;
+    static com.comingoo.user.comingoo.MyPlaceAdapter rPlaceAdapter;
     static ArrayList<place> fPlaceData;
     static ArrayList<place> rPlaceData;
 
