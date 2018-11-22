@@ -65,8 +65,8 @@ public class FevoriteLocationActivity extends AppCompatActivity
     private int position;
     private String userId = "";
     private String febPlaceName = "";
-    private double febPlaceLat = 0.0;
-    private double febPlacelong = 0.0;
+    private String febPlaceLat = "";
+    private String febPlacelong = "";
     private String febPlaceAddress = "";
     private PlaceAutocompleteFragment autocompleteFragment;
 
@@ -97,7 +97,7 @@ public class FevoriteLocationActivity extends AppCompatActivity
         confirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!febPlaceAddress.isEmpty() && febPlaceLat != 0.0 && febPlacelong != 0.0) {
+                if (!febPlaceAddress.isEmpty() && febPlaceLat != "" && febPlacelong != "") {
                     FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child(febPlaceName).child("Lat").setValue(febPlaceLat);
                     FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child(febPlaceName).child("Long").setValue(febPlacelong);
                     FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child(febPlaceName).child("Address").setValue(febPlaceAddress);
@@ -192,8 +192,8 @@ public class FevoriteLocationActivity extends AppCompatActivity
                 mGoogleMap.addMarker(markerOptions);
 
                 searchEt.setText(place.getName().toString());
-                febPlaceLat = place.getLatLng().latitude;
-                febPlacelong = place.getLatLng().longitude;
+                febPlaceLat = String.valueOf(place.getLatLng().latitude);
+                febPlacelong = String.valueOf(place.getLatLng().longitude);
                 febPlaceAddress = place.getName().toString();
             }
 

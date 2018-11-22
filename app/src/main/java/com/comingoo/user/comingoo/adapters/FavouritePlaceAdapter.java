@@ -22,9 +22,11 @@ public class FavouritePlaceAdapter  extends RecyclerView.Adapter<FavouritePlaceA
     private List<place> mDataset;
     private Context context;
     private boolean isAddButtonNeed;
+    private String userId;
 
-    public FavouritePlaceAdapter(Context context, List<place> myDataset, boolean isAddNeed) {
+    public FavouritePlaceAdapter(Context context, List<place> myDataset, boolean isAddNeed, String userId) {
         this.mDataset = myDataset;
+        this.userId = userId;
         this.context = context;
         this.isAddButtonNeed = isAddNeed;
     }
@@ -48,21 +50,30 @@ public class FavouritePlaceAdapter  extends RecyclerView.Adapter<FavouritePlaceA
         holder.clickView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MapsActivity.showSearchAddressStartUI();
-                MapsActivity.goToLocation(context, Double.parseDouble(newPlace.getLat()), Double.parseDouble(newPlace.getLng()), newPlace);
+                if (newPlace.getLat() != null && newPlace.getLng() != null) {
+                    if (!newPlace.getLat().isEmpty() && !newPlace.getLng().isEmpty()) {
+                        MapsActivity.showSearchAddressStartUI();
+                        MapsActivity.goToLocation(context, Double.parseDouble(newPlace.
+                                getLat()), Double.parseDouble(newPlace.getLng()), newPlace);
+                    }
+                }
             }
         });
 
-        holder.title.setText(newPlace.getName());
-        holder.title.setText(newPlace.getName());
+        if (position ==0)
+        holder.title.setText("Work");
+        else if (position == 1) holder.title.setText("Home");
+
         holder.address.setText(newPlace.getAddress());
+
+
         holder.image.setImageResource(newPlace.getImage());
         holder.addBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, FevoriteLocationActivity.class);
                 intent.putExtra("position", position);
-//                intent.putExtra("userId", );
+                intent.putExtra("userId", userId);
                 context.startActivity(intent);
             }
         });

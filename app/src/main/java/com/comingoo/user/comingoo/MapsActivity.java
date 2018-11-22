@@ -65,6 +65,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.comingoo.user.comingoo.adapters.FavouritePlaceAdapter;
 import com.comingoo.user.comingoo.adapters.MyPlaceAdapter;
 
 import com.comingoo.user.comingoo.others.HttpConnection;
@@ -99,6 +100,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseException;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
@@ -166,7 +168,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     static RecyclerView fLocationView;
     static RecyclerView rLocationView;
-    public static MyPlaceAdapter fPlaceAdapter;
+    public static FavouritePlaceAdapter fPlaceAdapter;
     public static MyPlaceAdapter rPlaceAdapter;
     static ArrayList<place> placeDataList;
     static ArrayList<place> fPlaceDataList;
@@ -2196,7 +2198,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         placeAdapter = new MyPlaceAdapter(getApplicationContext(), placeDataList, false, userId);
         mLocationView.setAdapter(placeAdapter);
 
-        fPlaceAdapter = new MyPlaceAdapter(getApplicationContext(), fPlaceDataList, true, userId);
+        fPlaceAdapter = new FavouritePlaceAdapter(getApplicationContext(), fPlaceDataList, true, userId);
         fLocationView.setAdapter(fPlaceAdapter);
 
         rPlaceAdapter = new MyPlaceAdapter(getApplicationContext(), rPlaceDataList, false, userId);
@@ -2204,7 +2206,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         Acceuil = findViewById(R.id.acceuil);
-        Historique =  findViewById(R.id.historique);
+        Historique = findViewById(R.id.historique);
         Inbox = findViewById(R.id.inbox);
         ComingoonYou = findViewById(R.id.comingoonyou);
         Aide = findViewById(R.id.aide);
@@ -2488,6 +2490,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
+//        gettingWorkHome();
         //This change is for making conflict
     }
 
@@ -2615,14 +2618,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void showFavoritsAndRecents() {
-        fPlaceDataList.clear();
-//        rPlaceDataList.clear();
+//        fPlaceDataList.clear();
+        rPlaceDataList.clear();
         place Place = new place("Travail", "This feature is not yet available", "33.5725155", "-7.5962637", R.drawable.lieux_proches);
         place Place2 = new place("Maison", "This feature is not yet available", "33.5725155", "-7.5962637", R.drawable.lieux_proches);
-//        place Place = new place("Home", "", "", "", R.drawable.mdaison_con);
-//        place Place2 = new place("Work", "", "", "", R.drawable.work_icon);
-        fPlaceDataList.add(Place);
-        fPlaceDataList.add(Place2);
+//rPlaceDataList
 
         // Place = new place("Location", "This feature is not yet available", "33.5725155", "-7.5962637 ", R.drawable.lieux_recent);
 // rPlaceDataList.add(Place);
@@ -2634,8 +2634,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //
 // }
 
-        fPlaceAdapter.notifyDataSetChanged();
-        rPlaceAdapter.notifyDataSetChanged();
+//        fPlaceAdapter.notifyDataSetChanged();
 
 
         AnimateConstraint.animate(MapsActivity.this, favorite, HeightAbsolute, 1, 100);
@@ -4538,40 +4537,135 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     String address = "", lat = "", Long = "";
+    String homeAddress = "", homeLat = "", homeLong = "";
 
     @Override
     protected void onResume() {
         super.onResume();
+        fPlaceDataList.clear();
         try {
-        prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
-        userId = prefs.getString("userID", "");
-        Log.e(TAG, "onResume: "+ userId );
-        FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child("Home").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                     address = dataSnapshot.child("Address").getValue(String.class);
-                     lat = String.valueOf(dataSnapshot.child("Lat").getValue(Double.class));
-                     Long = String.valueOf(dataSnapshot.child("Long").getValue(Double.class));
-                    Log.e(TAG, "onResume: "+address );
-                    Log.e(TAG, "onResume: "+lat );
-                    Log.e(TAG, "onResume: "+Long );
+            prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
+            userId = prefs.getString("userID", "");
+            Log.e(TAG, "onResume: " + userId);
+            FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child("Work").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+
+                        address = dataSnapshot.child("Address").getValue(String.class);
+                        lat = dataSnapshot.child("Lat").getValue(String.class);
+                        Long =dataSnapshot.child("Long").getValue(String.class);
+
+                        Log.e(TAG, "onDataChange: "+address );
+                        Log.e(TAG, "onDataChange: "+lat );
+                        Log.e(TAG, "onDataChange: "+Long );
+                    }
                 }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            }
-        });
+                }
+            });
+            FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child("Home").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        homeAddress = dataSnapshot.child("Address").getValue(String.class);
+                        homeLat = dataSnapshot.child("Lat").getValue(String.class);
+                        homeLong = dataSnapshot.child("Long").getValue(String.class);
 
-        place place = new place(address, address, lat, Long, R.drawable.add_icon);
-        
 
-        } catch (NullPointerException e){
+                        Log.e(TAG, "onDataChange:homeAddress "+homeAddress );
+                        Log.e(TAG, "onDataChange:homeLat "+homeLat );
+                        Log.e(TAG, "onDataChange:homeLong "+homeLong );
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+            place homePlace = new place(homeAddress, homeAddress, homeLat, homeLong,R.drawable.work_icon);
+            place workPlace = new place(address, address, lat, Long, R.drawable.mdaison_con);
+
+            fPlaceDataList.add(homePlace);
+            fPlaceDataList.add(workPlace);
+            fPlaceAdapter.notifyDataSetChanged();
+
+
+        } catch (DatabaseException e) {
             e.printStackTrace();
-        } catch (Exception e){
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+//    private void gettingWorkHome(){
+////        fPlaceDataList.clear();
+//        try {
+//            prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
+//            userId = prefs.getString("userID", "");
+//            Log.e(TAG, "onResume: " + userId);
+//            FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child("Work").addListenerForSingleValueEvent(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                    if (dataSnapshot.exists()) {
+//
+//                        address = dataSnapshot.child("Address").getValue(String.class);
+//                        lat = dataSnapshot.child("Lat").getValue(String.class);
+//                        Long =dataSnapshot.child("Long").getValue(String.class);
+//
+//                        Log.e(TAG, "onDataChange: "+address );
+//                        Log.e(TAG, "onDataChange: "+lat );
+//                        Log.e(TAG, "onDataChange: "+Long );
+//                    }
+//                }
+//
+//                @Override
+//                public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                }
+//            });
+//            FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child("Home").addListenerForSingleValueEvent(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                    if (dataSnapshot.exists()) {
+//                        homeAddress = dataSnapshot.child("Address").getValue(String.class);
+//                        homeLat = dataSnapshot.child("Lat").getValue(String.class);
+//                        homeLong = dataSnapshot.child("Long").getValue(String.class);
+//
+//
+//                        Log.e(TAG, "onDataChange:homeAddress "+homeAddress );
+//                        Log.e(TAG, "onDataChange:homeLat "+homeLat );
+//                        Log.e(TAG, "onDataChange:homeLong "+homeLong );
+//                    }
+//                }
+//
+//                @Override
+//                public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                }
+//            });
+//
+//            place homePlace = new place(homeAddress, homeAddress, homeLat, homeLong,R.drawable.work_icon);
+//            place workPlace = new place(address, address, lat, Long, R.drawable.mdaison_con);
+//
+//            fPlaceDataList.add(homePlace);
+//            fPlaceDataList.add(workPlace);
+//            fPlaceAdapter.notifyDataSetChanged();
+//
+//
+//        } catch (DatabaseException e) {
+//            e.printStackTrace();
+//        } catch (NullPointerException e) {
+//            e.printStackTrace();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 }
