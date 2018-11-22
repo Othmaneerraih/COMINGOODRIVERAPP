@@ -89,9 +89,9 @@ public class FevoriteLocationActivity extends AppCompatActivity
         userId = getIntent().getStringExtra("userId");
 
         if (position == 0) {
-            febPlaceName = "Home";
-        } else {
             febPlaceName = "Work";
+        } else {
+            febPlaceName = "Home";
         }
 
         confirmBtn.setOnClickListener(new View.OnClickListener() {

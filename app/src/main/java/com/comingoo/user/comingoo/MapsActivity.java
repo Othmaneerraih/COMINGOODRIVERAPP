@@ -561,6 +561,34 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mp.setLooping(false);
         mp.start();
 
+
+        final int origionalVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
+
+        switch (audioManager.getRingerMode()) {
+            case 0:
+
+                mp.start();
+                break;
+            case 1:
+
+                mp.start();
+                break;
+            case 2:
+
+                mp.start();
+                break;
+        }
+
+        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                mp.stop();
+                mp.release();
+                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, origionalVolume, 0);
+            }
+        });
+
         if (ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(MapsActivity.this,
                     new String[]{android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.READ_PHONE_STATE},
@@ -811,7 +839,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                                     double avgRating = totalRating / totalRatingPerson;
                                                     String avg = String.format("%.2f", avgRating);
-                                                    iv_total_rating_number.setText(avg);
+                                                    String newString = avg.replace(",", ".");
+                                                    iv_total_rating_number.setText(newString);
 //                                                    int rating = Integer.parseInt(dataSnapshot.getValue(String.class)) + 1;
 //                                                    FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientId).child("rating").child(Integer.toString(RATE)).setValue("" + rating);
                                                 }
@@ -2264,7 +2293,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-        gooBox.setOnClickListener(new View.OnClickListener() {
+        promoCode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 showCustomDialog(MapsActivity.this);
@@ -2618,25 +2647,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void showFavoritsAndRecents() {
-//        fPlaceDataList.clear();
-        rPlaceDataList.clear();
-        place Place = new place("Travail", "This feature is not yet available", "33.5725155", "-7.5962637", R.drawable.lieux_proches);
-        place Place2 = new place("Maison", "This feature is not yet available", "33.5725155", "-7.5962637", R.drawable.lieux_proches);
-//rPlaceDataList
-
-        // Place = new place("Location", "This feature is not yet available", "33.5725155", "-7.5962637 ", R.drawable.lieux_recent);
-// rPlaceDataList.add(Place);
-// rPlaceDataList.add(Place);
-// rPlaceDataList.add(Place);
-// rPlaceDataList.add(Place);
         rPlaceDataList.add(getRecentPlaces(context));
-// if(!getRecentPlaces(context).lat.equals(null)){
-//
-// }
-
-//        fPlaceAdapter.notifyDataSetChanged();
-
-
+        rPlaceAdapter.notifyDataSetChanged();
         AnimateConstraint.animate(MapsActivity.this, favorite, HeightAbsolute, 1, 100);
 
 
@@ -3246,7 +3258,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             int Height = 67 * placeDataList.size();
-            AnimateConstraint.animate(context, aR, HeightAbsolute, HeightAbsolute, 1);
+//            AnimateConstraint.animate(context, aR, HeightAbsolute, HeightAbsolute, 1);
             AnimateConstraint.animate(context, favorite, 1, 1, 1);
             if (orderDriverState == 0) {
 //                searchButton.setVisibility(View.VISIBLE);
@@ -3354,13 +3366,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 rPlaceAdapter.notifyDataSetChanged();
             }
         }
-        image1.setVisibility(View.INVISIBLE);
-        image2.setVisibility(View.INVISIBLE);
-        positionButton.setVisibility(View.VISIBLE);
-        X.setVisibility(View.GONE);
-        citySelectLayout.setVisibility(View.GONE);
-        searchEditText.clearFocus();
-        searchDestEditText.clearFocus();
+//        image1.setVisibility(View.INVISIBLE);
+//        image2.setVisibility(View.INVISIBLE);
+//        positionButton.setVisibility(View.VISIBLE);
+//        X.setVisibility(View.GONE);
+//        citySelectLayout.setVisibility(View.GONE);
+//        searchEditText.clearFocus();
+//        searchDestEditText.clearFocus();
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(new LatLng(lat, lng))      // Sets the center of the map to Mountain View
                 .zoom(17)                   // Sets the zoom
@@ -4555,6 +4567,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         address = dataSnapshot.child("Address").getValue(String.class);
                         lat = dataSnapshot.child("Lat").getValue(String.class);
                         Long =dataSnapshot.child("Long").getValue(String.class);
+                        place workPlace = new place(address, address, lat, Long, R.drawable.mdaison_con);
+
+                        fPlaceDataList.add(workPlace);
+                        fPlaceAdapter.notifyDataSetChanged();
 
                         Log.e(TAG, "onDataChange: "+address );
                         Log.e(TAG, "onDataChange: "+lat );
@@ -4575,7 +4591,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         homeLat = dataSnapshot.child("Lat").getValue(String.class);
                         homeLong = dataSnapshot.child("Long").getValue(String.class);
 
-
+                        place homePlace = new place(homeAddress, homeAddress, homeLat, homeLong,R.drawable.work_icon);
+                        fPlaceDataList.add(homePlace);
+                        fPlaceAdapter.notifyDataSetChanged();
                         Log.e(TAG, "onDataChange:homeAddress "+homeAddress );
                         Log.e(TAG, "onDataChange:homeLat "+homeLat );
                         Log.e(TAG, "onDataChange:homeLong "+homeLong );
@@ -4587,14 +4605,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 }
             });
-
-            place homePlace = new place(homeAddress, homeAddress, homeLat, homeLong,R.drawable.work_icon);
-            place workPlace = new place(address, address, lat, Long, R.drawable.mdaison_con);
-
-            fPlaceDataList.add(homePlace);
-            fPlaceDataList.add(workPlace);
-            fPlaceAdapter.notifyDataSetChanged();
-
 
         } catch (DatabaseException e) {
             e.printStackTrace();
