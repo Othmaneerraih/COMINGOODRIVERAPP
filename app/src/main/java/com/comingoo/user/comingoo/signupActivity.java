@@ -53,7 +53,6 @@ public class signupActivity extends AppCompatActivity {
         imageURI = getIntent().getStringExtra("imageURI");
 
         mCallBacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-
             @Override
             public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
                 Intent intent = new Intent(signupActivity.this, MapsActivity.class);

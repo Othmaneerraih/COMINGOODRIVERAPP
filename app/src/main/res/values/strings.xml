@@ -98,6 +98,7 @@
     <string name="sinch_app_key">04ae7d45-1084-4fb5-9d7c-08d82527d191</string>
     <string name="sinch_app_secret">TfJrquo6qEmkV8DG/EXQPg==</string>
     <string name="sinch_envirentmnet_host">clientapi.sinch.com</string>
+    <string name="title_activity_confirm_btn">Confirmer address</string>
 
     <string-array name="blocked_users" tools:ignore="ExtraTranslation">
         <item>brightgupta18@gmail.com</item>

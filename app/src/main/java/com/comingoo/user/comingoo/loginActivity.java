@@ -142,8 +142,7 @@ public class loginActivity extends AppCompatActivity {
                                                                             startActivity(new Intent(loginActivity.this, MapsActivity.class));
                                                                             finish();
                                                                         } else {
-//                                                                            loginBtn.setVisibility(View.VISIBLE);
-                                                                            Toast.makeText(loginActivity.this, "Error!!!", Toast.LENGTH_SHORT).show();
+                                                                            Toast.makeText(loginActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                                                                         }
                                                                     }
                                                                 });
