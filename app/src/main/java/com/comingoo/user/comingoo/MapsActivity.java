@@ -810,7 +810,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                     double avgRating = totalRating / totalRatingPerson;
                                                     String avg = String.format("%.2f", avgRating);
                                                     iv_total_rating_number.setText(avg);
-                                                    Log.e(TAG, "onDataChange: Driver Rate: " + avg);
 //                                                    int rating = Integer.parseInt(dataSnapshot.getValue(String.class)) + 1;
 //                                                    FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientId).child("rating").child(Integer.toString(RATE)).setValue("" + rating);
                                                 }
@@ -2194,13 +2193,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         rLocationView.setHasFixedSize(true);
         rLocationView.setLayoutManager(new LinearLayoutManager(this));
 
-        placeAdapter = new MyPlaceAdapter(getApplicationContext(), placeDataList, false);
+        placeAdapter = new MyPlaceAdapter(getApplicationContext(), placeDataList, false, userId);
         mLocationView.setAdapter(placeAdapter);
 
-        fPlaceAdapter = new MyPlaceAdapter(getApplicationContext(), fPlaceDataList, true);
+        fPlaceAdapter = new MyPlaceAdapter(getApplicationContext(), fPlaceDataList, true, userId);
         fLocationView.setAdapter(fPlaceAdapter);
 
-        rPlaceAdapter = new MyPlaceAdapter(getApplicationContext(), rPlaceDataList, false);
+        rPlaceAdapter = new MyPlaceAdapter(getApplicationContext(), rPlaceDataList, false, userId);
         rLocationView.setAdapter(rPlaceAdapter);
 
 
@@ -4151,10 +4150,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Runnable runnable;
     private Handler handler;
     private int stop = 0;
+    String userId;
+    SharedPreferences prefs;
 
     private class sendRequestsTask extends AsyncTask<String, Integer, String> {
         SharedPreferences prefs;
-        String userId;
+
         String image;
         boolean finishedSendReq = false;
 
@@ -4534,5 +4535,43 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         confirm_start.setText(resources.getString(R.string.confirm_start));
         confirm_dest.setText(resources.getString(R.string.Ajouterladestination));
         passer.setText(resources.getString(R.string.passer));
+    }
+
+    String address = "", lat = "", Long = "";
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        try {
+        prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
+        userId = prefs.getString("userID", "");
+        Log.e(TAG, "onResume: "+ userId );
+        FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child("Home").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                     address = dataSnapshot.child("Address").getValue(String.class);
+                     lat = String.valueOf(dataSnapshot.child("Lat").getValue(Double.class));
+                     Long = String.valueOf(dataSnapshot.child("Long").getValue(Double.class));
+                    Log.e(TAG, "onResume: "+address );
+                    Log.e(TAG, "onResume: "+lat );
+                    Log.e(TAG, "onResume: "+Long );
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        place place = new place(address, address, lat, Long, R.drawable.add_icon);
+        
+
+        } catch (NullPointerException e){
+            e.printStackTrace();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }

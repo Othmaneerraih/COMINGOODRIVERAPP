@@ -62,6 +62,7 @@ public class FavouritePlaceAdapter  extends RecyclerView.Adapter<FavouritePlaceA
             public void onClick(View view) {
                 Intent intent = new Intent(context, FevoriteLocationActivity.class);
                 intent.putExtra("position", position);
+//                intent.putExtra("userId", );
                 context.startActivity(intent);
             }
         });

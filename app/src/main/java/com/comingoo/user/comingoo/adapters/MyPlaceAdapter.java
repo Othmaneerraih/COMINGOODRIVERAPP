@@ -1,6 +1,5 @@
 package com.comingoo.user.comingoo.adapters;
 
-
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
@@ -24,10 +23,12 @@ public class MyPlaceAdapter extends RecyclerView.Adapter<MyPlaceAdapter.ViewHold
     private List<place> mDataset;
     private Context context;
     private boolean isAddButtonNeed;
+    private String userId;
 
-    public MyPlaceAdapter(Context context, List<place> myDataset, boolean isAddNeed) {
+    public MyPlaceAdapter(Context context, List<place> myDataset, boolean isAddNeed, String userId) {
         this.mDataset = myDataset;
         this.context = context;
+        this.userId = userId;
         this.isAddButtonNeed = isAddNeed;
     }
 
@@ -64,11 +65,10 @@ public class MyPlaceAdapter extends RecyclerView.Adapter<MyPlaceAdapter.ViewHold
             public void onClick(View view) {
                 Intent intent = new Intent(context, FevoriteLocationActivity.class);
                 intent.putExtra("position", position);
+                intent.putExtra("userId", userId);
                 context.startActivity(intent);
             }
         });
-
-        Log.e("MyPlace", "onCreateViewHolder: ");
 
     }
 
