@@ -64,8 +64,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.comingoo.user.comingoo.Others.HttpConnection;
-import com.comingoo.user.comingoo.Others.PathJSONParser;
+import com.comingoo.user.comingoo.others.HttpConnection;
+import com.comingoo.user.comingoo.adapters.MyPlaceAdapter;
+import com.comingoo.user.comingoo.others.PathJSONParser;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
@@ -78,7 +79,6 @@ import com.google.android.gms.location.places.GeoDataClient;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceBufferResponse;
 import com.google.android.gms.location.places.Places;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -128,9 +128,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -3309,7 +3307,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         prefsEditor.commit();
     }
 
-    static void goToLocation(Context context, Double lat, Double lng,place rPlace) {
+    public static void goToLocation(Context context, Double lat, Double lng, place rPlace) {
         // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), 17));
         if(rPlace != null){
             if (contains(rPlaceData, rPlace.name)) {
@@ -3374,7 +3372,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    static void showSearchAddressStartUI() {
+    public static void showSearchAddressStartUI() {
         menuButton.setVisibility(View.VISIBLE);
         state = 0;
         placeData.clear();

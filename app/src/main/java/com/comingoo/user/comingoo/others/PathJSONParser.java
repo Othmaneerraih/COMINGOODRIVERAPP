@@ -1,4 +1,4 @@
-package com.comingoo.user.comingoo.Others;
+package com.comingoo.user.comingoo.others;
 
 import com.google.android.gms.maps.model.LatLng;
 
