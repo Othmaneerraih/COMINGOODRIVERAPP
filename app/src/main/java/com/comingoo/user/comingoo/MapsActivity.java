@@ -360,8 +360,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         destArrow.setImageBitmap(scaleBitmap(26, 200, R.drawable.arrow));
         menuButton.setImageBitmap(scaleBitmap(45, 45, R.drawable.home_icon));
         positionButton.setImageBitmap(scaleBitmap(40, 37, R.drawable.my_position_icon));
-//        X.setImageBitmap(scaleBitmap(30, 35, R.drawable.cancel));
-//        searchEditText.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) (dpWidth - 30), (int )((dpWidth - 30) / 3.75), R.drawable.search_icon)));
 
         //citySelectLayout.setBackground(new BitmapDrawable(getResources(), scaleBitmap(115, 29, R.drawable.)));
         //gooButton.setImageBitmap(scaleBitmap(20, 20, R.drawable.goo));
@@ -370,8 +368,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         gooBox.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) ((dpWidth - 30) / 3.75), context.getResources().getDisplayMetrics());
-
-
     }
 
     private String userName;
@@ -1810,7 +1806,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     // checking with debug point
- // for pulling ujjwal kumar
+    // for pulling ujjwal kumar
 
     private MediaRecorder myAudioRecorder;
     private String outputeFile;
@@ -1926,7 +1922,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     mediaPlayer.reset();
                     pauseAudio.setVisibility(View.GONE);
                     playAudio.setVisibility(View.VISIBLE);
-//                    setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
+                    setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
                 }
             });
         }
@@ -2335,7 +2331,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     //AnimateConstraint.expandCircleAnimation(context, findViewById(R.id.gooLayout), dpHeight, dpWidth);
                     menuButton.setVisibility(View.VISIBLE);
                     startSearchUI();
-                    hideAllUI();
+//                    hideAllUI();
 
                     try {
                         new LookForDriverTask().execute();
@@ -2573,19 +2569,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    private void hideAllUI() {
-        startConstraint.setVisibility(View.INVISIBLE);
-        searchDestEditText.setVisibility(View.INVISIBLE);
-        gooBox.setVisibility(View.INVISIBLE);
-        destArrow.setVisibility(View.INVISIBLE);
-    }
-
-    private void showAllUI() {
-        startConstraint.setVisibility(View.VISIBLE);
-        searchDestEditText.setVisibility(View.VISIBLE);
-        gooBox.setVisibility(View.VISIBLE);
-        destArrow.setVisibility(View.VISIBLE);
-    }
+//    private void hideAllUI() {
+//        startConstraint.setVisibility(View.INVISIBLE);
+//        searchDestEditText.setVisibility(View.INVISIBLE);
+//        gooBox.setVisibility(View.INVISIBLE);
+//        destArrow.setVisibility(View.INVISIBLE);
+//    }
+//
+//    private void showAllUI() {
+//        startConstraint.setVisibility(View.VISIBLE);
+//        searchDestEditText.setVisibility(View.VISIBLE);
+//        gooBox.setVisibility(View.VISIBLE);
+//        destArrow.setVisibility(View.VISIBLE);
+//    }
 
     public void showCustomDialog(final Context context) {
         final Dialog dialog = new Dialog(context);
@@ -2661,8 +2657,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         findViewById(R.id.adress_result).setVisibility(View.INVISIBLE);
 
 
-        //  AnimateConstraint.animate(MapsActivity.this,fR,  fHeight, 1, 1);
-        // AnimateConstraint.animate(MapsActivity.this,rR,  rHeight, 1, 1);
+//          AnimateConstraint.animate(MapsActivity.this,fR,  fHeight, 1, 1);
+//         AnimateConstraint.animate(MapsActivity.this,rR,  rHeight, 1, 1);
     }
 
 
@@ -3029,6 +3025,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         frameLayout.buildDrawingCache();
         frameTime.setText(closestDriverText.getText());
         Bitmap bm = frameLayout.getDrawingCache();
+
         Marker myMarker = mMap.addMarker(new MarkerOptions()
                 .position(startLatLng)
                 .icon(BitmapDescriptorFactory.fromBitmap(bm)));
@@ -3130,7 +3127,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     hideKeyboard(MapsActivity.this);
                     searchEditText.clearFocus();
                     searchEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-                    //lookForAddress();
+//                    lookForAddress();
                     return true;
                 }
                 return false;
@@ -3260,7 +3257,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             int Height = 67 * placeDataList.size();
-//            AnimateConstraint.animate(context, aR, HeightAbsolute, HeightAbsolute, 1);
+            AnimateConstraint.animate(context, aR, HeightAbsolute, HeightAbsolute, 1);
             AnimateConstraint.animate(context, favorite, 1, 1, 1);
             if (orderDriverState == 0) {
 //                searchButton.setVisibility(View.VISIBLE);
@@ -3784,7 +3781,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-//                            Log.d("MapDemoActivity", "Error trying to get last GPS location");
                             e.printStackTrace();
                         }
                     });
@@ -4454,7 +4450,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View v) {
                 stopSearchUI();
                 stop = 1;
-                showAllUI();
+//                showAllUI();
                 for (int h = (counter - Step); h < (counter + Step) && h < driversKeys.size(); h++) {
 //                    //The Driver Has Not Answered The Pickup Call(Refused)
 //                    if (h >= 0) {
@@ -4568,15 +4564,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                         address = dataSnapshot.child("Address").getValue(String.class);
                         lat = dataSnapshot.child("Lat").getValue(String.class);
-                        Long =dataSnapshot.child("Long").getValue(String.class);
+                        Long = dataSnapshot.child("Long").getValue(String.class);
                         place workPlace = new place(address, address, lat, Long, R.drawable.mdaison_con);
 
                         fPlaceDataList.add(workPlace);
                         fPlaceAdapter.notifyDataSetChanged();
 
-                        Log.e(TAG, "onDataChange: "+address );
-                        Log.e(TAG, "onDataChange: "+lat );
-                        Log.e(TAG, "onDataChange: "+Long );
+                        Log.e(TAG, "onDataChange: " + address);
+                        Log.e(TAG, "onDataChange: " + lat);
+                        Log.e(TAG, "onDataChange: " + Long);
                     }
                 }
 
@@ -4593,12 +4589,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         homeLat = dataSnapshot.child("Lat").getValue(String.class);
                         homeLong = dataSnapshot.child("Long").getValue(String.class);
 
-                        place homePlace = new place(homeAddress, homeAddress, homeLat, homeLong,R.drawable.work_icon);
+                        place homePlace = new place(homeAddress, homeAddress, homeLat, homeLong, R.drawable.work_icon);
                         fPlaceDataList.add(homePlace);
                         fPlaceAdapter.notifyDataSetChanged();
-                        Log.e(TAG, "onDataChange:homeAddress "+homeAddress );
-                        Log.e(TAG, "onDataChange:homeLat "+homeLat );
-                        Log.e(TAG, "onDataChange:homeLong "+homeLong );
+                        Log.e(TAG, "onDataChange:homeAddress " + homeAddress);
+                        Log.e(TAG, "onDataChange:homeLat " + homeLat);
+                        Log.e(TAG, "onDataChange:homeLong " + homeLong);
                     }
                 }
 
