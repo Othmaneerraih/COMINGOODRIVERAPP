@@ -2331,7 +2331,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     //AnimateConstraint.expandCircleAnimation(context, findViewById(R.id.gooLayout), dpHeight, dpWidth);
                     menuButton.setVisibility(View.VISIBLE);
                     startSearchUI();
-//                    hideAllUI();
+                    hideAllUI();
 
                     try {
                         new LookForDriverTask().execute();
@@ -2569,19 +2569,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-//    private void hideAllUI() {
-//        startConstraint.setVisibility(View.INVISIBLE);
-//        searchDestEditText.setVisibility(View.INVISIBLE);
-//        gooBox.setVisibility(View.INVISIBLE);
-//        destArrow.setVisibility(View.INVISIBLE);
-//    }
-//
-//    private void showAllUI() {
-//        startConstraint.setVisibility(View.VISIBLE);
-//        searchDestEditText.setVisibility(View.VISIBLE);
-//        gooBox.setVisibility(View.VISIBLE);
-//        destArrow.setVisibility(View.VISIBLE);
-//    }
+    private void hideAllUI() {
+        startConstraint.setVisibility(View.INVISIBLE);
+        searchDestEditText.setVisibility(View.INVISIBLE);
+        gooBox.setVisibility(View.INVISIBLE);
+        destArrow.setVisibility(View.INVISIBLE);
+    }
+
+    private void showAllUI() {
+        startConstraint.setVisibility(View.VISIBLE);
+        searchDestEditText.setVisibility(View.VISIBLE);
+        gooBox.setVisibility(View.VISIBLE);
+        destArrow.setVisibility(View.VISIBLE);
+    }
 
     public void showCustomDialog(final Context context) {
         final Dialog dialog = new Dialog(context);
@@ -4450,7 +4450,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View v) {
                 stopSearchUI();
                 stop = 1;
-//                showAllUI();
+                showAllUI();
                 for (int h = (counter - Step); h < (counter + Step) && h < driversKeys.size(); h++) {
 //                    //The Driver Has Not Answered The Pickup Call(Refused)
 //                    if (h >= 0) {
