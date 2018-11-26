@@ -1809,6 +1809,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    // checking with debug point
 
     private MediaRecorder myAudioRecorder;
     private String outputeFile;
