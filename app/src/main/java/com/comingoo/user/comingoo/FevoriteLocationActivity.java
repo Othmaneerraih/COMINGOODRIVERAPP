@@ -8,6 +8,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -50,6 +52,9 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.List;
+import java.util.Locale;
 
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
@@ -95,6 +100,7 @@ public class FevoriteLocationActivity extends AppCompatActivity
         autocompleteFragment = (PlaceAutocompleteFragment)
                 getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
 
+
         position = getIntent().getIntExtra("position", 0);
         userId = getIntent().getStringExtra("userId");
 
@@ -130,8 +136,6 @@ public class FevoriteLocationActivity extends AppCompatActivity
         autocompleteFragment.getView().setBackgroundResource(R.drawable.main_edit_text);
 
         setAutocompleteFragmentAction();
-
-
     }
 
     BitmapFactory.Options bOptions;
@@ -194,24 +198,6 @@ public class FevoriteLocationActivity extends AppCompatActivity
         mGoogleMap = googleMap;
         mGoogleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
-        //Initialize Google Play Services
-//        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//            if (ContextCompat.checkSelfPermission(this,
-//                    Manifest.permission.ACCESS_FINE_LOCATION)
-//                    == PackageManager.PERMISSION_GRANTED) {
-//                //Location Permission already granted
-//                buildGoogleApiClient();
-//                mGoogleMap.setMyLocationEnabled(true);
-//            } else {
-//                //Request Location Permission
-//                checkLocationPermission();
-//            }
-//        } else {
-//            buildGoogleApiClient();
-//            mGoogleMap.setMyLocationEnabled(true);
-//        }
-
-
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -225,6 +211,7 @@ public class FevoriteLocationActivity extends AppCompatActivity
         mGoogleMap.setMyLocationEnabled(true);
         mGoogleMap.getUiSettings().setMyLocationButtonEnabled(false);
         getLastLocation();
+
     }
 
     private LatLng userLatLng;
@@ -252,12 +239,37 @@ public class FevoriteLocationActivity extends AppCompatActivity
                     });
         }
     }
+
+    private String getCompleteAddressString(Context context, double LATITUDE, double LONGITUDE) {
+        String strAdd = "";
+        Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(LATITUDE, LONGITUDE, 1);
+            if (addresses != null) {
+                Address returnedAddress = addresses.get(0);
+                StringBuilder strReturnedAddress = new StringBuilder("");
+
+                for (int i = 0; i <= returnedAddress.getMaxAddressLineIndex(); i++) {
+                    strReturnedAddress.append(returnedAddress.getAddressLine(i)).append("\n");
+                }
+                strAdd = strReturnedAddress.toString();
+            } else {
+            }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return strAdd;
+    }
+
     public void goToLocation(Context context, Double lat, Double lng, place rPlace) {
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(new LatLng(lat, lng))      // Sets the center of the map to Mountain View
                 .zoom(17)                   // Sets the zoom
                 .build();                   // Creates a CameraPosition from the builder
         mGoogleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        autocompleteFragment.setText(getCompleteAddressString(getApplicationContext(), lat, lng));
     }
 
     private void setAutocompleteFragmentAction() {
