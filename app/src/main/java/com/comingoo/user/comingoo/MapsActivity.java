@@ -40,7 +40,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.ArrayMap;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
@@ -258,7 +257,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ImageButton carButton;
     private ImageButton selectCity;
 
-    private ConstraintLayout gooBox;
+    private RelativeLayout gooBox;
 
     private ConstraintLayout gooVoid;
 
@@ -363,7 +362,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         //citySelectLayout.setBackground(new BitmapDrawable(getResources(), scaleBitmap(115, 29, R.drawable.)));
         //gooButton.setImageBitmap(scaleBitmap(20, 20, R.drawable.goo));
-        gooBox.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) (dpWidth - 30), (int) ((dpWidth - 30) / 3.75), R.drawable.footer_min)));
+//        gooBox.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) (dpWidth - 30), (int) ((dpWidth - 30) / 3.75), R.drawable.footer_min)));
         shadowBg.setImageBitmap(scaleBitmap((int) dpWidth, 80, R.drawable.shadow_bottom));
 
 
@@ -2059,7 +2058,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         resources = co.getResources();
 
 
-        promoCode = (TextView) findViewById(R.id.promoCode);
+        promoCode = (TextView) findViewById(R.id.tv_promo_code);
         promoCode.setText("PROMO CODE");
 
         callLayout = findViewById(R.id.callLayout);
@@ -2124,7 +2123,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         sinchClient.getCallClient().addCallClientListener(new SinchCallClientListener());
 
-        price = (TextView) findViewById(R.id.price);
+        price = (TextView) findViewById(R.id.tv_price);
         fixedLocations = new ArrayList<>();
         context = MapsActivity.this;
         orderDriverState = 0;
@@ -2134,7 +2133,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         image2 = (ImageView) findViewById(R.id.imageView8);
         X = (ImageButton) findViewById(R.id.x);
         positionButton = (ImageButton) findViewById(R.id.my_position);
-        gooBox = (ConstraintLayout) findViewById(R.id.gooBox);
+        gooBox =  findViewById(R.id.gooBox);
 
         coverButton = (Button) findViewById(R.id.coverButton);
 
