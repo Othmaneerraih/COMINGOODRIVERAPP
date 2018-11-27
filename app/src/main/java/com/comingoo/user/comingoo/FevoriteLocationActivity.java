@@ -35,6 +35,7 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
@@ -136,6 +137,13 @@ public class FevoriteLocationActivity extends AppCompatActivity
         autocompleteFragment.getView().setBackgroundResource(R.drawable.main_edit_text);
 
         setAutocompleteFragmentAction();
+
+        AutocompleteFilter autocompleteFilter = new AutocompleteFilter.Builder()
+                .setTypeFilter(Place.TYPE_COUNTRY)
+                .setCountry("MA")
+                .build();
+
+        autocompleteFragment.setFilter(autocompleteFilter);
     }
 
     BitmapFactory.Options bOptions;

@@ -279,6 +279,7 @@
                 android:id="@+id/logout"
                 android:layout_width="fill_parent"
                 android:layout_height="60dp"
+                android:visibility="gone"
                 android:background="@drawable/top_border"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
