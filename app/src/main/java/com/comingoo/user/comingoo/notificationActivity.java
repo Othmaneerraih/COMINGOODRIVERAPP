@@ -145,7 +145,7 @@ public class notificationActivity extends AppCompatActivity {
                 title = v.findViewById(R.id.title);
                 content = v.findViewById(R.id.content);
                 promoImg = v.findViewById(R.id.imageView8);
-                promoCode = v.findViewById(R.id.promoCode);
+                promoCode = v.findViewById(R.id.tv_promo_code);
                 apply = v.findViewById(R.id.apply);
 
             }

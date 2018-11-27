@@ -1,6 +1,7 @@
 package com.comingoo.user.comingoo;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -9,6 +10,7 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -20,12 +22,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -42,8 +46,12 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
 
 public class FevoriteLocationActivity extends AppCompatActivity
@@ -69,18 +77,20 @@ public class FevoriteLocationActivity extends AppCompatActivity
     private String febPlacelong = "";
     private String febPlaceAddress = "";
     private PlaceAutocompleteFragment autocompleteFragment;
+    private ImageButton positionButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fevorite_location);
 
-//        getSupportActionBar().setTitle("Map Location Activity");
-
         mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFrag.getMapAsync(this);
         searchEt = (EditText) findViewById(R.id.search_edit_text);
         confirmBtn = (Button) findViewById(R.id.confirm_btn);
+        positionButton = (ImageButton) findViewById(R.id.my_position);
+
+        positionButton.setImageBitmap(scaleBitmap(40, 37, R.drawable.my_position_icon));
 
         autocompleteFragment = (PlaceAutocompleteFragment)
                 getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
@@ -108,14 +118,14 @@ public class FevoriteLocationActivity extends AppCompatActivity
             }
         });
 
-
-//        searchEt.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                searchEt.setVisibility(View.GONE);
-//                setAutocompleteFragmentAction();
-//            }
-//        });
+        positionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (userLatLng != null) {
+                    getLastLocation();
+                }
+            }
+        });
 
         autocompleteFragment.getView().setBackgroundResource(R.drawable.main_edit_text);
 
@@ -124,6 +134,51 @@ public class FevoriteLocationActivity extends AppCompatActivity
 
     }
 
+    BitmapFactory.Options bOptions;
+    int imageHeight;
+    int imageWidth;
+    int lastImageHeight;
+    int lastImageWidth;
+    int inSampleSize;
+    public Bitmap scaleBitmap(int reqWidth, int reqHeight, int resId) {
+        // Raw height and width of image
+
+        bOptions = new BitmapFactory.Options();
+        bOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeResource(getResources(), resId, bOptions);
+        imageHeight = bOptions.outHeight;
+        imageWidth = bOptions.outWidth;
+
+        imageHeight = bOptions.outHeight;
+        imageWidth = bOptions.outWidth;
+        inSampleSize = 1;
+
+        if (imageHeight > reqHeight || imageWidth > reqWidth) {
+
+            lastImageHeight = imageHeight / 2;
+            lastImageWidth = lastImageWidth / 2;
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while ((lastImageHeight / inSampleSize) >= reqHeight
+                    && (lastImageWidth / inSampleSize) >= reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+
+
+        // First decode with inJustDecodeBounds=true to check dimensions
+        bOptions = new BitmapFactory.Options();
+        bOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeResource(getResources(), resId, bOptions);
+
+        // Calculate inSampleSize
+        bOptions.inSampleSize = inSampleSize;
+
+        // Decode bitmap with inSampleSize set
+        bOptions.inJustDecodeBounds = false;
+        return BitmapFactory.decodeResource(getResources(), resId, bOptions);
+    }
     @Override
     public void onPause() {
         super.onPause();
@@ -140,21 +195,69 @@ public class FevoriteLocationActivity extends AppCompatActivity
         mGoogleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
         //Initialize Google Play Services
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this,
-                    Manifest.permission.ACCESS_FINE_LOCATION)
-                    == PackageManager.PERMISSION_GRANTED) {
-                //Location Permission already granted
-                buildGoogleApiClient();
-                mGoogleMap.setMyLocationEnabled(true);
-            } else {
-                //Request Location Permission
-                checkLocationPermission();
-            }
-        } else {
-            buildGoogleApiClient();
-            mGoogleMap.setMyLocationEnabled(true);
+//        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            if (ContextCompat.checkSelfPermission(this,
+//                    Manifest.permission.ACCESS_FINE_LOCATION)
+//                    == PackageManager.PERMISSION_GRANTED) {
+//                //Location Permission already granted
+//                buildGoogleApiClient();
+//                mGoogleMap.setMyLocationEnabled(true);
+//            } else {
+//                //Request Location Permission
+//                checkLocationPermission();
+//            }
+//        } else {
+//            buildGoogleApiClient();
+//            mGoogleMap.setMyLocationEnabled(true);
+//        }
+
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
         }
+        mGoogleMap.setMyLocationEnabled(true);
+        mGoogleMap.getUiSettings().setMyLocationButtonEnabled(false);
+        getLastLocation();
+    }
+
+    private LatLng userLatLng;
+    public void getLastLocation() {
+        // Get last known recent location using new Google Play Services SDK (v11+)
+        FusedLocationProviderClient locationClient = getFusedLocationProviderClient(this);
+
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            locationClient.getLastLocation()
+                    .addOnSuccessListener(new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            // GPS location can be null if GPS is switched off
+                            if (location != null) {
+                                userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                                goToLocation(getApplicationContext(), userLatLng.latitude, userLatLng.longitude, null);
+                            }
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
+        }
+    }
+    public void goToLocation(Context context, Double lat, Double lng, place rPlace) {
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(new LatLng(lat, lng))      // Sets the center of the map to Mountain View
+                .zoom(17)                   // Sets the zoom
+                .build();                   // Creates a CameraPosition from the builder
+        mGoogleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 
     private void setAutocompleteFragmentAction() {
@@ -162,20 +265,8 @@ public class FevoriteLocationActivity extends AppCompatActivity
             @Override
             public void onPlaceSelected(Place place) {
                 mGoogleMap.clear();
-                // here is all data
-//                mGoogleMap.addMarker(new MarkerOptions().position(place.getLatLng()).title(place.getName().toString()));
                 mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
                 mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 12.0f));
-
-//                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-//                MarkerOptions markerOptions = new MarkerOptions();
-//                markerOptions.position(place.getLatLng());
-//                markerOptions.title("Current Position");
-
-
-//                markerOptions.icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons("depart_pin", 76, 56)));
-//                mCurrLocationMarker = mGoogleMap.addMarker(markerOptions);
-
 
                 int height = 150;
                 int width = 80;
@@ -281,16 +372,12 @@ public class FevoriteLocationActivity extends AppCompatActivity
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
 
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
                 new AlertDialog.Builder(this)
                         .setTitle("Location Permission Needed")
                         .setMessage("This app needs the Location permission, please accept to use location functionality")
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                //Prompt the user once explanation has been shown
                                 ActivityCompat.requestPermissions(FevoriteLocationActivity.this,
                                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                                         MY_PERMISSIONS_REQUEST_LOCATION);
@@ -318,8 +405,6 @@ public class FevoriteLocationActivity extends AppCompatActivity
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
-                    // permission was granted, yay! Do the
-                    // location-related task you need to do.
                     if (ContextCompat.checkSelfPermission(this,
                             Manifest.permission.ACCESS_FINE_LOCATION)
                             == PackageManager.PERMISSION_GRANTED) {

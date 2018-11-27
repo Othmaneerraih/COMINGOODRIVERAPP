@@ -40,7 +40,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.ArrayMap;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
@@ -1007,10 +1006,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             }
 
-            if (ContextCompat.checkSelfPermission(MapsActivity.this,
-                    android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED ||
-                    ContextCompat.checkSelfPermission(MapsActivity.this,
-                            android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED ||
+            if (
+//                    ContextCompat.checkSelfPermission(MapsActivity.this,
+//                    android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED ||
+//                    ContextCompat.checkSelfPermission(MapsActivity.this,
+//                            android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED ||
                     ContextCompat.checkSelfPermission(MapsActivity.this,
                             Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
@@ -2047,7 +2047,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
 
-        setContentView(R.layout.activity_maps);
+        setContentView(R.layout.activity_maps_two);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -2059,7 +2059,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         resources = co.getResources();
 
 
-        promoCode = (TextView) findViewById(R.id.promoCode);
+        promoCode =  findViewById(R.id.promoCode);
         promoCode.setText("PROMO CODE");
 
         callLayout = findViewById(R.id.callLayout);
@@ -2108,7 +2108,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
 //        callLayout.setVisibility(View.VISIBLE);
-
 
         sinchClient = Sinch.getSinchClientBuilder()
                 .context(this)
@@ -3708,6 +3707,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //        } catch(SecurityException e)  {
 //            Log.e("Exception: %s", e.getMessage());
 //        }
+
     }
 
     private static String getCompleteAddressString(Context context, double LATITUDE, double LONGITUDE) {
@@ -3837,14 +3837,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (requestCode == 10) {
             if (grantResult[0] == PackageManager.PERMISSION_GRANTED) {
-                Log.e(TAG, "onRequestPermissionsResult: permitted audio ujjwal");
                 showVoiceDialog();
             } else {
-                //User denied Permission.
             }
         }
     }
-
 
     private class DrawRouteTask extends AsyncTask<LatLng, Integer, String> {
         LatLng start;
@@ -3932,15 +3929,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return "this string is passed to onPostExecute";
         }
 
-        // This is called from background thread but runs in UI
         @Override
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
-            //Draw the polyline
-            // Do things like update the progress bar
         }
 
-        // This runs in UI when background thread finishes
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
