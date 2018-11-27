@@ -257,7 +257,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ImageButton carButton;
     private ImageButton selectCity;
 
-    private RelativeLayout gooBox;
+    private ConstraintLayout gooBox;
 
     private ConstraintLayout gooVoid;
 
@@ -1006,10 +1006,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             }
 
-            if (ContextCompat.checkSelfPermission(MapsActivity.this,
-                    android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED ||
-                    ContextCompat.checkSelfPermission(MapsActivity.this,
-                            android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED ||
+            if (
+//                    ContextCompat.checkSelfPermission(MapsActivity.this,
+//                    android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED ||
+//                    ContextCompat.checkSelfPermission(MapsActivity.this,
+//                            android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED ||
                     ContextCompat.checkSelfPermission(MapsActivity.this,
                             Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
@@ -2046,7 +2047,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
 
-        setContentView(R.layout.activity_maps);
+        setContentView(R.layout.activity_maps_two);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -2058,7 +2059,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         resources = co.getResources();
 
 
-        promoCode = (TextView) findViewById(R.id.tv_promo_code);
+        promoCode =  findViewById(R.id.promoCode);
         promoCode.setText("PROMO CODE");
 
         callLayout = findViewById(R.id.callLayout);
@@ -2108,7 +2109,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 //        callLayout.setVisibility(View.VISIBLE);
 
-
         sinchClient = Sinch.getSinchClientBuilder()
                 .context(this)
                 .userId(userId)
@@ -2123,7 +2123,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         sinchClient.getCallClient().addCallClientListener(new SinchCallClientListener());
 
-        price = (TextView) findViewById(R.id.tv_price);
+        price = (TextView) findViewById(R.id.price);
         fixedLocations = new ArrayList<>();
         context = MapsActivity.this;
         orderDriverState = 0;
@@ -2133,7 +2133,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         image2 = (ImageView) findViewById(R.id.imageView8);
         X = (ImageButton) findViewById(R.id.x);
         positionButton = (ImageButton) findViewById(R.id.my_position);
-        gooBox =  findViewById(R.id.gooBox);
+        gooBox = (ConstraintLayout) findViewById(R.id.gooBox);
 
         coverButton = (Button) findViewById(R.id.coverButton);
 
@@ -3836,14 +3836,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (requestCode == 10) {
             if (grantResult[0] == PackageManager.PERMISSION_GRANTED) {
-                Log.e(TAG, "onRequestPermissionsResult: permitted audio ujjwal");
                 showVoiceDialog();
             } else {
-                //User denied Permission.
             }
         }
     }
-
 
     private class DrawRouteTask extends AsyncTask<LatLng, Integer, String> {
         LatLng start;
@@ -3931,15 +3928,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return "this string is passed to onPostExecute";
         }
 
-        // This is called from background thread but runs in UI
         @Override
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
-            //Draw the polyline
-            // Do things like update the progress bar
         }
 
-        // This runs in UI when background thread finishes
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
