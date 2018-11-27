@@ -360,8 +360,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         destArrow.setImageBitmap(scaleBitmap(26, 200, R.drawable.arrow));
         menuButton.setImageBitmap(scaleBitmap(45, 45, R.drawable.home_icon));
         positionButton.setImageBitmap(scaleBitmap(40, 37, R.drawable.my_position_icon));
-//        X.setImageBitmap(scaleBitmap(30, 35, R.drawable.cancel));
-//        searchEditText.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) (dpWidth - 30), (int )((dpWidth - 30) / 3.75), R.drawable.search_icon)));
 
         //citySelectLayout.setBackground(new BitmapDrawable(getResources(), scaleBitmap(115, 29, R.drawable.)));
         //gooButton.setImageBitmap(scaleBitmap(20, 20, R.drawable.goo));
@@ -370,8 +368,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         gooBox.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) ((dpWidth - 30) / 3.75), context.getResources().getDisplayMetrics());
-
-
     }
 
     private String userName;
@@ -592,7 +588,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(MapsActivity.this,
                     new String[]{android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.READ_PHONE_STATE},
-                    1);
+                    10);
         }
 
         caller_name.setVisibility(View.VISIBLE);
@@ -1019,8 +1015,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
                 ActivityCompat.requestPermissions(MapsActivity.this,
-                        new String[]{android.Manifest.permission.RECORD_AUDIO,
-                                android.Manifest.permission.READ_PHONE_STATE,
+                        new String[]{
+//                                android.Manifest.permission.RECORD_AUDIO,
+//                                android.Manifest.permission.READ_PHONE_STATE,
                                 Manifest.permission.ACCESS_FINE_LOCATION},
                         1);
             }
@@ -1586,10 +1583,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                             });
                                             FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("COURSE").removeValue();
                                             if (RATE > 3) {
-                                                if (ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.RECORD_AUDIO)
-                                                        != PackageManager.PERMISSION_GRANTED) {
-                                                    ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.RECORD_AUDIO},
-                                                            10);
+                                                if (ContextCompat.checkSelfPermission(MapsActivity.this,
+                                                        Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                                                    ActivityCompat.requestPermissions(MapsActivity.this,
+                                                            new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 10);
                                                 } else {
                                                     showVoiceDialog();
                                                 }
@@ -1713,10 +1710,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                     newDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                                                         @Override
                                                         public void onDismiss(DialogInterface dialog) {
-                                                            if (ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.RECORD_AUDIO)
-                                                                    != PackageManager.PERMISSION_GRANTED) {
-                                                                ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.RECORD_AUDIO},
-                                                                        10);
+                                                            if (ContextCompat.checkSelfPermission(MapsActivity.this,
+                                                                    Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                                                                ActivityCompat.requestPermissions(MapsActivity.this,
+                                                                        new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 10);
                                                             } else {
                                                                 showVoiceDialog();
                                                             }
@@ -1809,29 +1806,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    // checking with debug point
 
-    private MediaRecorder myAudioRecorder;
-    private String outputeFile;
-    private boolean audioRecorded;
-    private ImageButton recordButton;
-    private ImageButton playAudio, pauseAudio, deleteAudio;
-    private MediaPlayer mediaPlayer;
-    private Dialog newDialog;
+    boolean audioRecorded = false;
+    ImageButton recordButton, playAudio, pauseAudio, deleteAudio;
+    String outputeFile;
 
     private void showVoiceDialog() {
-        audioRecorded = false;
-
-        newDialog = new Dialog(context);
+        final Dialog newDialog = new Dialog(context);
         newDialog.setContentView(R.layout.voice_record);
 
-        TextView textView18 = newDialog.findViewById(R.id.textView18);
-        TextView textView19 = newDialog.findViewById(R.id.textView19);
-        TextView textView20 = newDialog.findViewById(R.id.textView20);
+        TextView textView18 = (TextView) newDialog.findViewById(R.id.textView18);
+        TextView textView19 = (TextView) newDialog.findViewById(R.id.textView19);
+        TextView textView20 = (TextView) newDialog.findViewById(R.id.textView20);
+
 
         //Set Texts
         textView18.setText(resources.getString(R.string.Appreciate));
         textView19.setText(resources.getString(R.string.PS));
         textView20.setText(resources.getString(R.string.Record));
+
 
         ImageButton nextBtn = (ImageButton) newDialog.findViewById(R.id.imageButton6);
         TextView name = (TextView) newDialog.findViewById(R.id.textView17);
@@ -1841,94 +1835,80 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         playAudio = (ImageButton) newDialog.findViewById(R.id.playAudio);
         pauseAudio = (ImageButton) newDialog.findViewById(R.id.pauseAudio);
         deleteAudio = (ImageButton) newDialog.findViewById(R.id.deleteAudio);
-        mediaPlayer = new MediaPlayer();
+        final MediaPlayer mediaPlayer = new MediaPlayer();
 
 
-        if (ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(MapsActivity.this, new String[]{android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 55);
-            ActivityCompat.requestPermissions(MapsActivity.this, new String[]{android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.READ_PHONE_STATE}, 1);
-        } else {
-            try {
-                recordButton.setOnTouchListener(new View.OnTouchListener() {
-                    @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        int eventaction = event.getAction();
-                        switch (eventaction) {
-                            case MotionEvent.ACTION_DOWN:
-                                try {
-                                    outputeFile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/recording.3gp";
-                                    myAudioRecorder = new MediaRecorder();
-                                    myAudioRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-                                    myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-                                    myAudioRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
-                                    myAudioRecorder.setOutputFile(outputeFile);
-                                    recordButton.setScaleX((float) 1.3);
-                                    recordButton.setScaleY((float) 1.3);
-                                    myAudioRecorder.prepare();
-                                    myAudioRecorder.start();
-                                } catch (NullPointerException e) {
-                                    e.printStackTrace();
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                                break;
-                            case MotionEvent.ACTION_UP:
-                                try {
-                                    audioRecorded = true;
-                                    recordButton.setScaleX((float) 1);
-                                    recordButton.setScaleY((float) 1);
+        outputeFile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/recording.3gp";
+        final MediaRecorder myAudioRecorder = new MediaRecorder();
+        myAudioRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        myAudioRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
+        myAudioRecorder.setOutputFile(outputeFile);
+//        if (ContextCompat.checkSelfPermission(MapsActivity.this,
+//                Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+//            ActivityCompat.requestPermissions(MapsActivity.this,
+//                    new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 10);
+//        } else {
 
-                                    deleteAudio.setVisibility(View.VISIBLE);
-                                    deleteAudio.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            File file = new File(outputeFile);
-                                            file.delete();
-                                            recordButton.setVisibility(View.VISIBLE);
-                                            playAudio.setVisibility(View.GONE);
-                                            pauseAudio.setVisibility(View.GONE);
-                                            deleteAudio.setVisibility(View.GONE);
-                                        }
-                                    });
-                                    if (myAudioRecorder != null) {
-                                        myAudioRecorder.stop();
-                                        myAudioRecorder.release();
-                                        myAudioRecorder = null;
-                                    }
-                                    recordButton.setVisibility(View.GONE);
-                                    playAudio.setVisibility(View.VISIBLE);
-                                    setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
-                                } catch (NullPointerException e) {
-                                    e.printStackTrace();
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                                break;
+        recordButton.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                int eventaction = event.getAction();
+                switch (eventaction) {
+                    case MotionEvent.ACTION_DOWN:
+                        try {
+                            recordButton.setScaleX((float) 1.3);
+                            recordButton.setScaleY((float) 1.3);
+
+                            myAudioRecorder.prepare();
+                            myAudioRecorder.start();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } catch (Exception e) {
                         }
-                        return false;
-                    }
+                        break;
 
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+                    case MotionEvent.ACTION_UP:
+                        try {
+                            audioRecorded = true;
+                            recordButton.setScaleX((float) 1);
+                            recordButton.setScaleY((float) 1);
 
-        if (ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(MapsActivity.this, new String[]{android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 55);
-            ActivityCompat.requestPermissions(MapsActivity.this, new String[]{android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.READ_PHONE_STATE}, 1);
-        } else {
-            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mediaPlayer.reset();
-                    pauseAudio.setVisibility(View.GONE);
-                    playAudio.setVisibility(View.VISIBLE);
-//                    setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
+                            deleteAudio.setVisibility(View.VISIBLE);
+                            deleteAudio.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    newDialog.dismiss();
+                                    showVoiceDialog();
+                                }
+                            });
+                            if (myAudioRecorder != null) {
+                                myAudioRecorder.stop();
+                                myAudioRecorder.release();
+                            }
+                            recordButton.setVisibility(View.GONE);
+                            playAudio.setVisibility(View.VISIBLE);
+                            setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        break;
                 }
-            });
-        }
+                return false;
+            }
 
+        });
+
+
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                pauseAudio.setVisibility(View.GONE);
+                playAudio.setVisibility(View.VISIBLE);
+                mediaPlayer.reset();
+                setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
+            }
+        });
 
         name.setText(userName);
         nextBtn.setOnClickListener(new View.OnClickListener() {
@@ -2659,8 +2639,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         findViewById(R.id.adress_result).setVisibility(View.INVISIBLE);
 
 
-        //  AnimateConstraint.animate(MapsActivity.this,fR,  fHeight, 1, 1);
-        // AnimateConstraint.animate(MapsActivity.this,rR,  rHeight, 1, 1);
+//          AnimateConstraint.animate(MapsActivity.this,fR,  fHeight, 1, 1);
+//         AnimateConstraint.animate(MapsActivity.this,rR,  rHeight, 1, 1);
     }
 
 
@@ -3002,7 +2982,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         selectedOp.setVisibility(View.GONE);
         shadowBg.setVisibility(View.GONE);
 //        searchButton.setVisibility(View.GONE);
-
+        endConstraint.setVisibility(View.VISIBLE);
         searchEditText.setEnabled(false);
 
 
@@ -3027,6 +3007,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         frameLayout.buildDrawingCache();
         frameTime.setText(closestDriverText.getText());
         Bitmap bm = frameLayout.getDrawingCache();
+
         Marker myMarker = mMap.addMarker(new MarkerOptions()
                 .position(startLatLng)
                 .icon(BitmapDescriptorFactory.fromBitmap(bm)));
@@ -3128,7 +3109,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     hideKeyboard(MapsActivity.this);
                     searchEditText.clearFocus();
                     searchEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-                    //lookForAddress();
+//                    lookForAddress();
                     return true;
                 }
                 return false;
@@ -3258,7 +3239,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             int Height = 67 * placeDataList.size();
-//            AnimateConstraint.animate(context, aR, HeightAbsolute, HeightAbsolute, 1);
+            AnimateConstraint.animate(context, aR, HeightAbsolute, HeightAbsolute, 1);
             AnimateConstraint.animate(context, favorite, 1, 1, 1);
             if (orderDriverState == 0) {
 //                searchButton.setVisibility(View.VISIBLE);
@@ -3782,7 +3763,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-//                            Log.d("MapDemoActivity", "Error trying to get last GPS location");
                             e.printStackTrace();
                         }
                     });
@@ -3795,71 +3775,76 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (grantResult.length > 0 && grantResult[0] == PackageManager.PERMISSION_GRANTED) {
             getLastLocation();
-            try {
-                if (recordButton != null) {
-                    recordButton.setOnTouchListener(new View.OnTouchListener() {
-                        @Override
-                        public boolean onTouch(View v, MotionEvent event) {
-                            int eventaction = event.getAction();
-                            switch (eventaction) {
-                                case MotionEvent.ACTION_DOWN:
-                                    try {
-                                        recordButton.setScaleX((float) 1.3);
-                                        recordButton.setScaleY((float) 1.3);
-                                        myAudioRecorder.prepare();
-                                        myAudioRecorder.start();
-                                    } catch (NullPointerException e) {
-                                        e.printStackTrace();
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                    break;
-                                case MotionEvent.ACTION_UP:
-                                    try {
-                                        audioRecorded = true;
-                                        recordButton.setScaleX((float) 1);
-                                        recordButton.setScaleY((float) 1);
 
-                                        deleteAudio.setVisibility(View.VISIBLE);
-                                        deleteAudio.setOnClickListener(new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View v) {
-                                                newDialog.dismiss();
-                                            }
-                                        });
-                                        if (myAudioRecorder != null) {
-                                            myAudioRecorder.stop();
-                                            myAudioRecorder.release();
-                                            myAudioRecorder = null;
-                                        }
-                                        recordButton.setVisibility(View.GONE);
-                                        playAudio.setVisibility(View.VISIBLE);
-                                        setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
-                                    } catch (NullPointerException e) {
-                                        e.printStackTrace();
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                    break;
-                            }
-                            return false;
-                        }
 
-                    });
-                }
-            } catch (NullPointerException e) {
-                e.printStackTrace();
-            }
+            //            try {
+//                if (recordButton != null) {
+//                    recordButton.setOnTouchListener(new View.OnTouchListener() {
+//                        @Override
+//                        public boolean onTouch(View v, MotionEvent event) {
+//                            int eventaction = event.getAction();
+//                            switch (eventaction) {
+//                                case MotionEvent.ACTION_DOWN:
+//                                    try {
+//                                        recordButton.setScaleX((float) 1.3);
+//                                        recordButton.setScaleY((float) 1.3);
+//                                        myAudioRecorder.prepare();
+//                                        myAudioRecorder.start();
+//                                    } catch (NullPointerException e) {
+//                                        e.printStackTrace();
+//                                    } catch (Exception e) {
+//                                        e.printStackTrace();
+//                                    }
+//                                    break;
+//                                case MotionEvent.ACTION_UP:
+//                                    try {
+//                                        audioRecorded = true;
+//                                        recordButton.setScaleX((float) 1);
+//                                        recordButton.setScaleY((float) 1);
+//
+//                                        deleteAudio.setVisibility(View.VISIBLE);
+//                                        deleteAudio.setOnClickListener(new View.OnClickListener() {
+//                                            @Override
+//                                            public void onClick(View v) {
+//                                                newDialog.dismiss();
+//                                            }
+//                                        });
+//                                        if (myAudioRecorder != null) {
+//                                            myAudioRecorder.stop();
+//                                            myAudioRecorder.release();
+//                                            myAudioRecorder = null;
+//                                        }
+//                                        recordButton.setVisibility(View.GONE);
+//                                        playAudio.setVisibility(View.VISIBLE);
+//                                        setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
+//                                    } catch (NullPointerException e) {
+//                                        e.printStackTrace();
+//                                    } catch (Exception e) {
+//                                        e.printStackTrace();
+//                                    }
+//                                    break;
+//                            }
+//                            return false;
+//                        }
+//
+//                    });
+//                }
+//            } catch (NullPointerException e) {
+//                e.printStackTrace();
+//            }
+
         }
 
         if (requestCode == 10) {
             if (grantResult[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.e(TAG, "onRequestPermissionsResult: permitted audio ujjwal");
                 showVoiceDialog();
             } else {
                 //User denied Permission.
             }
         }
     }
+
 
     private class DrawRouteTask extends AsyncTask<LatLng, Integer, String> {
         LatLng start;
@@ -4316,7 +4301,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                                 });
 
 
-                                                                // startSearchUI();
+//                                                                 startSearchUI();
                                                             }
                                                             //findViewById(R.id.driverInfo).setVisibility(View.VISIBLE);
                                                         }
@@ -4566,15 +4551,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                         address = dataSnapshot.child("Address").getValue(String.class);
                         lat = dataSnapshot.child("Lat").getValue(String.class);
-                        Long =dataSnapshot.child("Long").getValue(String.class);
+                        Long = dataSnapshot.child("Long").getValue(String.class);
                         place workPlace = new place(address, address, lat, Long, R.drawable.mdaison_con);
 
                         fPlaceDataList.add(workPlace);
                         fPlaceAdapter.notifyDataSetChanged();
 
-                        Log.e(TAG, "onDataChange: "+address );
-                        Log.e(TAG, "onDataChange: "+lat );
-                        Log.e(TAG, "onDataChange: "+Long );
+                        Log.e(TAG, "onDataChange: " + address);
+                        Log.e(TAG, "onDataChange: " + lat);
+                        Log.e(TAG, "onDataChange: " + Long);
                     }
                 }
 
@@ -4591,12 +4576,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         homeLat = dataSnapshot.child("Lat").getValue(String.class);
                         homeLong = dataSnapshot.child("Long").getValue(String.class);
 
-                        place homePlace = new place(homeAddress, homeAddress, homeLat, homeLong,R.drawable.work_icon);
+                        place homePlace = new place(homeAddress, homeAddress, homeLat, homeLong, R.drawable.work_icon);
                         fPlaceDataList.add(homePlace);
                         fPlaceAdapter.notifyDataSetChanged();
-                        Log.e(TAG, "onDataChange:homeAddress "+homeAddress );
-                        Log.e(TAG, "onDataChange:homeLat "+homeLat );
-                        Log.e(TAG, "onDataChange:homeLong "+homeLong );
+                        Log.e(TAG, "onDataChange:homeAddress " + homeAddress);
+                        Log.e(TAG, "onDataChange:homeLat " + homeLat);
+                        Log.e(TAG, "onDataChange:homeLong " + homeLong);
                     }
                 }
 
