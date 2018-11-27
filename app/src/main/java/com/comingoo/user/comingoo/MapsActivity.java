@@ -3710,7 +3710,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    private static String getCompleteAddressString(Context context, double LATITUDE, double LONGITUDE) {
+    private String getCompleteAddressString(Context context, double LATITUDE, double LONGITUDE) {
         String strAdd = "";
         Geocoder geocoder = new Geocoder(context, Locale.getDefault());
         try {
