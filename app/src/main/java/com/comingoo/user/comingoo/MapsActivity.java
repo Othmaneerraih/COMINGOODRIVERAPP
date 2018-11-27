@@ -1583,10 +1583,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                             });
                                             FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("COURSE").removeValue();
                                             if (RATE > 3) {
-                                                if (ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.RECORD_AUDIO)
-                                                        != PackageManager.PERMISSION_GRANTED) {
-                                                    ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.RECORD_AUDIO},
-                                                            10);
+                                                if (ContextCompat.checkSelfPermission(MapsActivity.this,
+                                                        Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                                                    ActivityCompat.requestPermissions(MapsActivity.this,
+                                                            new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 10);
                                                 } else {
                                                     showVoiceDialog();
                                                 }
@@ -1710,10 +1710,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                     newDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                                                         @Override
                                                         public void onDismiss(DialogInterface dialog) {
-                                                            if (ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.RECORD_AUDIO)
-                                                                    != PackageManager.PERMISSION_GRANTED) {
-                                                                ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.RECORD_AUDIO},
-                                                                        10);
+                                                            if (ContextCompat.checkSelfPermission(MapsActivity.this,
+                                                                    Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                                                                ActivityCompat.requestPermissions(MapsActivity.this,
+                                                                        new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 10);
                                                             } else {
                                                                 showVoiceDialog();
                                                             }
@@ -1807,20 +1807,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     // checking with debug point
-    // for pulling ujjwal kumar
 
-
-    private MediaRecorder myAudioRecorder;
-    private String outputeFile;
-    private boolean audioRecorded;
+    boolean audioRecorded = false;
+    ImageButton recordButton, playAudio, pauseAudio, deleteAudio;
+    String outputeFile;
 
     private void showVoiceDialog() {
-
-        audioRecorded = false;
-
         final Dialog newDialog = new Dialog(context);
         newDialog.setContentView(R.layout.voice_record);
-
 
         TextView textView18 = (TextView) newDialog.findViewById(R.id.textView18);
         TextView textView19 = (TextView) newDialog.findViewById(R.id.textView19);
@@ -1837,39 +1831,45 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         TextView name = (TextView) newDialog.findViewById(R.id.textView17);
 
 
-        final ImageButton recordButton = (ImageButton) newDialog.findViewById(R.id.recordAudio);
-        final ImageButton playAudio = (ImageButton) newDialog.findViewById(R.id.playAudio);
-        final ImageButton pauseAudio = (ImageButton) newDialog.findViewById(R.id.pauseAudio);
-        final ImageButton deleteAudio = (ImageButton) newDialog.findViewById(R.id.deleteAudio);
+        recordButton = (ImageButton) newDialog.findViewById(R.id.recordAudio);
+        playAudio = (ImageButton) newDialog.findViewById(R.id.playAudio);
+        pauseAudio = (ImageButton) newDialog.findViewById(R.id.pauseAudio);
+        deleteAudio = (ImageButton) newDialog.findViewById(R.id.deleteAudio);
         final MediaPlayer mediaPlayer = new MediaPlayer();
 
 
         outputeFile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/recording.3gp";
-        myAudioRecorder = new MediaRecorder();
+        final MediaRecorder myAudioRecorder = new MediaRecorder();
         myAudioRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
         myAudioRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
         myAudioRecorder.setOutputFile(outputeFile);
-        if (ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 55);
-        } else {
-            recordButton.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    int eventaction = event.getAction();
-                    switch (eventaction) {
-                        case MotionEvent.ACTION_DOWN:
-                            try {
-                                recordButton.setScaleX((float) 1.3);
-                                recordButton.setScaleY((float) 1.3);
-                                myAudioRecorder.prepare();
-                                myAudioRecorder.start();
+//        if (ContextCompat.checkSelfPermission(MapsActivity.this,
+//                Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+//            ActivityCompat.requestPermissions(MapsActivity.this,
+//                    new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 10);
+//        } else {
 
-                            } catch (Exception e) {
+        recordButton.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                int eventaction = event.getAction();
+                switch (eventaction) {
+                    case MotionEvent.ACTION_DOWN:
+                        try {
+                            recordButton.setScaleX((float) 1.3);
+                            recordButton.setScaleY((float) 1.3);
 
-                            }
-                            break;
-                        case MotionEvent.ACTION_UP:
+                            myAudioRecorder.prepare();
+                            myAudioRecorder.start();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } catch (Exception e) {
+                        }
+                        break;
+
+                    case MotionEvent.ACTION_UP:
+                        try {
                             audioRecorded = true;
                             recordButton.setScaleX((float) 1);
                             recordButton.setScaleY((float) 1);
@@ -1878,25 +1878,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             deleteAudio.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    showVoiceDialog();
                                     newDialog.dismiss();
+                                    showVoiceDialog();
                                 }
                             });
-
-                            myAudioRecorder.stop();
-                            myAudioRecorder.release();
-                            myAudioRecorder = null;
-
+                            if (myAudioRecorder != null) {
+                                myAudioRecorder.stop();
+                                myAudioRecorder.release();
+                            }
                             recordButton.setVisibility(View.GONE);
                             playAudio.setVisibility(View.VISIBLE);
                             setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
-                            break;
-                    }
-                    return false;
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        break;
                 }
+                return false;
+            }
 
-            });
-        }
+        });
+
 
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
@@ -2980,7 +2982,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         selectedOp.setVisibility(View.GONE);
         shadowBg.setVisibility(View.GONE);
 //        searchButton.setVisibility(View.GONE);
-
+        endConstraint.setVisibility(View.VISIBLE);
         searchEditText.setEnabled(false);
 
 
@@ -3835,12 +3837,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (requestCode == 10) {
             if (grantResult[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.e(TAG, "onRequestPermissionsResult: permitted audio ujjwal");
                 showVoiceDialog();
             } else {
                 //User denied Permission.
             }
         }
     }
+
 
     private class DrawRouteTask extends AsyncTask<LatLng, Integer, String> {
         LatLng start;
@@ -4297,7 +4301,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                                 });
 
 
-                                                                // startSearchUI();
+//                                                                 startSearchUI();
                                                             }
                                                             //findViewById(R.id.driverInfo).setVisibility(View.VISIBLE);
                                                         }
