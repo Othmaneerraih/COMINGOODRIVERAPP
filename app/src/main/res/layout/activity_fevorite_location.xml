@@ -12,6 +12,20 @@
         android:layout_height="match_parent"
         tools:context=".FevoriteLocationActivity" />
 
+
+    <ImageButton
+        android:id="@+id/my_position"
+        android:layout_width="40dp"
+        android:layout_height="37dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="80dp"
+        android:background="@color/transp"
+        android:scaleType="centerInside"
+        android:layout_marginTop="@dimen/margin_large"
+        android:layout_alignParentRight="true" />
+
+
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="50dp"
