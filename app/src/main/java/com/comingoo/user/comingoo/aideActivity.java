@@ -17,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,6 +43,7 @@ public class aideActivity extends AppCompatActivity {
 
     private EditText message;
     private TextView selectImage;
+    private ImageView ivArrawOne, ivArrawTwo;
 
     private String userId;
 
@@ -65,13 +67,17 @@ public class aideActivity extends AppCompatActivity {
         content = (ConstraintLayout) findViewById(R.id.content);
 
         image = (ConstraintLayout) findViewById(R.id.add_image);
+        ivArrawOne = findViewById(R.id.arrow1);
+        ivArrawTwo = findViewById(R.id.arrow2);
 
-        fc.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AnimateConstraint.animate(aideActivity.this, content, 250, 1, 500);
-            }
-        });
+        AnimateConstraint.animate(aideActivity.this, content, 250, 1, 0);
+
+//        fc.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                AnimateConstraint.animate(aideActivity.this, content, 70, 1, 500);
+//            }
+//        });
 
         findViewById(R.id.add_voice).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,9 +123,11 @@ public class aideActivity extends AppCompatActivity {
                 if (!a1) {
                     AnimateConstraint.animate(aideActivity.this, A1, 100, 2, 500);
                     a1 = true;
+                    ivArrawOne.setImageResource(R.drawable.ic_arraw_up);
                 } else {
                     AnimateConstraint.animate(aideActivity.this, A1, 2, 100, 500);
                     a1 = false;
+                    ivArrawOne.setImageResource(R.drawable.expand);
                 }
             }
         });
@@ -129,9 +137,11 @@ public class aideActivity extends AppCompatActivity {
                 if (!a2) {
                     AnimateConstraint.animate(aideActivity.this, A2, 70, 2, 500);
                     a2 = true;
+                    ivArrawTwo.setImageResource(R.drawable.ic_arraw_up);
                 } else {
                     AnimateConstraint.animate(aideActivity.this, A2, 2, 70, 500);
                     a2 = false;
+                    ivArrawTwo.setImageResource(R.drawable.expand);
                 }
 
             }

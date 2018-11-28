@@ -2,11 +2,15 @@ package com.comingoo.user.comingoo.adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.comingoo.user.comingoo.Course;
@@ -23,8 +27,8 @@ import java.util.List;
 public class HistoriqueAdapter extends RecyclerView.Adapter<HistoriqueAdapter.ViewHolder> {
     private List<Course> mDataset;
     private Context mContext;
+    private boolean isExpn = false;
 
-    // Provide a suitable constructor (depends on the kind of dataset)
     public HistoriqueAdapter(Context context, List<Course> myDataset) {
         this.mDataset = myDataset;
         this.mContext = context;
@@ -32,8 +36,7 @@ public class HistoriqueAdapter extends RecyclerView.Adapter<HistoriqueAdapter.Vi
 
     // Create new views (invoked by the layout manager)
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                   int viewType) {
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // create a new view
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.courses_rows, parent, false);
@@ -50,8 +53,41 @@ public class HistoriqueAdapter extends RecyclerView.Adapter<HistoriqueAdapter.Vi
             @Override
             public void onClick(View v) {
                 holder.fc.toggle(false);
+                if (isExpn) isExpn = false;
+                else isExpn = true;
             }
         });
+
+//        final ConstraintLayout.LayoutParams params = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
+//        if (isExpn){
+//            Log.e("Historyad", "onBindViewHolder: Expaned" );
+//            params.setMargins(0,50,0,0);
+//            holder.endText.setLayoutParams(params);
+//        } else {
+//            Log.e("Historyad", "onBindViewHolder: Expaned not" );
+//            params.setMargins(0, 0, 0, 0);
+//            holder.endText.setLayoutParams(params);
+//        }
+
+//        holder.fc.setLayoutAnimationListener(new Animation.AnimationListener() {
+//            @Override
+//            public void onAnimationStart(Animation animation) {
+//                params.setMargins(0,20,0,0);
+//                holder.endText.setLayoutParams(params);
+//            }
+//
+//            @Override
+//            public void onAnimationEnd(Animation animation) {
+//                params.setMargins(0,0,0,0);
+//                holder.endText.setLayoutParams(params);
+//            }
+//
+//            @Override
+//            public void onAnimationRepeat(Animation animation) {
+//
+//            }
+//        });
+//
 
         holder.dateText.setText(newCourse.getDate());
         holder.date2.setText(newCourse.getDate());
