@@ -156,7 +156,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     static ImageView shadowBg;
     static ConstraintLayout selectStart;
     static ConstraintLayout selectDest;
+
     static Button confirmStart;
+    private Button confirmDest;
+
     static ProgressBar searchProgBar;
     static ProgressBar searchProgBarDest;
 
@@ -217,7 +220,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private ImageButton cancelRequest;
 
-    private Button confirmDest;
 
     int Height;
 
@@ -1021,15 +1023,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 Manifest.permission.ACCESS_FINE_LOCATION},
                         1);
             }
-
-//            ivCallDriver.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    Call call = sinchClient.getCallClient().callUser(driverIDT);
-//                    call.addCallListener(new SinchCallListener());
-//                }
-//            });
-
         }
 
 
@@ -2099,7 +2092,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         deleviryButton = (ImageButton) findViewById(R.id.deliveryButton);
         carButton = (ImageButton) findViewById(R.id.carButton);
         selectCity = (ImageButton) findViewById(R.id.imageButton4);
-        destArrow = (ImageView) findViewById(R.id.destArrow);
+        destArrow = (ImageView) findViewById(R.id.iv_arrow_start_end);
 
         if (ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(MapsActivity.this,
@@ -2191,7 +2184,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         fPlaceDataList = new ArrayList<>();
         rPlaceDataList = new ArrayList<>();
 
-        mLocationView = (RecyclerView) findViewById(R.id.my_recycler_view);
+        mLocationView = (RecyclerView) findViewById(R.id.rv_fav_place);
         mLocationView.setHasFixedSize(true);
         mLocationView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -2409,13 +2402,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         confirmStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Begin Selecting Destination Phase
                 try {
                     if (startPositionIsValid()) {
                         orderDriverState = 1;
                         showSelectDestUI();
-//                    menuButton.setVisibility(View.GONE);
-
                         state = 1;
                     }
                 } catch (Exception e) {
@@ -2765,7 +2755,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void cancelCommandLayout() {
         orderDriverState = 1;
 
-        AnimateConstraint.animate(context, endConstraint, 180, dpHeight - 20, 500, selectDest, findViewById(R.id.destArrow));
+        AnimateConstraint.animate(context, endConstraint, 180, dpHeight - 20, 500, selectDest, findViewById(R.id.iv_arrow_start_end));
         destArrow.setVisibility(View.GONE);
         findViewById(R.id.gooContent).setVisibility(View.GONE);
 
@@ -2786,7 +2776,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void switchToCommandLayout() {
         orderDriverState = 2;
         positionButton.setVisibility(View.GONE);
-        AnimateConstraint.animate(context, endConstraint, dpHeight - 40, 180, 500, selectDest, findViewById(R.id.destArrow));
+        AnimateConstraint.animate(context, endConstraint, dpHeight - 40, 180, 500, selectDest, findViewById(R.id.iv_arrow_start_end));
         AnimateConstraint.fadeIn(MapsActivity.this, findViewById(R.id.gooContent), 500, 10);
 
         startConstraint.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) (dpHeight - 62), context.getResources().getDisplayMetrics());
@@ -3070,6 +3060,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             }
         });
+
         searchDestEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
@@ -3114,6 +3105,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 return false;
             }
         });
+
         searchDestEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
@@ -3371,8 +3363,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void hideSearchAddressStartUI() {
-        //bottomMenu.setVisibility(View.GONE);
-        //selectedOp.setVisibility(View.GONE);
         placeDataList.clear();
         placeAdapter.notifyDataSetChanged();
         findViewById(R.id.imageView7).setVisibility(View.INVISIBLE);
@@ -4407,6 +4397,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             cancelCommandLayout();
             return;
         }
+
         if (state != 1 && state != 2) {
             this.doubleBackToExitPressedOnce = true;
             Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();

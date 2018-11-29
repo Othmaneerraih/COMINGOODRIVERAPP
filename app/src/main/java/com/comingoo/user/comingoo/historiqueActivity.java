@@ -10,10 +10,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.comingoo.user.comingoo.adapters.HistoriqueAdapter;
@@ -22,9 +19,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.ramotion.foldingcell.FoldingCell;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -61,7 +56,7 @@ public class historiqueActivity extends AppCompatActivity {
         mLocation.keepSynced(true);
 
         CoursesData  = new ArrayList<>();
-        mLocationView = (RecyclerView) findViewById(R.id.my_recycler_view);
+        mLocationView = (RecyclerView) findViewById(R.id.rv_fav_place);
         mLocationView.setHasFixedSize(true);
         mLocationView.setLayoutManager(new LinearLayoutManager(this));
 

@@ -48,7 +48,7 @@ public class notificationActivity extends AppCompatActivity {
         mLocation.keepSynced(true);
 
         NotificationData  = new ArrayList<>();
-        mLocationView = (RecyclerView) findViewById(R.id.my_recycler_view);
+        mLocationView = (RecyclerView) findViewById(R.id.rv_fav_place);
         mLocationView.setHasFixedSize(true);
         mLocationView.setLayoutManager(new LinearLayoutManager(this));
 

@@ -64,8 +64,8 @@
 
         <ImageView
             android:id="@+id/ic_location_pin_start"
-            android:layout_width="76dp"
-            android:layout_height="56dp"
+            android:layout_width="86dp"
+            android:layout_height="66dp"
             android:layout_marginBottom="76dp"
             android:visibility="visible"
             android:src="@drawable/ic_depart_pin"/>
@@ -84,15 +84,13 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/roboto"
             android:text="\n..."
-            android:layout_marginTop="@dimen/margin_small"
+            android:layout_marginTop="12dp"
             android:layout_centerHorizontal="true"
             android:textAlignment="center"
             android:textColor="@android:color/white"
             android:textSize="12sp" />
 
     </RelativeLayout>
-
-
 
 
     <ImageView
@@ -122,21 +120,170 @@
             android:layout_centerInParent="true" />
     </com.skyfishjy.library.RippleBackground>
 
-    <include
-        android:id="@+id/content_pickup"
-        layout="@layout/content_pickup"
+    <RelativeLayout
+        android:id="@+id/rl_start_point"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:layout_alignParentBottom="true"></include>
+        android:visibility="visible"
+        android:layout_alignParentBottom="true">
+
+        <EditText
+            android:id="@+id/et_start_point"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_margin="@dimen/margin_large"
+            android:background="@drawable/contact_area"
+            android:cursorVisible="false"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:textColor="@color/color_dark_ash"
+            android:drawablePadding="@dimen/margin_normal"
+            android:drawableLeft="@drawable/ic_dot"
+            android:drawableRight="@drawable/ic_search"
+            android:padding="@dimen/margin_normal" />
+
+        <TextView
+            android:id="@+id/tv_fav_pace"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/txt_favourite_place"
+            android:textStyle="bold"
+            android:visibility="gone"
+            android:layout_marginLeft="@dimen/margin_large"
+            android:layout_below="@+id/et_start_point"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_fav_place"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_normal"
+            android:fontFamily="@font/roboto"
+            android:paddingBottom="15dp"
+            android:visibility="gone"
+            android:scrollbars="vertical"
+            android:layout_below="@+id/tv_fav_pace"/>
+
+        <TextView
+            android:id="@+id/tv_recent_place"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/txt_recent_place"
+            android:layout_marginLeft="@dimen/margin_large"
+            android:textStyle="bold"
+            android:visibility="gone"
+            android:layout_below="@+id/rv_fav_place"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_recent_places"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_normal"
+            android:fontFamily="@font/roboto"
+            android:paddingBottom="15dp"
+            android:scrollbars="vertical"
+            android:visibility="gone"
+            android:layout_below="@+id/tv_recent_place"/>
+
+        <Button
+            android:id="@+id/btn_pickup"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_below="@+id/rv_recent_places"
+            android:layout_marginLeft="@dimen/margin_normal"
+            android:layout_marginRight="@dimen/margin_normal"
+            android:background="@drawable/ic_pickup"
+            android:text="@string/txt_pick_up"
+            android:textColor="@android:color/white" />
+
+        <ImageView
+            android:id="@+id/iv_wheel"
+            android:layout_width="80dp"
+            android:layout_height="50dp"
+            android:layout_below="@+id/btn_pickup"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/ic_wheel" />
+
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/iv_arrow_start_end"
+        android:layout_width="26dp"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/margin_large"
+        android:layout_marginTop="@dimen/margin_xlarge"
+        android:visibility="visible"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/arrow"/>
+
+
+    <RelativeLayout
+        android:id="@+id/rl_end_point"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_alignParentBottom="true">
+
+        <EditText
+            android:id="@+id/et_end_point"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_margin="@dimen/margin_normal"
+            android:background="@drawable/contact_area"
+            android:drawableLeft="@drawable/ic_dot"
+            android:drawableRight="@drawable/ic_search"
+            android:padding="@dimen/margin_normal"
+            android:drawablePadding="@dimen/margin_normal"
+            android:cursorVisible="false"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:textColor="@color/color_dark_ash"/>
+
+        <LinearLayout
+            android:id="@+id/ll_destination"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/et_end_point"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+            <Button
+                android:id="@+id/btn_destination"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_weight="0.3"
+                android:layout_marginLeft="@dimen/margin_normal"
+                android:layout_marginRight="@dimen/margin_normal"
+                android:background="@drawable/ic_pickup"
+                android:text="@string/txt_pick_up"
+                android:textColor="@android:color/white" />
+
+            <Button
+                android:id="@+id/btn_destination_ignore"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_weight="0.7"
+                android:layout_marginRight="@dimen/margin_normal"
+                android:background="@drawable/gray_button"
+                android:text="@string/txt_ignore"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
+    </RelativeLayout>
 
     <ImageView
         android:id="@+id/iv_current_location"
         android:layout_width="35dp"
         android:layout_height="35dp"
         android:src="@drawable/my_position_icon"
-        android:layout_above="@+id/content_pickup"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_marginRight="@dimen/margin_normal"
-        android:layout_marginBottom="@dimen/margin_normal"/>
+        android:layout_marginBottom="190dp"/>
+
+    <include
+    android:id="@+id/content_price_promo_code"
+    layout="@layout/content_price_promo_code"
+    android:layout_height="wrap_content"
+    android:layout_width="wrap_content"
+    android:layout_alignParentBottom="true"></include>
 
 </RelativeLayout>

@@ -16,6 +16,8 @@
 
     <string name="txt_pick_up">Set pickup</string>
     <string name="txt_ignore">Ignore</string>
+    <string name="txt_favourite_place">Favourite Places</string>
+    <string name="txt_recent_place">Recent Places</string>
 
     <string name="Lieuxfavoris">Lieux favoris:</string>
     <string name="Lieuxrécents">Lieux récents:</string>

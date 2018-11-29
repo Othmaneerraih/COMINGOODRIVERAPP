@@ -91,6 +91,8 @@
 
     <string name="txt_pick_up">Set pickup</string>
     <string name="txt_ignore">Ignore</string>
+    <string name="txt_favourite_place">Favourite Places</string>
+    <string name="txt_recent_place">Recent Places</string>
 
     <string name="sinch_app_key">05a626b9-33a4-4b83-b7bc-2d49062ea9ae</string>
     <string name="sinch_app_secret">TfJrquo6qEmkV8DG/EXQPg==</string>

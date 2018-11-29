@@ -1,6 +1,7 @@
 package com.comingoo.user.comingoo;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -8,19 +9,30 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.comingoo.user.comingoo.adapters.FavouritePlaceAdapter;
+import com.comingoo.user.comingoo.adapters.MyPlaceAdapter;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
@@ -39,11 +51,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.maps.android.PolyUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
@@ -51,8 +63,8 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
     private String TAG = "MapsActivityNew";
     private ImageView ivDrawerToggol;
     private GoogleMap mMap;
-    private EditText etSearchOne;
-    private EditText etSearchTwo;
+    private EditText etSearchStartAddress;
+    private EditText etSearchDestination;
     private ImageView ivCurrentLocation;
 
     private float density;
@@ -63,7 +75,7 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
     private boolean courseScreenIsOn = false;
 
     private TextView tvClosestDriver;
-    private TextView tvFrameTime;
+    private TextView tvFrameTime, tvClosestDriverText;
 
     private ArrayList<String> driversKeys;
     private ArrayList<String> driversLocations;
@@ -75,6 +87,24 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
     private LatLng startLatLng;
     private LatLng destLatLng;
 
+    // Pickup Edittext contents
+    private Button btnPickUp;
+    private RelativeLayout rlStartPoint, rlEndPoint;
+    private ImageView ivWheel;
+    private RecyclerView rvFavPlaces, rvRecentPlaces;
+    private TextView tvFavPlace, tvRecentPlace;
+    private FavouritePlaceAdapter fPlaceAdapter;
+    private MyPlaceAdapter rPlaceAdapter;
+    private ArrayList<place> placeDataList;
+    private ArrayList<place> fPlaceDataList;
+    private ArrayList<place> rPlaceDataList;
+    private MyPlaceAdapter placeAdapter;
+
+    private LinearLayout llConfirmDestination;
+    private Button btnConfirmDestination, btnIgnoreDestination;
+
+    private String userId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,18 +114,36 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
     }
 
     private void initialize() {
-
         driversKeys = new ArrayList<String>();
         driversLocations = new ArrayList<String>();
         driversKeysHold = new ArrayList<String>();
+        placeDataList = new ArrayList<>();
+        fPlaceDataList = new ArrayList<>();
+        rPlaceDataList = new ArrayList<>();
+
 
         ivDrawerToggol = findViewById(R.id.iv_menu_maps);
         ivCurrentLocation = findViewById(R.id.iv_current_location);
-        etSearchOne = findViewById(R.id.et_start_point);
-        etSearchTwo = findViewById(R.id.et_end_point);
+        etSearchStartAddress = findViewById(R.id.et_start_point);
+        etSearchDestination = findViewById(R.id.et_end_point);
+        btnConfirmDestination = findViewById(R.id.btn_destination);
 
         tvClosestDriver = findViewById(R.id.tv_closest_driver);
         tvFrameTime = findViewById(R.id.tv_closest_driverPin);
+        tvClosestDriverText = findViewById(R.id.tv_closest_driver);
+
+        btnPickUp = findViewById(R.id.btn_pickup);
+        rlStartPoint = findViewById(R.id.rl_start_point);
+        rlEndPoint = findViewById(R.id.rl_end_point);
+        ivWheel = findViewById(R.id.iv_wheel);
+
+        llConfirmDestination = findViewById(R.id.ll_destination);
+        btnIgnoreDestination = findViewById(R.id.btn_destination_ignore);
+
+        rvFavPlaces = findViewById(R.id.rv_fav_place);
+        rvRecentPlaces = findViewById(R.id.rv_recent_places);
+        tvFavPlace = findViewById(R.id.tv_fav_pace);
+        tvRecentPlace = findViewById(R.id.tv_recent_place);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map_maps_activity);
@@ -103,7 +151,10 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
     }
 
     private void action() {
-        // Getting disply resulation and toggle drawer
+        SharedPreferences prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
+        userId = prefs.getString("userID", null);
+
+        // Getting display resoulation and toggle drawer
         Display display = getWindowManager().getDefaultDisplay();
         DisplayMetrics outMetrics = new DisplayMetrics();
         display.getMetrics(outMetrics);
@@ -120,7 +171,7 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
 
             }
         });
-
+        ////////////// Drawer toggling end //////////////////
 
         // Checking Location Permission
         if (ContextCompat.checkSelfPermission(MapsActivityNew.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -135,6 +186,237 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
                 }
             }
         });
+
+        btnPickUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                if (startPositionIsValid()) {
+                    orderDriverState = 1;
+                    showSelectDestUI();
+                    ivWheel.setVisibility(View.GONE);
+                    state = 1;
+//                }
+            }
+        });
+
+        etSearchStartAddress.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                state = 1;
+                AnimateConstraint.animate(MapsActivityNew.this, rlStartPoint, (dpHeight - 80), 100, 0);
+                ivWheel.setVisibility(View.GONE);
+                btnPickUp.setVisibility(View.GONE);
+                tvFavPlace.setVisibility(View.VISIBLE);
+                tvRecentPlace.setVisibility(View.VISIBLE);
+                rvFavPlaces.setVisibility(View.VISIBLE);
+                rvRecentPlaces.setVisibility(View.VISIBLE);
+
+                rlEndPoint.setVisibility(View.VISIBLE);
+                AnimateConstraint.animate(getApplicationContext(), rlEndPoint, 150, 1, 500);
+            }
+        });
+
+        btnConfirmDestination.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                if (destPositionIsValid()) {
+                    switchToCommandLayout();
+//                }
+            }
+        });
+
+        btnIgnoreDestination.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                destLatLng = null;
+                switchToCommandLayout();
+            }
+        });
+
+        rvFavPlaces.setHasFixedSize(true);
+        rvFavPlaces.setLayoutManager(new LinearLayoutManager(this));
+
+        rvRecentPlaces.setHasFixedSize(true);
+        rvRecentPlaces.setLayoutManager(new LinearLayoutManager(this));
+
+        placeAdapter = new MyPlaceAdapter(getApplicationContext(), placeDataList, false, userId);
+        rvRecentPlaces.setAdapter(placeAdapter);
+
+        fPlaceAdapter = new FavouritePlaceAdapter(getApplicationContext(), fPlaceDataList, true, userId);
+        rvFavPlaces.setAdapter(fPlaceAdapter);
+    }
+
+
+    private void showSelectDestUI() {
+        orderDriverState = 1;
+        hideSearchAddressStartUI();
+        btnPickUp.setVisibility(View.GONE);
+        rlEndPoint.setVisibility(View.VISIBLE);
+
+
+        Display display = getWindowManager().getDefaultDisplay();
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        display.getMetrics(outMetrics);
+
+        float density = getResources().getDisplayMetrics().density;
+        float dpHeight = outMetrics.heightPixels / density;
+        float dpWidth = outMetrics.widthPixels / density;
+
+        AnimateConstraint.animate(getApplicationContext(), rlStartPoint, (dpHeight - 20), 50, 500);
+        AnimateConstraint.fadeIn(getApplicationContext(), rlEndPoint, 500, 10);
+
+
+        findViewById(R.id.ic_location_pin_start).setVisibility(View.GONE);
+        findViewById(R.id.tv_closest_driver).setVisibility(View.GONE);
+        findViewById(R.id.iv_location_pin_dest).setVisibility(View.VISIBLE);
+
+        tvFrameTime.setText(tvClosestDriverText.getText());
+
+        ivDrawerToggol.setVisibility(View.VISIBLE);
+        ivDrawerToggol.setImageResource(R.drawable.back_arrow);
+        ivDrawerToggol.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hideSelectDestUI();
+            }
+        });
+
+    }
+
+    public void hideSearchAddressStartUI() {
+        placeDataList.clear();
+        placeAdapter.notifyDataSetChanged();
+        rvFavPlaces.setVisibility(View.INVISIBLE);
+
+        if (rvFavPlaces.getHeight() >= HeightAbsolute)
+            AnimateConstraint.animateCollapse(getApplicationContext(), rvFavPlaces, 1, HeightAbsolute, 300);
+//        hideKeyboard(geta);
+        rlStartPoint.setVisibility(View.VISIBLE);
+    }
+
+    private void switchToCommandLayout() {
+        orderDriverState = 2;
+        ivCurrentLocation.setVisibility(View.GONE);
+        AnimateConstraint.animate(getApplicationContext(), rlEndPoint,
+                dpHeight - 40, 180, 500, llConfirmDestination, findViewById(R.id.iv_arrow_start_end));
+
+
+        AnimateConstraint.fadeIn(MapsActivityNew.this, findViewById(R.id.gooContent), 500, 10);
+
+        rlStartPoint.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                (int) (dpHeight - 62), getApplicationContext().getResources().getDisplayMetrics());
+
+        llConfirmDestination.setVisibility(View.GONE);
+
+        state = 2;
+
+        findViewById(R.id.iv_location_pin_dest).setVisibility(View.GONE);
+
+
+//        if (destLatLng != null) {
+//            new DrawRouteTask().execute(startLatLng, destLatLng);
+//            gooButton.setVisibility(View.GONE);
+//            frameLayout2.setDrawingCacheEnabled(true);
+//            frameLayout2.buildDrawingCache();
+//            Bitmap bm = frameLayout2.getDrawingCache();
+//            Marker myMarker = mMap.addMarker(new MarkerOptions()
+//                    .position(destLatLng)
+//                    .icon(BitmapDescriptorFactory.fromBitmap(bm)));
+//
+//
+//        } else {
+//            gooButton.setVisibility(View.VISIBLE);
+//            searchDestEditText.setText("Destination non choisi.");
+//        }
+//
+//        ivDrawerToggol.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                cancelCommandLayout();
+//            }
+//        });
+    }
+
+    private String startCity;
+    private String destCity;
+
+    //Check Start Position
+    private boolean startPositionIsValid() {
+        //PolyUtil.containsLocation(position.latitude, position.longitude, casaPoly, true);
+
+        startCity = "casa";
+
+//        if(startLatLng != null)
+        if (PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.casaPoly(), true) || PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.errahmaPoly(), true)) {
+            startCity = "casa";
+        } else if (PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.salePoly(), true)) {
+            startCity = "sale";
+        } else if (PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.aeroportCasaPoly(), true)) {
+            startCity = "aeroportCasa";
+        } else if (PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.bouskouraPoly(), true)) {
+            startCity = "bouskoura";
+        } else if (PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.darBouazzaPoly(), true)) {
+            startCity = "darBouazza";
+        } else if (PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.jadidaPoly(), true)) {
+            startCity = "jadida";
+        } else if (PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.marrakechPoly(), true)) {
+            startCity = "marrakech";
+        } else if (PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.sidiRahalPoly(), true)) {
+            startCity = "sidirahal";
+        } else if (PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.rabatPoly(), true) || PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.missingRabatPoly(), true)) {
+            startCity = "rabat";
+        } else {
+            Toast.makeText(getApplicationContext(), "On est seulement disponible sur Casablanca!", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        return true;
+    }
+    private boolean destPositionIsValid() {
+        if (destLatLng == null)
+            return false;
+        if (PolyUtil.containsLocation(destLatLng.latitude, destLatLng.longitude, LocationInitializer.casaPoly(), true) || PolyUtil.containsLocation(destLatLng.latitude, destLatLng.longitude, LocationInitializer.errahmaPoly(), true)) {
+            destCity = "casa";
+            return true;
+        } else if (PolyUtil.containsLocation(destLatLng.latitude, destLatLng.longitude, LocationInitializer.rabatPoly(), true) || PolyUtil.containsLocation(destLatLng.latitude, destLatLng.longitude, LocationInitializer.missingRabatPoly(), true)) {
+            destCity = "rabat";
+            return true;
+        } else if (PolyUtil.containsLocation(destLatLng.latitude, destLatLng.longitude, LocationInitializer.salePoly(), true)) {
+            destCity = "sale";
+            return true;
+        } else if (PolyUtil.containsLocation(destLatLng.latitude, destLatLng.longitude, LocationInitializer.bouskouraPoly(), true)) {
+            destCity = "bouskoura";
+            return true;
+        } else if (PolyUtil.containsLocation(destLatLng.latitude, destLatLng.longitude, LocationInitializer.aeroportCasaPoly(), true)) {
+            destCity = "aeroportCasa";
+            return true;
+        }
+        if (PolyUtil.containsLocation(destLatLng.latitude, destLatLng.longitude, LocationInitializer.sidiRahalPoly(), true)) {
+            destCity = "sidiRahal";
+            return true;
+        } else if (PolyUtil.containsLocation(destLatLng.latitude, destLatLng.longitude, LocationInitializer.darBouazzaPoly(), true)) {
+            destCity = "darBouazza";
+            return true;
+        } else if (PolyUtil.containsLocation(destLatLng.latitude, destLatLng.longitude, LocationInitializer.marrakechPoly(), true)) {
+            destCity = "marrakech";
+            return true;
+        } else if (PolyUtil.containsLocation(destLatLng.latitude, destLatLng.longitude, LocationInitializer.jadidaPoly(), true)) {
+            destCity = "jadida";
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     @Override
@@ -181,11 +463,10 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
         mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
             @Override
             public void onMapLoaded() {
-                etSearchOne.setText(getCompleteAddressString(getApplicationContext(),
+                etSearchStartAddress.setText(getCompleteAddressString(getApplicationContext(),
                         startLatLng.latitude, startLatLng.longitude));
             }
         });
-
 
         try {
             new checkCourseTask().execute();
@@ -196,6 +477,104 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
         }
     }
 
+    boolean doubleBackToExitPressedOnce = false;
+    private int state = 0;
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed();
+            return;
+        }
+
+        if (state == 1) {
+            state = 0;
+//            hideSelectDestUI();
+            AnimateConstraint.animate(getApplicationContext(), etSearchStartAddress, 1, 1, 1);
+            btnPickUp.setVisibility(View.VISIBLE);
+            ivWheel.setVisibility(View.VISIBLE);
+        }
+
+        if (state != 1) {
+            this.doubleBackToExitPressedOnce = true;
+            Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+
+            new Handler().postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    doubleBackToExitPressedOnce = false;
+                }
+            }, 2000);
+        }
+
+    }
+
+
+    private void hideSelectDestUI() {
+        orderDriverState = 0;
+
+        ivDrawerToggol.setClickable(true);
+
+//        hideSearchAddressStartUI();
+        etSearchStartAddress.setVisibility(View.VISIBLE);
+
+//        searchButton.setVisibility(View.VISIBLE);
+
+        etSearchDestination.setVisibility(View.GONE);
+//        selectDest.setVisibility(View.GONE);
+
+
+        etSearchStartAddress.setEnabled(true);
+
+        AnimateConstraint.animate(MapsActivityNew.this, etSearchStartAddress, 120, (dpHeight - 80), 500);
+
+        findViewById(R.id.ic_location_pin_start).setVisibility(View.VISIBLE);
+        findViewById(R.id.tv_closest_driver).setVisibility(View.VISIBLE);
+        findViewById(R.id.iv_location_pin_dest).setVisibility(View.GONE);
+
+
+        ivDrawerToggol.setImageResource(R.drawable.home_icon);
+        ivDrawerToggol.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // mDrawer.openMenu(true);
+                View contentMap = findViewById(R.id.content_map_view);
+                ConstraintLayout contentBlocker = findViewById(R.id.contentBlocker);
+                AnimateConstraint.resideAnimation(getApplicationContext(), contentMap, contentBlocker, (int) dpWidth, (int) dpHeight, 200);
+            }
+        });
+
+
+        mMap.clear();
+
+    }
+
+
+    public void showSearchAddressStartUI() {
+        ivDrawerToggol.setVisibility(View.VISIBLE);
+        state = 0;
+        placeDataList.clear();
+        placeAdapter.notifyDataSetChanged();
+        rlStartPoint.setVisibility(View.VISIBLE);
+        etSearchStartAddress.clearFocus();
+        etSearchStartAddress.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+//        searchDestEditText.clearFocus();
+
+        AnimateConstraint.animate(getApplicationContext(), etSearchStartAddress, 1, 1, 1);
+
+//        if (orderDriverState == 0) {
+//            selectStart.setVisibility(View.VISIBLE);
+//            bottomMenu.setVisibility(View.VISIBLE);
+//            selectedOp.setVisibility(View.VISIBLE);
+//            shadowBg.setVisibility(View.VISIBLE);
+//        }
+//        if (orderDriverState == 1) {
+//            selectDest.setVisibility(View.VISIBLE);
+//        }
+    }
 
     private class ReverseGeocodingTask extends AsyncTask<LatLng, Void, String> {
         Context mContext;
@@ -217,9 +596,9 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
             if (courseScreenIsOn)
                 return;
             if (orderDriverState == 0)
-                etSearchOne.setText(addressText);
+                etSearchStartAddress.setText(addressText);
             if (orderDriverState == 1)
-                etSearchTwo.setText(addressText);
+                etSearchDestination.setText(addressText);
 
         }
     }
@@ -374,7 +753,7 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
                             String distance = "" + (loc.distanceTo(loca) / 1000);
 
 
-                            etSearchOne.setText(getCompleteAddressString(getApplicationContext(), startLatLng.latitude, startLatLng.longitude));
+                            etSearchStartAddress.setText(getCompleteAddressString(getApplicationContext(), startLatLng.latitude, startLatLng.longitude));
 
 
                             for (int j = 0; j < driversKeys.size(); j++) {
