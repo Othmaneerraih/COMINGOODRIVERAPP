@@ -9,7 +9,7 @@
     android:focusableInTouchMode="true">
 
     <android.support.constraint.ConstraintLayout
-        android:id="@+id/menuLayout"
+        android:id="@+id/rl_map_drawer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/colorPrimaryDark"
@@ -68,7 +68,7 @@
                     android:layout_marginLeft="36dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
-                    android:background="@drawable/acceuil"
+                    android:background="@drawable/ic_home_white"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -367,7 +367,7 @@
                 app:rb_scale="6">
 
                 <ImageView
-                    android:id="@+id/centerImage"
+                    android:id="@+id/iv_rapple_center_image"
                     android:layout_width="64dp"
                     android:layout_height="64dp"
                     android:layout_centerInParent="true" />
@@ -384,7 +384,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
-            android:visibility="invisible"
+            android:visibility="visible"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -409,7 +409,7 @@
                     app:layout_constraintVertical_bias="1.0" />
 
                 <TextView
-                    android:id="@+id/closestDriverPin"
+                    android:id="@+id/tv_closest_driverPin"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
@@ -506,7 +506,7 @@
 
 
         <android.support.constraint.ConstraintLayout
-            android:id="@+id/pin"
+            android:id="@+id/rl_depart_pin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -517,7 +517,7 @@
             app:layout_constraintTop_toTopOf="@+id/map">
 
             <ImageView
-                android:id="@+id/locationPin"
+                android:id="@+id/ic_location_pin_start"
                 android:layout_width="56dp"
                 android:layout_height="76dp"
                 android:layout_marginBottom="76dp"
@@ -530,11 +530,11 @@
                 app:layout_constraintVertical_bias="0.0" />
 
             <ImageView
-                android:id="@+id/locationPinDest"
+                android:id="@+id/iv_location_pin_dest"
                 android:layout_width="56dp"
                 android:layout_height="76dp"
                 android:layout_marginBottom="76dp"
-                android:visibility="gone"
+                android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -543,7 +543,7 @@
                 app:layout_constraintVertical_bias="0.0" />
 
             <TextView
-                android:id="@+id/closestDriver"
+                android:id="@+id/tv_closest_driver"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -1559,7 +1559,7 @@
         android:layout_height="match_parent"
         android:clickable="true"
         android:elevation="10dp"
-        android:visibility="gone">
+        android:visibility="visible">
 
     </android.support.constraint.ConstraintLayout>
 

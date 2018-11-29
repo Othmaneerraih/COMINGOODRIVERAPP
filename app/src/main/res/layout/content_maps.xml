@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/map_maps_activity"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.comingoo.user.comingoo.MapsActivity" />
+
+
+    <FrameLayout
+        android:id="@+id/framelayout"
+        android:layout_width="79dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:visibility="visible">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/location_start_pin"
+                android:layout_width="56dp"
+                android:layout_height="76dp"
+                android:layout_marginStart="0dp"
+                android:layout_marginLeft="0dp"
+                android:layout_marginEnd="0dp"
+                android:layout_marginRight="0dp"
+                android:visibility="visible" />
+
+            <TextView
+                android:id="@+id/tv_closest_driverPin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:fontFamily="@font/roboto"
+                android:text="6\nmin"
+                android:textAlignment="center"
+                android:textColor="@android:color/white"
+                android:textSize="12sp" />
+
+        </RelativeLayout>
+
+    </FrameLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_depart_pin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_centerInParent="true">
+
+        <ImageView
+            android:id="@+id/ic_location_pin_start"
+            android:layout_width="76dp"
+            android:layout_height="56dp"
+            android:layout_marginBottom="76dp"
+            android:visibility="visible"
+            android:src="@drawable/ic_depart_pin"/>
+
+        <ImageView
+            android:id="@+id/iv_location_pin_dest"
+            android:layout_width="76dp"
+            android:layout_height="56dp"
+            android:layout_marginBottom="76dp"
+            android:visibility="gone"
+            android:src="@drawable/ic_destination_pin" />
+
+        <TextView
+            android:id="@+id/tv_closest_driver"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto"
+            android:text="\n..."
+            android:layout_marginTop="@dimen/margin_small"
+            android:layout_centerHorizontal="true"
+            android:textAlignment="center"
+            android:textColor="@android:color/white"
+            android:textSize="12sp" />
+
+    </RelativeLayout>
+
+
+
+
+    <ImageView
+        android:id="@+id/iv_menu_maps"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginLeft="@dimen/margin_normal"
+        android:layout_marginTop="@dimen/margin_normal"
+        android:src="@drawable/home_icon" />
+
+    <com.skyfishjy.library.RippleBackground xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/rapple_animation"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.5"
+        app:rb_color="@color/colorPrimaryDark"
+        app:rb_duration="3000"
+        app:rb_radius="32dp"
+        app:rb_rippleAmount="4"
+        app:rb_scale="6">
+
+        <ImageView
+            android:id="@+id/iv_rapple_center_image"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_centerInParent="true" />
+    </com.skyfishjy.library.RippleBackground>
+
+    <include
+        android:id="@+id/content_pickup"
+        layout="@layout/content_pickup"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_alignParentBottom="true"></include>
+
+    <ImageView
+        android:id="@+id/iv_current_location"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:src="@drawable/my_position_icon"
+        android:layout_above="@+id/content_pickup"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="@dimen/margin_normal"
+        android:layout_marginBottom="@dimen/margin_normal"/>
+
+</RelativeLayout>

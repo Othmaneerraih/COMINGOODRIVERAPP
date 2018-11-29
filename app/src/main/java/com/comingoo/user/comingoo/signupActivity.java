@@ -55,7 +55,8 @@ public class signupActivity extends AppCompatActivity {
         mCallBacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             @Override
             public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
-                Intent intent = new Intent(signupActivity.this, MapsActivity.class);
+//                Intent intent = new Intent(signupActivity.this, MapsActivity.class);
+                Intent intent = new Intent(signupActivity.this, MapsActivityNew.class);
                 startActivity(intent);
                 finish();
             }
@@ -124,7 +125,8 @@ public class signupActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         if(FirebaseAuth.getInstance().getCurrentUser() != null) {
-            Intent intent = new Intent(signupActivity.this, MapsActivity.class);
+//            Intent intent = new Intent(signupActivity.this, MapsActivity.class);
+            Intent intent = new Intent(signupActivity.this, MapsActivityNew.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finish();

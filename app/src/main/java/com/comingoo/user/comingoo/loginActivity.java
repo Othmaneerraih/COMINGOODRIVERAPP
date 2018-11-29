@@ -56,7 +56,8 @@ public class loginActivity extends AppCompatActivity {
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
 //            SharedPreferences prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
 //            prefs.edit().putString("userID", FirebaseAuth.getInstance().getCurrentUser().getUid()).apply();
-            startActivity(new Intent(loginActivity.this, MapsActivity.class));
+//            startActivity(new Intent(loginActivity.this, MapsActivity.class));
+            startActivity(new Intent(loginActivity.this, MapsActivityNew.class));
             finish();
         }
 
@@ -139,7 +140,8 @@ public class loginActivity extends AppCompatActivity {
                                                                         if (task.isSuccessful()) {
                                                                             SharedPreferences prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
                                                                             prefs.edit().putString("userID", FirebaseAuth.getInstance().getCurrentUser().getUid()).apply();
-                                                                            startActivity(new Intent(loginActivity.this, MapsActivity.class));
+//                                                                            startActivity(new Intent(loginActivity.this, MapsActivity.class));
+                                                                            startActivity(new Intent(loginActivity.this, MapsActivityNew.class));
                                                                             finish();
                                                                         } else {
                                                                             Toast.makeText(loginActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();

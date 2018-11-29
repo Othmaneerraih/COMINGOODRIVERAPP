@@ -347,12 +347,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void loadImages() {
-        locationStartPin.setImageBitmap(scaleBitmap(76, 56, R.drawable.depart_pin));
-        locationDestPin.setImageBitmap(scaleBitmap(76, 56, R.drawable.destination_pin));
-        locationPinStart.setImageBitmap(scaleBitmap(76, 56, R.drawable.depart_pin));
+        locationStartPin.setImageBitmap(scaleBitmap(76, 56, R.drawable.ic_depart_pin));
+        locationDestPin.setImageBitmap(scaleBitmap(76, 56, R.drawable.ic_destination_pin));
+        locationPinStart.setImageBitmap(scaleBitmap(76, 56, R.drawable.ic_depart_pin));
         locationPinDriver.setImageBitmap(scaleBitmap(76, 56, R.drawable.driver_pin));
-        locationPinDest.setImageBitmap(scaleBitmap(76, 56, R.drawable.destination_pin));
-        selectedOpImage.setImageBitmap(scaleBitmap(70, 70, R.drawable.wheel_icon));
+        locationPinDest.setImageBitmap(scaleBitmap(76, 56, R.drawable.ic_destination_pin));
+        selectedOpImage.setImageBitmap(scaleBitmap(70, 70, R.drawable.ic_wheel));
         deleviryButton.setImageBitmap(scaleBitmap((int) (dpWidth / 2), 55, R.drawable.delivery_icon));
         carButton.setImageBitmap(scaleBitmap((int) (dpWidth / 2), 55, R.drawable.car_icon));
         selectCity.setImageBitmap(scaleBitmap(10, 15, R.drawable.city_arrow));
@@ -945,7 +945,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 courseScreenIsOn = false;
                 courseScreenStageZero = false;
                 courseScreenStageOne = false;
-                findViewById(R.id.pin).setVisibility(View.VISIBLE);
+                findViewById(R.id.rl_depart_pin).setVisibility(View.VISIBLE);
                 cancelCommandLayout();
                 hideSelectDestUI();
                 coverButton.setClickable(true);
@@ -981,7 +981,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             searchEditText.setText(startText);
             searchDestEditText.setText(endText);
 
-            findViewById(R.id.pin).setVisibility(View.GONE);
+            findViewById(R.id.rl_depart_pin).setVisibility(View.GONE);
 
             AnimateConstraint.fadeIn(context, bottomMenu, 500, 0);
             AnimateConstraint.fadeIn(context, selectedOpImage, 500, 0);
@@ -2091,7 +2091,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         driversLocations = new ArrayList<String>();
         driversKeysHold = new ArrayList<String>();
 
-        locationPinDest = (ImageView) findViewById(R.id.locationPinDest);
+        locationPinDest = (ImageView) findViewById(R.id.iv_location_pin_dest);
         locationPinDriver = (ImageView) findViewById(R.id.driver_pin);
         profileImage = (ImageView) findViewById(R.id.profile_image);
         tvUserName = (TextView) findViewById(R.id.textView3);
@@ -2143,7 +2143,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         locationStartPin = (ImageView) findViewById(R.id.location_start_pin);
         locationDestPin = (ImageView) findViewById(R.id.location_dest_pin);
-        locationPinStart = (ImageView) findViewById(R.id.locationPin);
+        locationPinStart = (ImageView) findViewById(R.id.ic_location_pin_start);
 
         menuButton = (ImageButton) findViewById(R.id.menu_button);
 
@@ -2506,8 +2506,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         frameLayout = findViewById(R.id.framelayout);
         frameLayout2 = findViewById(R.id.framelayout2);
         frameLayout3 = findViewById(R.id.framelayout3);
-        frameTime = findViewById(R.id.closestDriverPin);
-        closestDriverText = findViewById(R.id.closestDriver);
+        frameTime = findViewById(R.id.tv_closest_driverPin);
+        closestDriverText = findViewById(R.id.tv_closest_driver);
 
         searchEditText = (EditText) findViewById(R.id.search_edit_text);
 //        searchButton = (ImageButton) findViewById(R.id.search_address_button);
@@ -2778,7 +2778,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         coverButton.setVisibility(View.VISIBLE);
         searchDestEditText.setEnabled(true);
 
-        findViewById(R.id.locationPinDest).setVisibility(View.VISIBLE);
+        findViewById(R.id.iv_location_pin_dest).setVisibility(View.VISIBLE);
         mMap.clear();
         showSelectDestUI();
     }
@@ -2799,7 +2799,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         coverButton.setVisibility(View.GONE);
         searchDestEditText.setEnabled(false);
 
-        findViewById(R.id.locationPinDest).setVisibility(View.GONE);
+        findViewById(R.id.iv_location_pin_dest).setVisibility(View.GONE);
 
 
         if (destLatLng != null) {
@@ -2951,9 +2951,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         AnimateConstraint.animate(MapsActivity.this, startConstraint, 80, (dpHeight - 130), 500);
 
-        findViewById(R.id.locationPin).setVisibility(View.VISIBLE);
-        findViewById(R.id.closestDriver).setVisibility(View.VISIBLE);
-        findViewById(R.id.locationPinDest).setVisibility(View.GONE);
+        findViewById(R.id.ic_location_pin_start).setVisibility(View.VISIBLE);
+        findViewById(R.id.tv_closest_driver).setVisibility(View.VISIBLE);
+        findViewById(R.id.iv_location_pin_dest).setVisibility(View.GONE);
 
 
         menuButton.setImageBitmap(scaleBitmap(45, 45, R.drawable.home_icon));
@@ -2998,9 +2998,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         AnimateConstraint.fadeIn(MapsActivity.this, selectDest, 500, 10);
 
 
-        findViewById(R.id.locationPin).setVisibility(View.GONE);
-        findViewById(R.id.closestDriver).setVisibility(View.GONE);
-        findViewById(R.id.locationPinDest).setVisibility(View.VISIBLE);
+        findViewById(R.id.ic_location_pin_start).setVisibility(View.GONE);
+        findViewById(R.id.tv_closest_driver).setVisibility(View.GONE);
+        findViewById(R.id.iv_location_pin_dest).setVisibility(View.VISIBLE);
 
         frameLayout.setDrawingCacheEnabled(true);
         frameLayout.buildDrawingCache();
@@ -3431,23 +3431,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     private class LookForDriverTask extends AsyncTask<String, Integer, String> {
-        SharedPreferences prefs;
-        String userId;
         String image;
 
-        // Runs in UI before background thread is called
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            // Do something like display a progress bar
         }
 
-        // This is run in a background thread
         @Override
         protected String doInBackground(String... params) {
-
-           /* if(params[0].equals("true"))
-                getData = true;*/
 
             if (startLatLng != null) {
 
@@ -3775,64 +3767,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (grantResult.length > 0 && grantResult[0] == PackageManager.PERMISSION_GRANTED) {
             getLastLocation();
-
-
-            //            try {
-//                if (recordButton != null) {
-//                    recordButton.setOnTouchListener(new View.OnTouchListener() {
-//                        @Override
-//                        public boolean onTouch(View v, MotionEvent event) {
-//                            int eventaction = event.getAction();
-//                            switch (eventaction) {
-//                                case MotionEvent.ACTION_DOWN:
-//                                    try {
-//                                        recordButton.setScaleX((float) 1.3);
-//                                        recordButton.setScaleY((float) 1.3);
-//                                        myAudioRecorder.prepare();
-//                                        myAudioRecorder.start();
-//                                    } catch (NullPointerException e) {
-//                                        e.printStackTrace();
-//                                    } catch (Exception e) {
-//                                        e.printStackTrace();
-//                                    }
-//                                    break;
-//                                case MotionEvent.ACTION_UP:
-//                                    try {
-//                                        audioRecorded = true;
-//                                        recordButton.setScaleX((float) 1);
-//                                        recordButton.setScaleY((float) 1);
-//
-//                                        deleteAudio.setVisibility(View.VISIBLE);
-//                                        deleteAudio.setOnClickListener(new View.OnClickListener() {
-//                                            @Override
-//                                            public void onClick(View v) {
-//                                                newDialog.dismiss();
-//                                            }
-//                                        });
-//                                        if (myAudioRecorder != null) {
-//                                            myAudioRecorder.stop();
-//                                            myAudioRecorder.release();
-//                                            myAudioRecorder = null;
-//                                        }
-//                                        recordButton.setVisibility(View.GONE);
-//                                        playAudio.setVisibility(View.VISIBLE);
-//                                        setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
-//                                    } catch (NullPointerException e) {
-//                                        e.printStackTrace();
-//                                    } catch (Exception e) {
-//                                        e.printStackTrace();
-//                                    }
-//                                    break;
-//                            }
-//                            return false;
-//                        }
-//
-//                    });
-//                }
-//            } catch (NullPointerException e) {
-//                e.printStackTrace();
-//            }
-
         }
 
         if (requestCode == 10) {
