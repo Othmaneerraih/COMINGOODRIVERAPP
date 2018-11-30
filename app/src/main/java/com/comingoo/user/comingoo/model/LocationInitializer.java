@@ -1,4 +1,4 @@
-package com.comingoo.user.comingoo;
+package com.comingoo.user.comingoo.model;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -7,7 +7,7 @@ import java.util.List;
 
 public class LocationInitializer {
 
-    static List<LatLng> casaPoly(){
+    public static List<LatLng> casaPoly(){
         List<LatLng> casaPoly = new ArrayList<>();
         casaPoly.add(new LatLng(33.6382031 ,-7.4981684));
         casaPoly.add(new LatLng(33.6250524 ,-7.4836904));
@@ -604,7 +604,7 @@ public class LocationInitializer {
         return casaPoly;
         
     }
-    static List<LatLng> rabatPoly(){
+    public static List<LatLng> rabatPoly(){
 
         List<LatLng> rabatPoly = new ArrayList<>();
 
@@ -1108,7 +1108,7 @@ public class LocationInitializer {
         return  rabatPoly;
 
     }
-    static List<LatLng> missingRabatPoly(){
+    public static List<LatLng> missingRabatPoly(){
         List<LatLng> missingRabatPoly = new ArrayList<>();
         missingRabatPoly.add(new LatLng(34.031397, -6.838083));
         missingRabatPoly.add(new LatLng(34.026227, -6.824359));
@@ -1116,7 +1116,7 @@ public class LocationInitializer {
         missingRabatPoly.add(new LatLng(34.023556, -6.852698));
         return missingRabatPoly;
     }
-    static List<LatLng> bouskouraPoly(){
+    public static List<LatLng> bouskouraPoly(){
         List<LatLng> bouskouraPoly = new ArrayList<>();
 
         bouskouraPoly.add(new LatLng(33.4342544, -7.5638997));
@@ -1243,7 +1243,7 @@ public class LocationInitializer {
 
         return bouskouraPoly;
     }
-    static List<LatLng> aeroportCasaPoly(){
+    public static List<LatLng> aeroportCasaPoly(){
         List<LatLng> aeroportCasaPoly = new ArrayList<>();
         aeroportCasaPoly.add(new LatLng(33.391312, -7.607836));
         aeroportCasaPoly.add(new LatLng(33.409965, -7.534040));
@@ -1253,7 +1253,7 @@ public class LocationInitializer {
 
         return aeroportCasaPoly;
     }
-    static List<LatLng> errahmaPoly(){
+    public static List<LatLng> errahmaPoly(){
         List<LatLng> errahmaPoly = new ArrayList<>();
 
         errahmaPoly.add(new LatLng(33.533624, -7.756917));
@@ -1264,7 +1264,7 @@ public class LocationInitializer {
 
         return errahmaPoly;
     }
-    static List<LatLng> sidiRahalPoly(){
+    public static List<LatLng> sidiRahalPoly(){
         List<LatLng> sidiRahalPoly = new ArrayList<>();
 
 
@@ -1366,7 +1366,7 @@ public class LocationInitializer {
 
         return sidiRahalPoly;
     }
-    static List<LatLng>  darBouazzaPoly(){
+    public static List<LatLng>  darBouazzaPoly(){
         List<LatLng> darBouazzaPoly = new ArrayList<>();
         List<LatLng> iterator = new ArrayList<>();
 
@@ -1523,7 +1523,7 @@ public class LocationInitializer {
         return darBouazzaPoly;
 
     }
-    static List<LatLng> marrakechPoly(){
+    public static List<LatLng> marrakechPoly(){
 
         List<LatLng> marrakechMissingPoly = new ArrayList<>();
         List<LatLng> iterator = new ArrayList<>();
@@ -2036,7 +2036,7 @@ public class LocationInitializer {
         }
         return marrakechMissingPoly;
     }
-    static List<LatLng> jadidaPoly(){
+    public static List<LatLng> jadidaPoly(){
 
         List<LatLng> jadidaPoly = new ArrayList<>();
 
@@ -2215,7 +2215,7 @@ public class LocationInitializer {
 
         return jadidaPoly;
     }
-    static List<LatLng> salePoly(){
+    public static List<LatLng> salePoly(){
         List<LatLng> salePoly = new ArrayList<>();
         salePoly.add(new LatLng(34.0250276, -6.7174210));
         salePoly.add(new LatLng(34.0268277, -6.7170546));

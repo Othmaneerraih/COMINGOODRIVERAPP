@@ -64,11 +64,25 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.comingoo.user.comingoo.activity.VoipCallingActivity;
+import com.comingoo.user.comingoo.activity.aideActivity;
+import com.comingoo.user.comingoo.activity.comingoonuActivity;
+import com.comingoo.user.comingoo.activity.historiqueActivity;
+import com.comingoo.user.comingoo.activity.inviteActivity;
+import com.comingoo.user.comingoo.activity.loginActivity;
+import com.comingoo.user.comingoo.activity.notificationActivity;
 import com.comingoo.user.comingoo.adapters.FavouritePlaceAdapter;
 import com.comingoo.user.comingoo.adapters.MyPlaceAdapter;
 
+import com.comingoo.user.comingoo.interfaces.ActivityCallback;
+import com.comingoo.user.comingoo.model.FixedLocation;
+import com.comingoo.user.comingoo.model.LocationInitializer;
+import com.comingoo.user.comingoo.model.place;
 import com.comingoo.user.comingoo.others.HttpConnection;
 import com.comingoo.user.comingoo.others.PathJSONParser;
+import com.comingoo.user.comingoo.utility.AnimateConstraint;
+import com.comingoo.user.comingoo.utility.LocalHelper;
+import com.comingoo.user.comingoo.utility.SharedPreferenceTask;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
@@ -143,7 +157,7 @@ import pl.droidsonroids.gif.GifImageButton;
 
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,ActivityCallback {
     private static final String TAG = "MapsActivity";
     static GoogleMap mMap;
     private static EditText searchEditText;
@@ -163,7 +177,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     static ProgressBar searchProgBar;
     static ProgressBar searchProgBarDest;
 
-    static TextView promoCode;
+    private TextView promoCode;
 
     static RecyclerView mLocationView;
     public static MyPlaceAdapter placeAdapter;
@@ -373,6 +387,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private String userName;
     private Call call;
+
+    @Override
+    public void onMethodCallback(String code) {
+        promoCode.setText(code);
+    }
 
     private class CheckUserTask extends AsyncTask<String, Integer, String> {
         SharedPreferences prefs;
