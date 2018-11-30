@@ -14,7 +14,7 @@ import com.comingoo.user.comingoo.utility.LocalHelper;
 import com.comingoo.user.comingoo.R;
 
 
-public class inviteActivity extends AppCompatActivity {
+public class InviteActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,19 +30,18 @@ public class inviteActivity extends AppCompatActivity {
         updateViews();
     }
 
-    public void updateViews(){
+    public void updateViews() {
         Context context;
         Resources resources;
         String language;
         language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
 
-        context = LocalHelper.setLocale(inviteActivity.this, language);
+        context = LocalHelper.setLocale(InviteActivity.this, language);
         resources = context.getResources();
 
         TextView textView33 = (TextView) findViewById(R.id.textView33);
         TextView textView37 = (TextView) findViewById(R.id.textView37);
         Button button2 = (Button) findViewById(R.id.button2);
-
 
 
         //Set Texts
@@ -58,18 +57,18 @@ public class inviteActivity extends AppCompatActivity {
         });
     }
 
-    private void shareSocialMedia(){
+    private void shareSocialMedia() {
 
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
 //        intent.setPackage("com.facebook.katana");
 //        intent.setPackage("com.android.twitter");
-        intent .putExtra(Intent.EXTRA_TEXT, "Bonjour,\n" +
+        intent.putExtra(Intent.EXTRA_TEXT, "Bonjour,\n" +
                 "Je vous invite a utiliser l'application Comingoo pour vos déplacements. www.comingoo.com/app");
         try {
-            this.startActivity(intent );
+            this.startActivity(intent);
         } catch (android.content.ActivityNotFoundException ex) {
-            Toast.makeText(inviteActivity.this, "Facebook have not been installed.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(InviteActivity.this, "Facebook have not been installed.", Toast.LENGTH_SHORT).show();
         }
     }
 

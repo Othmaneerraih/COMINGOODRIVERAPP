@@ -6,7 +6,7 @@ import android.os.Bundle;
 import com.comingoo.user.comingoo.R;
 
 
-public class signupInfoActivity extends AppCompatActivity {
+public class SignupInfoActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

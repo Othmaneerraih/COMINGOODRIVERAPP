@@ -36,7 +36,7 @@ import java.util.Locale;
 import java.util.Map;
 
 
-public class aideActivity extends AppCompatActivity {
+public class AideActivity extends AppCompatActivity {
     private ConstraintLayout Q1, Q2, A1, A2;
     private boolean a1 = false, a2 = false;
     public ConstraintLayout fc, content;
@@ -73,12 +73,12 @@ public class aideActivity extends AppCompatActivity {
         ivArrawOne = findViewById(R.id.arrow1);
         ivArrawTwo = findViewById(R.id.arrow2);
 
-        AnimateConstraint.animate(aideActivity.this, content, 250, 1, 0);
+        AnimateConstraint.animate(AideActivity.this, content, 250, 1, 0);
 
 //        fc.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
-//                AnimateConstraint.animate(aideActivity.this, content, 70, 1, 500);
+//                AnimateConstraint.animate(AideActivity.this, content, 70, 1, 500);
 //            }
 //        });
 
@@ -93,7 +93,7 @@ public class aideActivity extends AppCompatActivity {
                 if (intent.resolveActivity(getPackageManager()) != null) {
                     startActivityForResult(intent, 10);
                 } else {
-                    Toast.makeText(aideActivity.this, "Your Device Don't Support Speech Input", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AideActivity.this, "Your Device Don't Support Speech Input", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -101,8 +101,8 @@ public class aideActivity extends AppCompatActivity {
         image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (ContextCompat.checkSelfPermission(aideActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(aideActivity.this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+                if (ContextCompat.checkSelfPermission(AideActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(AideActivity.this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
                 } else {
                     Intent intent = new Intent(Intent.ACTION_PICK);
                     intent.setType("image/*");
@@ -115,7 +115,7 @@ public class aideActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 new UpdateInfoTask().execute();
-                AnimateConstraint.animate(aideActivity.this, content, 1, 250, 500);
+                AnimateConstraint.animate(AideActivity.this, content, 1, 250, 500);
             }
         });
 
@@ -124,11 +124,11 @@ public class aideActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (!a1) {
-                    AnimateConstraint.animate(aideActivity.this, A1, 100, 2, 500);
+                    AnimateConstraint.animate(AideActivity.this, A1, 100, 2, 500);
                     a1 = true;
                     ivArrawOne.setImageResource(R.drawable.ic_arraw_up);
                 } else {
-                    AnimateConstraint.animate(aideActivity.this, A1, 2, 100, 500);
+                    AnimateConstraint.animate(AideActivity.this, A1, 2, 100, 500);
                     a1 = false;
                     ivArrawOne.setImageResource(R.drawable.expand);
                 }
@@ -138,11 +138,11 @@ public class aideActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (!a2) {
-                    AnimateConstraint.animate(aideActivity.this, A2, 70, 2, 500);
+                    AnimateConstraint.animate(AideActivity.this, A2, 70, 2, 500);
                     a2 = true;
                     ivArrawTwo.setImageResource(R.drawable.ic_arraw_up);
                 } else {
-                    AnimateConstraint.animate(aideActivity.this, A2, 2, 70, 500);
+                    AnimateConstraint.animate(AideActivity.this, A2, 2, 70, 500);
                     a2 = false;
                     ivArrawTwo.setImageResource(R.drawable.expand);
                 }
@@ -236,7 +236,7 @@ public class aideActivity extends AppCompatActivity {
             super.onPostExecute(result);
             // Do things like hide the progress bar or change a TextView
 
-            Toast.makeText(aideActivity.this, "message envoyé.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(AideActivity.this, "message envoyé.", Toast.LENGTH_SHORT).show();
             message.setText("");
             selectImage.setText("Ajouter une image");
         }
@@ -271,7 +271,7 @@ public class aideActivity extends AppCompatActivity {
         String language;
         language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
 
-        context = LocalHelper.setLocale(aideActivity.this, language);
+        context = LocalHelper.setLocale(AideActivity.this, language);
         resources = context.getResources();
 
         TextView textView13 = (TextView) findViewById(R.id.textView13);
