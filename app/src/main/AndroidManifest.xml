@@ -149,7 +149,7 @@
             android:configChanges="orientation"
             android:screenOrientation="portrait"></activity>
         
-        <activity android:name=".MapsActivityNew"
+        <activity android:name=".activity.MapsActivityNew"
             android:configChanges="orientation"
             android:fitsSystemWindows="true"
             android:label="@string/title_activity_maps"

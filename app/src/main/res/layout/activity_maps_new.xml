@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MapsActivityNew">
+    tools:context=".activity.MapsActivityNew">
 
     <RelativeLayout
         android:id="@+id/rl_map_drawer"
@@ -192,7 +192,7 @@
 
     <include
         android:id="@+id/content_map_view"
-        layout="@layout/content_maps"/>
+        layout="@layout/content_maps" />
 
     <RelativeLayout
         android:id="@+id/rl_block_content"
@@ -204,31 +204,20 @@
 
     </RelativeLayout>
 
-    <!--<RelativeLayout-->
-        <!--android:id="@+id/rl_loading_comingoo_logo"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:background="@drawable/online_button"-->
-        <!--android:clickable="true"-->
-        <!--android:visibility="visible">-->
-
-        <!--<pl.droidsonroids.gif.GifImageView-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_marginTop="16dp"-->
-            <!--android:layout_marginBottom="8dp"-->
-            <!--android:src="@drawable/wheel_running" />-->
-
-    <!--</RelativeLayout>-->
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/shadow"
+    <RelativeLayout
+        android:id="@+id/rl_loading_comingoo_logo"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:alpha="0.5"
-        android:background="@drawable/shadow"
-        app:layout_constraintBottom_toTopOf="@+id/bottomMenu"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        android:layout_height="match_parent"
+        android:background="@drawable/online_button"
+        android:clickable="true"
+        android:visibility="visible">
 
-    </android.support.constraint.ConstraintLayout>
+        <pl.droidsonroids.gif.GifImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"
+            android:src="@drawable/wheel_running" />
+
+    </RelativeLayout>
 </RelativeLayout>

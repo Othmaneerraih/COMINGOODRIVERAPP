@@ -1,7 +1,8 @@
-package com.comingoo.user.comingoo;
+package com.comingoo.user.comingoo.activity;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -20,6 +21,8 @@ import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
+import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
@@ -43,6 +46,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -50,10 +54,16 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.comingoo.user.comingoo.R;
 import com.comingoo.user.comingoo.adapters.FavouritePlaceAdapter;
 import com.comingoo.user.comingoo.adapters.MyPlaceAdapter;
+import com.comingoo.user.comingoo.interfaces.ActivityCallback;
+import com.comingoo.user.comingoo.model.LocationInitializer;
+import com.comingoo.user.comingoo.model.place;
 import com.comingoo.user.comingoo.others.HttpConnection;
 import com.comingoo.user.comingoo.others.PathJSONParser;
+import com.comingoo.user.comingoo.utility.AnimateConstraint;
+import com.comingoo.user.comingoo.utility.SharedPreferenceTask;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
@@ -89,6 +99,7 @@ import com.google.maps.model.DirectionsResult;
 import com.google.maps.model.DirectionsRoute;
 import com.google.maps.model.DirectionsStep;
 import com.google.maps.model.EncodedPolyline;
+import com.skyfishjy.library.RippleBackground;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONObject;
@@ -100,10 +111,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
-public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallback, ActivityCallback {
     private String TAG = "MapsActivityNew";
     private ImageView ivDrawerToggol;
     private GoogleMap mMap;
@@ -157,11 +169,14 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
     private View contentPricePromoCode;
     private TextView tvPrice, tvPromoCode, tvMAD;
     private RelativeLayout rlCallLayout;
+    private ImageView ivCallDriver, close_button;
     private LinearLayout llVoipView;
     private TextView tv_appelle_voip, tv_appelle_telephone;
     private ImageView ivShadow, ivCancelRequest;
+    private RippleBackground rippleBackground;
 
     private String userId;
+    private String clientID;
 
 
     private String courseIDT;
@@ -190,10 +205,20 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
     private Marker driverPosMarker;
     private Marker startPositionMarker;
     private boolean blockingTimeOver = true;
-    private ImageView ivDriver;
+    private ImageView ivDriver, ivCancelRide;
 
     private TextView driverNameL, iv_total_ride_number, iv_car_number, iv_total_rating_number;
-//    LinearLayout voip_view;
+
+    private int driverSize;
+    private Runnable runnable;
+    private Handler handler;
+    private int stop = 0;
+    SharedPreferences prefs;
+
+    private FrameLayout flLocationStart;
+    private FrameLayout flLocationDestination;
+    private FrameLayout flDriverPin;
+    private TextView frameTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -213,12 +238,20 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
 
         llDrawerHome = findViewById(R.id.ll_drawer_home);
         llDrawerInvite = findViewById(R.id.ll_drawer_refer_friend);
-        llDrawerNotifications  = findViewById(R.id.ll_drawer_notificatiions);
+        llDrawerNotifications = findViewById(R.id.ll_drawer_notificatiions);
         llDrawerHistory = findViewById(R.id.ll_drawer_history);
         llDrawerAide = findViewById(R.id.ll_drawer_help);
         llDrawerComingooYou = findViewById(R.id.ll_drawer_comingoo_you);
 
         ivShadow = findViewById(R.id.iv_shadow);
+        tvClosestDriver = findViewById(R.id.tv_closest_driver);
+
+        flLocationStart = findViewById(R.id.framelayout);
+        flLocationDestination = findViewById(R.id.framelayout2);
+        flDriverPin = findViewById(R.id.framelayout3);
+        frameTime = findViewById(R.id.tv_closest_driverPin);
+
+        ivCancelRide = findViewById(R.id.iv_cancel_ride);
 
         ivDrawerToggol = findViewById(R.id.iv_menu_maps);
         ivCurrentLocation = findViewById(R.id.iv_current_location);
@@ -228,6 +261,7 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
         ivArraw = findViewById(R.id.iv_arrow_start_end);
         ivCancelRequest = findViewById(R.id.iv_cancel_request);
 
+        rippleBackground = findViewById(R.id.rapple_animation);
         ivProfilePicDrawer = findViewById(R.id.iv_user_image_drawer);
         tvNameDrawer = findViewById(R.id.tv_user_name_drawer);
 
@@ -249,6 +283,9 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
 
         rlCallLayout = findViewById(R.id.rl_call_layout);
         llVoipView = findViewById(R.id.ll_voip_view);
+        ivCallDriver = findViewById(R.id.iv_call_driver);
+        close_button = findViewById(R.id.close_button);
+
 
         llConfirmDestination = findViewById(R.id.ll_destination);
         btnIgnoreDestination = findViewById(R.id.btn_destination_ignore);
@@ -310,10 +347,11 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
             @Override
             public void onClick(View v) {
 //                if (startPositionIsValid()) {
-                    orderDriverState = 1;
-                    showSelectDestUI();
-                    ivWheel.setVisibility(View.GONE);
-                    state = 1;
+                orderDriverState = 1;
+                showSelectDestUI();
+                ivWheel.setVisibility(View.GONE);
+                ivShadow.setVisibility(View.GONE);
+                state = 1;
 //                }
             }
         });
@@ -410,9 +448,360 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
         }
 
         ivShadow.setImageBitmap(scaleBitmap((int) dpWidth, 80, R.drawable.shadow_bottom));
+
+        close_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                close_button.setVisibility(View.GONE);
+                ivCallDriver.setVisibility(View.VISIBLE);
+                llVoipView.setVisibility(View.GONE);
+            }
+        });
+
+        ivGoo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (blockingTimeOver) {
+                    ivGoo.setClickable(false);
+
+                    CameraPosition cameraPosition = new CameraPosition.Builder()
+                            .target(startLatLng)      // Sets the center of the map to Mountain View
+                            .zoom(17)                   // Sets the zoom
+                            .build();                   // Creates a CameraPosition from the builder
+                    mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                    AnimateConstraint.fadeOut(getApplicationContext(), ivGoo, 200, 10);
+                    //AnimateConstraint.expandCircleAnimation(context, findViewById(R.id.gooLayout), dpHeight, dpWidth);
+                    ivDrawerToggol.setVisibility(View.VISIBLE);
+                    startSearchUI();
+                    hideAllUI();
+
+                    try {
+                        new LookForDriverTask().execute();
+                        new sendRequestsTask().execute();
+                    } catch (NullPointerException e) {
+                        e.printStackTrace();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
+
+
+    private void startSearchUI() {
+        rippleBackground.startRippleAnimation();
+        ivCancelRequest.setVisibility(View.VISIBLE);
+    }
+
+    private void stopSearchUI() {
+        driversKeysHold.clear();
+        AnimateConstraint.fadeIn(getApplicationContext(), ivGoo, 200, 10);
+        rippleBackground.stopRippleAnimation();
+        ivDrawerToggol.setVisibility(View.VISIBLE);
+        ivCancelRequest.setVisibility(View.GONE);
+        ivGoo.setClickable(true);
+        driversKeys.clear();
+        driversKeysHold.clear();
+        if (startLatLng != null)
+            geoQuery.setCenter(new GeoLocation(startLatLng.latitude, startLatLng.longitude));
+    }
+
+    private void hideAllUI() {
+        rlStartPoint.setVisibility(View.INVISIBLE);
+        etSearchDestination.setVisibility(View.INVISIBLE);
+        ivGoo.setVisibility(View.INVISIBLE);
+        contentPricePromoCode.setVisibility(View.INVISIBLE);
+        ivArraw.setVisibility(View.INVISIBLE);
+    }
+
+    private void showAllUI() {
+        rlStartPoint.setVisibility(View.VISIBLE);
+        etSearchDestination.setVisibility(View.VISIBLE);
+        ivGoo.setVisibility(View.VISIBLE);
+
+        contentPricePromoCode.setVisibility(View.VISIBLE);
+        ivArraw.setVisibility(View.VISIBLE);
+    }
+
+    private class sendRequestsTask extends AsyncTask<String, Integer, String> {
+        SharedPreferences prefs;
+
+        String image;
+        boolean finishedSendReq = false;
+
+        // Runs in UI before background thread is called
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
+            userId = prefs.getString("userID", null);
+            finishedSendReq = false;
+            // Do something like display a progress bar
+        }
+
+        // This is run in a background thread
+        @Override
+        protected String doInBackground(String... params) {
+            SharedPreferences prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
+            final String userId = prefs.getString("userID", null);
+
+            final int Step = 3; //Number Of Drivers To Call Every Time
+//            final int secondsDelay = 15000; // Time To Wait Before Sending Request To The Next Set O Drivers
+
+            driverSize = driversKeys.size();
+            Log.e(TAG, "doInBackground: driverKeySize: " + driverSize);
+
+            if (driverSize == 0) {
+                finishedSendReq = true;
+            }
+            handler = new Handler(Looper.getMainLooper());
+            runnable = new Runnable() {
+                int counter = 0;
+
+                @Override
+                public void run() {
+                    // Do the task...
+//                    if (stop == 1 || counter >= driversKeys.size() || idInList(driversKeys.get(counter), driversKeysHold)) {
+//                        finishedSendReq = true;
+//                        handler.removeCallbacks(this);
+//                        driversKeys.clear();
+//                        driversKeysHold.clear();
+//                        geoQuery.setCenter(new GeoLocation(startLatLng.latitude, startLatLng.longitude));
+//                        counter = 0;
+//                        stop = 0;
+////                        return;
+//                    }
+
+
+                    //Initialize The First Requests
+                    if (counter == 0) {
+//                        Log.e(TAG, "run: if size: "+counter + Step );
+                        Log.e(TAG, "run: if driverSize: " + driversKeys.size());
+                        driversKeysHold.clear();
+                        for (int j = counter; j < (counter + Step) && j < driversKeys.size(); j++) {
+                            if (driversKeys.get(j) != null) {
+                                final DatabaseReference pickupRequest =
+                                        FirebaseDatabase.getInstance().getReference("PICKUPREQUEST").
+                                                child(driversKeys.get(j)).child(userId);
+
+                                Map<String, String> data = new HashMap<>();
+                                data.put("client", clientID);
+                                data.put("start", etSearchStartAddress.getText().toString());
+                                data.put("arrival", etSearchDestination.getText().toString());
+
+
+                                data.put("destFix", "0");
+                                data.put("fixedPrice", "");
+
+                                data.put("startLat", "" + startLatLng.latitude);
+                                data.put("startLong", "" + startLatLng.longitude);
+                                if (destLatLng != null) {
+                                    data.put("endLat", "" + destLatLng.latitude);
+                                    data.put("endLong", "" + destLatLng.longitude);
+                                } else {
+                                    data.put("endLat", "");
+                                    data.put("endLong", "");
+                                }
+
+                                data.put("distance", driversLocations.get(j));
+                                data.put("Refused", "0");
+                                pickupRequest.setValue(data);
+
+                                driversKeysHold.add(driversKeys.get(j));
+
+                                pickupRequest.onDisconnect().removeValue();
+
+
+                                pickupRequest.addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        if (!dataSnapshot.exists()) {
+                                            driverSize -= 1;
+                                            counter += Step;
+                                            if (driverSize == 0) {
+
+                                                stopSearchUI();
+                                                finishedSendReq = true;
+                                                FirebaseDatabase.getInstance().getReference("COURSES").orderByChild("client").equalTo(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                    @Override
+                                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                        for (DataSnapshot data : dataSnapshot.getChildren()) {
+                                                            //findViewById(R.id.commander).setVisibility(View.GONE);
+                                                            //selectDest.setVisibility(View.GONE);
+
+
+                                                        }
+                                                    }
+
+                                                    @Override
+                                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                    }
+                                                });
+                                                counter = 0;
+                                                stop = 0;
+                                                pickupRequest.removeEventListener(this);
+
+                                                FirebaseDatabase.getInstance().getReference("COURSES").orderByChild("client").equalTo(userId).limitToFirst(1).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                    @Override
+                                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                        if (!dataSnapshot.exists()) {
+                                                            Toast.makeText(MapsActivityNew.this, "No Driver Found Please Try Again", Toast.LENGTH_SHORT).show();
+                                                            courseScreenIsOn = false;
+                                                            finishedSendReq = true;
+                                                            handler.removeCallbacks(runnable);
+                                                            geoQuery.setCenter(new GeoLocation(startLatLng.latitude, startLatLng.longitude));
+                                                            counter = 0;
+                                                            stop = 0;
+
+                                                            stopSearchUI();
+                                                        } else {
+
+                                                            for (DataSnapshot data : dataSnapshot.getChildren()) {
+                                                                FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(data.child("driver").getValue(String.class)).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                    @Override
+                                                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                                        if (dataSnapshot.exists()) {
+                                                                            // driverName.setText(dataSnapshot.child("fullName").getValue(String.class));
+                                                                        }
+                                                                    }
+
+                                                                    @Override
+                                                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                                    }
+                                                                });
+
+
+//                                                                 startSearchUI();
+                                                            }
+                                                            //findViewById(R.id.driverInfo).setVisibility(View.VISIBLE);
+                                                        }
+                                                    }
+
+                                                    @Override
+                                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                    }
+                                                });
+
+//                                                return;
+                                            }
+                                            if (counter <= driversKeys.size())
+                                                handler.postDelayed(runnable, 0);
+                                            stopSearchUI();
+                                            pickupRequest.removeEventListener(this);
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+                            }
+                        }
+                    } else {
+                        if (counter < driversKeys.size()) {
+                            final DatabaseReference pickupRequest = FirebaseDatabase.getInstance().getReference("PICKUPREQUEST").child(driversKeys.get(counter)).child(userId);
+                            String level = FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("level").toString();
+                            Map<String, String> data = new HashMap<>();
+                            data.put("client", clientID);
+                            data.put("start", etSearchStartAddress.getText().toString());
+                            data.put("arrival", etSearchDestination.getText().toString());
+
+                            data.put("startLat", "" + startLatLng.latitude);
+                            data.put("startLong", "" + startLatLng.longitude);
+
+                            data.put("destFix", "0");
+                            data.put("fixedPrice", "");
+
+
+                            if (destLatLng != null) {
+                                data.put("endLat", "" + destLatLng.latitude);
+                                data.put("endLong", "" + destLatLng.longitude);
+                            } else {
+                                data.put("endLat", "");
+                                data.put("endLong", "");
+                            }
+
+                            data.put("distance", driversLocations.get(counter));
+                            data.put("Refused", "0");
+                            pickupRequest.setValue(data);
+                            driversKeysHold.add(driversKeys.get(counter));
+                            pickupRequest.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    if (!dataSnapshot.exists()) {
+                                        counter++;
+                                        if (counter <= driversKeys.size())
+                                            handler.postDelayed(runnable, 0);
+
+                                        pickupRequest.removeEventListener(this);
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+
+                        } else {
+                            return;
+                        }
+
+                    }
+
+                    setCancelSearchButton(userId, counter, Step);
+                }
+            };
+            handler.postDelayed(runnable, 1000);
+
+            return "";
+
+        }
+
+        // This is called from background thread but runs in UI
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+
+            // Do things like update the progress bar
+        }
+
+        // This runs in UI when background thread finishes
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+//            stopSearchUI();
+            // Do things like hide the progress bar or change a TextView
+        }
+    }
+
+    public void setCancelSearchButton(final String userId, final int counter, final int Step) {
+        ivCancelRequest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                stopSearchUI();
+                stop = 1;
+                showAllUI();
+                for (int h = (counter - Step); h < (counter + Step) && h < driversKeys.size(); h++) {
+                    DatabaseReference pickupRequest = FirebaseDatabase.getInstance().
+                            getReference("PICKUPREQUEST");
+                    pickupRequest.removeValue();
+                }
+            }
+        });
     }
 
     private String userName;
+
+    @Override
+    public void onMethodCallback(String code) {
+        tvPromoCode.setText(code);
+    }
 
     private class CheckUserTask extends AsyncTask<String, Integer, String> {
         SharedPreferences prefs;
@@ -437,7 +826,7 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
                 Looper.prepare();
                 Looper.myLooper();
             }
-//            clientID = userId;
+            clientID = userId;
             if (userId == null) {
                 userId = "123";
             }
@@ -1057,11 +1446,6 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
         myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
         myAudioRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
         myAudioRecorder.setOutputFile(outputeFile);
-//        if (ContextCompat.checkSelfPermission(MapsActivity.this,
-//                Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-//            ActivityCompat.requestPermissions(MapsActivity.this,
-//                    new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 10);
-//        } else {
 
         recordButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -1159,7 +1543,6 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
         playAudio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                try {
                 playAudio.setVisibility(View.GONE);
                 try {
                     mediaPlayer.setDataSource(outputeFile);
@@ -1189,7 +1572,6 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
             }
         });
     }
-
 
 
     BitmapFactory.Options bOptions;
@@ -1263,7 +1645,7 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
         findViewById(R.id.tv_closest_driver).setVisibility(View.GONE);
         findViewById(R.id.iv_location_pin_dest).setVisibility(View.VISIBLE);
 
-        tvFrameTime.setText(tvClosestDriverText.getText());
+//        tvFrameTime.setText(tvClosestDriverText.getText());
 
         ivDrawerToggol.setVisibility(View.VISIBLE);
         ivDrawerToggol.setImageResource(R.drawable.back_arrow);
@@ -1340,25 +1722,15 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
                 hideSelectDestUI();
             }
 
-            findViewById(R.id.buttonsLayout).setVisibility(View.VISIBLE);
+            etSearchStartAddress.setVisibility(View.VISIBLE);
+            btnPickUp.setVisibility(View.VISIBLE);
+            ivWheel.setVisibility(View.VISIBLE);
             return;
         }
 
-
-        // changes
-
-//        stopSearchUI();
+        stopSearchUI();
         ivShadow.setVisibility(View.VISIBLE);
         ivDrawerToggol.setImageBitmap(scaleBitmap(45, 45, R.drawable.home_icon));
-//        ivDrawerToggol.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                // mDrawer.openMenu(true);
-//                ConstraintLayout contentConstraint = (ConstraintLayout) findViewById(R.id.contentLayout);
-//                ConstraintLayout contentBlocker = (ConstraintLayout) findViewById(R.id.rl_block_content);
-//                AnimateConstraint.resideAnimation(getApplicationContext(), contentConstraint, contentBlocker, (int) dpWidth, (int) dpHeight, 200);
-//            }
-//        });
 
 
         ivArraw.setVisibility(View.VISIBLE);
@@ -1366,17 +1738,10 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
             courseScreenIsOn = true;
             mMap.clear();
 
-
-//            searchEditText.setEnabled(false);
-//            searchDestEditText.setEnabled(false);
-//            coverButton.setClickable(false);
-
             etSearchStartAddress.setText(startText);
             etSearchDestination.setText(endText);
 
             findViewById(R.id.rl_depart_pin).setVisibility(View.GONE);
-
-//            AnimateConstraint.fadeIn(getApplicationContext(), bottomMenu, 500, 0);
             AnimateConstraint.fadeIn(getApplicationContext(), ivWheel, 500, 0);
             AnimateConstraint.fadeIn(getApplicationContext(), rlCallLayout, 500, 0);
             ivGoo.setVisibility(View.GONE);
@@ -1402,7 +1767,7 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
             }
 
             if (ContextCompat.checkSelfPermission(MapsActivityNew.this,
-                            Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
                 ActivityCompat.requestPermissions(MapsActivityNew.this,
                         new String[]{
@@ -1415,15 +1780,15 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
         if (statusT.equals("0") && !courseScreenStageZero) {
 
             if (!userLevel.equals("2")) {
-//                ivCallDriver.setVisibility(View.VISIBLE);
-//                ivCallDriver.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        close_button.setVisibility(View.VISIBLE);
-//                        ivCallDriver.setVisibility(View.GONE);
-//                        llVoipView.setVisibility(View.VISIBLE);
-//                    }
-//                });
+                ivCallDriver.setVisibility(View.VISIBLE);
+                ivCallDriver.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        close_button.setVisibility(View.VISIBLE);
+                        ivCallDriver.setVisibility(View.GONE);
+                        llVoipView.setVisibility(View.VISIBLE);
+                    }
+                });
 
                 tv_appelle_telephone.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -1453,7 +1818,7 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
                         if (!driverIDT.isEmpty()) {
                             Intent intent = new Intent(MapsActivityNew.this, VoipCallingActivity.class);
                             intent.putExtra("driverId", driverIDT);
-//                            intent.putExtra("clientId", clientID);
+                            intent.putExtra("clientId", clientID);
                             intent.putExtra("driverName", driverName);
                             intent.putExtra("driverImage", driverImage);
                             startActivity(intent);
@@ -1492,161 +1857,225 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
             dialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
         }
 
-//        ivCross = findViewById(R.id.iv_cancel_ride);
-//
-//        if (statusT.equals("0")) {
-//            ivCross.setVisibility(View.VISIBLE);
-//            ivCross.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    rideCancelDialog();
-//                }
-//            });
-//
-//            if (driverPosMarker != null)
-//                driverPosMarker.remove();
-//
-//            if (startPositionMarker != null)
-//                startPositionMarker.remove();
-//
-//
-//            frameLayout3.setDrawingCacheEnabled(true);
-//            frameLayout3.buildDrawingCache();
-//            Bitmap bm = frameLayout3.getDrawingCache();
-//            driverPosMarker = mMap.addMarker(new MarkerOptions()
-//                    .position(driverPosT)
-//                    .icon(BitmapDescriptorFactory.fromBitmap(bm)));
-//
-//            frameLayout.setDrawingCacheEnabled(true);
-//            frameLayout.buildDrawingCache();
-//            bm = frameLayout.getDrawingCache();
-//            startPositionMarker = mMap.addMarker(new MarkerOptions()
-//                    .position(startPositionT)
-//                    .icon(BitmapDescriptorFactory.fromBitmap(bm)));
-//
-//        }
-//
-//        if (statusT.equals("1") && !courseScreenStageOne) {
-//            ivCross.setVisibility(View.GONE);
-//            if (!userLevel.equals("2")) {
-//                ivCallDriver.setVisibility(View.VISIBLE);
-//                ivCallDriver.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//                        close_button.setVisibility(View.VISIBLE);
-//                        ivCallDriver.setVisibility(View.GONE);
-//                        voip_view.setVisibility(View.VISIBLE);
-//                    }
-//                });
-//
-//                tv_appelle_telephone.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        if (driverPhone != null) {
-//                            try {
-//                                String callNumber = driverPhone;
-//                                if (callNumber.contains("+212")) {
-//                                    callNumber = callNumber.replace("+212", "");
-//                                }
-//                                Intent intent = new Intent(Intent.ACTION_DIAL);
-//                                intent.setData(Uri.parse("tel:" + callNumber));
-//                                startActivity(intent);
-//                            } catch (NullPointerException e) {
-//                                e.printStackTrace();
-//                            } catch (Exception e) {
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                    }
-//                });
-//
-//                tv_appelle_voip.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        if (!driverIDT.isEmpty()) {
-//                            Intent intent = new Intent(MapsActivityNew.this, VoipCallingActivity.class);
-//                            intent.putExtra("driverId", driverIDT);
-//                            intent.putExtra("clientId", clientID);
-//                            intent.putExtra("driverName", driverName);
-//                            intent.putExtra("driverImage", driverImage);
-//                            startActivity(intent);
-//                        }
-//                    }
-//                });
-//            }
-//
-//            mMap.clear();
-//            courseScreenStageOne = true;
-//
-//            try {
-//                final Dialog dialog = new Dialog(context);
-//                dialog.setContentView(R.layout.custom2);
-//                TextView textView8 = (TextView) dialog.findViewById(R.id.textView8);
-//                Button ddd = (Button) dialog.findViewById(R.id.button);
-//                //Set Texts
-//                textView8.setText(resources.getString(R.string.Votrechauffeurestarrivé));
-//                ddd.setText(resources.getString(R.string.Daccord));
-//                Button dialogButton = (Button) dialog.findViewById(R.id.button);
-//                dialogButton.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        dialog.dismiss();
-//                    }
-//                });
-//                dialog.show();
-//                WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
-//                lp.dimAmount = 0.5f;
-//                dialog.getWindow().setAttributes(lp);
-//                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-//                dialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//
-//            frameLayout.setDrawingCacheEnabled(true);
-//            frameLayout.buildDrawingCache();
-//
-//
-//            CameraPosition cameraPosition = new CameraPosition.Builder()
-//                    .target(startPositionT)      // Sets the center of the map to Mountain View
-//                    .zoom(17)                   // Sets the zoom
-//                    .build();                   // Creates a CameraPosition from the builder
-//            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-//
-//
-//            Bitmap bm = frameLayout3.getDrawingCache();
-//            startPositionMarker = mMap.addMarker(new MarkerOptions()
-//                    .position(startPositionT)
-//                    .icon(BitmapDescriptorFactory.fromBitmap(bm)));
-//
-//        }
-//        if (statusT.equals("2")) {
-//            mMap.clear();
-//
-//            frameLayout3.setDrawingCacheEnabled(true);
-//            frameLayout3.buildDrawingCache();
-//            Bitmap bm = frameLayout3.getDrawingCache();
-//            mMap.addMarker(new MarkerOptions()
-//                    .position(driverPosT)
-//                    .icon(BitmapDescriptorFactory.fromBitmap(bm)));
-//        }
-//
-//        if (statusT.equals("3")) {
-//
-//        }
-//
-//
-//        if (statusT.equals("5")) {
-//
-//        }
+        if (statusT.equals("0")) {
+            ivCancelRide.setVisibility(View.VISIBLE);
+            ivCancelRide.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    rideCancelDialog();
+                }
+            });
 
+            if (driverPosMarker != null)
+                driverPosMarker.remove();
+
+            if (startPositionMarker != null)
+                startPositionMarker.remove();
+
+
+            flDriverPin.setDrawingCacheEnabled(true);
+            flDriverPin.buildDrawingCache();
+            Bitmap bm = flDriverPin.getDrawingCache();
+            driverPosMarker = mMap.addMarker(new MarkerOptions()
+                    .position(driverPosT)
+                    .icon(BitmapDescriptorFactory.fromBitmap(bm)));
+
+            flLocationStart.setDrawingCacheEnabled(true);
+            flLocationStart.buildDrawingCache();
+            bm = flLocationStart.getDrawingCache();
+            startPositionMarker = mMap.addMarker(new MarkerOptions()
+                    .position(startPositionT)
+                    .icon(BitmapDescriptorFactory.fromBitmap(bm)));
+
+        }
+
+        if (statusT.equals("1") && !courseScreenStageOne) {
+            ivCancelRide.setVisibility(View.GONE);
+            if (!userLevel.equals("2")) {
+                ivCallDriver.setVisibility(View.VISIBLE);
+                ivCallDriver.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        close_button.setVisibility(View.VISIBLE);
+                        ivCallDriver.setVisibility(View.GONE);
+                        llVoipView.setVisibility(View.VISIBLE);
+                    }
+                });
+
+                tv_appelle_telephone.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (driverPhone != null) {
+                            try {
+                                String callNumber = driverPhone;
+                                if (callNumber.contains("+212")) {
+                                    callNumber = callNumber.replace("+212", "");
+                                }
+                                Intent intent = new Intent(Intent.ACTION_DIAL);
+                                intent.setData(Uri.parse("tel:" + callNumber));
+                                startActivity(intent);
+                            } catch (NullPointerException e) {
+                                e.printStackTrace();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                });
+
+                tv_appelle_voip.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (!driverIDT.isEmpty()) {
+                            Intent intent = new Intent(MapsActivityNew.this, VoipCallingActivity.class);
+                            intent.putExtra("driverId", driverIDT);
+                            intent.putExtra("clientId", clientID);
+                            intent.putExtra("driverName", driverName);
+                            intent.putExtra("driverImage", driverImage);
+                            startActivity(intent);
+                        }
+                    }
+                });
+            }
+
+            mMap.clear();
+            courseScreenStageOne = true;
+
+            try {
+                final Dialog dialog = new Dialog(getApplicationContext());
+                dialog.setContentView(R.layout.custom2);
+                TextView textView8 = (TextView) dialog.findViewById(R.id.textView8);
+                Button ddd = (Button) dialog.findViewById(R.id.button);
+                //Set Texts
+                textView8.setText(getResources().getString(R.string.Votrechauffeurestarrivé));
+                ddd.setText(getResources().getString(R.string.Daccord));
+                Button dialogButton = (Button) dialog.findViewById(R.id.button);
+                dialogButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
+                WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
+                lp.dimAmount = 0.5f;
+                dialog.getWindow().setAttributes(lp);
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                dialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            flLocationStart.setDrawingCacheEnabled(true);
+            flLocationStart.buildDrawingCache();
+
+
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(startPositionT)      // Sets the center of the map to Mountain View
+                    .zoom(17)                   // Sets the zoom
+                    .build();                   // Creates a CameraPosition from the builder
+            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+
+            Bitmap bm = flDriverPin.getDrawingCache();
+            startPositionMarker = mMap.addMarker(new MarkerOptions()
+                    .position(startPositionT)
+                    .icon(BitmapDescriptorFactory.fromBitmap(bm)));
+
+        }
+        if (statusT.equals("2")) {
+            mMap.clear();
+
+            flDriverPin.setDrawingCacheEnabled(true);
+            flDriverPin.buildDrawingCache();
+            Bitmap bm = flDriverPin.getDrawingCache();
+            mMap.addMarker(new MarkerOptions()
+                    .position(driverPosT)
+                    .icon(BitmapDescriptorFactory.fromBitmap(bm)));
+        }
     }
+
+    private void rideCancelDialog() {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        final AlertDialog alertDialog = dialogBuilder.create();
+        alertDialog.show();
+        alertDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        LayoutInflater inflater = this.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.content_cancel_ride_dialog, null);
+        alertDialog.getWindow().setContentView(dialogView);
+
+        final Button btnYesCancelRide = dialogView.findViewById(R.id.btn_yes_cancel_ride);
+        final Button btnNoDontCancelRide = dialogView.findViewById(R.id.btn_dont_cancel_ride);
+
+        btnYesCancelRide.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                btnYesCancelRide.setBackgroundColor(Color.WHITE);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    btnYesCancelRide.setTextColor(getApplicationContext().getColor(R.color.primaryLight));
+                } else {
+                    btnYesCancelRide.setTextColor(getApplicationContext().getResources().getColor(R.color.primaryLight));
+                }
+
+                btnNoDontCancelRide.setBackgroundColor(Color.TRANSPARENT);
+                btnNoDontCancelRide.setTextColor(Color.WHITE);
+
+
+                FirebaseDatabase.getInstance().getReference("COURSES").child(courseIDT).child("state").setValue("5");
+                FirebaseDatabase.getInstance().getReference("COURSES").child(courseIDT).removeValue();
+
+                SharedPreferenceTask preferenceTask = new SharedPreferenceTask(getApplicationContext());
+                int prevCancel = preferenceTask.getCancelNumber();
+                preferenceTask.setCancelNumber(prevCancel + 1);
+                rlCallLayout.setVisibility(View.GONE);
+                llVoipView.setVisibility(View.GONE);
+
+                if (preferenceTask.getCancelNumber() > 3) {
+                    Toast.makeText(MapsActivityNew.this,
+                            "Vous avez annulé beaucoup de fois, l’application va se bloquer pendant 1h",
+                            Toast.LENGTH_LONG).show();
+
+                    blockingTimeOver = false;
+
+                    new CountDownTimer(3600000, 1000) {
+
+                        public void onTick(long millisUntilFinished) {
+                        }
+
+                        public void onFinish() {
+                            blockingTimeOver = true;
+                        }
+                    }.start();
+                }
+                alertDialog.dismiss();
+                ivCancelRequest.setVisibility(View.GONE);
+            }
+        });
+
+        btnNoDontCancelRide.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.dismiss();
+                btnYesCancelRide.setBackgroundColor(Color.TRANSPARENT);
+                btnYesCancelRide.setTextColor(Color.WHITE);
+
+                btnNoDontCancelRide.setBackgroundColor(Color.WHITE);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    btnNoDontCancelRide.setTextColor(getApplicationContext().getColor(R.color.primaryLight));
+                } else {
+                    btnNoDontCancelRide.setTextColor(getApplicationContext().getResources().getColor(R.color.primaryLight));
+                }
+            }
+        });
+    }
+
 
     private void cancelCommandLayout() {
         orderDriverState = 1;
 
         AnimateConstraint.animate(getApplicationContext(), rlEndPoint,
-                180, dpHeight - 20, 500, llConfirmDestination,ivArraw);
+                180, dpHeight - 20, 500, llConfirmDestination, ivArraw);
         ivArraw.setVisibility(View.GONE);
 
         ivGoo.setVisibility(View.GONE);
@@ -1991,6 +2420,7 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
 
         return true;
     }
+
     private boolean destPositionIsValid() {
         if (destLatLng == null)
             return false;
@@ -2253,12 +2683,12 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
             getLastLocation();
         }
 
-//        if (requestCode == 10) {
-//            if (grantResult[0] == PackageManager.PERMISSION_GRANTED) {
-//                showVoiceDialog();
-//            } else {
-//            }
-//        }
+        if (requestCode == 10) {
+            if (grantResult[0] == PackageManager.PERMISSION_GRANTED) {
+                showVoiceDialog();
+            } else {
+            }
+        }
     }
 
     public void getLastLocation() {
@@ -2484,129 +2914,129 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
                     equalTo(userId).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
-//                    if (dataSnapshot.exists()) {
-//                        try {
-//                            for (final DataSnapshot data : dataSnapshot.getChildren()) {
-//                                courseIDT = data.getKey();
-//                                statusT = data.child("state").getValue(String.class);
-//                                clientIdT = data.child("client").getValue(String.class);
-//                                driverIDT = data.child("driver").getValue(String.class);
-//                                driverPosT = new LatLng(Double.parseDouble(data.child("driverPosLat").getValue(String.class)),
-//                                        Double.parseDouble(data.child("driverPosLong").getValue(String.class)));
-//                                startPositionT = new LatLng(Double.parseDouble(data.child("startLat").getValue(String.class)),
-//                                        Double.parseDouble(data.child("startLong").getValue(String.class)));
-//
-//
-//                                driverLocT = new Location("");
-//                                startLocT = new Location("");
-//
-//
-//                                startText = data.child("startAddress").getValue(String.class);
-//                                endText = data.child("endAddress").getValue(String.class);
-//
-//                                driverLocT.setLatitude(driverPosT.latitude);
-//                                driverLocT.setLatitude(driverPosT.longitude);
-//
-//                                startLocT.setLatitude(startPositionT.latitude);
-//                                startLocT.setLatitude(startPositionT.longitude);
-//
-//
-//                                FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(driverIDT).addListenerForSingleValueEvent(new ValueEventListener() {
-//                                    @Override
-//                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                                        if (dataSnapshot.exists()) {
-//                                            driverPhone = dataSnapshot.child("phoneNumber").getValue(String.class);
-//                                            driverImage = dataSnapshot.child("image").getValue(String.class);
-//                                            driverName = dataSnapshot.child("fullName").getValue(String.class);
-//
-//
-//                                            FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(driverIDT).child("rating").addListenerForSingleValueEvent(new ValueEventListener() {
-//                                                @Override
-//                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                                                    int oneStarPerson = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("1").getValue(String.class)));
-//                                                    int one = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("1").getValue(String.class)));
-//                                                    int twoStarPerson = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("2").getValue(String.class)));
-//                                                    int two = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("2").getValue(String.class))) * 2;
-//                                                    int threeStarPerson = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("3").getValue(String.class)));
-//                                                    int three = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("3").getValue(String.class))) * 3;
-//                                                    int fourStarPerson = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("4").getValue(String.class)));
-//                                                    int four = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("4").getValue(String.class))) * 4;
-//                                                    int fiveStarPerson = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("5").getValue(String.class)));
-//                                                    int five = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("5").getValue(String.class))) * 5;
-//
-//                                                    double totalRating = one + two + three + four + five;
-//                                                    double totalRatingPerson = oneStarPerson + twoStarPerson + threeStarPerson + fourStarPerson + fiveStarPerson;
-//
-//                                                    double avgRating = totalRating / totalRatingPerson;
-//                                                    String avg = String.format("%.2f", avgRating);
-//                                                    String newString = avg.replace(",", ".");
-//                                                    iv_total_rating_number.setText(newString);
-////                                                    int rating = Integer.parseInt(dataSnapshot.getValue(String.class)) + 1;
-////                                                    FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientId).child("rating").child(Integer.toString(RATE)).setValue("" + rating);
-//                                                }
-//
-//                                                @Override
-//                                                public void onCancelled(@NonNull DatabaseError databaseError) {
-//                                                    iv_total_rating_number.setText(4.5 + "");
-//                                                }
-//                                            });
-//
-//                                            FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(driverIDT).child("CARS").orderByChild("selected").equalTo("1").addListenerForSingleValueEvent(new ValueEventListener() {
-//                                                @Override
-//                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                                                    if (dataSnapshot.exists()) {
-//
-//                                                        for (DataSnapshot data : dataSnapshot.getChildren()) {
-//                                                            driverCarName = data.child("name").getValue(String.class);
-//                                                            driverCarDescription = data.child("description").getValue(String.class);
-//                                                        }
-//                                                    } else {
-//                                                        driverCarName = "Renault Clio 4(Rouge)";
-//                                                        driverCarDescription = "1359 A 4";
-//                                                    }
-//
-//                                                    FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientIdT).addListenerForSingleValueEvent(new ValueEventListener() {
-//                                                        @Override
-//                                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                                                            userLevel = dataSnapshot.child("level").getValue(String.class);
-//                                                            handleCourseCallBack();
-//
-//                                                        }
-//
-//                                                        @Override
-//                                                        public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                                                        }
-//                                                    });
-//
-//                                                }
-//
-//                                                @Override
-//                                                public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                                                }
-//                                            });
-//
-//                                        }
-//
-//
-//                                    }
-//
-//                                    @Override
-//                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                                    }
-//                                });
-//
-//
-//                            }
-//                        } catch (NullPointerException e) {
-//                            e.printStackTrace();
-//                        }
-//                    } else {
-//                        statusT = "4";
-//                        handleCourseCallBack();
-//                    }
+                    if (dataSnapshot.exists()) {
+                        try {
+                            for (final DataSnapshot data : dataSnapshot.getChildren()) {
+                                courseIDT = data.getKey();
+                                statusT = data.child("state").getValue(String.class);
+                                clientIdT = data.child("client").getValue(String.class);
+                                driverIDT = data.child("driver").getValue(String.class);
+                                driverPosT = new LatLng(Double.parseDouble(data.child("driverPosLat").getValue(String.class)),
+                                        Double.parseDouble(data.child("driverPosLong").getValue(String.class)));
+                                startPositionT = new LatLng(Double.parseDouble(data.child("startLat").getValue(String.class)),
+                                        Double.parseDouble(data.child("startLong").getValue(String.class)));
+
+
+                                driverLocT = new Location("");
+                                startLocT = new Location("");
+
+
+                                startText = data.child("startAddress").getValue(String.class);
+                                endText = data.child("endAddress").getValue(String.class);
+
+                                driverLocT.setLatitude(driverPosT.latitude);
+                                driverLocT.setLatitude(driverPosT.longitude);
+
+                                startLocT.setLatitude(startPositionT.latitude);
+                                startLocT.setLatitude(startPositionT.longitude);
+
+
+                                FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(driverIDT).addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        if (dataSnapshot.exists()) {
+                                            driverPhone = dataSnapshot.child("phoneNumber").getValue(String.class);
+                                            driverImage = dataSnapshot.child("image").getValue(String.class);
+                                            driverName = dataSnapshot.child("fullName").getValue(String.class);
+
+
+                                            FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(driverIDT).child("rating").addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                    int oneStarPerson = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("1").getValue(String.class)));
+                                                    int one = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("1").getValue(String.class)));
+                                                    int twoStarPerson = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("2").getValue(String.class)));
+                                                    int two = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("2").getValue(String.class))) * 2;
+                                                    int threeStarPerson = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("3").getValue(String.class)));
+                                                    int three = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("3").getValue(String.class))) * 3;
+                                                    int fourStarPerson = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("4").getValue(String.class)));
+                                                    int four = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("4").getValue(String.class))) * 4;
+                                                    int fiveStarPerson = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("5").getValue(String.class)));
+                                                    int five = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("5").getValue(String.class))) * 5;
+
+                                                    double totalRating = one + two + three + four + five;
+                                                    double totalRatingPerson = oneStarPerson + twoStarPerson + threeStarPerson + fourStarPerson + fiveStarPerson;
+
+                                                    double avgRating = totalRating / totalRatingPerson;
+                                                    String avg = String.format("%.2f", avgRating);
+                                                    String newString = avg.replace(",", ".");
+                                                    iv_total_rating_number.setText(newString);
+//                                                    int rating = Integer.parseInt(dataSnapshot.getValue(String.class)) + 1;
+//                                                    FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientId).child("rating").child(Integer.toString(RATE)).setValue("" + rating);
+                                                }
+
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                                    iv_total_rating_number.setText(4.5 + "");
+                                                }
+                                            });
+
+                                            FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(driverIDT).child("CARS").orderByChild("selected").equalTo("1").addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                    if (dataSnapshot.exists()) {
+
+                                                        for (DataSnapshot data : dataSnapshot.getChildren()) {
+                                                            driverCarName = data.child("name").getValue(String.class);
+                                                            driverCarDescription = data.child("description").getValue(String.class);
+                                                        }
+                                                    } else {
+                                                        driverCarName = "Renault Clio 4(Rouge)";
+                                                        driverCarDescription = "1359 A 4";
+                                                    }
+
+                                                    FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientIdT).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                        @Override
+                                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                            userLevel = dataSnapshot.child("level").getValue(String.class);
+                                                            handleCourseCallBack();
+
+                                                        }
+
+                                                        @Override
+                                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                        }
+                                                    });
+
+                                                }
+
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                }
+                                            });
+
+                                        }
+
+
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+
+
+                            }
+                        } catch (NullPointerException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        statusT = "4";
+                        handleCourseCallBack();
+                    }
                 }
 
                 @Override
