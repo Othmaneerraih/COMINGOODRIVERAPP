@@ -1,4 +1,4 @@
-package com.comingoo.user.comingoo;
+package com.comingoo.user.comingoo.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,6 +9,8 @@ import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.comingoo.user.comingoo.MapsActivity;
+import com.comingoo.user.comingoo.R;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;

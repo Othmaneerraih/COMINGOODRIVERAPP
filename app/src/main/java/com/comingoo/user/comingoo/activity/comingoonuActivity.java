@@ -1,4 +1,4 @@
-package com.comingoo.user.comingoo;
+package com.comingoo.user.comingoo.activity;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -15,6 +15,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.comingoo.user.comingoo.utility.AnimateConstraint;
+import com.comingoo.user.comingoo.utility.LocalHelper;
+import com.comingoo.user.comingoo.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;

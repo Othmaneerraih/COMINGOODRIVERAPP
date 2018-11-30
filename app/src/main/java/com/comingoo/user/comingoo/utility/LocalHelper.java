@@ -1,4 +1,4 @@
-package com.comingoo.user.comingoo;
+package com.comingoo.user.comingoo.utility;
 
 
 import android.annotation.TargetApi;

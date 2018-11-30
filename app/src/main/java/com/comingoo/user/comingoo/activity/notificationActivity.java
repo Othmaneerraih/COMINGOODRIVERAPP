@@ -1,4 +1,4 @@
-package com.comingoo.user.comingoo;
+package com.comingoo.user.comingoo.activity;
 
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -14,6 +14,10 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.comingoo.user.comingoo.MapsActivity;
+import com.comingoo.user.comingoo.interfaces.ActivityCallback;
+import com.comingoo.user.comingoo.model.Notification;
+import com.comingoo.user.comingoo.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -31,6 +35,7 @@ public class notificationActivity extends AppCompatActivity {
     private MyAdapter cAdapter;
     private List<Notification> NotificationData;
     private String userId;
+    private ActivityCallback activityCallback;
 
 
     @Override
@@ -190,11 +195,8 @@ public class notificationActivity extends AppCompatActivity {
                            try{
                                if(newCourse != null){
                                    if (newCourse.getCode() != null){
-                                       MapsActivity.promoCode.setText(newCourse.getCode());
-//                                       SharedPreferences prefs = getSharedPreferences("COMINGOODRIVERDATA", MODE_PRIVATE);
-//                                       userId = prefs.getString("userId", null);
+                                       activityCallback.onMethodCallback(newCourse.getCode());
                                        FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("PROMOCODE").setValue(newCourse.getCode());
-
                                        finish();
                                    }
                                }
