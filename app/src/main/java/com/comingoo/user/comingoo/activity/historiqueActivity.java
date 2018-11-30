@@ -1,4 +1,4 @@
-package com.comingoo.user.comingoo;
+package com.comingoo.user.comingoo.activity;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -13,6 +13,9 @@ import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.TextView;
 
+import com.comingoo.user.comingoo.model.Course;
+import com.comingoo.user.comingoo.utility.LocalHelper;
+import com.comingoo.user.comingoo.R;
 import com.comingoo.user.comingoo.adapters.HistoriqueAdapter;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;

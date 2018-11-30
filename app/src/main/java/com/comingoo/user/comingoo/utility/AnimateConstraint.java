@@ -1,4 +1,4 @@
-package com.comingoo.user.comingoo;
+package com.comingoo.user.comingoo.utility;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 
 public class AnimateConstraint {
 
-    static void animate(final Context context, final View constraintLayout, final float reachedHeigth, final float currentHeight, int duration, final View ...opt){
+    public static void animate(final Context context, final View constraintLayout, final float reachedHeigth, final float currentHeight, int duration, final View... opt){
 
         constraintLayout.setVisibility(View.VISIBLE);
 
@@ -59,7 +59,7 @@ public class AnimateConstraint {
         anim.start();
 
     }
-    static void fadeIn(Context context,final View constraintLayout, final int duration, final int howSmooth){
+    public static void fadeIn(Context context, final View constraintLayout, final int duration, final int howSmooth){
         constraintLayout.setVisibility(View.VISIBLE);
 
         ObjectAnimator fadeIn = ObjectAnimator.ofFloat(constraintLayout, "alpha", 0f, 1f);
@@ -69,7 +69,7 @@ public class AnimateConstraint {
         mAnimationSet.play(fadeIn);
         mAnimationSet.start();
     }
-    static void fadeOut(Context context,final View constraintLayout, final int duration, final int howSmooth){
+    public static void fadeOut(Context context, final View constraintLayout, final int duration, final int howSmooth){
         constraintLayout.setVisibility(View.VISIBLE);
 
         ObjectAnimator fadeIn = ObjectAnimator.ofFloat(constraintLayout, "alpha", 1f, 0f);
@@ -79,7 +79,7 @@ public class AnimateConstraint {
         mAnimationSet.play(fadeIn);
         mAnimationSet.start();
     }
-    static void animateCollapse(final Context context, final View constraintLayout, final float reachedHeigth, final float currentHeight, int duration){
+    public static void animateCollapse(final Context context, final View constraintLayout, final float reachedHeigth, final float currentHeight, int duration){
 
         constraintLayout.setVisibility(View.VISIBLE);
 
@@ -99,7 +99,7 @@ public class AnimateConstraint {
         anim.setDuration(duration);
         anim.start();
     }
-    static void resideAnimation(final Context context, final View constraintLayout, final View contentBlocker, final int screenWidth, final int screenHeight, final int duration){
+    public static void resideAnimation(final Context context, final View constraintLayout, final View contentBlocker, final int screenWidth, final int screenHeight, final int duration){
 
         final int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) screenHeight, context.getResources().getDisplayMetrics());
         final int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) screenWidth, context.getResources().getDisplayMetrics());

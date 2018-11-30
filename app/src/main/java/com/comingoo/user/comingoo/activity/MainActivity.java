@@ -1,4 +1,4 @@
-package com.comingoo.user.comingoo;
+package com.comingoo.user.comingoo.activity;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.comingoo.user.comingoo.MapsActivity;
+import com.comingoo.user.comingoo.R;
 import com.google.firebase.auth.FirebaseAuth;
 
 

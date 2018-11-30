@@ -1,4 +1,4 @@
-package com.comingoo.user.comingoo;
+package com.comingoo.user.comingoo.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +9,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.comingoo.user.comingoo.utility.LocalHelper;
+import com.comingoo.user.comingoo.R;
 
 
 public class inviteActivity extends AppCompatActivity {
