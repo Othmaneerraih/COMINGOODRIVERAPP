@@ -45,9 +45,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 
-public class loginActivity extends AppCompatActivity {
-    private EditText phoneNumber;
-    private EditText password;
+public class LoginActivity extends AppCompatActivity {
     private CallbackManager callbackManager;
 
     @Override
@@ -56,27 +54,15 @@ public class loginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-//            SharedPreferences prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
-//            prefs.edit().putString("userID", FirebaseAuth.getInstance().getCurrentUser().getUid()).apply();
-            startActivity(new Intent(loginActivity.this, MapsActivity.class));
+            startActivity(new Intent(LoginActivity.this, MapsActivity.class));
             finish();
         }
-
-//        phoneNumber = (EditText) findViewById(R.id.code);
-//        password = (EditText) findViewById(R.id.password);
-//        loginBtn = (ImageButton) findViewById(R.id.loginBtn);
-
-
-        FacebookSdk.sdkInitialize(getApplicationContext());
-        AppEventsLogger.activateApp(this);
 
         callbackManager = CallbackManager.Factory.create();
 
         final String EMAIL = "email";
         final LoginButton loginButton = findViewById(R.id.login_button);
         loginButton.setReadPermissions(Arrays.asList(EMAIL));
-
-//        getDurationForRoute("Pabnartek Rd, Dhaka","Bridge, Z5478");
 
         LoginManager.getInstance().registerCallback(callbackManager,
                 new FacebookCallback<LoginResult>() {
@@ -96,7 +82,7 @@ public class loginActivity extends AppCompatActivity {
                                             final String password = Profile.getCurrentProfile().getId();
                                             final String imageURI = Profile.getCurrentProfile().getProfilePictureUri(300, 300).toString();
 
-                                            Log.e("loginActivity", "onCompleted: email: " + Email);
+                                            Log.e("LoginActivity", "onCompleted: email: " + Email);
 
 
                                             FirebaseDatabase.getInstance().getReference("clientUSERS").orderByChild("email").equalTo(Email).
@@ -105,29 +91,21 @@ public class loginActivity extends AppCompatActivity {
                                                 @Override
                                                 public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
                                                     if (!dataSnapshot.exists()) {
-//                                                        loginBtn.setVisibility(View.VISIBLE);
-//                                                        Toast.makeText(loginActivity.this, "Numéro erroné!!!", Toast.LENGTH_SHORT).show();
-
-//                                                        loginBtn.setVisibility(View.VISIBLE);
-//                                                        Toast.makeText(loginActivity.this, "Error!!!", Toast.LENGTH_SHORT).show();
 
                                                         String[] stringArray = getResources().getStringArray(R.array.blocked_users);
-                                                        Log.e("loginActivity", "onDataChange: "+stringArray[0] );
+                                                        Log.e("LoginActivity", "onDataChange: " + stringArray[0]);
                                                         if (Arrays.asList(stringArray).contains(EMAIL)) {
                                                             // true
-                                                            Toast.makeText(loginActivity.this, "This account is blocked", Toast.LENGTH_LONG).show();
+                                                            Toast.makeText(LoginActivity.this, "This account is blocked", Toast.LENGTH_LONG).show();
                                                         } else {
-                                                            Intent intent = new Intent(loginActivity.this, signupActivity.class);
-                                                            intent.putExtra("Email",  Email);
-                                                            intent.putExtra("name",  name);
-                                                            intent.putExtra("password",  password);
-                                                            intent.putExtra("imageURI",  imageURI);
+                                                            Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
+                                                            intent.putExtra("Email", Email);
+                                                            intent.putExtra("name", name);
+                                                            intent.putExtra("password", password);
+                                                            intent.putExtra("imageURI", imageURI);
                                                             startActivity(intent);
                                                             finish();
                                                         }
-
-
-
                                                     } else {
 
                                                         for (DataSnapshot data : dataSnapshot.getChildren()) {
@@ -141,16 +119,15 @@ public class loginActivity extends AppCompatActivity {
                                                                         if (task.isSuccessful()) {
                                                                             SharedPreferences prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
                                                                             prefs.edit().putString("userID", FirebaseAuth.getInstance().getCurrentUser().getUid()).apply();
-                                                                            startActivity(new Intent(loginActivity.this, MapsActivity.class));
+                                                                            startActivity(new Intent(LoginActivity.this, MapsActivity.class));
                                                                             finish();
                                                                         } else {
-                                                                            Toast.makeText(loginActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                                                            Toast.makeText(LoginActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                                                                         }
                                                                     }
                                                                 });
                                                             } else {
-//                                                                loginBtn.setVisibility(View.VISIBLE);
-                                                                Toast.makeText(loginActivity.this, "Error!!!", Toast.LENGTH_SHORT).show();
+                                                                Toast.makeText(LoginActivity.this, "Error!!!", Toast.LENGTH_SHORT).show();
                                                             }
 
 
@@ -164,18 +141,9 @@ public class loginActivity extends AppCompatActivity {
 
                                                 }
                                             });
-
-
-
-
-
-
-
-
-
                                             LoginManager.getInstance().logOut();
                                         } catch (Exception e) {
-                                            Toast.makeText(loginActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(LoginActivity.this, "Error", Toast.LENGTH_SHORT).show();
                                         }
                                     }
                                 });
@@ -193,39 +161,10 @@ public class loginActivity extends AppCompatActivity {
                     @Override
                     public void onError(FacebookException exception) {
                         // App code
-                        Toast.makeText(loginActivity.this, exception.toString(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, exception.toString(), Toast.LENGTH_SHORT).show();
                     }
                 });
 
-    }
-
-    private String getDurationForRoute(String origin, String destination){
-        // - We need a context to access the API
-        GeoApiContext geoApiContext = new GeoApiContext.Builder()
-                .apiKey(getResources().getString(R.string.google_maps_key))
-                .build();
-
-        // - Perform the actual request
-        DirectionsResult directionsResult = null;
-        try {
-            directionsResult = DirectionsApi.newRequest(geoApiContext)
-                    .mode(TravelMode.DRIVING)
-                    .origin(origin)
-                    .destination(destination)
-                    .await();
-        } catch (ApiException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        // - Parse the result
-        DirectionsRoute route = directionsResult.routes[0];
-        DirectionsLeg leg = route.legs[0];
-        Duration duration = leg.duration;
-        return duration.humanReadable;
     }
 
     @Override

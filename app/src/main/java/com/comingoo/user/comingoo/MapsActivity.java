@@ -65,12 +65,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.comingoo.user.comingoo.activity.VoipCallingActivity;
-import com.comingoo.user.comingoo.activity.aideActivity;
-import com.comingoo.user.comingoo.activity.comingoonuActivity;
-import com.comingoo.user.comingoo.activity.historiqueActivity;
-import com.comingoo.user.comingoo.activity.inviteActivity;
-import com.comingoo.user.comingoo.activity.loginActivity;
-import com.comingoo.user.comingoo.activity.notificationActivity;
+import com.comingoo.user.comingoo.activity.AideActivity;
+import com.comingoo.user.comingoo.activity.ComingoonuActivity;
+import com.comingoo.user.comingoo.activity.HistoriqueActivity;
+import com.comingoo.user.comingoo.activity.InviteActivity;
+import com.comingoo.user.comingoo.activity.LoginActivity;
+import com.comingoo.user.comingoo.activity.NotificationActivity;
 import com.comingoo.user.comingoo.adapters.FavouritePlaceAdapter;
 import com.comingoo.user.comingoo.adapters.MyPlaceAdapter;
 
@@ -426,7 +426,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     if (!dataSnapshot.exists()) {
                         prefs.edit().remove("userID");
                         FirebaseAuth.getInstance().signOut();
-                        Intent intent = new Intent(MapsActivity.this, loginActivity.class);
+                        Intent intent = new Intent(MapsActivity.this, LoginActivity.class);
                         startActivity(intent);
 //                        finish();
                         return;
@@ -442,7 +442,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         ComingoonYou.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                Intent intent = new Intent(MapsActivity.this, comingoonuActivity.class);
+                                Intent intent = new Intent(MapsActivity.this, ComingoonuActivity.class);
                                 intent.putExtra("image", dataSnapshot.child("image").getValue(String.class));
                                 intent.putExtra("name", dataSnapshot.child("fullName").getValue(String.class));
 //                                intent.putExtra("phone", dataSnapshot.child("phoneNumber").getValue(String.class));
@@ -2047,7 +2047,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (userId == null || FirebaseAuth.getInstance().getCurrentUser() == null) {
             prefs.edit().remove("userID");
             FirebaseAuth.getInstance().signOut();
-            Intent intent = new Intent(MapsActivity.this, loginActivity.class);
+            Intent intent = new Intent(MapsActivity.this, LoginActivity.class);
             startActivity(intent);
             finish();
         }
@@ -2252,14 +2252,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Historique.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MapsActivity.this, historiqueActivity.class));
+                startActivity(new Intent(MapsActivity.this, HistoriqueActivity.class));
             }
         });
 
         findViewById(R.id.invite).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MapsActivity.this, inviteActivity.class));
+                startActivity(new Intent(MapsActivity.this, InviteActivity.class));
             }
         });
 
@@ -2269,7 +2269,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //                SharedPreferences prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
 //                prefs.edit().remove("userID");
 //                FirebaseAuth.getInstance().signOut();
-//                startActivity(new Intent(MapsActivity.this, loginActivity.class));
+//                startActivity(new Intent(MapsActivity.this, LoginActivity.class));
 //                finish();
 
                 String url = "https://www.comingoo.com/driver";
@@ -2281,13 +2281,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Inbox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MapsActivity.this, notificationActivity.class));
+                startActivity(new Intent(MapsActivity.this, NotificationActivity.class));
             }
         });
         Aide.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MapsActivity.this, aideActivity.class));
+                startActivity(new Intent(MapsActivity.this, AideActivity.class));
             }
         });
 

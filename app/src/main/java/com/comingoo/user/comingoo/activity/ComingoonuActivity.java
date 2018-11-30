@@ -32,7 +32,7 @@ import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
-public class comingoonuActivity extends AppCompatActivity {
+public class ComingoonuActivity extends AppCompatActivity {
     private int selectedScreen = 0;
     private ConstraintLayout parametreLayout, profileLayout, changePasswordLayout, portFeuilleLayout;
     private ImageView paramsImage, profilImage, portFImage;
@@ -301,23 +301,23 @@ public class comingoonuActivity extends AppCompatActivity {
         toolBarUI();
         switch(selectedScreen){
             case 0 :
-                AnimateConstraint.fadeIn(comingoonuActivity.this, parametreLayout, 500, 10);
+                AnimateConstraint.fadeIn(ComingoonuActivity.this, parametreLayout, 500, 10);
                 break;
             case 1 :
-                AnimateConstraint.fadeIn(comingoonuActivity.this, profileLayout, 500, 10);
+                AnimateConstraint.fadeIn(ComingoonuActivity.this, profileLayout, 500, 10);
                 break;
             case 2 :
                 break;
             case 3 :
-                AnimateConstraint.fadeIn(comingoonuActivity.this, changePasswordLayout, 500, 10);
+                AnimateConstraint.fadeIn(ComingoonuActivity.this, changePasswordLayout, 500, 10);
                 break;
             case 4 :
                 break;
             case 5 :
-                AnimateConstraint.fadeIn(comingoonuActivity.this, portFeuilleLayout, 500, 10);
+                AnimateConstraint.fadeIn(ComingoonuActivity.this, portFeuilleLayout, 500, 10);
                 break;
             case 6 :
-                AnimateConstraint.fadeIn(comingoonuActivity.this, tarifsLayout, 500, 10);
+                AnimateConstraint.fadeIn(ComingoonuActivity.this, tarifsLayout, 500, 10);
                 break;
         }
 
@@ -328,7 +328,7 @@ public class comingoonuActivity extends AppCompatActivity {
         Context context;
         Resources resources;
 
-        context = LocalHelper.setLocale(comingoonuActivity.this, language);
+        context = LocalHelper.setLocale(ComingoonuActivity.this, language);
         resources = context.getResources();
 
         TextView textView19 = (TextView) findViewById(R.id.textView19);
@@ -399,7 +399,7 @@ public class comingoonuActivity extends AppCompatActivity {
 
         if (newPassword.length() != 0 && confirmPassword.length() != 0 && oldPassword.length() != 0) {
             if (newPassword.length() < 8) {
-                Toast.makeText(comingoonuActivity.this, "Mot de passe doit avoir 8 lettres.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ComingoonuActivity.this, "Mot de passe doit avoir 8 lettres.", Toast.LENGTH_SHORT).show();
                 changePassBtn.setVisibility(View.VISIBLE);
                 findViewById(R.id.progressBar).setVisibility(View.GONE);
             } else if (newPassword.length() >= 8 && confirmPassword.length() >= 8) {
@@ -426,14 +426,14 @@ public class comingoonuActivity extends AppCompatActivity {
                                                             selectedScreen = 1;
                                                             updateUI();
                                                         } else {
-                                                            Toast.makeText(comingoonuActivity.this, "Error!!! ", Toast.LENGTH_SHORT).show();
+                                                            Toast.makeText(ComingoonuActivity.this, "Error!!! ", Toast.LENGTH_SHORT).show();
                                                             changePassBtn.setVisibility(View.VISIBLE);
                                                             findViewById(R.id.progressBar).setVisibility(View.GONE);
                                                         }
                                                     }
                                                 });
                                             } else {
-                                                Toast.makeText(comingoonuActivity.this, "Error!!! ", Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(ComingoonuActivity.this, "Error!!! ", Toast.LENGTH_SHORT).show();
                                                 changePassBtn.setVisibility(View.VISIBLE);
                                                 findViewById(R.id.progressBar).setVisibility(View.GONE);
                                             }
@@ -453,7 +453,7 @@ public class comingoonuActivity extends AppCompatActivity {
 
 
             } else {
-                Toast.makeText(comingoonuActivity.this, "Tous les champs doivent étres remplis!!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ComingoonuActivity.this, "Tous les champs doivent étres remplis!!", Toast.LENGTH_SHORT).show();
                 changePassBtn.setVisibility(View.VISIBLE);
                 findViewById(R.id.progressBar).setVisibility(View.GONE);
             }

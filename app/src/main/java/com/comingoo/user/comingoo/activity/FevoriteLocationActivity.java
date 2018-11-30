@@ -52,6 +52,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
@@ -64,41 +65,42 @@ public class FevoriteLocationActivity extends AppCompatActivity
 
     private String TAG = "FevoriteLocationActivity";
 
-    GoogleMap mGoogleMap;
-    SupportMapFragment mapFrag;
-    LocationRequest mLocationRequest;
-    GoogleApiClient mGoogleApiClient;
-    Location mLastLocation;
-    Marker mCurrLocationMarker;
-    private EditText searchEt;
+    private GoogleMap mGoogleMap;
+    private GoogleApiClient mGoogleApiClient;
+    private Marker mCurrLocationMarker;
     private Button confirmBtn;
-    private int position;
+    private ImageButton positionButton;
+    private EditText searchEt;
     private String userId = "";
     private String febPlaceName = "";
     private String febPlaceLat = "";
     private String febPlacelong = "";
     private String febPlaceAddress = "";
+    private int lastImageWidth;
+    private LatLng userLatLng;
+
     private PlaceAutocompleteFragment autocompleteFragment;
-    private ImageButton positionButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fevorite_location);
 
-        mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        mapFrag.getMapAsync(this);
-        searchEt = (EditText) findViewById(R.id.search_edit_text);
-        confirmBtn = (Button) findViewById(R.id.confirm_btn);
-        positionButton = (ImageButton) findViewById(R.id.my_position);
+        initialize();
+        action();
 
-        positionButton.setImageBitmap(scaleBitmap(40, 37, R.drawable.my_position_icon));
+    }
 
-        autocompleteFragment = (PlaceAutocompleteFragment)
-                getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+    private void initialize(){
+        SupportMapFragment mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        Objects.requireNonNull(mapFrag).getMapAsync(this);
+        searchEt = findViewById(R.id.search_edit_text);
+        confirmBtn = findViewById(R.id.confirm_btn);
+        positionButton = findViewById(R.id.my_position);
+        autocompleteFragment = (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
 
 
-        position = getIntent().getIntExtra("position", 0);
+        int position = getIntent().getIntExtra("position", 0);
         userId = getIntent().getStringExtra("userId");
 
         if (position == 0) {
@@ -106,11 +108,13 @@ public class FevoriteLocationActivity extends AppCompatActivity
         } else {
             febPlaceName = "Home";
         }
+    }
 
+    private void action(){
         confirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!febPlaceAddress.isEmpty() && febPlaceLat != "" && febPlacelong != "") {
+                if (!febPlaceAddress.isEmpty() && !febPlaceLat.equals("") && !febPlacelong.equals("")) {
                     FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child(febPlaceName).child("Lat").setValue(febPlaceLat);
                     FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child(febPlaceName).child("Long").setValue(febPlacelong);
                     FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child(febPlaceName).child("Address").setValue(febPlaceAddress);
@@ -129,8 +133,8 @@ public class FevoriteLocationActivity extends AppCompatActivity
                 }
             }
         });
-
-        autocompleteFragment.getView().setBackgroundResource(R.drawable.main_edit_text);
+        positionButton.setImageBitmap(scaleBitmap(40, 37, R.drawable.my_position_icon));
+        Objects.requireNonNull(autocompleteFragment.getView()).setBackgroundResource(R.drawable.main_edit_text);
 
         setAutocompleteFragmentAction();
 
@@ -142,28 +146,20 @@ public class FevoriteLocationActivity extends AppCompatActivity
         autocompleteFragment.setFilter(autocompleteFilter);
     }
 
-    BitmapFactory.Options bOptions;
-    int imageHeight;
-    int imageWidth;
-    int lastImageHeight;
-    int lastImageWidth;
-    int inSampleSize;
     public Bitmap scaleBitmap(int reqWidth, int reqHeight, int resId) {
         // Raw height and width of image
 
-        bOptions = new BitmapFactory.Options();
+        BitmapFactory.Options bOptions = new BitmapFactory.Options();
         bOptions.inJustDecodeBounds = true;
         BitmapFactory.decodeResource(getResources(), resId, bOptions);
-        imageHeight = bOptions.outHeight;
-        imageWidth = bOptions.outWidth;
+        int imageHeight = bOptions.outHeight;
+        int imageWidth = bOptions.outWidth;
 
-        imageHeight = bOptions.outHeight;
-        imageWidth = bOptions.outWidth;
-        inSampleSize = 1;
+        int inSampleSize = 1;
 
         if (imageHeight > reqHeight || imageWidth > reqWidth) {
 
-            lastImageHeight = imageHeight / 2;
+            int lastImageHeight = imageHeight / 2;
             lastImageWidth = lastImageWidth / 2;
 
             // Calculate the largest inSampleSize value that is a power of 2 and keeps both
@@ -218,7 +214,6 @@ public class FevoriteLocationActivity extends AppCompatActivity
 
     }
 
-    private LatLng userLatLng;
     public void getLastLocation() {
         // Get last known recent location using new Google Play Services SDK (v11+)
         FusedLocationProviderClient locationClient = getFusedLocationProviderClient(this);
@@ -257,10 +252,7 @@ public class FevoriteLocationActivity extends AppCompatActivity
                     strReturnedAddress.append(returnedAddress.getAddressLine(i)).append("\n");
                 }
                 strAdd = strReturnedAddress.toString();
-            } else {
             }
-        } catch (NullPointerException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -322,7 +314,7 @@ public class FevoriteLocationActivity extends AppCompatActivity
 
     @Override
     public void onConnected(Bundle bundle) {
-        mLocationRequest = new LocationRequest();
+        LocationRequest mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(1000);
         mLocationRequest.setFastestInterval(1000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
@@ -338,27 +330,17 @@ public class FevoriteLocationActivity extends AppCompatActivity
     }
 
     @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
     }
 
     @Override
     public void onLocationChanged(Location location) {
-        mLastLocation = location;
         if (mCurrLocationMarker != null) {
             mCurrLocationMarker.remove();
         }
 
-        BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.depart_pin);
-//        scaleBitmap(76, 56, R.drawable.depart_pin)
-
         //Place current location marker
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-//        MarkerOptions markerOptions = new MarkerOptions();
-//        markerOptions.position(latLng);
-//        markerOptions.title("Current Position");
-//        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons("depart_pin", 56, 76)));
-//        mCurrLocationMarker = mGoogleMap.addMarker(markerOptions);
-
         int height = 150;
         int width = 80;
         BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.depart_pin);
@@ -380,41 +362,9 @@ public class FevoriteLocationActivity extends AppCompatActivity
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
 
-    private void checkLocationPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.ACCESS_FINE_LOCATION)) {
-
-                new AlertDialog.Builder(this)
-                        .setTitle("Location Permission Needed")
-                        .setMessage("This app needs the Location permission, please accept to use location functionality")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                ActivityCompat.requestPermissions(FevoriteLocationActivity.this,
-                                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                                        MY_PERMISSIONS_REQUEST_LOCATION);
-                            }
-                        })
-                        .create()
-                        .show();
-
-
-            } else {
-                // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        MY_PERMISSIONS_REQUEST_LOCATION);
-            }
-        }
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+                                           @NonNull String permissions[], @NonNull int[] grantResults) {
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_LOCATION: {
                 // If request is cancelled, the result arrays are empty.
@@ -434,18 +384,8 @@ public class FevoriteLocationActivity extends AppCompatActivity
                 } else {
                     Toast.makeText(this, "permission denied", Toast.LENGTH_LONG).show();
                 }
-                return;
             }
-
-            // other 'case' lines to check for other
-            // permissions this app might request
         }
-    }
-
-    public Bitmap resizeMapIcons(String iconName, int width, int height) {
-        Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(), getResources().getIdentifier(iconName, "drawable", getPackageName()));
-        Bitmap resizedBitmap = Bitmap.createScaledBitmap(imageBitmap, width, height, false);
-        return resizedBitmap;
     }
 
 }
