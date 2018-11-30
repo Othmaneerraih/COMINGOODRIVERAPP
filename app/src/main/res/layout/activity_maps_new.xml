@@ -23,6 +23,7 @@
             app:civ_border_width="5dp" />
 
         <TextView
+            android:id="@+id/tv_user_name_drawer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/margin_normal"
@@ -64,7 +65,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/ll_drawer_home"
             android:layout_marginLeft="@dimen/margin_xlarge"
-            android:layout_marginTop="@dimen/margin_large"
+            android:layout_marginTop="@dimen/margin_xlarge"
             android:orientation="horizontal">
 
             <ImageView
@@ -90,7 +91,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/ll_drawer_history"
             android:layout_marginLeft="@dimen/margin_xlarge"
-            android:layout_marginTop="@dimen/margin_large"
+            android:layout_marginTop="@dimen/margin_xlarge"
             android:orientation="horizontal">
 
             <ImageView
@@ -116,7 +117,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/ll_drawer_notificatiions"
             android:layout_marginLeft="@dimen/margin_xlarge"
-            android:layout_marginTop="@dimen/margin_large"
+            android:layout_marginTop="@dimen/margin_xlarge"
             android:orientation="horizontal">
 
             <ImageView
@@ -142,7 +143,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/ll_drawer_refer_friend"
             android:layout_marginLeft="@dimen/margin_xlarge"
-            android:layout_marginTop="@dimen/margin_large"
+            android:layout_marginTop="@dimen/margin_xlarge"
             android:orientation="horizontal">
 
             <ImageView
@@ -168,7 +169,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/ll_drawer_comingoo_you"
             android:layout_marginLeft="@dimen/margin_xlarge"
-            android:layout_marginTop="@dimen/margin_large"
+            android:layout_marginTop="@dimen/margin_xlarge"
             android:orientation="horizontal">
 
             <ImageView
@@ -193,15 +194,31 @@
         android:id="@+id/content_map_view"
         layout="@layout/content_maps"/>
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/contentBlocker"
+    <RelativeLayout
+        android:id="@+id/rl_block_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clickable="true"
         android:elevation="10dp"
         android:visibility="gone">
 
-    </android.support.constraint.ConstraintLayout>
+    </RelativeLayout>
 
+    <RelativeLayout
+        android:id="@+id/rl_loading_comingoo_logo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/online_button"
+        android:clickable="true"
+        android:visibility="visible">
+
+        <pl.droidsonroids.gif.GifImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"
+            android:src="@drawable/wheel_running" />
+
+    </RelativeLayout>
 
 </RelativeLayout>

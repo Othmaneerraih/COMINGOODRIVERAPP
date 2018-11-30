@@ -1520,7 +1520,7 @@
                 android:background="@drawable/layout_background_rounded_corner"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:visibility="gone"
+                android:visibility="visible"
                 app:layout_constraintStart_toStartOf="parent">
 
                 <TextView
@@ -1553,36 +1553,36 @@
 
     </android.support.constraint.ConstraintLayout>
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/contentBlocker"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clickable="true"
-        android:elevation="10dp"
-        android:visibility="visible">
+    <!--<android.support.constraint.ConstraintLayout-->
+        <!--android:id="@+id/rl_block_content"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:clickable="true"-->
+        <!--android:elevation="10dp"-->
+        <!--android:visibility="visible">-->
 
-    </android.support.constraint.ConstraintLayout>
+    <!--</android.support.constraint.ConstraintLayout>-->
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/loadingScreen"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/online_button"
-        android:clickable="true"
-        android:visibility="visible">
+    <!--<android.support.constraint.ConstraintLayout-->
+        <!--android:id="@+id/rl_loading_comingoo_logo"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:background="@drawable/online_button"-->
+        <!--android:clickable="true"-->
+        <!--android:visibility="visible">-->
 
-        <pl.droidsonroids.gif.GifImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="8dp"
-            android:src="@drawable/wheel_running"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+        <!--<pl.droidsonroids.gif.GifImageView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginTop="16dp"-->
+            <!--android:layout_marginBottom="8dp"-->
+            <!--android:src="@drawable/wheel_running"-->
+            <!--app:layout_constraintBottom_toBottomOf="parent"-->
+            <!--app:layout_constraintEnd_toEndOf="parent"-->
+            <!--app:layout_constraintStart_toStartOf="parent"-->
+            <!--app:layout_constraintTop_toTopOf="parent" />-->
 
-    </android.support.constraint.ConstraintLayout>
+    <!--</android.support.constraint.ConstraintLayout>-->
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/iv_cancel_ride"

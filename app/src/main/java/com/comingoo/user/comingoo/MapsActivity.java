@@ -439,11 +439,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             }
                         });
 
-                        AnimateConstraint.fadeOut(context, findViewById(R.id.loadingScreen), 500, 10);
+                        AnimateConstraint.fadeOut(context, findViewById(R.id.rl_loading_comingoo_logo), 500, 10);
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                findViewById(R.id.loadingScreen).setVisibility(View.GONE);
+                                findViewById(R.id.rl_loading_comingoo_logo).setVisibility(View.GONE);
                             }
                         }, 500);
                     }
@@ -964,7 +964,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View view) {
                 // mDrawer.openMenu(true);
                 ConstraintLayout contentConstraint = (ConstraintLayout) findViewById(R.id.contentLayout);
-                ConstraintLayout contentBlocker = (ConstraintLayout) findViewById(R.id.contentBlocker);
+                ConstraintLayout contentBlocker = (ConstraintLayout) findViewById(R.id.rl_block_content);
                 AnimateConstraint.resideAnimation(context, contentConstraint, contentBlocker, (int) dpWidth, (int) dpHeight, 200);
             }
         });
@@ -1799,7 +1799,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    // checking with debug point
 
     boolean audioRecorded = false;
     ImageButton recordButton, playAudio, pauseAudio, deleteAudio;
@@ -1965,43 +1964,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         });
                     }
                 });
-
-//                    if (!mediaPlayer.isPlaying()){
-//                        pauseAudio.setVisibility(View.GONE);
-//                        playAudio.setVisibility(View.VISIBLE);
-//                    }
-
-
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
             }
         });
 
 
-//        playAudio.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (!isPlaying) {
-//                    try {
-//                        mediaPlayer.setDataSource(outputeFile);
-//                        mediaPlayer.prepare();
-//                        mediaPlayer.start();
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                    playAudio.setBackgroundResource(R.drawable.pause_record);
-//                    isPlaying = true;
-//                } else {
-//                    isPlaying = false;
-//                    mediaPlayer.stop();
-//                    mediaPlayer.release();
-//                    playAudio.setBackgroundResource(R.drawable.play_record);
-//                }
-//            }
-//        });
-
     }
+
+
     //////////////////////////////////////////////////////
 
 
@@ -2252,6 +2221,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 startActivity(i);
             }
         });
+
         Inbox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -2344,7 +2314,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View view) {
                 // mDrawer.openMenu(true);
                 ConstraintLayout contentConstraint = findViewById(R.id.contentLayout);
-                ConstraintLayout contentBlocker = findViewById(R.id.contentBlocker);
+                ConstraintLayout contentBlocker = findViewById(R.id.rl_block_content);
                 AnimateConstraint.resideAnimation(context, contentConstraint, contentBlocker, (int) dpWidth, (int) dpHeight, 200);
             }
         });
@@ -2952,7 +2922,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View v) {
                 // mDrawer.openMenu(true);
                 ConstraintLayout contentConstraint = (ConstraintLayout) findViewById(R.id.contentLayout);
-                ConstraintLayout contentBlocker = (ConstraintLayout) findViewById(R.id.contentBlocker);
+                ConstraintLayout contentBlocker = (ConstraintLayout) findViewById(R.id.rl_block_content);
                 AnimateConstraint.resideAnimation(context, contentConstraint, contentBlocker, (int) dpWidth, (int) dpHeight, 200);
             }
         });

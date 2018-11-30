@@ -21,7 +21,6 @@
         android:layout_marginTop="8dp"
         android:visibility="visible">
 
-
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -59,33 +58,33 @@
         android:id="@+id/rl_depart_pin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:layout_centerInParent="true">
+        android:layout_centerInParent="true"
+        android:gravity="center">
 
         <ImageView
             android:id="@+id/ic_location_pin_start"
             android:layout_width="86dp"
             android:layout_height="66dp"
             android:layout_marginBottom="76dp"
-            android:visibility="visible"
-            android:src="@drawable/ic_depart_pin"/>
+            android:src="@drawable/ic_depart_pin"
+            android:visibility="visible" />
 
         <ImageView
             android:id="@+id/iv_location_pin_dest"
             android:layout_width="76dp"
             android:layout_height="56dp"
             android:layout_marginBottom="76dp"
-            android:visibility="gone"
-            android:src="@drawable/ic_destination_pin" />
+            android:src="@drawable/ic_destination_pin"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/tv_closest_driver"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="12dp"
             android:fontFamily="@font/roboto"
             android:text="\n..."
-            android:layout_marginTop="12dp"
-            android:layout_centerHorizontal="true"
             android:textAlignment="center"
             android:textColor="@android:color/white"
             android:textSize="12sp" />
@@ -124,8 +123,8 @@
         android:id="@+id/rl_start_point"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="visible"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:visibility="visible">
 
         <EditText
             android:id="@+id/et_start_point"
@@ -134,55 +133,55 @@
             android:layout_margin="@dimen/margin_large"
             android:background="@drawable/contact_area"
             android:cursorVisible="false"
-            android:maxLines="1"
-            android:singleLine="true"
-            android:textColor="@color/color_dark_ash"
-            android:drawablePadding="@dimen/margin_normal"
             android:drawableLeft="@drawable/ic_dot"
             android:drawableRight="@drawable/ic_search"
-            android:padding="@dimen/margin_normal" />
+            android:drawablePadding="@dimen/margin_normal"
+            android:maxLines="1"
+            android:padding="@dimen/margin_normal"
+            android:singleLine="true"
+            android:textColor="@color/color_dark_ash" />
 
         <TextView
             android:id="@+id/tv_fav_pace"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/et_start_point"
+            android:layout_marginLeft="@dimen/margin_large"
             android:text="@string/txt_favourite_place"
             android:textStyle="bold"
-            android:visibility="gone"
-            android:layout_marginLeft="@dimen/margin_large"
-            android:layout_below="@+id/et_start_point"/>
+            android:visibility="gone" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rv_fav_place"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_fav_pace"
             android:layout_margin="@dimen/margin_normal"
             android:fontFamily="@font/roboto"
             android:paddingBottom="15dp"
-            android:visibility="gone"
             android:scrollbars="vertical"
-            android:layout_below="@+id/tv_fav_pace"/>
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/tv_recent_place"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/txt_recent_place"
+            android:layout_below="@+id/rv_fav_place"
             android:layout_marginLeft="@dimen/margin_large"
+            android:text="@string/txt_recent_place"
             android:textStyle="bold"
-            android:visibility="gone"
-            android:layout_below="@+id/rv_fav_place"/>
+            android:visibility="gone" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rv_recent_places"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_recent_place"
             android:layout_margin="@dimen/margin_normal"
             android:fontFamily="@font/roboto"
             android:paddingBottom="15dp"
             android:scrollbars="vertical"
-            android:visibility="gone"
-            android:layout_below="@+id/tv_recent_place"/>
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/btn_pickup"
@@ -205,38 +204,28 @@
 
     </RelativeLayout>
 
-    <ImageView
-        android:id="@+id/iv_arrow_start_end"
-        android:layout_width="26dp"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="@dimen/margin_large"
-        android:layout_marginTop="@dimen/margin_xlarge"
-        android:visibility="visible"
-        android:layout_alignParentRight="true"
-        android:src="@drawable/arrow"/>
-
 
     <RelativeLayout
         android:id="@+id/rl_end_point"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:visibility="gone">
 
         <EditText
             android:id="@+id/et_end_point"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_margin="@dimen/margin_normal"
             android:background="@drawable/contact_area"
+            android:cursorVisible="false"
             android:drawableLeft="@drawable/ic_dot"
             android:drawableRight="@drawable/ic_search"
-            android:padding="@dimen/margin_normal"
             android:drawablePadding="@dimen/margin_normal"
-            android:cursorVisible="false"
             android:maxLines="1"
+            android:layout_margin="@dimen/margin_large"
+            android:padding="@dimen/margin_normal"
             android:singleLine="true"
-            android:textColor="@color/color_dark_ash"/>
+            android:textColor="@color/color_dark_ash" />
 
         <LinearLayout
             android:id="@+id/ll_destination"
@@ -250,9 +239,9 @@
                 android:id="@+id/btn_destination"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:layout_weight="0.3"
                 android:layout_marginLeft="@dimen/margin_normal"
                 android:layout_marginRight="@dimen/margin_normal"
+                android:layout_weight="0.3"
                 android:background="@drawable/ic_pickup"
                 android:text="@string/txt_pick_up"
                 android:textColor="@android:color/white" />
@@ -261,8 +250,8 @@
                 android:id="@+id/btn_destination_ignore"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:layout_weight="0.7"
                 android:layout_marginRight="@dimen/margin_normal"
+                android:layout_weight="0.7"
                 android:background="@drawable/gray_button"
                 android:text="@string/txt_ignore"
                 android:textColor="@android:color/white" />
@@ -270,20 +259,48 @@
     </RelativeLayout>
 
     <ImageView
+        android:id="@+id/iv_arrow_start_end"
+        android:layout_width="20dp"
+        android:layout_height="80dp"
+        android:scaleType="fitXY"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="70dp"
+        android:layout_marginRight="@dimen/margin_small"
+        android:src="@drawable/arrow"
+        android:visibility="visible" />
+    <ImageView
         android:id="@+id/iv_current_location"
         android:layout_width="35dp"
         android:layout_height="35dp"
-        android:src="@drawable/my_position_icon"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
         android:layout_marginRight="@dimen/margin_normal"
-        android:layout_marginBottom="190dp"/>
+        android:layout_marginBottom="190dp"
+        android:src="@drawable/my_position_icon" />
 
     <include
-    android:id="@+id/content_price_promo_code"
-    layout="@layout/content_price_promo_code"
-    android:layout_height="wrap_content"
-    android:layout_width="wrap_content"
-    android:layout_alignParentBottom="true"></include>
+        android:id="@+id/content_price_promo_code"
+        layout="@layout/content_price_promo_code"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_alignParentBottom="true"></include>
+
+    <include
+        android:id="@+id/content_voip_view"
+        layout="@layout/content_voip_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_alignParentBottom="true"></include>
+
+    <ImageView
+        android:id="@+id/iv_goo"
+        android:layout_width="140dp"
+        android:layout_height="60dp"
+        android:src="@drawable/goo"
+        android:visibility="gone"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/content_price_promo_code"/>
 
 </RelativeLayout>

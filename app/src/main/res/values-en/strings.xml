@@ -2,6 +2,21 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Comingoo</string>
     <!--<string name="app_name">comingouserTwo</string>-->
+
+
+
+    <string name="txt_pick_up">Set pickup</string>
+    <string name="txt_ignore">Ignore</string>
+    <string name="txt_favourite_place">Favourite Places</string>
+    <string name="txt_recent_place">Recent Places</string>
+
+
+
+    <string name="txt_enter_promo_code">Please Enter Promo Code</string>
+    <string name="txt_promo_code_expired">Promo Code is expired</string>
+
+
+
     <string name="language_value">English</string>
     <string name="Acceuil">Home</string>
     <string name="Historique">History</string>
@@ -88,11 +103,6 @@
     <string name="Record">"Hold your finger on the button to record "</string>
     <string name="passer">Pass</string>
     <string name="driver_arrived_txt">At Comingoo, we ride in the front</string>
-
-    <string name="txt_pick_up">Set pickup</string>
-    <string name="txt_ignore">Ignore</string>
-    <string name="txt_favourite_place">Favourite Places</string>
-    <string name="txt_recent_place">Recent Places</string>
 
     <string name="sinch_app_key">05a626b9-33a4-4b83-b7bc-2d49062ea9ae</string>
     <string name="sinch_app_secret">TfJrquo6qEmkV8DG/EXQPg==</string>

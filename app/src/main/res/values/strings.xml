@@ -19,6 +19,14 @@
     <string name="txt_favourite_place">Favourite Places</string>
     <string name="txt_recent_place">Recent Places</string>
 
+
+
+    <string name="txt_enter_promo_code">Please Enter Promo Code</string>
+    <string name="txt_promo_code_expired">Promo Code is expired</string>
+
+
+
+
     <string name="Lieuxfavoris">Lieux favoris:</string>
     <string name="Lieuxrécents">Lieux récents:</string>
     <string name="Ajouterladestination">Ajouter la destination</string>

@@ -42,8 +42,7 @@
             android:layout_width="1dp"
             android:layout_height="40dp"
             android:layout_marginTop="@dimen/margin_small"
-            android:layout_marginLeft="@dimen/margin_xxxlarge"
-            android:layout_toRightOf="@id/tv_app_name"
+            android:layout_centerHorizontal="true"
             android:background="@color/color_ash" />
 
         <ImageView
@@ -59,8 +58,8 @@
             android:id="@+id/tv_promo_code"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_large"
-            android:layout_marginLeft="@dimen/margin_normal"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="@dimen/margin_small"
             android:layout_toRightOf="@id/iv_promo_code"
             android:text="PROMO CODE"
             android:textStyle="bold"/>
@@ -83,6 +82,7 @@
             <View
                 android:layout_width="wrap_content"
                 android:layout_height="1dp"
+                android:layout_marginLeft="@dimen/margin_normal"
                 android:background="@color/color_ash"
                 android:layout_weight="0.5" />
 
@@ -112,7 +112,7 @@
             android:layout_height="40dp"
             android:layout_below="@id/ll_view"
             android:layout_marginLeft="72dp"
-            android:layout_toRightOf="@id/tv_payment"
+            android:layout_centerHorizontal="true"
             android:background="@color/color_ash" />
 
 
