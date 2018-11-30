@@ -194,6 +194,14 @@
             android:text="@string/txt_pick_up"
             android:textColor="@android:color/white" />
 
+
+        <ImageView
+            android:id="@+id/iv_shadow"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_below="@+id/btn_pickup"
+            android:background="@drawable/shadow" />
+
         <ImageView
             android:id="@+id/iv_wheel"
             android:layout_width="80dp"
@@ -201,7 +209,6 @@
             android:layout_below="@+id/btn_pickup"
             android:layout_centerHorizontal="true"
             android:src="@drawable/ic_wheel" />
-
     </RelativeLayout>
 
 
@@ -216,13 +223,13 @@
             android:id="@+id/et_end_point"
             android:layout_width="match_parent"
             android:layout_height="50dp"
+            android:layout_margin="@dimen/margin_large"
             android:background="@drawable/contact_area"
             android:cursorVisible="false"
             android:drawableLeft="@drawable/ic_dot"
             android:drawableRight="@drawable/ic_search"
             android:drawablePadding="@dimen/margin_normal"
             android:maxLines="1"
-            android:layout_margin="@dimen/margin_large"
             android:padding="@dimen/margin_normal"
             android:singleLine="true"
             android:textColor="@color/color_dark_ash" />
@@ -262,12 +269,13 @@
         android:id="@+id/iv_arrow_start_end"
         android:layout_width="20dp"
         android:layout_height="80dp"
-        android:scaleType="fitXY"
         android:layout_alignParentRight="true"
         android:layout_marginTop="70dp"
         android:layout_marginRight="@dimen/margin_small"
+        android:scaleType="fitXY"
         android:src="@drawable/arrow"
-        android:visibility="visible" />
+        android:visibility="gone" />
+
     <ImageView
         android:id="@+id/iv_current_location"
         android:layout_width="35dp"
@@ -283,24 +291,33 @@
         layout="@layout/content_price_promo_code"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:layout_alignParentBottom="true"></include>
+        android:layout_alignParentBottom="true"
+        android:visibility="gone"></include>
 
     <include
         android:id="@+id/content_voip_view"
         layout="@layout/content_voip_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:layout_alignParentBottom="true"></include>
+        android:layout_alignParentBottom="true"
+        android:visibility="gone"></include>
 
     <ImageView
         android:id="@+id/iv_goo"
         android:layout_width="140dp"
         android:layout_height="60dp"
-        android:src="@drawable/goo"
-        android:visibility="gone"
+        android:layout_above="@+id/content_price_promo_code"
         android:layout_centerHorizontal="true"
-        android:layout_above="@+id/content_price_promo_code"/>
+        android:src="@drawable/goo"
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/iv_cancel_request"
+        android:layout_width="49dp"
+        android:layout_height="49dp"
+        android:layout_above="@+id/content_price_promo_code"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/goo_layout"
+        android:visibility="gone" />
 
 </RelativeLayout>

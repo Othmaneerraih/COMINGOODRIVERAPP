@@ -204,21 +204,31 @@
 
     </RelativeLayout>
 
-    <RelativeLayout
-        android:id="@+id/rl_loading_comingoo_logo"
+    <!--<RelativeLayout-->
+        <!--android:id="@+id/rl_loading_comingoo_logo"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:background="@drawable/online_button"-->
+        <!--android:clickable="true"-->
+        <!--android:visibility="visible">-->
+
+        <!--<pl.droidsonroids.gif.GifImageView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginTop="16dp"-->
+            <!--android:layout_marginBottom="8dp"-->
+            <!--android:src="@drawable/wheel_running" />-->
+
+    <!--</RelativeLayout>-->
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/shadow"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/online_button"
-        android:clickable="true"
-        android:visibility="visible">
+        android:layout_height="50dp"
+        android:alpha="0.5"
+        android:background="@drawable/shadow"
+        app:layout_constraintBottom_toTopOf="@+id/bottomMenu"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
-        <pl.droidsonroids.gif.GifImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="8dp"
-            android:src="@drawable/wheel_running" />
-
-    </RelativeLayout>
-
+    </android.support.constraint.ConstraintLayout>
 </RelativeLayout>

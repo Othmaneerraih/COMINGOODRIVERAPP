@@ -139,7 +139,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import pl.droidsonroids.gif.GifImageButton;
 
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
@@ -2099,7 +2098,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         coverButton = (Button) findViewById(R.id.coverButton);
 
-        cancelRequest = (ImageButton) findViewById(R.id.cancelRequest);
+        cancelRequest = (ImageButton) findViewById(R.id.iv_cancel_request);
 
         passer = (Button) findViewById(R.id.passer);
 
@@ -2785,109 +2784,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 cancelCommandLayout();
             }
         });
-    }
-
-
-    int Score = 0;
-
-    private void startTheWaitGame() {
-    /*    final Handler handler = new Handler();
-        final Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                final ConstraintLayout gameLayout = (ConstraintLayout)  findViewById(R.id.gameLayout);
-                final GifImageButton gifFromResource = createGif();
-                gifFromResource.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Score += 30;
-                        //Kill The Monster
-                        createKillGif((int) gifFromResource.getX(), (int) gifFromResource.getY());
-                        gameLayout.removeView(gifFromResource);
-                        TextView txt = findViewById(R.id.score);
-                        txt.setText(""+Score);
-                    }
-                });
-
-                handler.postDelayed(this, new Random().nextInt(2000) + 500);
-            }
-        };
-        handler.postDelayed(runnable, 1000);
-*/
-    }
-
-    public void createKillGif(int x, int y) {
-
-/*
-        final GifImageButton gifFromResource = new GifImageButton( MapsActivity.this);
-        final ConstraintLayout gameLayout = (ConstraintLayout)  findViewById(R.id.gameLayout);
-
-
-        int gifHeight = 200;
-        int gifWidth = 270;
-
-        gifFromResource.setImageResource(R.mipmap.disappear);
-        gifFromResource.setLayoutParams(new LinearLayout.LayoutParams(
-                (int)  TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,  gifHeight, context.getResources().getDisplayMetrics()),
-                (int)   TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, gifWidth, context.getResources().getDisplayMetrics())
-        ));
-
-        gifFromResource.setBackgroundColor(0);
-        gifFromResource.setTranslationX(x);
-        gifFromResource.setTranslationY(y);
-
-        gameLayout.addView(gifFromResource);
-
-        final Handler handler = new Handler();
-        final Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                gameLayout.removeView(gifFromResource);
-            }
-        };
-        handler.postDelayed(runnable, 500);
-
-*/
-
-    }
-
-    public GifImageButton createGif() {
-/*
-        final GifImageButton gifFromResource = new GifImageButton( MapsActivity.this);
-        final ConstraintLayout gameLayout = (ConstraintLayout)  findViewById(R.id.gameLayout);
-
-
-        int gifHeight = 200;
-        int gifWidth = 270;
-
-        gifFromResource.setImageResource(R.mipmap.monster);
-        gifFromResource.setLayoutParams(new LinearLayout.LayoutParams(
-                (int)  TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,  gifHeight, context.getResources().getDisplayMetrics()),
-                (int)   TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, gifWidth, context.getResources().getDisplayMetrics())
-        ));
-
-        int yPos = new Random().nextInt(gameLayout.getHeight() - gifHeight);
-        int xPos = new Random().nextInt(gameLayout.getWidth() - gifWidth );
-
-        gifFromResource.setBackgroundColor(0);
-        gifFromResource.setTranslationX(xPos);
-        gifFromResource.setTranslationY(yPos);
-
-        gameLayout.addView(gifFromResource);
-
-        final Handler handler = new Handler();
-        final Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                gameLayout.removeView(gifFromResource);
-            }
-        };
-        handler.postDelayed(runnable, new Random().nextInt(400) + 400);
-
-
-        return gifFromResource;
-           */
-        return null;
     }
 
     private void hideSelectDestUI() {
