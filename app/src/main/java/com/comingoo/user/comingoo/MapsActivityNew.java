@@ -1344,6 +1344,9 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
             return;
         }
 
+
+        // changes
+
 //        stopSearchUI();
         ivShadow.setVisibility(View.VISIBLE);
         ivDrawerToggol.setImageBitmap(scaleBitmap(45, 45, R.drawable.home_icon));
