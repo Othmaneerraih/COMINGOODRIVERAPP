@@ -175,6 +175,8 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
     private ImageView ivShadow, ivCancelRequest;
     private RippleBackground rippleBackground;
 
+    private RelativeLayout rlFavouritePlace, rlRecentPlace;
+
     private String userId;
     private String clientID;
 
@@ -220,6 +222,10 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
     private FrameLayout flDriverPin;
     private TextView frameTime;
 
+
+    private RecyclerView rvSearchResult;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -242,6 +248,9 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
         llDrawerHistory = findViewById(R.id.ll_drawer_history);
         llDrawerAide = findViewById(R.id.ll_drawer_help);
         llDrawerComingooYou = findViewById(R.id.ll_drawer_comingoo_you);
+
+        rlFavouritePlace = findViewById(R.id.rl_favourite_place);
+        rlRecentPlace = findViewById(R.id.rl_recent_place);
 
         ivShadow = findViewById(R.id.iv_shadow);
         tvClosestDriver = findViewById(R.id.tv_closest_driver);
@@ -294,6 +303,8 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
         rvRecentPlaces = findViewById(R.id.rv_recent_places);
         tvFavPlace = findViewById(R.id.tv_fav_pace);
         tvRecentPlace = findViewById(R.id.tv_recent_place);
+
+        rvSearchResult = findViewById(R.id.rv_search_result);
 
         ivGoo = findViewById(R.id.iv_goo);
         contentPricePromoCode = findViewById(R.id.content_price_promo_code);
@@ -349,8 +360,6 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
 //                if (startPositionIsValid()) {
                 orderDriverState = 1;
                 showSelectDestUI();
-                ivWheel.setVisibility(View.GONE);
-                ivShadow.setVisibility(View.GONE);
                 state = 1;
 //                }
             }
@@ -395,27 +404,27 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
         llDrawerHistory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MapsActivityNew.this, historiqueActivity.class));
+                startActivity(new Intent(MapsActivityNew.this, HistoriqueActivity.class));
             }
         });
 
         llDrawerInvite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MapsActivityNew.this, inviteActivity.class));
+                startActivity(new Intent(MapsActivityNew.this, InviteActivity.class));
             }
         });
 
         llDrawerNotifications.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MapsActivityNew.this, notificationActivity.class));
+                startActivity(new Intent(MapsActivityNew.this, NotificationActivity.class));
             }
         });
         llDrawerAide.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MapsActivityNew.this, aideActivity.class));
+                startActivity(new Intent(MapsActivityNew.this, AideActivity.class));
             }
         });
 
@@ -839,7 +848,7 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
                     if (!dataSnapshot.exists()) {
                         prefs.edit().remove("userID");
                         FirebaseAuth.getInstance().signOut();
-                        Intent intent = new Intent(MapsActivityNew.this, loginActivity.class);
+                        Intent intent = new Intent(MapsActivityNew.this, LoginActivity.class);
                         startActivity(intent);
 //                        finish();
                         return;
@@ -856,7 +865,7 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
                         llDrawerComingooYou.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                Intent intent = new Intent(MapsActivityNew.this, comingoonuActivity.class);
+                                Intent intent = new Intent(MapsActivityNew.this, ComingoonuActivity.class);
                                 intent.putExtra("image", dataSnapshot.child("image").getValue(String.class));
                                 intent.putExtra("name", dataSnapshot.child("fullName").getValue(String.class));
                                 intent.putExtra("email", dataSnapshot.child("email").getValue(String.class));
@@ -1625,8 +1634,10 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
         orderDriverState = 1;
         hideSearchAddressStartUI();
         btnPickUp.setVisibility(View.GONE);
+        ivShadow.setVisibility(View.GONE);
+        etSearchDestination.setVisibility(View.VISIBLE);
         rlEndPoint.setVisibility(View.VISIBLE);
-
+        ivWheel.setVisibility(View.GONE);
 
         Display display = getWindowManager().getDefaultDisplay();
         DisplayMetrics outMetrics = new DisplayMetrics();
@@ -1658,14 +1669,46 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
 
     }
 
+//    public void hideSearchAddressStartUI() {
+//        placeDataList.clear();
+//        placeAdapter.notifyDataSetChanged();
+//        rvFavPlaces.setVisibility(View.INVISIBLE);
+//
+//        if (rvFavPlaces.getHeight() >= HeightAbsolute)
+//            AnimateConstraint.animateCollapse(getApplicationContext(), rvFavPlaces, 1, HeightAbsolute, 300);
+//        rlStartPoint.setVisibility(View.VISIBLE);
+//    }
+
+
     public void hideSearchAddressStartUI() {
         placeDataList.clear();
         placeAdapter.notifyDataSetChanged();
-        rvFavPlaces.setVisibility(View.INVISIBLE);
+//        findViewById(R.id.imageView7).setVisibility(View.INVISIBLE);
+//        findViewById(R.id.imageView8).setVisibility(View.INVISIBLE);
+        rlFavouritePlace.setVisibility(View.INVISIBLE);
+        rvSearchResult.setVisibility(View.INVISIBLE);
+//        findViewById(R.id.imageView111).setVisibility(View.INVISIBLE);
 
-        if (rvFavPlaces.getHeight() >= HeightAbsolute)
-            AnimateConstraint.animateCollapse(getApplicationContext(), rvFavPlaces, 1, HeightAbsolute, 300);
+        if (rlFavouritePlace.getHeight() >= HeightAbsolute)
+            AnimateConstraint.animateCollapse(getApplicationContext(),
+                    rlFavouritePlace, 1, HeightAbsolute, 300);
+        if (rvSearchResult.getHeight() >= HeightAbsolute)
+            AnimateConstraint.animateCollapse(getApplicationContext(),
+                    rvSearchResult, 1, HeightAbsolute, 300);
+
+
+//        findViewById(R.id.imageView7).setVisibility(View.INVISIBLE);
+//        findViewById(R.id.imageView8).setVisibility(View.INVISIBLE);
+//        coverButton.setVisibility(View.VISIBLE);
         rlStartPoint.setVisibility(View.VISIBLE);
+        if (orderDriverState == 0) {
+            btnPickUp.setVisibility(View.VISIBLE);
+//            bottomMenu.setVisibility(View.VISIBLE);
+            ivWheel.setVisibility(View.VISIBLE);
+        }
+        if (orderDriverState == 1) {
+            llConfirmDestination.setVisibility(View.VISIBLE);
+        }
     }
 
     private void switchToCommandLayout() {
@@ -2531,22 +2574,24 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-
         if (doubleBackToExitPressedOnce) {
             super.onBackPressed();
             return;
         }
 
-        if (state == 1) {
+        if (state == 1 || state == -1) {
             state = 0;
-//            hideSelectDestUI();
-            AnimateConstraint.animate(getApplicationContext(), etSearchStartAddress, 1, 1, 1);
-            btnPickUp.setVisibility(View.VISIBLE);
-            ivWheel.setVisibility(View.VISIBLE);
+            hideSelectDestUI();
+            return;
         }
 
-        if (state != 1) {
+        if (state == 2) {
+            state = 1;
+            cancelCommandLayout();
+            return;
+        }
+
+        if (state != 1 && state != 2) {
             this.doubleBackToExitPressedOnce = true;
             Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
 
@@ -2558,7 +2603,6 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
                 }
             }, 2000);
         }
-
     }
 
 
@@ -2569,15 +2613,15 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
 
         hideSearchAddressStartUI();
         etSearchStartAddress.setVisibility(View.VISIBLE);
-//        rlStartPoint.setVisibility(View.VISIBLE);
+        rlStartPoint.setVisibility(View.VISIBLE);
 
         etSearchDestination.setVisibility(View.GONE);
-//        selectDest.setVisibility(View.GONE);
+        llConfirmDestination.setVisibility(View.GONE);
 
 
         etSearchStartAddress.setEnabled(true);
 
-        AnimateConstraint.animate(MapsActivityNew.this, rlStartPoint, 120, (dpHeight - 80), 500);
+        AnimateConstraint.animate(MapsActivityNew.this, rlStartPoint, 180, (dpHeight - 80), 500);
 
         findViewById(R.id.ic_location_pin_start).setVisibility(View.VISIBLE);
         findViewById(R.id.tv_closest_driver).setVisibility(View.VISIBLE);
@@ -2588,7 +2632,6 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
         ivDrawerToggol.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // mDrawer.openMenu(true);
                 View contentMap = findViewById(R.id.content_map_view);
                 RelativeLayout contentBlocker = findViewById(R.id.rl_block_content);
                 AnimateConstraint.resideAnimation(getApplicationContext(), contentMap, contentBlocker,

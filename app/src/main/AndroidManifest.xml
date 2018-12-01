@@ -146,6 +146,11 @@
             android:name="com.comingoo.user.comingoo.activity.InviteActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
+
+        <activity
+            android:name="com.comingoo.user.comingoo.activity.MapsActivityNew"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

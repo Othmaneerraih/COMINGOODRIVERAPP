@@ -39,7 +39,7 @@ public class NotificationActivity extends AppCompatActivity {
     private void initialize() {
         SharedPreferences prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
         userId = prefs.getString("userID", null);
-        mLocationView = findViewById(R.id.my_recycler_view);
+        mLocationView = findViewById(R.id.rv_fav_place);
         mLocation = FirebaseDatabase.getInstance().getReference("CLIENTNOTIFICATIONS");
         mLocation.keepSynced(true);
         NotificationData = new ArrayList<>();

@@ -54,7 +54,7 @@ public class LoginActivity extends AppCompatActivity {
 
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
 //            startActivity(new Intent(loginActivity.this, MapsActivity.class));
-            startActivity(new Intent(loginActivity.this, MapsActivityNew.class));
+            startActivity(new Intent(LoginActivity.this, MapsActivityNew.class));
             finish();
         }
 
@@ -119,8 +119,7 @@ public class LoginActivity extends AppCompatActivity {
                                                                         if (task.isSuccessful()) {
                                                                             SharedPreferences prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
                                                                             prefs.edit().putString("userID", FirebaseAuth.getInstance().getCurrentUser().getUid()).apply();
-//                                                                            startActivity(new Intent(loginActivity.this, MapsActivity.class));
-                                                                            startActivity(new Intent(loginActivity.this, MapsActivityNew.class));
+                                                                            startActivity(new Intent(LoginActivity.this, MapsActivityNew.class));
                                                                             finish();
                                                                         } else {
                                                                             Toast.makeText(LoginActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
@@ -161,7 +160,6 @@ public class LoginActivity extends AppCompatActivity {
 
                     @Override
                     public void onError(FacebookException exception) {
-                        // App code
                         Toast.makeText(LoginActivity.this, exception.toString(), Toast.LENGTH_SHORT).show();
                     }
                 });

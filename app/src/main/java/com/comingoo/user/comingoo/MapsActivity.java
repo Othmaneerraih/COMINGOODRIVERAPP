@@ -1427,7 +1427,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 dialog.setCancelable(false);
                                 dialog.setCanceledOnTouchOutside(false);
 
-                                // defaul rate
+                                // defaul ratef
                                 RATE = 4;
                                 star1.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
                                 star2.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
@@ -2109,8 +2109,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         orderDriverState = 0;
         citySelectLayout = (ConstraintLayout) findViewById(R.id.select_city);
         city = (TextView) findViewById(R.id.city);
-        image1 = (ImageView) findViewById(R.id.imageView7);
-        image2 = (ImageView) findViewById(R.id.imageView8);
         X = (ImageButton) findViewById(R.id.x);
         positionButton = (ImageButton) findViewById(R.id.my_position);
         gooBox = (ConstraintLayout) findViewById(R.id.gooBox);

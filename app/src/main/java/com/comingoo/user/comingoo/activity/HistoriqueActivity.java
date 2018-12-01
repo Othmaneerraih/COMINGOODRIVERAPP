@@ -32,7 +32,6 @@ public class HistoriqueActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_historique);
-
         action();
         updateViews();
 
@@ -46,7 +45,7 @@ public class HistoriqueActivity extends AppCompatActivity {
         mLocation.keepSynced(true);
 
         CoursesData = new ArrayList<>();
-        mLocationView = (RecyclerView) findViewById(R.id.my_recycler_view);
+        mLocationView = findViewById(R.id.rv_fav_place);
         mLocationView.setHasFixedSize(true);
         mLocationView.setLayoutManager(new LinearLayoutManager(this));
 
