@@ -34,15 +34,19 @@ import android.support.v4.content.ContextCompat;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -54,6 +58,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.comingoo.user.comingoo.MapsActivity;
 import com.comingoo.user.comingoo.R;
 import com.comingoo.user.comingoo.adapters.FavouritePlaceAdapter;
 import com.comingoo.user.comingoo.adapters.MyPlaceAdapter;
@@ -69,6 +74,13 @@ import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
 import com.firebase.geofire.GeoQueryDataEventListener;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.places.AutocompleteFilter;
+import com.google.android.gms.location.places.AutocompletePrediction;
+import com.google.android.gms.location.places.AutocompletePredictionBufferResponse;
+import com.google.android.gms.location.places.GeoDataClient;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.PlaceBufferResponse;
+import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -80,8 +92,10 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -221,6 +235,9 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
     private FrameLayout flLocationDestination;
     private FrameLayout flDriverPin;
     private TextView frameTime;
+
+    private TextWatcher txt;
+    private TextWatcher txtDest;
 
 
     private RecyclerView rvSearchResult;
@@ -495,8 +512,213 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
                 }
             }
         });
+
+        etSearchStartAddress.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if (b) {
+                    // hideSearchAddressStartUI();
+                    etSearchStartAddress.addTextChangedListener(new TextWatcher() {
+                        @Override
+                        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                        }
+
+                        @Override
+                        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                            txt = this;
+                            if (etSearchStartAddress.getText().toString().length() >= 3) {
+                                lookForAddress();
+                            }
+
+                        }
+
+                        @Override
+                        public void afterTextChanged(Editable editable) {
+
+                        }
+                    });
+                } else {
+                    etSearchStartAddress.removeTextChangedListener(txt);
+                }
+            }
+        });
+
+        etSearchDestination.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if (b) {
+                    // hideSearchAddressStartUI();
+                    etSearchDestination.addTextChangedListener(new TextWatcher() {
+                        @Override
+                        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                        }
+
+                        @Override
+                        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                            txtDest = this;
+                            if (etSearchDestination.getText().toString().length() >= 3) {
+                                lookForAddress();
+                            }
+
+                        }
+
+                        @Override
+                        public void afterTextChanged(Editable editable) {
+
+                        }
+                    });
+                } else {
+                    etSearchDestination.removeTextChangedListener(txtDest);
+                }
+            }
+        });
+
+        mGeoDataClient = Places.getGeoDataClient(this);
+        etSearchStartAddress.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                if (i == EditorInfo.IME_ACTION_DONE) {
+                    hideKeyboard(MapsActivityNew.this);
+                    etSearchStartAddress.clearFocus();
+                    etSearchStartAddress.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+//                    lookForAddress();
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        etSearchDestination.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                if (i == EditorInfo.IME_ACTION_DONE) {
+                    hideKeyboard(MapsActivityNew.this);
+                    etSearchDestination.clearFocus();
+                    //lookForAddress();
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 
+    public void lookForAddress() {
+        //searchEditText.clearFocus();
+        //searchDestEditText.clearFocus();
+        //hideKeyboard(MapsActivity.this);
+        if ((etSearchStartAddress.getText().toString().length() == 0 && orderDriverState == 0) || (etSearchDestination.getText().toString().length() == 0 && orderDriverState == 1)) {
+            findViewById(R.id.imageView111).setVisibility(View.VISIBLE);
+            showSearchAddressStartUI();
+            return;
+        }
+//        if (orderDriverState == 1) {
+//            startConstraint.setVisibility(View.INVISIBLE);
+//        }
+        new LookForAddressTask().execute();
+    }
+
+    private GeoDataClient mGeoDataClient;
+    private String searchLoc;
+
+    private class LookForAddressTask extends AsyncTask<String, Integer, String> {
+        // Runs in UI before background thread is called
+        boolean finished;
+        String searchText;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            placeDataList.clear();
+            finished = false;
+            if (orderDriverState == 0)
+                searchText = etSearchStartAddress.getText().toString();
+            if (orderDriverState == 1)
+                searchText = etSearchDestination.getText().toString();
+
+            // Do something like display a progress bar
+        }
+
+        // This is run in a background thread
+        @Override
+        protected String doInBackground(String... params) {
+
+
+            AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
+                    .setCountry("MA")
+                    .build();
+
+            mGeoDataClient.getAutocompletePredictions(searchText + " " + searchLoc, null,
+                    typeFilter).addOnCompleteListener(new OnCompleteListener<AutocompletePredictionBufferResponse>() {
+                @Override
+                public void onComplete(@NonNull Task<AutocompletePredictionBufferResponse> task) {
+                    if (task.isSuccessful() && task.getResult().getCount() > 0) {
+                        finished = true;
+                        AutocompletePredictionBufferResponse aa = task.getResult();
+                        for (final AutocompletePrediction ap : aa) {
+                            mGeoDataClient.getPlaceById(ap.getPlaceId()).addOnCompleteListener(new OnCompleteListener<PlaceBufferResponse>() {
+                                @Override
+                                public void onComplete(@NonNull Task<PlaceBufferResponse> task) {
+                                    if (task.isSuccessful() && task.getResult().getCount() > 0) {
+                                        for (Place gotPlace : task.getResult()) {
+                                            place Place = new place(gotPlace.getName().toString(),
+                                                    gotPlace.getAddress().toString(), "" + gotPlace.getLatLng().latitude,
+                                                    "" + gotPlace.getLatLng().longitude, R.drawable.lieux_proches);
+                                            placeDataList.add(Place);
+                                        }
+                                        placeAdapter.notifyDataSetChanged();
+                                        finished = true;
+                                    } else {
+                                        finished = true;
+                                    }
+                                }
+                            });
+                        }
+                    } else {
+                        finished = true;
+                    }
+                }
+            });
+            return "this string is passed to onPostExecute";
+        }
+
+        // This is called from background thread but runs in UI
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            // Do things like update the progress bar
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            int Height = 67 * placeDataList.size();
+//            AnimateConstraint.animate(context, aR, HeightAbsolute, HeightAbsolute, 1);
+//            AnimateConstraint.animate(context, favorite, 1, 1, 1);
+//            if (orderDriverState == 0) {
+////                searchButton.setVisibility(View.VISIBLE);
+//                findViewById(R.id.imageView111).setVisibility(View.VISIBLE);
+//                aR.setVisibility(View.VISIBLE);
+//                //if(Height > (dpHeight - (270)))
+//                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+//                selectStart.setVisibility(View.GONE);
+//                selectedOp.setVisibility(View.GONE);
+//                bottomMenu.setVisibility(View.GONE);
+//                findViewById(R.id.shadow).setVisibility(View.GONE);
+//            }
+//
+//            if (orderDriverState == 1) {
+//                searchButtonDest.setVisibility(View.VISIBLE);
+//                aR.setVisibility(View.VISIBLE);
+//                //if(Height > (dpHeight - (270)))
+//                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+//                selectDest.setVisibility(View.GONE);
+//            }
+//            searchProgBar.setVisibility(View.GONE);
+//            searchProgBarDest.setVisibility(View.GONE);
+        }
+    }
 
     private void startSearchUI() {
         rippleBackground.startRippleAnimation();
