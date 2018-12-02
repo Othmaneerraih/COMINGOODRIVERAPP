@@ -1240,7 +1240,7 @@
             android:id="@+id/gooContent"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/gooBox"
@@ -1375,7 +1375,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="220dp"
-            android:visibility="visible"
+            android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@+id/adress_result"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent">
@@ -1397,20 +1397,8 @@
                     android:background="@drawable/borderbox_round"
                     android:gravity="center"
                     android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
-
-                    <!--<de.hdodenhof.circleimageview.CircleImageView-->
-                    <!--android:id="@+id/iv_driver_image"-->
-                    <!--android:layout_width="100dp"-->
-                    <!--android:layout_height="100dp"-->
-                    <!--android:layout_centerVertical="true"-->
-                    <!--android:layout_marginStart="8dp"-->
-                    <!--android:layout_marginEnd="8dp"-->
-                    <!--android:layout_marginRight="8dp"-->
-                    <!--android:layout_marginBottom="30dp"-->
-                    <!--android:src="@drawable/ic_driver" />-->
 
                     <com.mikhaellopez.circularimageview.CircularImageView
                         android:id="@+id/iv_driver_image"
@@ -1491,6 +1479,7 @@
                         android:layout_height="50dp"
                         android:layout_below="@+id/ll_call"
                         android:layout_toRightOf="@id/ll_call"
+                        android:layout_marginLeft="@dimen/margin_xlarge"
                         android:src="@drawable/call" />
 
                     <ImageView
@@ -1501,7 +1490,6 @@
                         android:layout_toRightOf="@id/ll_call"
                         android:src="@drawable/delete_button"
                         android:visibility="gone" />
-
 
                 </RelativeLayout>
             </android.support.constraint.ConstraintLayout>

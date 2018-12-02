@@ -2293,16 +2293,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View view) {
                 if (blockingTimeOver) {
                     gooButton.setClickable(false);
-//               /* Handler h = new Handler();
-//                Runnable r= new Runnable(){
-//                    @Override
-//                    public void run() {
-//                        gooButton.setVisibility(View.GONE);
-//                        startTheWaitGame();
-//                    }
-//                };
-//                h.postDelayed(r, 300);*/
-
                     CameraPosition cameraPosition = new CameraPosition.Builder()
                             .target(startLatLng)      // Sets the center of the map to Mountain View
                             .zoom(17)                   // Sets the zoom
@@ -2318,10 +2308,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         new LookForDriverTask().execute();
                         new sendRequestsTask().execute();
                     } catch (NullPointerException e) {
-                        Log.e(TAG, "onClick: excp111" + e.getMessage());
                         e.printStackTrace();
                     } catch (Exception e) {
-                        Log.e(TAG, "onClick: excp222" + e.getMessage());
                         e.printStackTrace();
                     }
                 }
