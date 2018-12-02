@@ -2120,7 +2120,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         passer = (Button) findViewById(R.id.passer);
 
         locationStartPin = (ImageView) findViewById(R.id.location_start_pin);
-        locationDestPin = (ImageView) findViewById(R.id.location_dest_pin);
+        locationDestPin = (ImageView) findViewById(R.id.iv_location_dest_pin);
         locationPinStart = (ImageView) findViewById(R.id.ic_location_pin_start);
 
         menuButton = (ImageButton) findViewById(R.id.menu_button);
@@ -2479,9 +2479,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void initialize() {
-        frameLayout = findViewById(R.id.framelayout);
-        frameLayout2 = findViewById(R.id.framelayout2);
-        frameLayout3 = findViewById(R.id.framelayout3);
+        frameLayout = findViewById(R.id.fl_location_start);
+        frameLayout2 = findViewById(R.id.fl_location_destination);
+        frameLayout3 = findViewById(R.id.fl_driver_location_pic);
         frameTime = findViewById(R.id.tv_closest_driverPin);
         closestDriverText = findViewById(R.id.tv_closest_driver);
 
@@ -3153,37 +3153,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (orderDriverState != 0 && orderDriverState != 1)
                 return "";
 
-//            Geocoder geocoder = new Geocoder(mContext);
-//            double latitude = params[0].latitude;
-//            double longitude = params[0].longitude;
-//
-//            List<Address> addresses = null;
-//            String addressText = "";
-//
-//            try {
-//                addresses = geocoder.getFromLocation(latitude, longitude, 1);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//
-//            if (addresses != null && addresses.size() > 0) {
-//                Address address = addresses.get(0);
-//
-//                if (address != null) {
-//                    if (address.getThoroughfare() != null) {
-//                        addressText = String.format("%s, %s.",
-//                                address.getThoroughfare().length() > 0 ? address.getThoroughfare() : "",
-//                                address.getLocality());
-//                    } else {
-//                        addressText = "Address non trouvé";
-//                    }
-//                } else {
-//                    addressText = "Address non trouvé";
-//                }
-//
-//            }
-
-//            return addressText;
             return getCompleteAddressString(context, params[0].latitude, params[0].longitude);
         }
 

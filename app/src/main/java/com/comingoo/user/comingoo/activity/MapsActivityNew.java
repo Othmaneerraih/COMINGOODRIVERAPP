@@ -26,6 +26,7 @@ import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
@@ -99,11 +100,13 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseException;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.gson.Gson;
 import com.google.maps.DirectionsApi;
 import com.google.maps.DirectionsApiRequest;
 import com.google.maps.GeoApiContext;
@@ -142,11 +145,11 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
     private float dpHeight;
     private float dpWidth;
     int HeightAbsolute;
-    private int orderDriverState;
+    private int orderDriverState = 0;
     private boolean courseScreenIsOn = false;
 
     private TextView tvClosestDriver;
-    private TextView tvFrameTime, tvClosestDriverText;
+    private TextView tvFrameTime;
 
     // Drawer elements
     private ImageView ivProfilePicDrawer;
@@ -171,7 +174,6 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
     private RecyclerView rvFavPlaces, rvRecentPlaces;
     private TextView tvFavPlace, tvRecentPlace;
     private FavouritePlaceAdapter fPlaceAdapter;
-    private MyPlaceAdapter rPlaceAdapter;
     private ArrayList<place> placeDataList;
     private ArrayList<place> fPlaceDataList;
     private ArrayList<place> rPlaceDataList;
@@ -239,9 +241,7 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
     private TextWatcher txt;
     private TextWatcher txtDest;
 
-
     private RecyclerView rvSearchResult;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -272,9 +272,9 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
         ivShadow = findViewById(R.id.iv_shadow);
         tvClosestDriver = findViewById(R.id.tv_closest_driver);
 
-        flLocationStart = findViewById(R.id.framelayout);
-        flLocationDestination = findViewById(R.id.framelayout2);
-        flDriverPin = findViewById(R.id.framelayout3);
+        flLocationStart = findViewById(R.id.fl_location_start);
+        flLocationDestination = findViewById(R.id.fl_location_destination);
+        flDriverPin = findViewById(R.id.fl_driver_location_pic);
         frameTime = findViewById(R.id.tv_closest_driverPin);
 
         ivCancelRide = findViewById(R.id.iv_cancel_ride);
@@ -362,6 +362,23 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
             ActivityCompat.requestPermissions(MapsActivityNew.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         }
 
+        rvFavPlaces.setHasFixedSize(true);
+        rvFavPlaces.setLayoutManager(new LinearLayoutManager(this));
+
+        rvRecentPlaces.setHasFixedSize(true);
+        rvRecentPlaces.setLayoutManager(new LinearLayoutManager(this));
+
+        placeAdapter = new MyPlaceAdapter(getApplicationContext(), placeDataList, false, userId);
+        rvRecentPlaces.setAdapter(placeAdapter);
+        rvRecentPlaces.setAdapter(placeAdapter);
+
+        fPlaceAdapter = new FavouritePlaceAdapter(getApplicationContext(), fPlaceDataList, true, userId);
+        rvFavPlaces.setAdapter(fPlaceAdapter);
+
+
+        fPlaceAdapter = new FavouritePlaceAdapter(getApplicationContext(), fPlaceDataList, true, userId);
+        rvFavPlaces.setAdapter(fPlaceAdapter);
+
         ivCurrentLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -370,6 +387,8 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
                 }
             }
         });
+
+        orderDriverState = 0;
 
         btnPickUp.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -401,7 +420,7 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
                 btnPickUp.setVisibility(View.GONE);
                 tvFavPlace.setVisibility(View.VISIBLE);
                 tvRecentPlace.setVisibility(View.VISIBLE);
-                rvFavPlaces.setVisibility(View.VISIBLE);
+                rvSearchResult.setVisibility(View.VISIBLE);
                 rvRecentPlaces.setVisibility(View.VISIBLE);
 
                 rlEndPoint.setVisibility(View.VISIBLE);
@@ -452,17 +471,7 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
             }
         });
 
-        rvFavPlaces.setHasFixedSize(true);
-        rvFavPlaces.setLayoutManager(new LinearLayoutManager(this));
 
-        rvRecentPlaces.setHasFixedSize(true);
-        rvRecentPlaces.setLayoutManager(new LinearLayoutManager(this));
-
-        placeAdapter = new MyPlaceAdapter(getApplicationContext(), placeDataList, false, userId);
-        rvRecentPlaces.setAdapter(placeAdapter);
-
-        fPlaceAdapter = new FavouritePlaceAdapter(getApplicationContext(), fPlaceDataList, true, userId);
-        rvFavPlaces.setAdapter(fPlaceAdapter);
 
         try {
             new CheckUserTask().execute();
@@ -513,109 +522,150 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
             }
         });
 
-        etSearchStartAddress.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                if (b) {
-                    // hideSearchAddressStartUI();
-                    etSearchStartAddress.addTextChangedListener(new TextWatcher() {
-                        @Override
-                        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                        }
-
-                        @Override
-                        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                            txt = this;
-                            if (etSearchStartAddress.getText().toString().length() >= 3) {
-                                lookForAddress();
-                            }
-
-                        }
-
-                        @Override
-                        public void afterTextChanged(Editable editable) {
-
-                        }
-                    });
-                } else {
-                    etSearchStartAddress.removeTextChangedListener(txt);
-                }
-            }
-        });
-
-        etSearchDestination.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                if (b) {
-                    // hideSearchAddressStartUI();
-                    etSearchDestination.addTextChangedListener(new TextWatcher() {
-                        @Override
-                        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                        }
-
-                        @Override
-                        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                            txtDest = this;
-                            if (etSearchDestination.getText().toString().length() >= 3) {
-                                lookForAddress();
-                            }
-
-                        }
-
-                        @Override
-                        public void afterTextChanged(Editable editable) {
-
-                        }
-                    });
-                } else {
-                    etSearchDestination.removeTextChangedListener(txtDest);
-                }
-            }
-        });
+//        setSearchFunc();
 
         mGeoDataClient = Places.getGeoDataClient(this);
-        etSearchStartAddress.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+    }
+
+    private void setSearchFunc() {
+//        findViewById(R.id.coverButton).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                selectStart.setVisibility(View.GONE);
+//                findViewById(R.id.shadow).setVisibility(View.GONE);
+//                bottomMenu.setVisibility(View.GONE);
+//                selectedOp.setVisibility(View.GONE);
+//                selectDest.setVisibility(View.GONE);
+//                findViewById(R.id.coverButton).setVisibility(View.GONE);
+//                state = -1;
+//                showFavoritsAndRecents();
+//            }
+//        });
+
+
+        etSearchStartAddress.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                if (i == EditorInfo.IME_ACTION_DONE) {
-                    hideKeyboard(MapsActivityNew.this);
-                    etSearchStartAddress.clearFocus();
-                    etSearchStartAddress.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-//                    lookForAddress();
-                    return true;
-                }
-                return false;
+            public boolean onTouch(View v, MotionEvent event) {
+                rvSearchResult.setVisibility(View.VISIBLE);
+                return true;
             }
         });
 
-        etSearchDestination.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                if (i == EditorInfo.IME_ACTION_DONE) {
-                    hideKeyboard(MapsActivityNew.this);
-                    etSearchDestination.clearFocus();
-                    //lookForAddress();
-                    return true;
-                }
-                return false;
-            }
-        });
+//        etSearchStartAddress.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+//            @Override
+//            public void onFocusChange(View view, boolean b) {
+//                if (b) {
+//                    // hideSearchAddressStartUI();
+//                    etSearchStartAddress.addTextChangedListener(new TextWatcher() {
+//                        @Override
+//                        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//
+//                        }
+//
+//                        @Override
+//                        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//                            txt = this;
+//                            if (etSearchStartAddress.getText().toString().length() >= 3) {
+//                                lookForAddress();
+//                            }
+//
+//                        }
+//
+//                        @Override
+//                        public void afterTextChanged(Editable editable) {
+//
+//                        }
+//                    });
+//                } else {
+//                    etSearchStartAddress.removeTextChangedListener(txt);
+//                }
+//            }
+//        });
+//
+//        etSearchDestination.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+//            @Override
+//            public void onFocusChange(View view, boolean b) {
+//                if (b) {
+//                    // hideSearchAddressStartUI();
+//                    etSearchDestination.addTextChangedListener(new TextWatcher() {
+//                        @Override
+//                        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//
+//                        }
+//
+//                        @Override
+//                        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//                            txtDest = this;
+//                            if (etSearchDestination.getText().toString().length() >= 3) {
+//                                lookForAddress();
+//                            }
+//
+//                        }
+//
+//                        @Override
+//                        public void afterTextChanged(Editable editable) {
+//
+//                        }
+//                    });
+//                } else {
+//                    etSearchDestination.removeTextChangedListener(txtDest);
+//                }
+//            }
+//        });
+//
+//        etSearchStartAddress.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+//            @Override
+//            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+//                if (i == EditorInfo.IME_ACTION_DONE) {
+//                    hideKeyboard(MapsActivityNew.this);
+//                    etSearchStartAddress.clearFocus();
+//                    etSearchStartAddress.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+////                    lookForAddress();
+//                    return true;
+//                }
+//                return false;
+//            }
+//        });
+//
+//        etSearchDestination.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+//            @Override
+//            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+//                if (i == EditorInfo.IME_ACTION_DONE) {
+//                    hideKeyboard(MapsActivityNew.this);
+//                    etSearchDestination.clearFocus();
+//                    //lookForAddress();
+//                    return true;
+//                }
+//                return false;
+//            }
+//        });
+//
+//        etSearchDestination.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                hideKeyboard(MapsActivityNew.this);
+//                etSearchDestination.clearFocus();
+////                searchButtonDest.setVisibility(View.GONE);
+////                searchProgBarDest.setVisibility(View.VISIBLE);
+//                lookForAddress();
+//            }
+//        });
+
+
     }
 
     public void lookForAddress() {
-        //searchEditText.clearFocus();
-        //searchDestEditText.clearFocus();
+        etSearchStartAddress.clearFocus();
+        etSearchDestination.clearFocus();
         //hideKeyboard(MapsActivity.this);
-        if ((etSearchStartAddress.getText().toString().length() == 0 && orderDriverState == 0) || (etSearchDestination.getText().toString().length() == 0 && orderDriverState == 1)) {
-            findViewById(R.id.imageView111).setVisibility(View.VISIBLE);
+        if ((etSearchStartAddress.getText().toString().length() == 0 && orderDriverState == 0)
+                || (etSearchDestination.getText().toString().length() == 0 && orderDriverState == 1)) {
             showSearchAddressStartUI();
             return;
         }
-//        if (orderDriverState == 1) {
-//            startConstraint.setVisibility(View.INVISIBLE);
-//        }
+        if (orderDriverState == 1) {
+            rlStartPoint.setVisibility(View.INVISIBLE);
+        }
         new LookForAddressTask().execute();
     }
 
@@ -636,14 +686,11 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
                 searchText = etSearchStartAddress.getText().toString();
             if (orderDriverState == 1)
                 searchText = etSearchDestination.getText().toString();
-
-            // Do something like display a progress bar
         }
 
         // This is run in a background thread
         @Override
         protected String doInBackground(String... params) {
-
 
             AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
                     .setCountry("MA")
@@ -683,40 +730,62 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
             return "this string is passed to onPostExecute";
         }
 
-        // This is called from background thread but runs in UI
         @Override
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
-            // Do things like update the progress bar
         }
 
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             int Height = 67 * placeDataList.size();
-//            AnimateConstraint.animate(context, aR, HeightAbsolute, HeightAbsolute, 1);
-//            AnimateConstraint.animate(context, favorite, 1, 1, 1);
-//            if (orderDriverState == 0) {
-////                searchButton.setVisibility(View.VISIBLE);
-//                findViewById(R.id.imageView111).setVisibility(View.VISIBLE);
-//                aR.setVisibility(View.VISIBLE);
-//                //if(Height > (dpHeight - (270)))
-//                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-//                selectStart.setVisibility(View.GONE);
-//                selectedOp.setVisibility(View.GONE);
-//                bottomMenu.setVisibility(View.GONE);
-//                findViewById(R.id.shadow).setVisibility(View.GONE);
-//            }
-//
-//            if (orderDriverState == 1) {
-//                searchButtonDest.setVisibility(View.VISIBLE);
-//                aR.setVisibility(View.VISIBLE);
-//                //if(Height > (dpHeight - (270)))
-//                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-//                selectDest.setVisibility(View.GONE);
-//            }
+            AnimateConstraint.animate(getApplicationContext(), rvSearchResult, HeightAbsolute, HeightAbsolute, 1);
+            AnimateConstraint.animate(getApplicationContext(), rlFavouritePlace, 1, 1, 1);
+            if (orderDriverState == 0) {
+//                searchButton.setVisibility(View.VISIBLE);
+                rvSearchResult.setVisibility(View.VISIBLE);
+                //if(Height > (dpHeight - (270)))
+                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+                rlStartPoint.setVisibility(View.GONE);
+                ivWheel.setVisibility(View.GONE);
+                ivShadow.setVisibility(View.GONE);
+            }
+
+            if (orderDriverState == 1) {
+                btnConfirmDestination.setVisibility(View.VISIBLE);
+                rvSearchResult.setVisibility(View.VISIBLE);
+                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+                llConfirmDestination.setVisibility(View.GONE);
+            }
 //            searchProgBar.setVisibility(View.GONE);
 //            searchProgBarDest.setVisibility(View.GONE);
+        }
+    }
+    public void showFavoritsAndRecents() {
+        rPlaceDataList.add(getRecentPlaces(getApplicationContext()));
+        placeAdapter.notifyDataSetChanged();
+        AnimateConstraint.animate(MapsActivityNew.this, rvFavPlaces, HeightAbsolute, 1, 100);
+
+        findViewById(R.id.x).setVisibility(View.VISIBLE);
+//        findViewById(R.id.my_position).setVisibility(View.GONE);
+//        findViewById(R.id.adress_result).setVisibility(View.INVISIBLE);
+    }
+
+    public place getRecentPlaces(Context context) {
+
+        SharedPreferences appSharedPrefs = PreferenceManager
+                .getDefaultSharedPreferences(context.getApplicationContext());
+        Gson gson = new Gson();
+        String json = appSharedPrefs.getString("recent_places", "");
+
+
+        place rPlace = gson.fromJson(json, place.class);
+        place Place = new place("Travail", "", "33.5725155", "-7.5962637", R.drawable.lieux_proches);
+
+        if (rPlace == null) {
+            return Place;
+        } else {
+            return rPlace;
         }
     }
 
@@ -1878,7 +1947,16 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
         findViewById(R.id.tv_closest_driver).setVisibility(View.GONE);
         findViewById(R.id.iv_location_pin_dest).setVisibility(View.VISIBLE);
 
-//        tvFrameTime.setText(tvClosestDriverText.getText());
+        tvFrameTime.setText(tvClosestDriver.getText());
+
+        flDriverPin.setDrawingCacheEnabled(true);
+        flDriverPin.buildDrawingCache();
+        frameTime.setText(tvClosestDriver.getText());
+        Bitmap bm = flDriverPin.getDrawingCache();
+
+        Marker myMarker = mMap.addMarker(new MarkerOptions()
+                .position(startLatLng)
+                .icon(BitmapDescriptorFactory.fromBitmap(bm)));
 
         ivDrawerToggol.setVisibility(View.VISIBLE);
         ivDrawerToggol.setImageResource(R.drawable.back_arrow);
@@ -1905,11 +1983,8 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
     public void hideSearchAddressStartUI() {
         placeDataList.clear();
         placeAdapter.notifyDataSetChanged();
-//        findViewById(R.id.imageView7).setVisibility(View.INVISIBLE);
-//        findViewById(R.id.imageView8).setVisibility(View.INVISIBLE);
         rlFavouritePlace.setVisibility(View.INVISIBLE);
         rvSearchResult.setVisibility(View.INVISIBLE);
-//        findViewById(R.id.imageView111).setVisibility(View.INVISIBLE);
 
         if (rlFavouritePlace.getHeight() >= HeightAbsolute)
             AnimateConstraint.animateCollapse(getApplicationContext(),
@@ -2006,7 +2081,7 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
             etSearchStartAddress.setText(startText);
             etSearchDestination.setText(endText);
 
-            findViewById(R.id.rl_depart_pin).setVisibility(View.GONE);
+//            findViewById(R.id.rl_depart_pin).setVisibility(View.GONE);
             AnimateConstraint.fadeIn(getApplicationContext(), ivWheel, 500, 0);
             AnimateConstraint.fadeIn(getApplicationContext(), rlCallLayout, 500, 0);
             ivGoo.setVisibility(View.GONE);
@@ -2479,6 +2554,23 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
                         distance /= 1000;
 //                        getPrice();
                         drawPolyLineOnMap(start, arrival);
+
+                        flDriverPin.setDrawingCacheEnabled(true);
+                        flDriverPin.buildDrawingCache();
+                        Bitmap bm = flDriverPin.getDrawingCache();
+                        /*driverPosMarker =*/ mMap.addMarker(new MarkerOptions()
+                                .position(arrival)
+                                .icon(BitmapDescriptorFactory.fromBitmap(bm)));
+
+                        flLocationStart.setDrawingCacheEnabled(true);
+                        flLocationStart.buildDrawingCache();
+                        bm = flLocationStart.getDrawingCache();
+                        /*startPositionMarker =*/ mMap.addMarker(new MarkerOptions()
+                                .position(start)
+                                .icon(BitmapDescriptorFactory.fromBitmap(bm)));
+
+
+
                         builder.include(arrival);
                         int padding = 200;
                         LatLngBounds bounds = builder.build();
@@ -2753,6 +2845,7 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
         mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
             @Override
             public void onCameraIdle() {
+                Log.e(TAG, "onCameraIdle: ");
                 if (orderDriverState == 0) {
                     if (geoQuery != null) {
                         geoQuery.setCenter(new GeoLocation(startLatLng.latitude, startLatLng.longitude));
@@ -2921,6 +3014,7 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
         String strAdd = "";
         Geocoder geocoder = new Geocoder(context, Locale.getDefault());
         try {
+
             List<Address> addresses = geocoder.getFromLocation(LATITUDE, LONGITUDE, 1);
             if (addresses != null) {
                 Address returnedAddress = addresses.get(0);
@@ -2930,9 +3024,10 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
                     strReturnedAddress.append(returnedAddress.getAddressLine(i)).append("\n");
                 }
                 strAdd = strReturnedAddress.toString();
-            } else {
             }
         } catch (NullPointerException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
@@ -3328,6 +3423,64 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
             super.onPostExecute(result);
 
             // Do things like hide the progress bar or change a TextView
+        }
+    }
+
+    String address = "", lat = "", Long = "";
+    String homeAddress = "", homeLat = "", homeLong = "";
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        fPlaceDataList.clear();
+        try {
+            prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
+            userId = prefs.getString("userID", "");
+            FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child("Work").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        address = dataSnapshot.child("Address").getValue(String.class);
+                        lat = dataSnapshot.child("Lat").getValue(String.class);
+                        Long = dataSnapshot.child("Long").getValue(String.class);
+                        place workPlace = new place(address, address, lat, Long, R.drawable.mdaison_con);
+
+                        fPlaceDataList.add(workPlace);
+                        fPlaceAdapter.notifyDataSetChanged();
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+            FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child("Home").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        homeAddress = dataSnapshot.child("Address").getValue(String.class);
+                        homeLat = dataSnapshot.child("Lat").getValue(String.class);
+                        homeLong = dataSnapshot.child("Long").getValue(String.class);
+
+                        place homePlace = new place(homeAddress, homeAddress, homeLat, homeLong, R.drawable.work_icon);
+                        fPlaceDataList.add(homePlace);
+                        fPlaceAdapter.notifyDataSetChanged();
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+        } catch (DatabaseException e) {
+            e.printStackTrace();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
