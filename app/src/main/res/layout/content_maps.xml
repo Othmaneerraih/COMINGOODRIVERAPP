@@ -209,78 +209,11 @@
             android:singleLine="true"
             android:textColor="@color/color_dark_ash" />
 
-        <RelativeLayout
-            android:id="@+id/rl_favourite_place"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/et_start_point"
-            android:layout_marginLeft="@dimen/margin_large">
-
-            <TextView
-                android:id="@+id/tv_fav_pace"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/txt_favourite_place"
-                android:textStyle="bold"
-                android:visibility="gone" />
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/rv_fav_place"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/tv_fav_pace"
-                android:layout_margin="@dimen/margin_normal"
-                android:fontFamily="@font/roboto"
-                android:paddingBottom="15dp"
-                android:scrollbars="vertical"
-                android:visibility="gone" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/rl_recent_place"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/rl_favourite_place"
-            android:layout_marginLeft="@dimen/margin_large">
-
-            <TextView
-                android:id="@+id/tv_recent_place"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/txt_recent_place"
-                android:textStyle="bold"
-                android:visibility="gone" />
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/rv_recent_places"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/tv_recent_place"
-                android:layout_margin="@dimen/margin_normal"
-                android:fontFamily="@font/roboto"
-                android:paddingBottom="15dp"
-                android:scrollbars="vertical"
-                android:visibility="gone" />
-        </RelativeLayout>
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/rv_search_result"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginRight="16dp"
-            android:fontFamily="@font/roboto"
-            android:scrollbars="vertical"
-            android:visibility="visible"
-            android:layout_below="@+id/et_start_point"/>
-
         <Button
             android:id="@+id/btn_pickup"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:layout_below="@+id/rl_recent_place"
+            android:layout_below="@+id/et_start_point"
             android:layout_marginLeft="@dimen/margin_normal"
             android:layout_marginRight="@dimen/margin_normal"
             android:background="@drawable/ic_pickup"
@@ -356,6 +289,75 @@
                 android:textColor="@android:color/white" />
         </LinearLayout>
     </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/rl_favourite_place"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rl_start_point"
+        android:layout_marginLeft="@dimen/margin_large">
+
+        <TextView
+            android:id="@+id/tv_fav_pace"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/txt_favourite_place"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_fav_place"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_fav_pace"
+            android:layout_margin="@dimen/margin_normal"
+            android:fontFamily="@font/roboto"
+            android:paddingBottom="15dp"
+            android:scrollbars="vertical"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_recent_place"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rl_favourite_place"
+        android:layout_marginLeft="@dimen/margin_large">
+
+        <TextView
+            android:id="@+id/tv_recent_place"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/txt_recent_place"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_recent_places"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_recent_place"
+            android:layout_margin="@dimen/margin_normal"
+            android:fontFamily="@font/roboto"
+            android:paddingBottom="15dp"
+            android:scrollbars="vertical"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_search_result"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:fontFamily="@font/roboto"
+        android:scrollbars="vertical"
+        android:visibility="visible"
+        android:layout_below="@+id/rl_start_point"/>
+
 
     <ImageView
         android:id="@+id/iv_arrow_start_end"
