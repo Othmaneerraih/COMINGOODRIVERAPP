@@ -257,7 +257,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ImageButton carButton;
     private ImageButton selectCity;
 
-    private ConstraintLayout gooBox;
+    private RelativeLayout gooBox;
 
     private ConstraintLayout gooVoid;
 
@@ -362,11 +362,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         //citySelectLayout.setBackground(new BitmapDrawable(getResources(), scaleBitmap(115, 29, R.drawable.)));
         //gooButton.setImageBitmap(scaleBitmap(20, 20, R.drawable.goo));
-        gooBox.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) (dpWidth - 30), (int) ((dpWidth - 30) / 3.75), R.drawable.footer_min)));
+//        gooBox.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) (dpWidth - 30), (int) ((dpWidth - 30) / 3.75), R.drawable.footer_min)));
         shadowBg.setImageBitmap(scaleBitmap((int) dpWidth, 80, R.drawable.shadow_bottom));
 
 
-        gooBox.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) ((dpWidth - 30) / 3.75), context.getResources().getDisplayMetrics());
+//        gooBox.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) ((dpWidth - 30) / 3.75), context.getResources().getDisplayMetrics());
     }
 
     private String userName;
@@ -1945,7 +1945,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         playAudio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                try {
                 playAudio.setVisibility(View.GONE);
                 try {
                     mediaPlayer.setDataSource(outputeFile);
@@ -1972,41 +1971,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         });
                     }
                 });
-
-//                    if (!mediaPlayer.isPlaying()){
-//                        pauseAudio.setVisibility(View.GONE);
-//                        playAudio.setVisibility(View.VISIBLE);
-//                    }
-
-
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
             }
         });
 
-
-//        playAudio.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (!isPlaying) {
-//                    try {
-//                        mediaPlayer.setDataSource(outputeFile);
-//                        mediaPlayer.prepare();
-//                        mediaPlayer.start();
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                    playAudio.setBackgroundResource(R.drawable.pause_record);
-//                    isPlaying = true;
-//                } else {
-//                    isPlaying = false;
-//                    mediaPlayer.stop();
-//                    mediaPlayer.release();
-//                    playAudio.setBackgroundResource(R.drawable.play_record);
-//                }
-//            }
-//        });
 
     }
     //////////////////////////////////////////////////////
@@ -2047,7 +2014,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
 
-        setContentView(R.layout.activity_maps_two);
+        setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -2123,7 +2090,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         sinchClient.getCallClient().addCallClientListener(new SinchCallClientListener());
 
-        price = (TextView) findViewById(R.id.price);
+        price = (TextView) findViewById(R.id.tv_mad);
         fixedLocations = new ArrayList<>();
         context = MapsActivity.this;
         orderDriverState = 0;
@@ -2133,7 +2100,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         image2 = (ImageView) findViewById(R.id.imageView8);
         X = (ImageButton) findViewById(R.id.x);
         positionButton = (ImageButton) findViewById(R.id.my_position);
-        gooBox = (ConstraintLayout) findViewById(R.id.gooBox);
+        gooBox =  findViewById(R.id.gooBox);
 
         coverButton = (Button) findViewById(R.id.coverButton);
 

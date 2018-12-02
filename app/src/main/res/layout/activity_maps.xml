@@ -1240,47 +1240,147 @@
             android:id="@+id/gooContent"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="visible">
+            android:layout_margin="@dimen/margin_normal"
+            android:visibility="gone">
 
-            <android.support.constraint.ConstraintLayout
+            <RelativeLayout
                 android:id="@+id/gooBox"
-                android:layout_width="fill_parent"
-                android:layout_height="1dp"
-                android:layout_marginStart="15dp"
-                android:layout_marginEnd="15dp"
-                android:layout_marginBottom="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/margin_normal"
+                android:layout_margin="@dimen/margin_normal"
+                android:background="@drawable/borderbox_round"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent">
 
+                <ImageView
+                    android:id="@+id/ic_car"
+                    android:layout_width="60dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/ic_car" />
+
                 <TextView
-                    android:id="@+id/price"
+                    android:id="@+id/tv_app_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="65dp"
-                    android:layout_marginRight="65dp"
-                    android:layout_marginBottom="18dp"
-                    android:text=""
-                    android:textColor="@color/colorPrimaryDark"
-                    android:textSize="12sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" />
+                    android:layout_marginLeft="@dimen/margin_small"
+                    android:layout_toRightOf="@id/ic_car"
+                    android:text="@string/app_name"
+                    android:textColor="@android:color/black"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tv_seats"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/tv_app_name"
+                    android:layout_marginLeft="@dimen/margin_normal"
+                    android:layout_toRightOf="@id/ic_car"
+                    android:text="4 Seats" />
+
+                <View
+                    android:id="@+id/view_one"
+                    android:layout_width="1dp"
+                    android:layout_height="40dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:background="@color/color_ash" />
+
+                <ImageView
+                    android:id="@+id/iv_promo_code"
+                    android:layout_width="40dp"
+                    android:layout_height="30dp"
+                    android:layout_marginLeft="@dimen/margin_normal"
+                    android:layout_marginTop="@dimen/margin_normal"
+                    android:layout_toRightOf="@id/view_one"
+                    android:src="@drawable/ic_promo_code" />
 
                 <TextView
                     android:id="@+id/promoCode"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="18dp"
-                    android:layout_marginEnd="25dp"
-                    android:textStyle="bold"
-                    android:layout_marginRight="25dp"
-                    android:text=""
-                    android:textColor="@color/colorPrimaryDark"
-                    android:textSize="12sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-            </android.support.constraint.ConstraintLayout>
+                    android:layout_marginLeft="@dimen/margin_small"
+                    android:layout_marginTop="16dp"
+                    android:layout_toRightOf="@id/iv_promo_code"
+                    android:text="PROMO CODE"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:id="@+id/ll_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/ic_car"
+                    android:layout_marginTop="@dimen/margin_normal"
+                    android:orientation="horizontal"
+                    android:weightSum="1">
+
+                    <View
+                        android:layout_width="wrap_content"
+                        android:layout_height="1dp"
+                        android:layout_marginRight="@dimen/margin_normal"
+                        android:layout_weight="0.5"
+                        android:background="@color/color_ash" />
+
+                    <View
+                        android:layout_width="wrap_content"
+                        android:layout_height="1dp"
+                        android:layout_marginLeft="@dimen/margin_normal"
+                        android:layout_weight="0.5"
+                        android:background="@color/color_ash" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tv_cash"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/ic_car"
+                    android:layout_marginLeft="50dp"
+                    android:layout_marginTop="@dimen/margin_large"
+                    android:text="CASH"
+                    android:visibility="visible"
+                    android:textColor="@android:color/black" />
+
+                <TextView
+                    android:id="@+id/tv_payment"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/tv_cash"
+                    android:layout_marginLeft="40dp"
+                    android:text="Payment" />
+
+                <View
+                    android:id="@+id/view_two"
+                    android:layout_width="1dp"
+                    android:layout_height="40dp"
+                    android:layout_below="@id/ll_view"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginLeft="72dp"
+                    android:background="@color/color_ash" />
+
+
+                <TextView
+                    android:id="@+id/tv_mad"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/ic_car"
+                    android:layout_marginLeft="50dp"
+                    android:layout_marginTop="@dimen/margin_large"
+                    android:layout_toRightOf="@+id/view_two"
+                    android:text="MAD 10-13"
+                    android:textColor="@android:color/black" />
+
+                <TextView
+                    android:id="@+id/tv_estimate_price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/tv_cash"
+                    android:layout_marginLeft="35dp"
+                    android:layout_toRightOf="@+id/view_two"
+                    android:text="Estimated Price" />
+            </RelativeLayout>
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/gooLayout"
@@ -1385,8 +1485,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="170dp"
                 android:layout_alignParentBottom="true"
-                android:background="@android:color/white"
                 android:layout_margin="@dimen/margin_normal"
+                android:background="@android:color/white"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent">
@@ -1478,8 +1578,8 @@
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:layout_below="@+id/ll_call"
-                        android:layout_toRightOf="@id/ll_call"
                         android:layout_marginLeft="@dimen/margin_xlarge"
+                        android:layout_toRightOf="@id/ll_call"
                         android:src="@drawable/call" />
 
                     <ImageView
@@ -1490,8 +1590,8 @@
                         android:layout_toRightOf="@id/ll_call"
                         android:src="@drawable/delete_button"
                         android:visibility="gone" />
-
                 </RelativeLayout>
+
             </android.support.constraint.ConstraintLayout>
 
             <LinearLayout
