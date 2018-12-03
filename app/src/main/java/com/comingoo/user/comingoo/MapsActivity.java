@@ -499,7 +499,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    AudioManager audioManager;
+//    AudioManager audioManager;
     boolean isLoud = false;
     MediaPlayer mp;
     TextView callState, caller_name, tv_name_voip_one;
@@ -551,7 +551,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         iv_loud.setVisibility(View.GONE);
 
 
-        audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+        final AudioManager audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
         audioManager.setMode(AudioManager.MODE_IN_CALL);
         audioManager.setMicrophoneMute(false);
         audioManager.setSpeakerphoneOn(false);
@@ -622,11 +622,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
         });
 
+        final AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
-        final int origionalVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
+        final int origionalVolume = am.getStreamVolume(AudioManager.STREAM_MUSIC);
+        am.setStreamVolume(AudioManager.STREAM_MUSIC, am.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
 
-        switch (audioManager.getRingerMode()) {
+        switch (am.getRingerMode()) {
             case 0:
 
                 mp.start();
@@ -646,7 +647,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onCompletion(MediaPlayer mediaPlayer) {
                 mp.stop();
                 mp.release();
-                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, origionalVolume, 0);
+                am.setStreamVolume(AudioManager.STREAM_MUSIC, origionalVolume, 0);
             }
         });
 
@@ -780,7 +781,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         iv_mute.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mute();
+                mute(audioManager);
             }
         });
 
@@ -790,8 +791,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         dialog.show();
     }
 
-    private void mute() {
-        if (audioManager.isMicrophoneMute() == false) {
+    private void mute(AudioManager audioManager) {
+        if (!audioManager.isMicrophoneMute()) {
             audioManager.setMicrophoneMute(true);
 
             iv_mute.setImageResource(R.drawable.clicked_mute);
