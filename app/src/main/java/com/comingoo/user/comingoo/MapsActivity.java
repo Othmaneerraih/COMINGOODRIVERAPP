@@ -13,9 +13,11 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -60,6 +62,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RatingBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -280,6 +283,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     String language;
 
     private ConstraintLayout callLayout;
+    private RatingBar rbDriverRating;
     private TextView driverNameL, iv_total_ride_number, iv_car_number, iv_total_rating_number;
     //    private CircleImageView driverImageL;
     private CircularImageView driverImageL;
@@ -1010,6 +1014,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Picasso.get().load(driverImage).into(driverImageL);
                 }
             }
+
+            LayerDrawable stars = (LayerDrawable) rbDriverRating.getProgressDrawable();
+            stars.getDrawable(0).setColorFilter(Color.YELLOW, PorterDuff.Mode.SRC_ATOP);
 
             if (
 //                    ContextCompat.checkSelfPermission(MapsActivity.this,
@@ -2041,6 +2048,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         driverImageL = findViewById(R.id.iv_driver_image);
         iv_car_number = (TextView) findViewById(R.id.iv_car_number);
         iv_total_ride_number = (TextView) findViewById(R.id.iv_total_ride_number);
+        rbDriverRating =  findViewById(R.id.rb_user);
         voip_view = findViewById(R.id.voip_view);
         tv_appelle_voip = (TextView) findViewById(R.id.tv_appelle_voip);
         tv_appelle_telephone = (TextView) findViewById(R.id.tv_appelle_telephone);
@@ -4049,6 +4057,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                             if (driverSize == 0) {
 
                                                 stopSearchUI();
+                                                showAllUI();
                                                 finishedSendReq = true;
                                                 FirebaseDatabase.getInstance().getReference("COURSES").orderByChild("client").equalTo(userId).addListenerForSingleValueEvent(new ValueEventListener() {
                                                     @Override
@@ -4085,6 +4094,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                             stop = 0;
 
                                                             stopSearchUI();
+                                                            showAllUI();
                                                         } else {
 
                                                             for (DataSnapshot data : dataSnapshot.getChildren()) {
@@ -4120,6 +4130,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                             if (counter <= driversKeys.size())
                                                 handler.postDelayed(runnable, 0);
                                             stopSearchUI();
+                                            showAllUI();
                                             pickupRequest.removeEventListener(this);
                                         }
                                     }
@@ -4219,8 +4230,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void stopSearchUI() {
         driversKeysHold.clear();
         AnimateConstraint.fadeIn(context, gooButton, 200, 10);
-        //gooButton.setVisibility(View.VISIBLE);
-        //gooButton.setAlpha(1);
         final RippleBackground rippleBackground = (RippleBackground) findViewById(R.id.gooVoidContent);
         rippleBackground.stopRippleAnimation();
         menuButton.setVisibility(View.VISIBLE);
@@ -4296,7 +4305,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
     }
-
 
     public void updateViews() {
         Context context;

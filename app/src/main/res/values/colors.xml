@@ -14,5 +14,8 @@
     <color name="transp">#00000000</color>
     <color name="gradiantEnd2">#0C57B1</color>
     <color name="color_ash">#fbc0c2c4</color>
+    <color name="color_ash_deep">#fb95989b</color>
+
+    <color name="color_yellow">#fbf1c205</color>
 
 </resources>
