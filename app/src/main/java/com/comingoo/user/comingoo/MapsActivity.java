@@ -560,65 +560,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mp.setLooping(false);
         mp.start();
 
-
-        final int origionalVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
-
-        switch (audioManager.getRingerMode()) {
-            case 0:
-
-                mp.start();
-                break;
-            case 1:
-
-                mp.start();
-                break;
-            case 2:
-
-                mp.start();
-                break;
-        }
-
-        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mediaPlayer) {
-                mp.stop();
-                mp.release();
-                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, origionalVolume, 0);
-            }
-        });
-
-        if (ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(MapsActivity.this,
-                    new String[]{android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.READ_PHONE_STATE},
-                    10);
-        }
-
-        caller_name.setVisibility(View.VISIBLE);
-        caller_name.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
-        caller_name.setTypeface(null, Typeface.NORMAL);      // for Normal Text
-
-        caller_name.setText(driverName + " vous appelle");
-        tv_name_voip_one.setText(driverName);
-        if (!driverImage.isEmpty()) {
-            Picasso.get().load(driverImage).into(iv_user_image_voip_one);
-        }
-
-        iv_cancel_call_voip_one.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                call.hangup();
-                mp.stop();
-                dialog.dismiss();
-            }
-        });
-
-        params = (RelativeLayout.LayoutParams) iv_cancel_call_voip_one.getLayoutParams();
-        params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-        iv_cancel_call_voip_one.setLayoutParams(params);
-
-        iv_recv_call_voip_one.setOnClickListener(new View.OnClickListener() {
-            class SinchCallListener implements CallListener {
+        call.addCallListener(new CallListener() {
                 @Override
                 public void onCallEnded(Call endedCall) {
                     //call ended by either party
@@ -678,7 +620,127 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 public void onShouldSendPushNotification(Call call, List<PushPair> pushPairs) {
                     //don't worry about this right now
                 }
+        });
+
+
+        final int origionalVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
+
+        switch (audioManager.getRingerMode()) {
+            case 0:
+
+                mp.start();
+                break;
+            case 1:
+
+                mp.start();
+                break;
+            case 2:
+
+                mp.start();
+                break;
+        }
+
+        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                mp.stop();
+                mp.release();
+                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, origionalVolume, 0);
             }
+        });
+
+        if (ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MapsActivity.this,
+                    new String[]{android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.READ_PHONE_STATE},
+                    10);
+        }
+
+        caller_name.setVisibility(View.VISIBLE);
+        caller_name.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+        caller_name.setTypeface(null, Typeface.NORMAL);      // for Normal Text
+
+        caller_name.setText(driverName + " vous appelle");
+        tv_name_voip_one.setText(driverName);
+        if (!driverImage.isEmpty()) {
+            Picasso.get().load(driverImage).into(iv_user_image_voip_one);
+        }
+
+        iv_cancel_call_voip_one.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                call.hangup();
+                mp.stop();
+                dialog.dismiss();
+            }
+        });
+
+        params = (RelativeLayout.LayoutParams) iv_cancel_call_voip_one.getLayoutParams();
+        params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        iv_cancel_call_voip_one.setLayoutParams(params);
+
+        iv_recv_call_voip_one.setOnClickListener(new View.OnClickListener() {
+//            class SinchCallListener implements CallListener {
+//                @Override
+//                public void onCallEnded(Call endedCall) {
+//                    //call ended by either party
+//                    dialog.findViewById(R.id.incoming_call_view).setVisibility(View.GONE);
+//                    setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
+//
+//                    mp.stop();
+//                    iv_mute.setVisibility(View.GONE);
+//                    iv_loud.setVisibility(View.GONE);
+//                    caller_name.setVisibility(View.GONE);
+//                    callState.setText("");
+//                    mHandler.removeCallbacks(mUpdate);// we need to remove our updates if the activity isn't focused(or even destroyed) or we could get in trouble
+//                    dialog.dismiss();
+//                }
+//
+//                @Override
+//                public void onCallEstablished(final Call establishedCall) {
+//                    //incoming call was picked up
+//                    dialog.findViewById(R.id.incoming_call_view).setVisibility(View.VISIBLE);
+//                    setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
+//                    callState.setText("connected");
+//                    iv_mute.setVisibility(View.VISIBLE);
+//                    iv_loud.setVisibility(View.VISIBLE);
+//
+//                    iv_recv_call_voip_one.setVisibility(View.GONE);
+//
+//                    params.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+//                    params.addRule(RelativeLayout.CENTER_HORIZONTAL);
+//                    iv_cancel_call_voip_one.setLayoutParams(params);
+//                    mp.stop();
+//
+////                    Calendar c = Calendar.getInstance();
+//                    mHour = 00;//c.get(Calendar.HOUR_OF_DAY);
+//                    mMinute = 00;//c.get(Calendar.MINUTE);
+//                    caller_name.setText(mHour + ":" + mMinute);
+//                    mHandler.postDelayed(mUpdate, 1000); // 60000 a minute
+//                }
+//
+//                @Override
+//                public void onCallProgressing(Call progressingCall) {
+//                    //call is ringing
+//                    dialog.findViewById(R.id.incoming_call_view).setVisibility(View.VISIBLE);
+//                    caller_name.setText(progressingCall.getDetails().getDuration() + "");
+//                    caller_name.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+//                    iv_mute.setVisibility(View.VISIBLE);
+//                    iv_loud.setVisibility(View.VISIBLE);
+//                    caller_name.setTypeface(null, Typeface.BOLD);
+//                    callState.setText("ringing");
+//                    iv_recv_call_voip_one.setVisibility(View.GONE);
+//                    params.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+//                    params.addRule(RelativeLayout.CENTER_HORIZONTAL);
+//                    iv_cancel_call_voip_one.setLayoutParams(params);
+//                    mp.stop();
+//                }
+//
+//                @Override
+//                public void onShouldSendPushNotification(Call call, List<PushPair> pushPairs) {
+//                    //don't worry about this right now
+//                }
+//            }
 
 
             @Override
@@ -686,7 +748,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if (call != null) {
                     mp.stop();
                     call.answer();
-                    call.addCallListener(new SinchCallListener());
+//                    call.addCallListener(new SinchCallListener());
                     audioManager.setMicrophoneMute(false);
                     audioManager.setSpeakerphoneOn(false);
                 }
