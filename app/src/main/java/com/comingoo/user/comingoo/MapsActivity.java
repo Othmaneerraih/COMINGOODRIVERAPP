@@ -67,6 +67,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.comingoo.user.comingoo.Interfaces.PickLocation;
 import com.comingoo.user.comingoo.adapters.FavouritePlaceAdapter;
 import com.comingoo.user.comingoo.adapters.MyPlaceAdapter;
 
@@ -146,7 +147,7 @@ import pl.droidsonroids.gif.GifImageButton;
 
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, PickLocation {
     private static final String TAG = "MapsActivity";
     static GoogleMap mMap;
     private static EditText searchEditText;
@@ -266,8 +267,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private Button passer;
 
-//    private ImageButton callButton;
-
     ////////////////////////////////////////////
 
 
@@ -375,6 +374,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private String userName;
     private Call call;
+
+    @Override
+    public void pickedLocation(place place) {
+
+    }
 
     private class CheckUserTask extends AsyncTask<String, Integer, String> {
         SharedPreferences prefs;
@@ -582,8 +586,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
-                mp.stop();
-                mp.release();
+                if(mp.isPlaying()) {
+                    mp.stop();
+                    mp.release();
+                }
                 audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, origionalVolume, 0);
             }
         });
@@ -608,7 +614,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View v) {
                 call.hangup();
-                mp.stop();
+                if (mp.isPlaying()) mp.stop();
                 dialog.dismiss();
             }
         });
@@ -621,16 +627,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             class SinchCallListener implements CallListener {
                 @Override
                 public void onCallEnded(Call endedCall) {
-                    //call ended by either party
                     dialog.findViewById(R.id.incoming_call_view).setVisibility(View.GONE);
                     setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
 
-                    mp.stop();
+                    if (mp.isPlaying())  mp.stop();
+
                     iv_mute.setVisibility(View.GONE);
                     iv_loud.setVisibility(View.GONE);
                     caller_name.setVisibility(View.GONE);
                     callState.setText("");
-                    mHandler.removeCallbacks(mUpdate);// we need to remove our updates if the activity isn't focused(or even destroyed) or we could get in trouble
+                    mHandler.removeCallbacks(mUpdate);
                     dialog.dismiss();
                 }
 
@@ -648,7 +654,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     params.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
                     params.addRule(RelativeLayout.CENTER_HORIZONTAL);
                     iv_cancel_call_voip_one.setLayoutParams(params);
-                    mp.stop();
+                    if (mp.isPlaying()) mp.stop();
 
 //                    Calendar c = Calendar.getInstance();
                     mHour = 00;//c.get(Calendar.HOUR_OF_DAY);
@@ -671,7 +677,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     params.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
                     params.addRule(RelativeLayout.CENTER_HORIZONTAL);
                     iv_cancel_call_voip_one.setLayoutParams(params);
-                    mp.stop();
+                    if (mp.isPlaying())   mp.stop();
                 }
 
                 @Override
@@ -684,7 +690,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View v) {
                 if (call != null) {
-                    mp.stop();
+                    if (mp.isPlaying()) mp.stop();
                     call.answer();
                     call.addCallListener(new SinchCallListener());
                     audioManager.setMicrophoneMute(false);
@@ -1301,7 +1307,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
                 FirebaseDatabase.getInstance().getReference("COURSES").child(courseIDT).child("state").setValue("5");
-                FirebaseDatabase.getInstance().getReference("COURSES").child(courseIDT).removeValue();
+
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        //Do something after 3000ms
+                        FirebaseDatabase.getInstance().getReference("COURSES").child(courseIDT).removeValue();
+                    }
+                }, 3000);
 
                 SharedPreferenceTask preferenceTask = new SharedPreferenceTask(getApplicationContext());
                 int prevCancel = preferenceTask.getCancelNumber();
@@ -1494,14 +1508,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                         }
                                     });
 
-
-//                                star1.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
-//                                star2.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
-//                                star3.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
-//                                star4.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
-//                                star5.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
-
-
                                     star1.setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(View v) {
@@ -1577,184 +1583,190 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     nextButton.setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(View v) {
-                                            if (RATE > 0) {
-                                                dialog.dismiss();
-                                                FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(dialogDriverId).child("rating").child(Integer.toString(RATE)).addListenerForSingleValueEvent(new ValueEventListener() {
-                                                    @Override
-                                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                        int Rating = Integer.parseInt(dataSnapshot.getValue(String.class)) + 1;
-                                                        FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(dialogDriverId).child("rating").child(Integer.toString(RATE)).setValue("" + Rating);
-                                                    }
+                                            try {
+                                                if (RATE > 0) {
+                                                    dialog.dismiss();
+                                                    FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(dialogDriverId).child("rating").child(Integer.toString(RATE)).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                        @Override
+                                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                            if (dataSnapshot.exists()) {
+                                                                int Rating = Integer.parseInt(dataSnapshot.getValue(String.class)) + 1;
+                                                                FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(dialogDriverId).child("rating").child(Integer.toString(RATE)).setValue("" + Rating);
+                                                            }
+                                                        }
 
-                                                    @Override
-                                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                                        @Override
+                                                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                                    }
-                                                });
-                                                FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("COURSE").removeValue();
-                                                if (RATE > 3) {
-                                                    if (ContextCompat.checkSelfPermission(MapsActivity.this,
-                                                            Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                                                        ActivityCompat.requestPermissions(MapsActivity.this,
-                                                                new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 10);
+                                                        }
+                                                    });
+                                                    FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("COURSE").removeValue();
+                                                    if (RATE > 3) {
+                                                        if (ContextCompat.checkSelfPermission(MapsActivity.this,
+                                                                Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                                                            ActivityCompat.requestPermissions(MapsActivity.this,
+                                                                    new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 10);
+                                                        } else {
+                                                            showVoiceDialog();
+                                                        }
                                                     } else {
-                                                        showVoiceDialog();
-                                                    }
-                                                } else {
 
-                                                    try {
-                                                        final Dialog newDialog = new Dialog(context);
-                                                        newDialog.setContentView(R.layout.finished_course_2);
-                                                        choseBox = null;
+                                                        try {
+                                                            final Dialog newDialog = new Dialog(context);
+                                                            newDialog.setContentView(R.layout.finished_course_2);
+                                                            choseBox = null;
 
-                                                        TextView textView15 = (TextView) dialog.findViewById(R.id.textView15);
-                                                        TextView textView16 = (TextView) dialog.findViewById(R.id.textView16);
-                                                        Button button5 = (Button) dialog.findViewById(R.id.button5);
-                                                        Button button7 = (Button) dialog.findViewById(R.id.button7);
-                                                        Button button8 = (Button) dialog.findViewById(R.id.button8);
-                                                        Button button9 = (Button) dialog.findViewById(R.id.button9);
-                                                        Button button10 = (Button) dialog.findViewById(R.id.button10);
+                                                            TextView textView15 = (TextView) dialog.findViewById(R.id.textView15);
+                                                            TextView textView16 = (TextView) dialog.findViewById(R.id.textView16);
+                                                            Button button5 = (Button) dialog.findViewById(R.id.button5);
+                                                            Button button7 = (Button) dialog.findViewById(R.id.button7);
+                                                            Button button8 = (Button) dialog.findViewById(R.id.button8);
+                                                            Button button9 = (Button) dialog.findViewById(R.id.button9);
+                                                            Button button10 = (Button) dialog.findViewById(R.id.button10);
 
 
-                                                        //Set Texts
-                                                        textView15.setText(resources.getString(R.string.Noussommesdésolé));
-                                                        textView16.setText(resources.getString(R.string.whatswrong));
-                                                        button5.setText(resources.getString(R.string.Heuredarrivée));
-                                                        button7.setText(resources.getString(R.string.Etatdelavoiture));
-                                                        button8.setText(resources.getString(R.string.Conduite));
-                                                        button9.setText(resources.getString(R.string.Itinéraire));
-                                                        button10.setText(resources.getString(R.string.Autre));
+                                                            //Set Texts
+                                                            textView15.setText(resources.getString(R.string.Noussommesdésolé));
+                                                            textView16.setText(resources.getString(R.string.whatswrong));
+                                                            button5.setText(resources.getString(R.string.Heuredarrivée));
+                                                            button7.setText(resources.getString(R.string.Etatdelavoiture));
+                                                            button8.setText(resources.getString(R.string.Conduite));
+                                                            button9.setText(resources.getString(R.string.Itinéraire));
+                                                            button10.setText(resources.getString(R.string.Autre));
 
-                                                        RelativeLayout body = (RelativeLayout) newDialog.findViewById(R.id.body);
-                                                        body.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) dpWidth, (int) dpWidth, R.drawable.finished_bg)));
+                                                            RelativeLayout body = (RelativeLayout) newDialog.findViewById(R.id.body);
+                                                            body.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) dpWidth, (int) dpWidth, R.drawable.finished_bg)));
 
-                                                        final Button opt1 = (Button) newDialog.findViewById(R.id.button5);
-                                                        final Button opt2 = (Button) newDialog.findViewById(R.id.button6);
-                                                        final Button opt3 = (Button) newDialog.findViewById(R.id.button7);
-                                                        final Button opt4 = (Button) newDialog.findViewById(R.id.button8);
-                                                        final Button opt5 = (Button) newDialog.findViewById(R.id.button9);
-                                                        final Button opt6 = (Button) newDialog.findViewById(R.id.button10);
+                                                            final Button opt1 = (Button) newDialog.findViewById(R.id.button5);
+                                                            final Button opt2 = (Button) newDialog.findViewById(R.id.button6);
+                                                            final Button opt3 = (Button) newDialog.findViewById(R.id.button7);
+                                                            final Button opt4 = (Button) newDialog.findViewById(R.id.button8);
+                                                            final Button opt5 = (Button) newDialog.findViewById(R.id.button9);
+                                                            final Button opt6 = (Button) newDialog.findViewById(R.id.button10);
 
-                                                        final EditText messageText = (EditText) newDialog.findViewById(R.id.editText);
+                                                            final EditText messageText = (EditText) newDialog.findViewById(R.id.editText);
 
-                                                        opt1.setOnClickListener(new View.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(View v) {
-                                                                opt1.setBackgroundResource(R.drawable.box_shadow);
-                                                                opt2.setBackgroundResource(R.drawable.select_box);
-                                                                opt3.setBackgroundResource(R.drawable.select_box);
-                                                                opt4.setBackgroundResource(R.drawable.select_box);
-                                                                opt5.setBackgroundResource(R.drawable.select_box);
-                                                                opt6.setBackgroundResource(R.drawable.select_box);
+                                                            opt1.setOnClickListener(new View.OnClickListener() {
+                                                                @Override
+                                                                public void onClick(View v) {
+                                                                    opt1.setBackgroundResource(R.drawable.box_shadow);
+                                                                    opt2.setBackgroundResource(R.drawable.select_box);
+                                                                    opt3.setBackgroundResource(R.drawable.select_box);
+                                                                    opt4.setBackgroundResource(R.drawable.select_box);
+                                                                    opt5.setBackgroundResource(R.drawable.select_box);
+                                                                    opt6.setBackgroundResource(R.drawable.select_box);
 
-                                                                choseBox = "Heure d'arrivée";
-                                                            }
-                                                        });
-                                                        opt2.setOnClickListener(new View.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(View v) {
-                                                                opt1.setBackgroundResource(R.drawable.select_box);
-                                                                opt2.setBackgroundResource(R.drawable.box_shadow);
-                                                                opt3.setBackgroundResource(R.drawable.select_box);
-                                                                opt4.setBackgroundResource(R.drawable.select_box);
-                                                                opt5.setBackgroundResource(R.drawable.select_box);
-                                                                opt6.setBackgroundResource(R.drawable.select_box);
-
-                                                                choseBox = "Service";
-                                                            }
-                                                        });
-                                                        opt3.setOnClickListener(new View.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(View v) {
-                                                                opt1.setBackgroundResource(R.drawable.select_box);
-                                                                opt2.setBackgroundResource(R.drawable.select_box);
-                                                                opt3.setBackgroundResource(R.drawable.box_shadow);
-                                                                opt4.setBackgroundResource(R.drawable.select_box);
-                                                                opt5.setBackgroundResource(R.drawable.select_box);
-                                                                opt6.setBackgroundResource(R.drawable.select_box);
-
-                                                                choseBox = "Etat de la voiture";
-                                                            }
-                                                        });
-                                                        opt4.setOnClickListener(new View.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(View v) {
-                                                                opt1.setBackgroundResource(R.drawable.select_box);
-                                                                opt2.setBackgroundResource(R.drawable.select_box);
-                                                                opt3.setBackgroundResource(R.drawable.select_box);
-                                                                opt4.setBackgroundResource(R.drawable.box_shadow);
-                                                                opt5.setBackgroundResource(R.drawable.select_box);
-                                                                opt6.setBackgroundResource(R.drawable.select_box);
-                                                                choseBox = "Conduite";
-                                                            }
-                                                        });
-                                                        opt5.setOnClickListener(new View.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(View v) {
-                                                                opt1.setBackgroundResource(R.drawable.select_box);
-                                                                opt2.setBackgroundResource(R.drawable.select_box);
-                                                                opt3.setBackgroundResource(R.drawable.select_box);
-                                                                opt4.setBackgroundResource(R.drawable.select_box);
-                                                                opt5.setBackgroundResource(R.drawable.box_shadow);
-                                                                opt6.setBackgroundResource(R.drawable.select_box);
-                                                                choseBox = "Itinéraire";
-                                                            }
-                                                        });
-                                                        opt6.setOnClickListener(new View.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(View v) {
-                                                                opt1.setBackgroundResource(R.drawable.select_box);
-                                                                opt2.setBackgroundResource(R.drawable.select_box);
-                                                                opt3.setBackgroundResource(R.drawable.select_box);
-                                                                opt4.setBackgroundResource(R.drawable.select_box);
-                                                                opt5.setBackgroundResource(R.drawable.select_box);
-                                                                opt6.setBackgroundResource(R.drawable.box_shadow);
-                                                                choseBox = "Autre";
-                                                            }
-                                                        });
-
-
-                                                        ImageButton nextBtn = newDialog.findViewById(R.id.imageButton3);
-
-
-                                                        newDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                                                            @Override
-                                                            public void onDismiss(DialogInterface dialog) {
-                                                                if (ContextCompat.checkSelfPermission(MapsActivity.this,
-                                                                        Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                                                                    ActivityCompat.requestPermissions(MapsActivity.this,
-                                                                            new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 10);
-                                                                } else {
-                                                                    showVoiceDialog();
+                                                                    choseBox = "Heure d'arrivée";
                                                                 }
-                                                            }
-                                                        });
-                                                        nextBtn.setOnClickListener(new View.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(View v) {
-                                                                if (choseBox != null) {
-                                                                    final String message = messageText.getText().toString();
-                                                                    Map<String, String> data = new HashMap<>();
-                                                                    data.put("complaint", choseBox);
-                                                                    data.put("message", message);
-                                                                    FirebaseDatabase.getInstance().getReference("COURSECOMPLAINT").child(COURSE).setValue(data);
+                                                            });
+                                                            opt2.setOnClickListener(new View.OnClickListener() {
+                                                                @Override
+                                                                public void onClick(View v) {
+                                                                    opt1.setBackgroundResource(R.drawable.select_box);
+                                                                    opt2.setBackgroundResource(R.drawable.box_shadow);
+                                                                    opt3.setBackgroundResource(R.drawable.select_box);
+                                                                    opt4.setBackgroundResource(R.drawable.select_box);
+                                                                    opt5.setBackgroundResource(R.drawable.select_box);
+                                                                    opt6.setBackgroundResource(R.drawable.select_box);
+
+                                                                    choseBox = "Service";
                                                                 }
-                                                                newDialog.dismiss();
-                                                            }
-                                                        });
+                                                            });
+                                                            opt3.setOnClickListener(new View.OnClickListener() {
+                                                                @Override
+                                                                public void onClick(View v) {
+                                                                    opt1.setBackgroundResource(R.drawable.select_box);
+                                                                    opt2.setBackgroundResource(R.drawable.select_box);
+                                                                    opt3.setBackgroundResource(R.drawable.box_shadow);
+                                                                    opt4.setBackgroundResource(R.drawable.select_box);
+                                                                    opt5.setBackgroundResource(R.drawable.select_box);
+                                                                    opt6.setBackgroundResource(R.drawable.select_box);
 
-                                                        newDialog.findViewById(R.id.body).getLayoutParams().width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) (dpWidth), context.getResources().getDisplayMetrics());
+                                                                    choseBox = "Etat de la voiture";
+                                                                }
+                                                            });
+                                                            opt4.setOnClickListener(new View.OnClickListener() {
+                                                                @Override
+                                                                public void onClick(View v) {
+                                                                    opt1.setBackgroundResource(R.drawable.select_box);
+                                                                    opt2.setBackgroundResource(R.drawable.select_box);
+                                                                    opt3.setBackgroundResource(R.drawable.select_box);
+                                                                    opt4.setBackgroundResource(R.drawable.box_shadow);
+                                                                    opt5.setBackgroundResource(R.drawable.select_box);
+                                                                    opt6.setBackgroundResource(R.drawable.select_box);
+                                                                    choseBox = "Conduite";
+                                                                }
+                                                            });
+                                                            opt5.setOnClickListener(new View.OnClickListener() {
+                                                                @Override
+                                                                public void onClick(View v) {
+                                                                    opt1.setBackgroundResource(R.drawable.select_box);
+                                                                    opt2.setBackgroundResource(R.drawable.select_box);
+                                                                    opt3.setBackgroundResource(R.drawable.select_box);
+                                                                    opt4.setBackgroundResource(R.drawable.select_box);
+                                                                    opt5.setBackgroundResource(R.drawable.box_shadow);
+                                                                    opt6.setBackgroundResource(R.drawable.select_box);
+                                                                    choseBox = "Itinéraire";
+                                                                }
+                                                            });
+                                                            opt6.setOnClickListener(new View.OnClickListener() {
+                                                                @Override
+                                                                public void onClick(View v) {
+                                                                    opt1.setBackgroundResource(R.drawable.select_box);
+                                                                    opt2.setBackgroundResource(R.drawable.select_box);
+                                                                    opt3.setBackgroundResource(R.drawable.select_box);
+                                                                    opt4.setBackgroundResource(R.drawable.select_box);
+                                                                    opt5.setBackgroundResource(R.drawable.select_box);
+                                                                    opt6.setBackgroundResource(R.drawable.box_shadow);
+                                                                    choseBox = "Autre";
+                                                                }
+                                                            });
 
-                                                        WindowManager.LayoutParams lp = newDialog.getWindow().getAttributes();
-                                                        lp.dimAmount = 0.5f;
-                                                        newDialog.getWindow().setAttributes(lp);
-                                                        newDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                                                        newDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-                                                        newDialog.show();
-                                                    } catch (Exception e) {
-                                                        e.printStackTrace();
+
+                                                            ImageButton nextBtn = newDialog.findViewById(R.id.imageButton3);
+
+
+                                                            newDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                                                                @Override
+                                                                public void onDismiss(DialogInterface dialog) {
+                                                                    if (ContextCompat.checkSelfPermission(MapsActivity.this,
+                                                                            Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                                                                        ActivityCompat.requestPermissions(MapsActivity.this,
+                                                                                new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 10);
+                                                                    } else {
+                                                                        showVoiceDialog();
+                                                                    }
+                                                                }
+                                                            });
+                                                            nextBtn.setOnClickListener(new View.OnClickListener() {
+                                                                @Override
+                                                                public void onClick(View v) {
+                                                                    if (choseBox != null) {
+                                                                        final String message = messageText.getText().toString();
+                                                                        Map<String, String> data = new HashMap<>();
+                                                                        data.put("complaint", choseBox);
+                                                                        data.put("message", message);
+                                                                        FirebaseDatabase.getInstance().getReference("COURSECOMPLAINT").child(COURSE).setValue(data);
+                                                                    }
+                                                                    newDialog.dismiss();
+                                                                }
+                                                            });
+
+                                                            newDialog.findViewById(R.id.body).getLayoutParams().width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) (dpWidth), context.getResources().getDisplayMetrics());
+
+                                                            WindowManager.LayoutParams lp = newDialog.getWindow().getAttributes();
+                                                            lp.dimAmount = 0.5f;
+                                                            newDialog.getWindow().setAttributes(lp);
+                                                            newDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                                                            newDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+                                                            newDialog.show();
+                                                        } catch (Exception e) {
+                                                            e.printStackTrace();
+                                                        }
                                                     }
                                                 }
+                                            }catch (Exception e){
+                                                e.printStackTrace();
                                             }
                                         }
                                     });
@@ -1763,7 +1775,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     dialog.show();
 
                                     dialog.findViewById(R.id.body).getLayoutParams().width = (int)
-                                            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) (dpWidth), context.getResources().getDisplayMetrics());
+                                            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                                                    (int) (dpWidth), context.getResources().getDisplayMetrics());
 
 
                                     WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
@@ -1771,15 +1784,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     dialog.getWindow().setAttributes(lp);
                                     dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
                                     dialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-
-                            /*    String price = dataSnapshott.child("price").getValue(String.class);
-                                Intent finishedCour²se = new Intent(MainActivity.this, finishedCourse.class);
-                                finishedCourse.putExtra("price", price+" MAD");
-                                finishedCourse.putExtra("courseID", dataSnapshot.getValue(String.class));
-                                finishedCourse.putExtra("driverID", dataSnapshott.child("driver").getValue(String.class));
-
-                                startActivity(finishedCourse);
-*/
                                 }
 
                                 @Override
@@ -1856,11 +1860,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
         myAudioRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
         myAudioRecorder.setOutputFile(outputeFile);
-//        if (ContextCompat.checkSelfPermission(MapsActivity.this,
-//                Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-//            ActivityCompat.requestPermissions(MapsActivity.this,
-//                    new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 10);
-//        } else {
 
         recordButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -1972,6 +1971,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     public void onClick(View v) {
                         pauseAudio.setVisibility(View.GONE);
                         playAudio.setVisibility(View.VISIBLE);
+                        if (mediaPlayer.isPlaying())
                         mediaPlayer.pause();
                         playAudio.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -2279,7 +2279,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                }
+                } else Toast.makeText(getApplicationContext(), getString(R.string.inviteText), Toast.LENGTH_LONG).show();
             }
         });
 
@@ -3002,10 +3002,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void lookForAddress() {
-        //searchEditText.clearFocus();
-        //searchDestEditText.clearFocus();
-        //hideKeyboard(MapsActivity.this);
-        if ((searchEditText.getText().toString().length() == 0 && orderDriverState == 0) || (searchDestEditText.getText().toString().length() == 0 && orderDriverState == 1)) {
+        if ((searchEditText.getText().toString().length() == 0 && orderDriverState == 0) ||
+                (searchDestEditText.getText().toString().length() == 0 && orderDriverState == 1)) {
             findViewById(R.id.imageView111).setVisibility(View.VISIBLE);
             showSearchAddressStartUI();
             return;
@@ -3222,6 +3220,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public static void showSearchAddressStartUI() {
+
+        X.setVisibility(View.VISIBLE);
         menuButton.setVisibility(View.VISIBLE);
         state = 0;
         placeDataList.clear();
@@ -4281,19 +4281,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             super.onBackPressed();
             return;
         }
+        if (courseScreenIsOn){
+            rideCancelDialog();
+        } else {
 
-        if (state == 1 || state == -1) {
-            state = 0;
-            hideSelectDestUI();
-            return;
+            if (state == 1 || state == -1) {
+                state = 0;
+                hideSelectDestUI();
+                return;
+            }
+
+            if (state == 2) {
+                state = 1;
+                cancelCommandLayout();
+                return;
+            }
         }
 
-        if (state == 2) {
-            state = 1;
-            cancelCommandLayout();
-            return;
-        }
-        if (state != 1 && state != 2) {
+
+        if (state != 1 && state != 2 && !courseScreenIsOn) {
             this.doubleBackToExitPressedOnce = true;
             Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
 
