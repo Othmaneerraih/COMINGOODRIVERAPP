@@ -7,11 +7,15 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
@@ -22,12 +26,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Interpolator;
+import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
 
+import com.firebase.geofire.GeoLocation;
+import com.firebase.geofire.GeoQuery;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
@@ -42,6 +50,7 @@ import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -84,6 +93,9 @@ public class FevoriteLocationActivity extends AppCompatActivity
     private String febPlaceAddress = "";
     private PlaceAutocompleteFragment autocompleteFragment;
     private ImageButton positionButton;
+    private LatLng searchLatLng;
+
+    private GeoQuery geoQuery;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,7 +140,7 @@ public class FevoriteLocationActivity extends AppCompatActivity
         positionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (userLatLng != null) {
+                if (searchLatLng != null) {
                     getLastLocation();
                 }
             }
@@ -152,6 +164,7 @@ public class FevoriteLocationActivity extends AppCompatActivity
     int lastImageHeight;
     int lastImageWidth;
     int inSampleSize;
+
     public Bitmap scaleBitmap(int reqWidth, int reqHeight, int resId) {
         // Raw height and width of image
 
@@ -191,11 +204,11 @@ public class FevoriteLocationActivity extends AppCompatActivity
         bOptions.inJustDecodeBounds = false;
         return BitmapFactory.decodeResource(getResources(), resId, bOptions);
     }
+
     @Override
     public void onPause() {
         super.onPause();
 
-        //stop location updates when Activity is no longer active
         if (mGoogleApiClient != null) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }
@@ -204,7 +217,9 @@ public class FevoriteLocationActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
-        mGoogleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+//        mGoogleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        mGoogleMap.getUiSettings().setRotateGesturesEnabled(false);
+        mGoogleMap.setBuildingsEnabled(false);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -215,14 +230,91 @@ public class FevoriteLocationActivity extends AppCompatActivity
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
             return;
+        } else {
+            mGoogleMap.setMyLocationEnabled(true);
+            mGoogleMap.getUiSettings().setMyLocationButtonEnabled(false);
+            getLastLocation();
         }
-        mGoogleMap.setMyLocationEnabled(true);
-        mGoogleMap.getUiSettings().setMyLocationButtonEnabled(false);
-        getLastLocation();
 
+
+
+        mGoogleMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+            @Override
+            public void onMapLoaded() {
+                searchEt.setText(getCompleteAddressString(getApplicationContext(), searchLatLng.latitude, searchLatLng.longitude));
+            }
+        });
+
+//        animateMarker(searchLatLng, false);
     }
 
-    private LatLng userLatLng;
+    MarkerOptions markerOptions;
+
+    public void animateMarker( final LatLng toPosition,
+                              final boolean hideMarker) {
+        final Handler handler = new Handler();
+        final long start = SystemClock.uptimeMillis();
+        Projection proj = mGoogleMap.getProjection();
+        int height = 150;
+        int width = 80;
+        BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.depart_pin);
+        Bitmap b = bitmapdraw.getBitmap();
+        Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
+
+        markerOptions = new MarkerOptions().position(searchLatLng)
+                .icon(BitmapDescriptorFactory.fromBitmap(smallMarker));
+        Point startPoint = proj.toScreenLocation(markerOptions.getPosition());
+        final LatLng startLatLng = proj.fromScreenLocation(startPoint);
+        final long duration = 500;
+
+        final Interpolator interpolator = new LinearInterpolator();
+
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                long elapsed = SystemClock.uptimeMillis() - start;
+                float t = interpolator.getInterpolation((float) elapsed
+                        / duration);
+                double lng = t * toPosition.longitude + (1 - t)
+                        * startLatLng.longitude;
+                double lat = t * toPosition.latitude + (1 - t)
+                        * startLatLng.latitude;
+                mGoogleMap.addMarker(markerOptions).setPosition(new LatLng(lat, lng));
+
+                if (t < 1.0) {
+                    // Post again 16ms later.
+                    handler.postDelayed(this, 16);
+                } else {
+                    if (hideMarker) {
+                        mGoogleMap.addMarker(markerOptions).setVisible(false);
+                    } else {
+                        mGoogleMap.addMarker(markerOptions).setVisible(true);
+                    }
+                }
+            }
+        });
+    }
+
+    private class ReverseGeocodingTask extends AsyncTask<LatLng, Void, String> {
+        Context mContext;
+
+        public ReverseGeocodingTask(Context context) {
+            super();
+            mContext = context;
+        }
+
+        // Finding address using reverse geocoding
+        @Override
+        protected String doInBackground(LatLng... params) {
+            return getCompleteAddressString(getApplicationContext(), params[0].latitude, params[0].longitude);
+        }
+
+        @Override
+        protected void onPostExecute(String addressText) {
+            searchEt.setText(addressText);
+        }
+    }
+
     public void getLastLocation() {
         // Get last known recent location using new Google Play Services SDK (v11+)
         FusedLocationProviderClient locationClient = getFusedLocationProviderClient(this);
@@ -234,8 +326,8 @@ public class FevoriteLocationActivity extends AppCompatActivity
                         public void onSuccess(Location location) {
                             // GPS location can be null if GPS is switched off
                             if (location != null) {
-                                userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-                                goToLocation(getApplicationContext(), userLatLng.latitude, userLatLng.longitude, null);
+                                searchLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                                goToLocation(getApplicationContext(), searchLatLng.latitude, searchLatLng.longitude, null);
                             }
                         }
                     })
@@ -272,12 +364,23 @@ public class FevoriteLocationActivity extends AppCompatActivity
     }
 
     public void goToLocation(Context context, Double lat, Double lng, place rPlace) {
+        mGoogleMap.clear();
+        int height = 150;
+        int width = 80;
+        BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.depart_pin);
+        Bitmap b = bitmapdraw.getBitmap();
+        Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
+
+        MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(lat, lng))
+                .icon(BitmapDescriptorFactory.fromBitmap(smallMarker));
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(new LatLng(lat, lng))      // Sets the center of the map to Mountain View
                 .zoom(17)                   // Sets the zoom
                 .build();                   // Creates a CameraPosition from the builder
         mGoogleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         autocompleteFragment.setText(getCompleteAddressString(getApplicationContext(), lat, lng));
+        mGoogleMap.addMarker(markerOptions);
+
     }
 
     private void setAutocompleteFragmentAction() {
