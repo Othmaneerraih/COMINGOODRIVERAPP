@@ -818,26 +818,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                             FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(driverIDT).child("rating").addListenerForSingleValueEvent(new ValueEventListener() {
                                                 @Override
                                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                    int oneStarPerson = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("1").getValue(String.class)));
-                                                    int one = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("1").getValue(String.class)));
-                                                    int twoStarPerson = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("2").getValue(String.class)));
-                                                    int two = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("2").getValue(String.class))) * 2;
-                                                    int threeStarPerson = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("3").getValue(String.class)));
-                                                    int three = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("3").getValue(String.class))) * 3;
-                                                    int fourStarPerson = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("4").getValue(String.class)));
-                                                    int four = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("4").getValue(String.class))) * 4;
-                                                    int fiveStarPerson = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("5").getValue(String.class)));
-                                                    int five = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("5").getValue(String.class))) * 5;
+                                                    if (dataSnapshot.exists()) {
+                                                        int oneStarPerson = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("1").getValue(String.class)));
+                                                        int one = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("1").getValue(String.class)));
+                                                        int twoStarPerson = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("2").getValue(String.class)));
+                                                        int two = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("2").getValue(String.class))) * 2;
+                                                        int threeStarPerson = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("3").getValue(String.class)));
+                                                        int three = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("3").getValue(String.class))) * 3;
+                                                        int fourStarPerson = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("4").getValue(String.class)));
+                                                        int four = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("4").getValue(String.class))) * 4;
+                                                        int fiveStarPerson = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("5").getValue(String.class)));
+                                                        int five = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("5").getValue(String.class))) * 5;
 
-                                                    double totalRating = one + two + three + four + five;
-                                                    double totalRatingPerson = oneStarPerson + twoStarPerson + threeStarPerson + fourStarPerson + fiveStarPerson;
+                                                        double totalRating = one + two + three + four + five;
+                                                        double totalRatingPerson = oneStarPerson + twoStarPerson + threeStarPerson + fourStarPerson + fiveStarPerson;
 
-                                                    double avgRating = totalRating / totalRatingPerson;
-                                                    String avg = String.format("%.2f", avgRating);
-                                                    String newString = avg.replace(",", ".");
-                                                    iv_total_rating_number.setText(newString);
+                                                        double avgRating = totalRating / totalRatingPerson;
+                                                        String avg = String.format("%.2f", avgRating);
+                                                        String newString = avg.replace(",", ".");
+                                                        iv_total_rating_number.setText(newString);
 //                                                    int rating = Integer.parseInt(dataSnapshot.getValue(String.class)) + 1;
 //                                                    FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientId).child("rating").child(Integer.toString(RATE)).setValue("" + rating);
+
+                                                    }
                                                 }
 
                                                 @Override
@@ -2026,7 +2029,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         resources = co.getResources();
 
 
-        promoCode =  findViewById(R.id.promoCode);
+        promoCode = findViewById(R.id.promoCode);
         promoCode.setText("PROMO CODE");
 
         callLayout = findViewById(R.id.callLayout);
@@ -2100,7 +2103,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         image2 = (ImageView) findViewById(R.id.imageView8);
         X = (ImageButton) findViewById(R.id.x);
         positionButton = (ImageButton) findViewById(R.id.my_position);
-        gooBox =  findViewById(R.id.gooBox);
+        gooBox = findViewById(R.id.gooBox);
 
         coverButton = (Button) findViewById(R.id.coverButton);
 
@@ -3974,7 +3977,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //            final int secondsDelay = 15000; // Time To Wait Before Sending Request To The Next Set O Drivers
 
             driverSize = driversKeys.size();
-            Log.e(TAG, "doInBackground: driverKeySize: " + driverSize);
+//            Log.e(TAG, "doInBackground: driverKeySize: " + driverSize);
 
             if (driverSize == 0) {
                 finishedSendReq = true;
@@ -4000,7 +4003,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     //Initialize The First Requests
                     if (counter == 0) {
-//                        Log.e(TAG, "run: if size: "+counter + Step );
+                        Log.e(TAG, "run: if size: "+counter + Step );
                         Log.e(TAG, "run: if driverSize: " + driversKeys.size());
                         driversKeysHold.clear();
                         for (int j = counter; j < (counter + Step) && j < driversKeys.size(); j++) {
@@ -4054,7 +4057,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                             //findViewById(R.id.commander).setVisibility(View.GONE);
                                                             //selectDest.setVisibility(View.GONE);
 
-
+//                                                            callLayout.setVisibility(View.VISIBLE);
                                                         }
                                                     }
 

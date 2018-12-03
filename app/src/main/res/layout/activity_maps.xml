@@ -1496,10 +1496,12 @@
                 <RelativeLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_normal"
                     android:background="@drawable/borderbox_round"
                     android:gravity="center"
                     android:paddingLeft="10dp"
                     app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
                     <com.mikhaellopez.circularimageview.CircularImageView
