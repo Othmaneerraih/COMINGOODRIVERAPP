@@ -2153,8 +2153,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     1);
         }
 
-//        callLayout.setVisibility(View.VISIBLE);
-
         sinchClient = Sinch.getSinchClientBuilder()
                 .context(this)
                 .userId(userId)
