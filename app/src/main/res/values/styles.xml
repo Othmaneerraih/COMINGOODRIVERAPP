@@ -8,5 +8,9 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="RatingBar" parent="Theme.AppCompat">
+        <item name="colorControlNormal">@color/color_yellow</item>
+        <item name="colorControlActivated">@color/color_yellow</item>
+    </style>
 
 </resources>

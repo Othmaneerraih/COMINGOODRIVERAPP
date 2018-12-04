@@ -66,7 +66,6 @@ public class FavouritePlaceAdapter  extends RecyclerView.Adapter<FavouritePlaceA
 
         holder.address.setText(newPlace.getAddress());
 
-
         holder.image.setImageResource(newPlace.getImage());
         holder.addBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,6 +73,7 @@ public class FavouritePlaceAdapter  extends RecyclerView.Adapter<FavouritePlaceA
                 Intent intent = new Intent(context, FevoriteLocationActivity.class);
                 intent.putExtra("position", position);
                 intent.putExtra("userId", userId);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
             }
         });

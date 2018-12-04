@@ -13,9 +13,11 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -40,7 +42,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.ArrayMap;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
@@ -61,10 +62,12 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RatingBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.comingoo.user.comingoo.Interfaces.PickLocation;
 import com.comingoo.user.comingoo.adapters.FavouritePlaceAdapter;
 import com.comingoo.user.comingoo.adapters.MyPlaceAdapter;
 
@@ -140,11 +143,10 @@ import java.util.Map;
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import pl.droidsonroids.gif.GifImageButton;
 
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, PickLocation {
     private static final String TAG = "MapsActivity";
     static GoogleMap mMap;
     private static EditText searchEditText;
@@ -217,6 +219,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     static ImageButton positionButton;
 
     private ImageButton cancelRequest;
+    private RippleBackground rippleBackground;
 
     private Button confirmDest;
 
@@ -258,13 +261,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ImageButton carButton;
     private ImageButton selectCity;
 
-    private ConstraintLayout gooBox;
+    private RelativeLayout gooBox;
 
     private ConstraintLayout gooVoid;
 
     private Button passer;
-
-//    private ImageButton callButton;
 
     ////////////////////////////////////////////
 
@@ -281,6 +282,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     String language;
 
     private ConstraintLayout callLayout;
+    private RatingBar rbDriverRating;
     private TextView driverNameL, iv_total_ride_number, iv_car_number, iv_total_rating_number;
     //    private CircleImageView driverImageL;
     private CircularImageView driverImageL;
@@ -357,25 +359,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         deleviryButton.setImageBitmap(scaleBitmap((int) (dpWidth / 2), 55, R.drawable.delivery_icon));
         carButton.setImageBitmap(scaleBitmap((int) (dpWidth / 2), 55, R.drawable.car_icon));
         selectCity.setImageBitmap(scaleBitmap(10, 15, R.drawable.city_arrow));
-        destArrow.setImageBitmap(scaleBitmap(26, 200, R.drawable.arrow));
+        destArrow.setImageBitmap(scaleBitmap(26, 190, R.drawable.arrow));
         menuButton.setImageBitmap(scaleBitmap(45, 45, R.drawable.home_icon));
         positionButton.setImageBitmap(scaleBitmap(40, 37, R.drawable.my_position_icon));
-//        X.setImageBitmap(scaleBitmap(30, 35, R.drawable.cancel));
-//        searchEditText.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) (dpWidth - 30), (int )((dpWidth - 30) / 3.75), R.drawable.search_icon)));
 
         //citySelectLayout.setBackground(new BitmapDrawable(getResources(), scaleBitmap(115, 29, R.drawable.)));
         //gooButton.setImageBitmap(scaleBitmap(20, 20, R.drawable.goo));
-        gooBox.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) (dpWidth - 30), (int) ((dpWidth - 30) / 3.75), R.drawable.footer_min)));
+//        gooBox.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) (dpWidth - 30), (int) ((dpWidth - 30) / 3.75), R.drawable.footer_min)));
         shadowBg.setImageBitmap(scaleBitmap((int) dpWidth, 80, R.drawable.shadow_bottom));
 
 
-        gooBox.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) ((dpWidth - 30) / 3.75), context.getResources().getDisplayMetrics());
-
-
+//        gooBox.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) ((dpWidth - 30) / 3.75), context.getResources().getDisplayMetrics());
     }
 
     private String userName;
     private Call call;
+
+    @Override
+    public void pickedLocation(place place) {
+        hideSearchAddressStartUI();
+    }
 
     private class CheckUserTask extends AsyncTask<String, Integer, String> {
         SharedPreferences prefs;
@@ -404,7 +407,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (userId == null) {
                 userId = "123";
             }
-
 
             FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).addValueEventListener(new ValueEventListener() {
                 @Override
@@ -500,7 +502,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    AudioManager audioManager;
+    //    AudioManager audioManager;
     boolean isLoud = false;
     MediaPlayer mp;
     TextView callState, caller_name, tv_name_voip_one;
@@ -552,7 +554,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         iv_loud.setVisibility(View.GONE);
 
 
-        audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+        final AudioManager audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
         audioManager.setMode(AudioManager.MODE_IN_CALL);
         audioManager.setMicrophoneMute(false);
         audioManager.setSpeakerphoneOn(false);
@@ -561,11 +563,74 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mp.setLooping(false);
         mp.start();
 
+        call.addCallListener(new CallListener() {
+            @Override
+            public void onCallEnded(Call endedCall) {
+                //call ended by either party
+                dialog.findViewById(R.id.incoming_call_view).setVisibility(View.GONE);
+                setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
 
-        final int origionalVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
+                mp.stop();
+                iv_mute.setVisibility(View.GONE);
+                iv_loud.setVisibility(View.GONE);
+                caller_name.setVisibility(View.GONE);
+                callState.setText("");
+                mHandler.removeCallbacks(mUpdate);// we need to remove our updates if the activity isn't focused(or even destroyed) or we could get in trouble
+                dialog.dismiss();
+            }
 
-        switch (audioManager.getRingerMode()) {
+            @Override
+            public void onCallEstablished(final Call establishedCall) {
+                //incoming call was picked up
+                dialog.findViewById(R.id.incoming_call_view).setVisibility(View.VISIBLE);
+                setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
+                callState.setText("connected");
+                iv_mute.setVisibility(View.VISIBLE);
+                iv_loud.setVisibility(View.VISIBLE);
+
+                iv_recv_call_voip_one.setVisibility(View.GONE);
+
+                params.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                params.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                iv_cancel_call_voip_one.setLayoutParams(params);
+                mp.stop();
+
+//                    Calendar c = Calendar.getInstance();
+                mHour = 00;//c.get(Calendar.HOUR_OF_DAY);
+                mMinute = 00;//c.get(Calendar.MINUTE);
+                caller_name.setText(mHour + ":" + mMinute);
+                mHandler.postDelayed(mUpdate, 1000); // 60000 a minute
+            }
+
+            @Override
+            public void onCallProgressing(Call progressingCall) {
+                //call is ringing
+                dialog.findViewById(R.id.incoming_call_view).setVisibility(View.VISIBLE);
+                caller_name.setText(progressingCall.getDetails().getDuration() + "");
+                caller_name.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+                iv_mute.setVisibility(View.VISIBLE);
+                iv_loud.setVisibility(View.VISIBLE);
+                caller_name.setTypeface(null, Typeface.BOLD);
+                callState.setText("ringing");
+                iv_recv_call_voip_one.setVisibility(View.GONE);
+                params.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                params.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                iv_cancel_call_voip_one.setLayoutParams(params);
+                mp.stop();
+            }
+
+            @Override
+            public void onShouldSendPushNotification(Call call, List<PushPair> pushPairs) {
+                //don't worry about this right now
+            }
+        });
+
+        final AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+
+        final int origionalVolume = am.getStreamVolume(AudioManager.STREAM_MUSIC);
+        am.setStreamVolume(AudioManager.STREAM_MUSIC, am.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
+
+        switch (am.getRingerMode()) {
             case 0:
 
                 mp.start();
@@ -583,8 +648,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
-                mp.stop();
-                mp.release();
+                if (mp.isPlaying()) {
+                    mp.stop();
+                    mp.release();
+                }
                 audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, origionalVolume, 0);
             }
         });
@@ -592,7 +659,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(MapsActivity.this,
                     new String[]{android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.READ_PHONE_STATE},
-                    1);
+                    10);
         }
 
         caller_name.setVisibility(View.VISIBLE);
@@ -609,7 +676,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View v) {
                 call.hangup();
-                mp.stop();
+                if (mp.isPlaying()) mp.stop();
                 dialog.dismiss();
             }
         });
@@ -619,75 +686,75 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         iv_cancel_call_voip_one.setLayoutParams(params);
 
         iv_recv_call_voip_one.setOnClickListener(new View.OnClickListener() {
-            class SinchCallListener implements CallListener {
-                @Override
-                public void onCallEnded(Call endedCall) {
-                    //call ended by either party
-                    dialog.findViewById(R.id.incoming_call_view).setVisibility(View.GONE);
-                    setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
-
-                    mp.stop();
-                    iv_mute.setVisibility(View.GONE);
-                    iv_loud.setVisibility(View.GONE);
-                    caller_name.setVisibility(View.GONE);
-                    callState.setText("");
-                    mHandler.removeCallbacks(mUpdate);// we need to remove our updates if the activity isn't focused(or even destroyed) or we could get in trouble
-                    dialog.dismiss();
-                }
-
-                @Override
-                public void onCallEstablished(final Call establishedCall) {
-                    //incoming call was picked up
-                    dialog.findViewById(R.id.incoming_call_view).setVisibility(View.VISIBLE);
-                    setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
-                    callState.setText("connected");
-                    iv_mute.setVisibility(View.VISIBLE);
-                    iv_loud.setVisibility(View.VISIBLE);
-
-                    iv_recv_call_voip_one.setVisibility(View.GONE);
-
-                    params.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-                    params.addRule(RelativeLayout.CENTER_HORIZONTAL);
-                    iv_cancel_call_voip_one.setLayoutParams(params);
-                    mp.stop();
-
-//                    Calendar c = Calendar.getInstance();
-                    mHour = 00;//c.get(Calendar.HOUR_OF_DAY);
-                    mMinute = 00;//c.get(Calendar.MINUTE);
-                    caller_name.setText(mHour + ":" + mMinute);
-                    mHandler.postDelayed(mUpdate, 1000); // 60000 a minute
-                }
-
-                @Override
-                public void onCallProgressing(Call progressingCall) {
-                    //call is ringing
-                    dialog.findViewById(R.id.incoming_call_view).setVisibility(View.VISIBLE);
-                    caller_name.setText(progressingCall.getDetails().getDuration() + "");
-                    caller_name.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-                    iv_mute.setVisibility(View.VISIBLE);
-                    iv_loud.setVisibility(View.VISIBLE);
-                    caller_name.setTypeface(null, Typeface.BOLD);
-                    callState.setText("ringing");
-                    iv_recv_call_voip_one.setVisibility(View.GONE);
-                    params.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-                    params.addRule(RelativeLayout.CENTER_HORIZONTAL);
-                    iv_cancel_call_voip_one.setLayoutParams(params);
-                    mp.stop();
-                }
-
-                @Override
-                public void onShouldSendPushNotification(Call call, List<PushPair> pushPairs) {
-                    //don't worry about this right now
-                }
-            }
+//            class SinchCallListener implements CallListener {
+//                @Override
+//                public void onCallEnded(Call endedCall) {
+//                    //call ended by either party
+//                    dialog.findViewById(R.id.incoming_call_view).setVisibility(View.GONE);
+//                    setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
+//
+//                    mp.stop();
+//                    iv_mute.setVisibility(View.GONE);
+//                    iv_loud.setVisibility(View.GONE);
+//                    caller_name.setVisibility(View.GONE);
+//                    callState.setText("");
+//                    mHandler.removeCallbacks(mUpdate);// we need to remove our updates if the activity isn't focused(or even destroyed) or we could get in trouble
+//                    dialog.dismiss();
+//                }
+//
+//                @Override
+//                public void onCallEstablished(final Call establishedCall) {
+//                    //incoming call was picked up
+//                    dialog.findViewById(R.id.incoming_call_view).setVisibility(View.VISIBLE);
+//                    setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
+//                    callState.setText("connected");
+//                    iv_mute.setVisibility(View.VISIBLE);
+//                    iv_loud.setVisibility(View.VISIBLE);
+//
+//                    iv_recv_call_voip_one.setVisibility(View.GONE);
+//
+//                    params.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+//                    params.addRule(RelativeLayout.CENTER_HORIZONTAL);
+//                    iv_cancel_call_voip_one.setLayoutParams(params);
+//                    mp.stop();
+//
+////                    Calendar c = Calendar.getInstance();
+//                    mHour = 00;//c.get(Calendar.HOUR_OF_DAY);
+//                    mMinute = 00;//c.get(Calendar.MINUTE);
+//                    caller_name.setText(mHour + ":" + mMinute);
+//                    mHandler.postDelayed(mUpdate, 1000); // 60000 a minute
+//                }
+//
+//                @Override
+//                public void onCallProgressing(Call progressingCall) {
+//                    //call is ringing
+//                    dialog.findViewById(R.id.incoming_call_view).setVisibility(View.VISIBLE);
+//                    caller_name.setText(progressingCall.getDetails().getDuration() + "");
+//                    caller_name.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+//                    iv_mute.setVisibility(View.VISIBLE);
+//                    iv_loud.setVisibility(View.VISIBLE);
+//                    caller_name.setTypeface(null, Typeface.BOLD);
+//                    callState.setText("ringing");
+//                    iv_recv_call_voip_one.setVisibility(View.GONE);
+//                    params.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+//                    params.addRule(RelativeLayout.CENTER_HORIZONTAL);
+//                    iv_cancel_call_voip_one.setLayoutParams(params);
+//                    mp.stop();
+//                }
+//
+//                @Override
+//                public void onShouldSendPushNotification(Call call, List<PushPair> pushPairs) {
+//                    //don't worry about this right now
+//                }
+//            }
 
 
             @Override
             public void onClick(View v) {
                 if (call != null) {
-                    mp.stop();
+                    if (mp.isPlaying()) mp.stop();
                     call.answer();
-                    call.addCallListener(new SinchCallListener());
+//                    call.addCallListener(new SinchCallListener());
                     audioManager.setMicrophoneMute(false);
                     audioManager.setSpeakerphoneOn(false);
                 }
@@ -719,7 +786,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         iv_mute.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mute();
+                mute(audioManager);
             }
         });
 
@@ -729,8 +796,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         dialog.show();
     }
 
-    private void mute() {
-        if (audioManager.isMicrophoneMute() == false) {
+    private void mute(AudioManager audioManager) {
+        if (!audioManager.isMicrophoneMute()) {
             audioManager.setMicrophoneMute(true);
 
             iv_mute.setImageResource(R.drawable.clicked_mute);
@@ -823,26 +890,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                             FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(driverIDT).child("rating").addListenerForSingleValueEvent(new ValueEventListener() {
                                                 @Override
                                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                    int oneStarPerson = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("1").getValue(String.class)));
-                                                    int one = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("1").getValue(String.class)));
-                                                    int twoStarPerson = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("2").getValue(String.class)));
-                                                    int two = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("2").getValue(String.class))) * 2;
-                                                    int threeStarPerson = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("3").getValue(String.class)));
-                                                    int three = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("3").getValue(String.class))) * 3;
-                                                    int fourStarPerson = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("4").getValue(String.class)));
-                                                    int four = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("4").getValue(String.class))) * 4;
-                                                    int fiveStarPerson = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("5").getValue(String.class)));
-                                                    int five = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("5").getValue(String.class))) * 5;
+                                                    if (dataSnapshot.exists()) {
+                                                        int oneStarPerson = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("1").getValue(String.class)));
+                                                        int one = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("1").getValue(String.class)));
+                                                        int twoStarPerson = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("2").getValue(String.class)));
+                                                        int two = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("2").getValue(String.class))) * 2;
+                                                        int threeStarPerson = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("3").getValue(String.class)));
+                                                        int three = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("3").getValue(String.class))) * 3;
+                                                        int fourStarPerson = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("4").getValue(String.class)));
+                                                        int four = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("4").getValue(String.class))) * 4;
+                                                        int fiveStarPerson = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("5").getValue(String.class)));
+                                                        int five = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("5").getValue(String.class))) * 5;
 
-                                                    double totalRating = one + two + three + four + five;
-                                                    double totalRatingPerson = oneStarPerson + twoStarPerson + threeStarPerson + fourStarPerson + fiveStarPerson;
+                                                        double totalRating = one + two + three + four + five;
+                                                        double totalRatingPerson = oneStarPerson + twoStarPerson + threeStarPerson + fourStarPerson + fiveStarPerson;
 
-                                                    double avgRating = totalRating / totalRatingPerson;
-                                                    String avg = String.format("%.2f", avgRating);
-                                                    String newString = avg.replace(",", ".");
-                                                    iv_total_rating_number.setText(newString);
+                                                        double avgRating = totalRating / totalRatingPerson;
+                                                        String avg = String.format("%.2f", avgRating);
+                                                        String newString = avg.replace(",", ".");
+                                                        iv_total_rating_number.setText(newString);
 //                                                    int rating = Integer.parseInt(dataSnapshot.getValue(String.class)) + 1;
 //                                                    FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientId).child("rating").child(Integer.toString(RATE)).setValue("" + rating);
+
+                                                    }
                                                 }
 
                                                 @Override
@@ -936,11 +1006,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    boolean gotValue = false;
     private boolean courseScreenStageZero = false;
     private boolean courseScreenStageOne = false;
     private Marker driverPosMarker;
     private Marker startPositionMarker;
     private boolean blockingTimeOver = true;
+    String driver = "";
 
     private void handleCourseCallBack() {
         if (statusT.equals("4")) {
@@ -951,6 +1023,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 courseScreenStageZero = false;
                 courseScreenStageOne = false;
                 findViewById(R.id.pin).setVisibility(View.VISIBLE);
+                state = 0;
                 cancelCommandLayout();
                 hideSelectDestUI();
                 coverButton.setClickable(true);
@@ -974,10 +1047,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         destArrow.setVisibility(View.VISIBLE);
+
         if (!courseScreenIsOn) {
             courseScreenIsOn = true;
             mMap.clear();
-
 
             searchEditText.setEnabled(false);
             searchDestEditText.setEnabled(false);
@@ -991,6 +1064,92 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             AnimateConstraint.fadeIn(context, bottomMenu, 500, 0);
             AnimateConstraint.fadeIn(context, selectedOpImage, 500, 0);
             AnimateConstraint.fadeIn(context, callLayout, 500, 0);
+
+            // inserting promo code under course table in firebase
+//            Map<String, Boolean> keyvaluePromoCode = new HashMap<>();
+//            if (userPromoCode.equals(""))
+//            keyvaluePromoCode.put("PROMOCODE", false);
+//            else keyvaluePromoCode.put("PROMOCODE", true);
+
+
+//            if (userPromoCode.equals("")) {
+//                FirebaseDatabase.getInstance().getReference("COURSES").child(driverIDT).addValueEventListener(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                        if (dataSnapshot.exists()) {
+//                            FirebaseDatabase.getInstance().getReference("COURSES").child(driverIDT).child("PROMOCODE").setValue(false);
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                    }
+//                });
+//            } else{
+//                FirebaseDatabase.getInstance().getReference("COURSES").child(driverIDT).addValueEventListener(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                        if (dataSnapshot.exists()){
+//                            FirebaseDatabase.getInstance().getReference("COURSES").child(driverIDT).child("PROMOCODE").setValue(true);
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                    }
+//                });
+//            }
+
+//            FirebaseDatabase.getInstance().getReference("COURSES").addValueEventListener(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                    if (dataSnapshot.exists()) {
+////                        for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
+////                            if (!gotValue) {
+////                                gotValue = true;
+////                                driver = childDataSnapshot.getKey();
+//                                if (userPromoCode.equals("")) {
+//                                    FirebaseDatabase.getInstance().getReference("COURSES").child(driverIDT).addValueEventListener(new ValueEventListener() {
+//                                        @Override
+//                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                                            if (dataSnapshot.exists()) {
+//                                                FirebaseDatabase.getInstance().getReference("COURSES").child(driverIDT).child("PROMOCODE").setValue(false);
+//                                            }
+//                                        }
+//
+//                                        @Override
+//                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                                        }
+//                                    });
+//                                } else{
+//                                    FirebaseDatabase.getInstance().getReference("COURSES").child(driverIDT).addValueEventListener(new ValueEventListener() {
+//                                        @Override
+//                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                                            if (dataSnapshot.exists()){
+//                                                FirebaseDatabase.getInstance().getReference("COURSES").child(driverIDT).child("PROMOCODE").setValue(true);
+//                                            }
+//                                        }
+//
+//                                        @Override
+//                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                                        }
+//                                    });
+//                            }
+////                        }
+//                    }
+//                }
+//
+//                @Override
+//                public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                }
+//            });
+
+
             findViewById(R.id.gooContent).setVisibility(View.GONE);
             cancelRequest.setVisibility(View.GONE);
 
@@ -1011,16 +1170,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             }
 
-            if (ContextCompat.checkSelfPermission(MapsActivity.this,
-                    android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED ||
-                    ContextCompat.checkSelfPermission(MapsActivity.this,
-                            android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED ||
+            LayerDrawable stars = (LayerDrawable) rbDriverRating.getProgressDrawable();
+            stars.getDrawable(0).setColorFilter(Color.YELLOW, PorterDuff.Mode.SRC_ATOP);
+
+            if (
+//                    ContextCompat.checkSelfPermission(MapsActivity.this,
+//                    android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED ||
+//                    ContextCompat.checkSelfPermission(MapsActivity.this,
+//                            android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED ||
                     ContextCompat.checkSelfPermission(MapsActivity.this,
                             Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
                 ActivityCompat.requestPermissions(MapsActivity.this,
-                        new String[]{android.Manifest.permission.RECORD_AUDIO,
-                                android.Manifest.permission.READ_PHONE_STATE,
+                        new String[]{
+//                                android.Manifest.permission.RECORD_AUDIO,
+//                                android.Manifest.permission.READ_PHONE_STATE,
                                 Manifest.permission.ACCESS_FINE_LOCATION},
                         1);
             }
@@ -1037,7 +1201,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         if (statusT.equals("0") && !courseScreenStageZero) {
-
             if (!userLevel.equals("2")) {
                 ivCallDriver.setVisibility(View.VISIBLE);
                 ivCallDriver.setOnClickListener(new View.OnClickListener() {
@@ -1148,7 +1311,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             startPositionMarker = mMap.addMarker(new MarkerOptions()
                     .position(startPositionT)
                     .icon(BitmapDescriptorFactory.fromBitmap(bm)));
-
         }
 
         if (statusT.equals("1") && !courseScreenStageOne) {
@@ -1294,7 +1456,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
                 FirebaseDatabase.getInstance().getReference("COURSES").child(courseIDT).child("state").setValue("5");
-                FirebaseDatabase.getInstance().getReference("COURSES").child(courseIDT).removeValue();
+
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        //Do something after 3000ms
+                        FirebaseDatabase.getInstance().getReference("COURSES").child(courseIDT).removeValue();
+                    }
+                }, 3000);
 
                 SharedPreferenceTask preferenceTask = new SharedPreferenceTask(getApplicationContext());
                 int prevCancel = preferenceTask.getCancelNumber();
@@ -1368,427 +1538,431 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // This is run in a background thread
         @Override
         protected String doInBackground(String... params) {
-
-            FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("COURSE").addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.exists()) {
-                        COURSE = dataSnapshot.getValue(String.class);
-                        FirebaseDatabase.getInstance().getReference("CLIENTFINISHEDCOURSES").child(userId).child(dataSnapshot.getValue(String.class)).addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshott) {
-                                callLayout.setVisibility(View.GONE);
-                                voip_view.setVisibility(View.GONE);
-                                final Dialog dialog = new Dialog(context);
-                                dialogDriverId = dataSnapshott.child("driver").getValue(String.class);
-                                dialog.setContentView(R.layout.finished_course);
+            try {
+                FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("COURSE").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            COURSE = dataSnapshot.getValue(String.class);
+                            FirebaseDatabase.getInstance().getReference("CLIENTFINISHEDCOURSES").child(userId).child(dataSnapshot.getValue(String.class)).
+                                    addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshott) {
+                                            callLayout.setVisibility(View.GONE);
+                                            voip_view.setVisibility(View.GONE);
 
 
-                                TextView textView13 = (TextView) dialog.findViewById(R.id.textView13);
-                                TextView textView14 = (TextView) dialog.findViewById(R.id.textView14);
+                                            // finishing promo code
+                                            FirebaseDatabase.getInstance().getReference("clientUSERS").
+                                                    child(userId).child("PROMOCODE").removeValue();
 
 
-                                //Set Texts
-                                textView13.setText(resources.getString(R.string.Montanttotalàpayer));
-                                textView14.setText(resources.getString(R.string.Evaluezvotreéxperience));
 
 
-                                RelativeLayout body = (RelativeLayout) dialog.findViewById(R.id.body);
-                                body.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) dpWidth, (int) dpWidth, R.drawable.finished_bg)));
-
-                                Button dialogButton = (Button) dialog.findViewById(R.id.button);
-                                Button price = (Button) dialog.findViewById(R.id.button3);
-                                price.setText(dataSnapshott.child("price").getValue(String.class) + " MAD");
-
-                                final Button star1 = (Button) dialog.findViewById(R.id.star1);
-                                final Button star2 = (Button) dialog.findViewById(R.id.star2);
-                                final Button star3 = (Button) dialog.findViewById(R.id.star3);
-                                final Button star4 = (Button) dialog.findViewById(R.id.star4);
-                                final Button star5 = (Button) dialog.findViewById(R.id.star5);
-
-                                final ImageButton im1 = (ImageButton) dialog.findViewById(R.id.imageView4);
-                                final ImageButton im2 = (ImageButton) dialog.findViewById(R.id.imageView5);
-                                final ImageButton im3 = (ImageButton) dialog.findViewById(R.id.imageView6);
-                                final ImageButton im4 = (ImageButton) dialog.findViewById(R.id.imageView7);
-                                final ImageButton im5 = (ImageButton) dialog.findViewById(R.id.imageView8);
-
-                                final ImageButton nextButton = (ImageButton) dialog.findViewById(R.id.next);
-
-                                final ImageView imot = (ImageView) dialog.findViewById(R.id.stars_rating);
-
-                                dialog.setCancelable(false);
-                                dialog.setCanceledOnTouchOutside(false);
-
-                                // defaul rate
-                                RATE = 4;
-                                star1.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
-                                star2.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
-                                star3.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
-                                star4.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.selected_star)));
-                                star5.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
-                                imot.setImageBitmap(scaleBitmap(150, 150, R.drawable.four_stars));
+                                            final Dialog dialog = new Dialog(context);
+                                            dialogDriverId = dataSnapshott.child("driver").getValue(String.class);
+                                            dialog.setContentView(R.layout.finished_course);
 
 
-                                im1.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        im1.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.belle_voiture)));
-                                        im2.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.bonne_music_unselected)));
-                                        im3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.exellent_service_unselected)));
-                                        im4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.expert_en_navigation_unselected)));
-                                        im5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.voiture_propre_unselected)));
-                                        tagStatus = "bonneVoirture";
-
-                                    }
-                                });
-                                im2.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        im1.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.belle_voiture)));
-                                        im2.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.bonne_music)));
-                                        im3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.exellent_service_unselected)));
-                                        im4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.expert_en_navigation_unselected)));
-                                        im5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.voiture_propre_unselected)));
-                                        tagStatus = "bonneMusic";
-
-                                    }
-                                });
-                                im3.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        im1.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.belle_voiture)));
-                                        im2.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.bonne_music_unselected)));
-                                        im3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.exellent_service)));
-                                        im4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.expert_en_navigation_unselected)));
-                                        im5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.voiture_propre_unselected)));
-                                        tagStatus = "exellentService";
-                                    }
-                                });
-                                im4.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        im1.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.belle_voiture)));
-                                        im2.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.bonne_music_unselected)));
-                                        im3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.exellent_service_unselected)));
-                                        im4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.expert_en_navigation)));
-                                        im5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.voiture_propre_unselected)));
-                                        tagStatus = "expertNavigation";
-                                    }
-                                });
-                                im5.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        im1.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.belle_voiture)));
-                                        im2.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.bonne_music_unselected)));
-                                        im3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.exellent_service_unselected)));
-                                        im4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.expert_en_navigation_unselected)));
-                                        im5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.voiture_propre)));
-                                        tagStatus = "voiturePropre";
-                                    }
-                                });
+                                            TextView textView13 = (TextView) dialog.findViewById(R.id.textView13);
+                                            TextView textView14 = (TextView) dialog.findViewById(R.id.textView14);
 
 
-//                                star1.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
-//                                star2.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
-//                                star3.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
-//                                star4.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
-//                                star5.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
+                                            //Set Texts
+                                            textView13.setText(resources.getString(R.string.Montanttotalàpayer));
+                                            textView14.setText(resources.getString(R.string.Evaluezvotreéxperience));
 
 
-                                star1.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        RATE = 1;
+                                            RelativeLayout body = (RelativeLayout) dialog.findViewById(R.id.body);
+                                            body.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) dpWidth, (int) dpWidth, R.drawable.finished_bg)));
 
-                                        star1.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.selected_star)));
-                                        star2.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
-                                        star3.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
-                                        star4.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
-                                        star5.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
+                                            Button dialogButton = (Button) dialog.findViewById(R.id.button);
+                                            Button price = (Button) dialog.findViewById(R.id.button3);
+                                            price.setText(dataSnapshott.child("price").getValue(String.class) + " MAD");
 
-                                        imot.setImageBitmap(scaleBitmap(150, 150, R.drawable.one_star));
-                                    }
-                                });
-                                star2.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        RATE = 2;
+                                            final Button star1 = (Button) dialog.findViewById(R.id.star1);
+                                            final Button star2 = (Button) dialog.findViewById(R.id.star2);
+                                            final Button star3 = (Button) dialog.findViewById(R.id.star3);
+                                            final Button star4 = (Button) dialog.findViewById(R.id.star4);
+                                            final Button star5 = (Button) dialog.findViewById(R.id.star5);
 
-                                        star1.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
-                                        star2.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.selected_star)));
-                                        star3.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
-                                        star4.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
-                                        star5.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
+                                            final ImageButton im1 = (ImageButton) dialog.findViewById(R.id.imageView4);
+                                            final ImageButton im2 = (ImageButton) dialog.findViewById(R.id.imageView5);
+                                            final ImageButton im3 = (ImageButton) dialog.findViewById(R.id.imageView6);
+                                            final ImageButton im4 = (ImageButton) dialog.findViewById(R.id.imageView7);
+                                            final ImageButton im5 = (ImageButton) dialog.findViewById(R.id.imageView8);
 
-                                        imot.setImageBitmap(scaleBitmap(150, 150, R.drawable.two_stars));
-                                    }
-                                });
-                                star3.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        RATE = 3;
+                                            final ImageButton nextButton = (ImageButton) dialog.findViewById(R.id.next);
 
-                                        star1.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
-                                        star2.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
-                                        star3.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.selected_star)));
-                                        star4.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
-                                        star5.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
+                                            final ImageView imot = (ImageView) dialog.findViewById(R.id.stars_rating);
 
-                                        imot.setImageBitmap(scaleBitmap(150, 150, R.drawable.three_stars));
-                                    }
-                                });
-                                star4.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        RATE = 4;
+                                            dialog.setCancelable(false);
+                                            dialog.setCanceledOnTouchOutside(false);
 
-                                        star1.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
-                                        star2.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
-                                        star3.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
-                                        star4.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.selected_star)));
-                                        star5.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
-
-                                        imot.setImageBitmap(scaleBitmap(150, 150, R.drawable.four_stars));
-                                    }
-                                });
-
-                                star5.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        RATE = 5;
-                                        star1.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
-                                        star2.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
-                                        star3.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
-                                        star4.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
-                                        star5.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.selected_star)));
-
-                                        imot.setImageBitmap(scaleBitmap(150, 150, R.drawable.five_stars));
-                                    }
-                                });
+                                            // defaul rate
+                                            RATE = 4;
+                                            star1.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
+                                            star2.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
+                                            star3.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
+                                            star4.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.selected_star)));
+                                            star5.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
+                                            imot.setImageBitmap(scaleBitmap(150, 150, R.drawable.four_stars));
 
 
-                                nextButton.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        if (RATE > 0) {
-                                            dialog.dismiss();
-                                            FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(dialogDriverId).child("rating").child(Integer.toString(RATE)).addListenerForSingleValueEvent(new ValueEventListener() {
+                                            im1.setOnClickListener(new View.OnClickListener() {
                                                 @Override
-                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                    int Rating = Integer.parseInt(dataSnapshot.getValue(String.class)) + 1;
-                                                    FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(dialogDriverId).child("rating").child(Integer.toString(RATE)).setValue("" + Rating);
-                                                }
-
-                                                @Override
-                                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                                public void onClick(View v) {
+                                                    im1.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.belle_voiture)));
+                                                    im2.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.bonne_music_unselected)));
+                                                    im3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.exellent_service_unselected)));
+                                                    im4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.expert_en_navigation_unselected)));
+                                                    im5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.voiture_propre_unselected)));
+                                                    tagStatus = "bonneVoirture";
 
                                                 }
                                             });
-                                            FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("COURSE").removeValue();
-                                            if (RATE > 3) {
-                                                if (ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.RECORD_AUDIO)
-                                                        != PackageManager.PERMISSION_GRANTED) {
-                                                    ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.RECORD_AUDIO},
-                                                            10);
-                                                } else {
-                                                    showVoiceDialog();
+                                            im2.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View v) {
+                                                    im1.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.belle_voiture)));
+                                                    im2.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.bonne_music)));
+                                                    im3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.exellent_service_unselected)));
+                                                    im4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.expert_en_navigation_unselected)));
+                                                    im5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.voiture_propre_unselected)));
+                                                    tagStatus = "bonneMusic";
+
                                                 }
-                                            } else {
+                                            });
+                                            im3.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View v) {
+                                                    im1.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.belle_voiture)));
+                                                    im2.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.bonne_music_unselected)));
+                                                    im3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.exellent_service)));
+                                                    im4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.expert_en_navigation_unselected)));
+                                                    im5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.voiture_propre_unselected)));
+                                                    tagStatus = "exellentService";
+                                                }
+                                            });
+                                            im4.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View v) {
+                                                    im1.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.belle_voiture)));
+                                                    im2.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.bonne_music_unselected)));
+                                                    im3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.exellent_service_unselected)));
+                                                    im4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.expert_en_navigation)));
+                                                    im5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.voiture_propre_unselected)));
+                                                    tagStatus = "expertNavigation";
+                                                }
+                                            });
+                                            im5.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View v) {
+                                                    im1.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.belle_voiture)));
+                                                    im2.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.bonne_music_unselected)));
+                                                    im3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.exellent_service_unselected)));
+                                                    im4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.expert_en_navigation_unselected)));
+                                                    im5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.voiture_propre)));
+                                                    tagStatus = "voiturePropre";
+                                                }
+                                            });
 
-                                                try {
-                                                    final Dialog newDialog = new Dialog(context);
-                                                    newDialog.setContentView(R.layout.finished_course_2);
-                                                    choseBox = null;
+                                            star1.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View v) {
+                                                    RATE = 1;
 
-                                                    TextView textView15 = (TextView) dialog.findViewById(R.id.textView15);
-                                                    TextView textView16 = (TextView) dialog.findViewById(R.id.textView16);
-                                                    Button button5 = (Button) dialog.findViewById(R.id.button5);
-                                                    Button button7 = (Button) dialog.findViewById(R.id.button7);
-                                                    Button button8 = (Button) dialog.findViewById(R.id.button8);
-                                                    Button button9 = (Button) dialog.findViewById(R.id.button9);
-                                                    Button button10 = (Button) dialog.findViewById(R.id.button10);
+                                                    star1.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.selected_star)));
+                                                    star2.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
+                                                    star3.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
+                                                    star4.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
+                                                    star5.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
 
+                                                    imot.setImageBitmap(scaleBitmap(150, 150, R.drawable.one_star));
+                                                }
+                                            });
+                                            star2.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View v) {
+                                                    RATE = 2;
 
-                                                    //Set Texts
-                                                    textView15.setText(resources.getString(R.string.Noussommesdésolé));
-                                                    textView16.setText(resources.getString(R.string.whatswrong));
-                                                    button5.setText(resources.getString(R.string.Heuredarrivée));
-                                                    button7.setText(resources.getString(R.string.Etatdelavoiture));
-                                                    button8.setText(resources.getString(R.string.Conduite));
-                                                    button9.setText(resources.getString(R.string.Itinéraire));
-                                                    button10.setText(resources.getString(R.string.Autre));
+                                                    star1.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
+                                                    star2.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.selected_star)));
+                                                    star3.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
+                                                    star4.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
+                                                    star5.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
 
-                                                    RelativeLayout body = (RelativeLayout) newDialog.findViewById(R.id.body);
-                                                    body.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) dpWidth, (int) dpWidth, R.drawable.finished_bg)));
+                                                    imot.setImageBitmap(scaleBitmap(150, 150, R.drawable.two_stars));
+                                                }
+                                            });
+                                            star3.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View v) {
+                                                    RATE = 3;
 
-                                                    final Button opt1 = (Button) newDialog.findViewById(R.id.button5);
-                                                    final Button opt2 = (Button) newDialog.findViewById(R.id.button6);
-                                                    final Button opt3 = (Button) newDialog.findViewById(R.id.button7);
-                                                    final Button opt4 = (Button) newDialog.findViewById(R.id.button8);
-                                                    final Button opt5 = (Button) newDialog.findViewById(R.id.button9);
-                                                    final Button opt6 = (Button) newDialog.findViewById(R.id.button10);
+                                                    star1.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
+                                                    star2.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
+                                                    star3.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.selected_star)));
+                                                    star4.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
+                                                    star5.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
 
-                                                    final EditText messageText = (EditText) newDialog.findViewById(R.id.editText);
+                                                    imot.setImageBitmap(scaleBitmap(150, 150, R.drawable.three_stars));
+                                                }
+                                            });
+                                            star4.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View v) {
+                                                    RATE = 4;
 
-                                                    opt1.setOnClickListener(new View.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View v) {
-                                                            opt1.setBackgroundResource(R.drawable.box_shadow);
-                                                            opt2.setBackgroundResource(R.drawable.select_box);
-                                                            opt3.setBackgroundResource(R.drawable.select_box);
-                                                            opt4.setBackgroundResource(R.drawable.select_box);
-                                                            opt5.setBackgroundResource(R.drawable.select_box);
-                                                            opt6.setBackgroundResource(R.drawable.select_box);
+                                                    star1.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
+                                                    star2.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
+                                                    star3.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
+                                                    star4.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.selected_star)));
+                                                    star5.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
 
-                                                            choseBox = "Heure d'arrivée";
-                                                        }
-                                                    });
-                                                    opt2.setOnClickListener(new View.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View v) {
-                                                            opt1.setBackgroundResource(R.drawable.select_box);
-                                                            opt2.setBackgroundResource(R.drawable.box_shadow);
-                                                            opt3.setBackgroundResource(R.drawable.select_box);
-                                                            opt4.setBackgroundResource(R.drawable.select_box);
-                                                            opt5.setBackgroundResource(R.drawable.select_box);
-                                                            opt6.setBackgroundResource(R.drawable.select_box);
+                                                    imot.setImageBitmap(scaleBitmap(150, 150, R.drawable.four_stars));
+                                                }
+                                            });
 
-                                                            choseBox = "Service";
-                                                        }
-                                                    });
-                                                    opt3.setOnClickListener(new View.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View v) {
-                                                            opt1.setBackgroundResource(R.drawable.select_box);
-                                                            opt2.setBackgroundResource(R.drawable.select_box);
-                                                            opt3.setBackgroundResource(R.drawable.box_shadow);
-                                                            opt4.setBackgroundResource(R.drawable.select_box);
-                                                            opt5.setBackgroundResource(R.drawable.select_box);
-                                                            opt6.setBackgroundResource(R.drawable.select_box);
+                                            star5.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View v) {
+                                                    RATE = 5;
+                                                    star1.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
+                                                    star2.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
+                                                    star3.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
+                                                    star4.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
+                                                    star5.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.selected_star)));
 
-                                                            choseBox = "Etat de la voiture";
-                                                        }
-                                                    });
-                                                    opt4.setOnClickListener(new View.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View v) {
-                                                            opt1.setBackgroundResource(R.drawable.select_box);
-                                                            opt2.setBackgroundResource(R.drawable.select_box);
-                                                            opt3.setBackgroundResource(R.drawable.select_box);
-                                                            opt4.setBackgroundResource(R.drawable.box_shadow);
-                                                            opt5.setBackgroundResource(R.drawable.select_box);
-                                                            opt6.setBackgroundResource(R.drawable.select_box);
-                                                            choseBox = "Conduite";
-                                                        }
-                                                    });
-                                                    opt5.setOnClickListener(new View.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View v) {
-                                                            opt1.setBackgroundResource(R.drawable.select_box);
-                                                            opt2.setBackgroundResource(R.drawable.select_box);
-                                                            opt3.setBackgroundResource(R.drawable.select_box);
-                                                            opt4.setBackgroundResource(R.drawable.select_box);
-                                                            opt5.setBackgroundResource(R.drawable.box_shadow);
-                                                            opt6.setBackgroundResource(R.drawable.select_box);
-                                                            choseBox = "Itinéraire";
-                                                        }
-                                                    });
-                                                    opt6.setOnClickListener(new View.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View v) {
-                                                            opt1.setBackgroundResource(R.drawable.select_box);
-                                                            opt2.setBackgroundResource(R.drawable.select_box);
-                                                            opt3.setBackgroundResource(R.drawable.select_box);
-                                                            opt4.setBackgroundResource(R.drawable.select_box);
-                                                            opt5.setBackgroundResource(R.drawable.select_box);
-                                                            opt6.setBackgroundResource(R.drawable.box_shadow);
-                                                            choseBox = "Autre";
-                                                        }
-                                                    });
+                                                    imot.setImageBitmap(scaleBitmap(150, 150, R.drawable.five_stars));
+                                                }
+                                            });
 
 
-                                                    ImageButton nextBtn = newDialog.findViewById(R.id.imageButton3);
+                                            nextButton.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View v) {
+                                                    try {
+                                                        if (RATE > 0) {
+                                                            dialog.dismiss();
+                                                            if (dialogDriverId != null) {
+                                                                FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(dialogDriverId).child("rating").child(Integer.toString(RATE)).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                    @Override
+                                                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                                                        if (dataSnapshot.exists()) {
+                                                                            int Rating = Integer.parseInt(dataSnapshot.getValue(String.class)) + 1;
+                                                                            FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(dialogDriverId).child("rating").child(Integer.toString(RATE)).setValue("" + Rating);
+                                                                        }
+                                                                    }
+
+                                                                    @Override
+                                                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                                    }
+                                                                });
+                                                                FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("COURSE").removeValue();
+                                                                if (RATE > 3) {
+                                                                    if (ContextCompat.checkSelfPermission(MapsActivity.this,
+                                                                            Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                                                                        ActivityCompat.requestPermissions(MapsActivity.this,
+                                                                                new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 10);
+                                                                    } else {
+                                                                        showVoiceDialog();
+                                                                    }
+                                                                } else {
+
+                                                                    try {
+                                                                        final Dialog newDialog = new Dialog(context);
+                                                                        newDialog.setContentView(R.layout.finished_course_2);
+                                                                        choseBox = null;
+
+                                                                        TextView textView15 = (TextView) dialog.findViewById(R.id.textView15);
+                                                                        TextView textView16 = (TextView) dialog.findViewById(R.id.textView16);
+                                                                        Button button5 = (Button) dialog.findViewById(R.id.button5);
+                                                                        Button button7 = (Button) dialog.findViewById(R.id.button7);
+                                                                        Button button8 = (Button) dialog.findViewById(R.id.button8);
+                                                                        Button button9 = (Button) dialog.findViewById(R.id.button9);
+                                                                        Button button10 = (Button) dialog.findViewById(R.id.button10);
 
 
-                                                    newDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                                                        @Override
-                                                        public void onDismiss(DialogInterface dialog) {
-                                                            if (ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.RECORD_AUDIO)
-                                                                    != PackageManager.PERMISSION_GRANTED) {
-                                                                ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.RECORD_AUDIO},
-                                                                        10);
-                                                            } else {
-                                                                showVoiceDialog();
+                                                                        //Set Texts
+                                                                        textView15.setText(resources.getString(R.string.Noussommesdésolé));
+                                                                        textView16.setText(resources.getString(R.string.whatswrong));
+                                                                        button5.setText(resources.getString(R.string.Heuredarrivée));
+                                                                        button7.setText(resources.getString(R.string.Etatdelavoiture));
+                                                                        button8.setText(resources.getString(R.string.Conduite));
+                                                                        button9.setText(resources.getString(R.string.Itinéraire));
+                                                                        button10.setText(resources.getString(R.string.Autre));
+
+                                                                        RelativeLayout body = (RelativeLayout) newDialog.findViewById(R.id.body);
+                                                                        body.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) dpWidth, (int) dpWidth, R.drawable.finished_bg)));
+
+                                                                        final Button opt1 = (Button) newDialog.findViewById(R.id.button5);
+                                                                        final Button opt2 = (Button) newDialog.findViewById(R.id.button6);
+                                                                        final Button opt3 = (Button) newDialog.findViewById(R.id.button7);
+                                                                        final Button opt4 = (Button) newDialog.findViewById(R.id.button8);
+                                                                        final Button opt5 = (Button) newDialog.findViewById(R.id.button9);
+                                                                        final Button opt6 = (Button) newDialog.findViewById(R.id.button10);
+
+                                                                        final EditText messageText = (EditText) newDialog.findViewById(R.id.editText);
+
+                                                                        opt1.setOnClickListener(new View.OnClickListener() {
+                                                                            @Override
+                                                                            public void onClick(View v) {
+                                                                                opt1.setBackgroundResource(R.drawable.box_shadow);
+                                                                                opt2.setBackgroundResource(R.drawable.select_box);
+                                                                                opt3.setBackgroundResource(R.drawable.select_box);
+                                                                                opt4.setBackgroundResource(R.drawable.select_box);
+                                                                                opt5.setBackgroundResource(R.drawable.select_box);
+                                                                                opt6.setBackgroundResource(R.drawable.select_box);
+
+                                                                                choseBox = "Heure d'arrivée";
+                                                                            }
+                                                                        });
+                                                                        opt2.setOnClickListener(new View.OnClickListener() {
+                                                                            @Override
+                                                                            public void onClick(View v) {
+                                                                                opt1.setBackgroundResource(R.drawable.select_box);
+                                                                                opt2.setBackgroundResource(R.drawable.box_shadow);
+                                                                                opt3.setBackgroundResource(R.drawable.select_box);
+                                                                                opt4.setBackgroundResource(R.drawable.select_box);
+                                                                                opt5.setBackgroundResource(R.drawable.select_box);
+                                                                                opt6.setBackgroundResource(R.drawable.select_box);
+
+                                                                                choseBox = "Service";
+                                                                            }
+                                                                        });
+                                                                        opt3.setOnClickListener(new View.OnClickListener() {
+                                                                            @Override
+                                                                            public void onClick(View v) {
+                                                                                opt1.setBackgroundResource(R.drawable.select_box);
+                                                                                opt2.setBackgroundResource(R.drawable.select_box);
+                                                                                opt3.setBackgroundResource(R.drawable.box_shadow);
+                                                                                opt4.setBackgroundResource(R.drawable.select_box);
+                                                                                opt5.setBackgroundResource(R.drawable.select_box);
+                                                                                opt6.setBackgroundResource(R.drawable.select_box);
+
+                                                                                choseBox = "Etat de la voiture";
+                                                                            }
+                                                                        });
+                                                                        opt4.setOnClickListener(new View.OnClickListener() {
+                                                                            @Override
+                                                                            public void onClick(View v) {
+                                                                                opt1.setBackgroundResource(R.drawable.select_box);
+                                                                                opt2.setBackgroundResource(R.drawable.select_box);
+                                                                                opt3.setBackgroundResource(R.drawable.select_box);
+                                                                                opt4.setBackgroundResource(R.drawable.box_shadow);
+                                                                                opt5.setBackgroundResource(R.drawable.select_box);
+                                                                                opt6.setBackgroundResource(R.drawable.select_box);
+                                                                                choseBox = "Conduite";
+                                                                            }
+                                                                        });
+                                                                        opt5.setOnClickListener(new View.OnClickListener() {
+                                                                            @Override
+                                                                            public void onClick(View v) {
+                                                                                opt1.setBackgroundResource(R.drawable.select_box);
+                                                                                opt2.setBackgroundResource(R.drawable.select_box);
+                                                                                opt3.setBackgroundResource(R.drawable.select_box);
+                                                                                opt4.setBackgroundResource(R.drawable.select_box);
+                                                                                opt5.setBackgroundResource(R.drawable.box_shadow);
+                                                                                opt6.setBackgroundResource(R.drawable.select_box);
+                                                                                choseBox = "Itinéraire";
+                                                                            }
+                                                                        });
+                                                                        opt6.setOnClickListener(new View.OnClickListener() {
+                                                                            @Override
+                                                                            public void onClick(View v) {
+                                                                                opt1.setBackgroundResource(R.drawable.select_box);
+                                                                                opt2.setBackgroundResource(R.drawable.select_box);
+                                                                                opt3.setBackgroundResource(R.drawable.select_box);
+                                                                                opt4.setBackgroundResource(R.drawable.select_box);
+                                                                                opt5.setBackgroundResource(R.drawable.select_box);
+                                                                                opt6.setBackgroundResource(R.drawable.box_shadow);
+                                                                                choseBox = "Autre";
+                                                                            }
+                                                                        });
+
+
+                                                                        ImageButton nextBtn = newDialog.findViewById(R.id.imageButton3);
+                                                                        newDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                                                                            @Override
+                                                                            public void onDismiss(DialogInterface dialog) {
+                                                                                if (ContextCompat.checkSelfPermission(MapsActivity.this,
+                                                                                        Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                                                                                    ActivityCompat.requestPermissions(MapsActivity.this,
+                                                                                            new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 10);
+                                                                                } else {
+                                                                                    showVoiceDialog();
+                                                                                }
+                                                                            }
+                                                                        });
+
+                                                                        nextBtn.setOnClickListener(new View.OnClickListener() {
+                                                                            @Override
+                                                                            public void onClick(View v) {
+                                                                                if (choseBox != null) {
+                                                                                    final String message = messageText.getText().toString();
+                                                                                    Map<String, String> data = new HashMap<>();
+                                                                                    data.put("complaint", choseBox);
+                                                                                    data.put("message", message);
+                                                                                    FirebaseDatabase.getInstance().getReference("COURSECOMPLAINT").child(COURSE).setValue(data);
+                                                                                }
+                                                                                newDialog.dismiss();
+                                                                            }
+                                                                        });
+
+                                                                        newDialog.findViewById(R.id.body).getLayoutParams().width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) (dpWidth), context.getResources().getDisplayMetrics());
+
+                                                                        WindowManager.LayoutParams lp = newDialog.getWindow().getAttributes();
+                                                                        lp.dimAmount = 0.5f;
+                                                                        newDialog.getWindow().setAttributes(lp);
+                                                                        newDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                                                                        newDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+                                                                        newDialog.show();
+                                                                    } catch (Exception e) {
+                                                                        e.printStackTrace();
+                                                                    }
+                                                                }
                                                             }
                                                         }
-                                                    });
-                                                    nextBtn.setOnClickListener(new View.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View v) {
-                                                            if (choseBox != null) {
-                                                                final String message = messageText.getText().toString();
-                                                                Map<String, String> data = new HashMap<>();
-                                                                data.put("complaint", choseBox);
-                                                                data.put("message", message);
-                                                                FirebaseDatabase.getInstance().getReference("COURSECOMPLAINT").child(COURSE).setValue(data);
-                                                            }
-                                                            newDialog.dismiss();
-                                                        }
-                                                    });
-
-                                                    newDialog.findViewById(R.id.body).getLayoutParams().width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) (dpWidth), context.getResources().getDisplayMetrics());
-
-                                                    WindowManager.LayoutParams lp = newDialog.getWindow().getAttributes();
-                                                    lp.dimAmount = 0.5f;
-                                                    newDialog.getWindow().setAttributes(lp);
-                                                    newDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                                                    newDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-                                                    newDialog.show();
-                                                } catch (Exception e) {
-                                                    e.printStackTrace();
+                                                    } catch (Exception e) {
+                                                        e.printStackTrace();
+                                                    }
                                                 }
-                                            }
+                                            });
+
+
+                                            dialog.show();
+
+                                            dialog.findViewById(R.id.body).getLayoutParams().width = (int)
+                                                    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                                                            (int) (dpWidth), context.getResources().getDisplayMetrics());
+
+
+                                            WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
+                                            lp.dimAmount = 0.5f;
+                                            dialog.getWindow().setAttributes(lp);
+                                            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                                            dialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
                                         }
-                                    }
-                                });
 
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                dialog.show();
-
-                                dialog.findViewById(R.id.body).getLayoutParams().width = (int)
-                                        TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) (dpWidth), context.getResources().getDisplayMetrics());
-
-
-                                WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
-                                lp.dimAmount = 0.5f;
-                                dialog.getWindow().setAttributes(lp);
-                                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                                dialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-
-                            /*    String price = dataSnapshott.child("price").getValue(String.class);
-                                Intent finishedCour²se = new Intent(MainActivity.this, finishedCourse.class);
-                                finishedCourse.putExtra("price", price+" MAD");
-                                finishedCourse.putExtra("courseID", dataSnapshot.getValue(String.class));
-                                finishedCourse.putExtra("driverID", dataSnapshott.child("driver").getValue(String.class));
-
-                                startActivity(finishedCourse);
-*/
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                            }
-                        });
+                                        }
+                                    });
+                        }
                     }
-                }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                }
-            });
-
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
             return "this string is passed to onPostExecute";
         }
@@ -1809,29 +1983,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    // checking with debug point
 
-    private MediaRecorder myAudioRecorder;
-    private String outputeFile;
-    private boolean audioRecorded;
-    private ImageButton recordButton;
-    private ImageButton playAudio, pauseAudio, deleteAudio;
-    private MediaPlayer mediaPlayer;
-    private Dialog newDialog;
+    boolean audioRecorded = false;
+    ImageButton recordButton, playAudio, pauseAudio, deleteAudio;
+    String outputeFile;
 
     private void showVoiceDialog() {
-        audioRecorded = false;
-
-        newDialog = new Dialog(context);
+        final Dialog newDialog = new Dialog(context);
         newDialog.setContentView(R.layout.voice_record);
 
-        TextView textView18 = newDialog.findViewById(R.id.textView18);
-        TextView textView19 = newDialog.findViewById(R.id.textView19);
-        TextView textView20 = newDialog.findViewById(R.id.textView20);
+        TextView textView18 = (TextView) newDialog.findViewById(R.id.tv_destination);
+        TextView textView19 = (TextView) newDialog.findViewById(R.id.textView19);
+        TextView textView20 = (TextView) newDialog.findViewById(R.id.textView20);
+
 
         //Set Texts
         textView18.setText(resources.getString(R.string.Appreciate));
         textView19.setText(resources.getString(R.string.PS));
         textView20.setText(resources.getString(R.string.Record));
+
 
         ImageButton nextBtn = (ImageButton) newDialog.findViewById(R.id.imageButton6);
         TextView name = (TextView) newDialog.findViewById(R.id.textView17);
@@ -1841,94 +2012,75 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         playAudio = (ImageButton) newDialog.findViewById(R.id.playAudio);
         pauseAudio = (ImageButton) newDialog.findViewById(R.id.pauseAudio);
         deleteAudio = (ImageButton) newDialog.findViewById(R.id.deleteAudio);
-        mediaPlayer = new MediaPlayer();
+        final MediaPlayer mediaPlayer = new MediaPlayer();
 
 
-        if (ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(MapsActivity.this, new String[]{android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 55);
-            ActivityCompat.requestPermissions(MapsActivity.this, new String[]{android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.READ_PHONE_STATE}, 1);
-        } else {
-            try {
-                recordButton.setOnTouchListener(new View.OnTouchListener() {
-                    @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        int eventaction = event.getAction();
-                        switch (eventaction) {
-                            case MotionEvent.ACTION_DOWN:
-                                try {
-                                    outputeFile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/recording.3gp";
-                                    myAudioRecorder = new MediaRecorder();
-                                    myAudioRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-                                    myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-                                    myAudioRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
-                                    myAudioRecorder.setOutputFile(outputeFile);
-                                    recordButton.setScaleX((float) 1.3);
-                                    recordButton.setScaleY((float) 1.3);
-                                    myAudioRecorder.prepare();
-                                    myAudioRecorder.start();
-                                } catch (NullPointerException e) {
-                                    e.printStackTrace();
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                                break;
-                            case MotionEvent.ACTION_UP:
-                                try {
-                                    audioRecorded = true;
-                                    recordButton.setScaleX((float) 1);
-                                    recordButton.setScaleY((float) 1);
+        outputeFile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/recording.3gp";
+        final MediaRecorder myAudioRecorder = new MediaRecorder();
+        myAudioRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        myAudioRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
+        myAudioRecorder.setOutputFile(outputeFile);
 
-                                    deleteAudio.setVisibility(View.VISIBLE);
-                                    deleteAudio.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            File file = new File(outputeFile);
-                                            file.delete();
-                                            recordButton.setVisibility(View.VISIBLE);
-                                            playAudio.setVisibility(View.GONE);
-                                            pauseAudio.setVisibility(View.GONE);
-                                            deleteAudio.setVisibility(View.GONE);
-                                        }
-                                    });
-                                    if (myAudioRecorder != null) {
-                                        myAudioRecorder.stop();
-                                        myAudioRecorder.release();
-                                        myAudioRecorder = null;
-                                    }
-                                    recordButton.setVisibility(View.GONE);
-                                    playAudio.setVisibility(View.VISIBLE);
-                                    setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
-                                } catch (NullPointerException e) {
-                                    e.printStackTrace();
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                                break;
+        recordButton.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                int eventaction = event.getAction();
+                switch (eventaction) {
+                    case MotionEvent.ACTION_DOWN:
+                        try {
+                            recordButton.setScaleX((float) 1.3);
+                            recordButton.setScaleY((float) 1.3);
+
+                            myAudioRecorder.prepare();
+                            myAudioRecorder.start();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } catch (Exception e) {
                         }
-                        return false;
-                    }
+                        break;
 
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+                    case MotionEvent.ACTION_UP:
+                        try {
+                            audioRecorded = true;
+                            recordButton.setScaleX((float) 1);
+                            recordButton.setScaleY((float) 1);
 
-        if (ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(MapsActivity.this, new String[]{android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 55);
-            ActivityCompat.requestPermissions(MapsActivity.this, new String[]{android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.READ_PHONE_STATE}, 1);
-        } else {
-            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mediaPlayer.reset();
-                    pauseAudio.setVisibility(View.GONE);
-                    playAudio.setVisibility(View.VISIBLE);
-//                    setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
+                            deleteAudio.setVisibility(View.VISIBLE);
+                            deleteAudio.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    newDialog.dismiss();
+                                    showVoiceDialog();
+                                }
+                            });
+                            if (myAudioRecorder != null) {
+                                myAudioRecorder.stop();
+                                myAudioRecorder.release();
+                            }
+                            recordButton.setVisibility(View.GONE);
+                            playAudio.setVisibility(View.VISIBLE);
+                            setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        break;
                 }
-            });
-        }
+                return false;
+            }
 
+        });
+
+
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                pauseAudio.setVisibility(View.GONE);
+                playAudio.setVisibility(View.VISIBLE);
+                mediaPlayer.reset();
+                setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
+            }
+        });
 
         name.setText(userName);
         nextBtn.setOnClickListener(new View.OnClickListener() {
@@ -1965,7 +2117,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         playAudio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                try {
                 playAudio.setVisibility(View.GONE);
                 try {
                     mediaPlayer.setDataSource(outputeFile);
@@ -1981,7 +2132,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     public void onClick(View v) {
                         pauseAudio.setVisibility(View.GONE);
                         playAudio.setVisibility(View.VISIBLE);
-                        mediaPlayer.pause();
+                        if (mediaPlayer.isPlaying())
+                            mediaPlayer.pause();
                         playAudio.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -1992,41 +2144,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         });
                     }
                 });
-
-//                    if (!mediaPlayer.isPlaying()){
-//                        pauseAudio.setVisibility(View.GONE);
-//                        playAudio.setVisibility(View.VISIBLE);
-//                    }
-
-
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
             }
         });
 
-
-//        playAudio.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (!isPlaying) {
-//                    try {
-//                        mediaPlayer.setDataSource(outputeFile);
-//                        mediaPlayer.prepare();
-//                        mediaPlayer.start();
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                    playAudio.setBackgroundResource(R.drawable.pause_record);
-//                    isPlaying = true;
-//                } else {
-//                    isPlaying = false;
-//                    mediaPlayer.stop();
-//                    mediaPlayer.release();
-//                    playAudio.setBackgroundResource(R.drawable.play_record);
-//                }
-//            }
-//        });
 
     }
     //////////////////////////////////////////////////////
@@ -2079,10 +2199,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         resources = co.getResources();
 
 
-        promoCode = (TextView) findViewById(R.id.promoCode);
+        promoCode = findViewById(R.id.promoCode);
         promoCode.setText("PROMO CODE");
 
         callLayout = findViewById(R.id.callLayout);
+        callLayout.setVisibility(View.VISIBLE);
 
         ivCallDriver = findViewById(R.id.iv_call_driver);
 
@@ -2091,6 +2212,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         driverImageL = findViewById(R.id.iv_driver_image);
         iv_car_number = (TextView) findViewById(R.id.iv_car_number);
         iv_total_ride_number = (TextView) findViewById(R.id.iv_total_ride_number);
+        rbDriverRating = findViewById(R.id.rb_user);
         voip_view = findViewById(R.id.voip_view);
         tv_appelle_voip = (TextView) findViewById(R.id.tv_appelle_voip);
         tv_appelle_telephone = (TextView) findViewById(R.id.tv_appelle_telephone);
@@ -2127,9 +2249,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     1);
         }
 
-//        callLayout.setVisibility(View.VISIBLE);
-
-
         sinchClient = Sinch.getSinchClientBuilder()
                 .context(this)
                 .userId(userId)
@@ -2144,7 +2263,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         sinchClient.getCallClient().addCallClientListener(new SinchCallClientListener());
 
-        price = (TextView) findViewById(R.id.price);
+        price = (TextView) findViewById(R.id.tv_mad);
         fixedLocations = new ArrayList<>();
         context = MapsActivity.this;
         orderDriverState = 0;
@@ -2154,7 +2273,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         image2 = (ImageView) findViewById(R.id.imageView8);
         X = (ImageButton) findViewById(R.id.x);
         positionButton = (ImageButton) findViewById(R.id.my_position);
-        gooBox = (ConstraintLayout) findViewById(R.id.gooBox);
+        gooBox = findViewById(R.id.gooBox);
 
         coverButton = (Button) findViewById(R.id.coverButton);
 
@@ -2192,18 +2311,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         startLatLng = null;
         destLatLng = null;
 
-//        tv_appelle_voip.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(MapsActivity.this, VoipCallingActivity.class);
-//                intent.putExtra("driverId", driverIDT);
-//                intent.putExtra("clientId", clientID);
-//                intent.putExtra("driverName", driverName);
-//                intent.putExtra("driverImage", driverImage);
-//                startActivity(intent);
-//            }
-//        });
-
         mGeoDataClient = Places.getGeoDataClient(this);
 
         initialize();
@@ -2224,13 +2331,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         rLocationView.setHasFixedSize(true);
         rLocationView.setLayoutManager(new LinearLayoutManager(this));
 
-        placeAdapter = new MyPlaceAdapter(getApplicationContext(), placeDataList, false, userId);
+        placeAdapter = new MyPlaceAdapter(getApplicationContext(), placeDataList, false, userId, this);
         mLocationView.setAdapter(placeAdapter);
 
         fPlaceAdapter = new FavouritePlaceAdapter(getApplicationContext(), fPlaceDataList, true, userId);
         fLocationView.setAdapter(fPlaceAdapter);
 
-        rPlaceAdapter = new MyPlaceAdapter(getApplicationContext(), rPlaceDataList, false, userId);
+        rPlaceAdapter = new MyPlaceAdapter(getApplicationContext(), rPlaceDataList, false, userId, this);
         rLocationView.setAdapter(rPlaceAdapter);
 
 
@@ -2244,7 +2351,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         ivCallDriver.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 close_button.setVisibility(View.VISIBLE);
                 ivCallDriver.setVisibility(View.GONE);
                 voip_view.setVisibility(View.VISIBLE);
@@ -2296,7 +2402,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         promoCode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showCustomDialog(MapsActivity.this);
+                showPromoCodeDialog(MapsActivity.this);
             }
         });
 
@@ -2314,16 +2420,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View view) {
                 if (blockingTimeOver) {
                     gooButton.setClickable(false);
-//               /* Handler h = new Handler();
-//                Runnable r= new Runnable(){
-//                    @Override
-//                    public void run() {
-//                        gooButton.setVisibility(View.GONE);
-//                        startTheWaitGame();
-//                    }
-//                };
-//                h.postDelayed(r, 300);*/
-
                     CameraPosition cameraPosition = new CameraPosition.Builder()
                             .target(startLatLng)      // Sets the center of the map to Mountain View
                             .zoom(17)                   // Sets the zoom
@@ -2339,13 +2435,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         new LookForDriverTask().execute();
                         new sendRequestsTask().execute();
                     } catch (NullPointerException e) {
-                        Log.e(TAG, "onClick: excp111" + e.getMessage());
                         e.printStackTrace();
                     } catch (Exception e) {
-                        Log.e(TAG, "onClick: excp222" + e.getMessage());
                         e.printStackTrace();
                     }
-                }
+                } else
+                    Toast.makeText(getApplicationContext(), getString(R.string.inviteText), Toast.LENGTH_LONG).show();
             }
         });
 
@@ -2359,6 +2454,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             }
         });
+
         passer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -2485,7 +2581,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 if (snapshot.hasChild("favouritePlace")) {
-                    // run some code
                 } else {
                     Map<String, String> dataFavPlace = new HashMap();
                     dataFavPlace.put("Home", "");
@@ -2524,6 +2619,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void initialize() {
+
+        rippleBackground = (RippleBackground) findViewById(R.id.gooVoidContent);
         frameLayout = findViewById(R.id.framelayout);
         frameLayout2 = findViewById(R.id.framelayout2);
         frameLayout3 = findViewById(R.id.framelayout3);
@@ -2585,7 +2682,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         destArrow.setVisibility(View.VISIBLE);
     }
 
-    public void showCustomDialog(final Context context) {
+    public void showPromoCodeDialog(final Context context) {
         final Dialog dialog = new Dialog(context);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -2616,13 +2713,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                         child("qsjkldjqld").child("value").addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        price.setText(dataSnapshot.getValue() + " MAD");
-                                        promoCode.setText(etPromoCode.getText().toString());
+                                        if (dataSnapshot.exists()) {
+                                            price.setText(dataSnapshot.getValue() + " MAD");
+                                            promoCode.setText(etPromoCode.getText().toString());
+                                            userPromoCode = etPromoCode.getText().toString();
+
+                                            FirebaseDatabase.getInstance().getReference("clientUSERS").
+                                                    child(userId).child("PROMOCODE").setValue(userPromoCode);
+                                            dialog.dismiss();
+                                        }
                                     }
 
                                     @Override
                                     public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                                        dialog.dismiss();
                                     }
                                 });
 
@@ -2632,7 +2736,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                            dialog.dismiss();
                         }
                     });
 
@@ -2659,8 +2763,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         findViewById(R.id.adress_result).setVisibility(View.INVISIBLE);
 
 
-        //  AnimateConstraint.animate(MapsActivity.this,fR,  fHeight, 1, 1);
-        // AnimateConstraint.animate(MapsActivity.this,rR,  rHeight, 1, 1);
+//          AnimateConstraint.animate(MapsActivity.this,fR,  fHeight, 1, 1);
+//         AnimateConstraint.animate(MapsActivity.this,rR,  rHeight, 1, 1);
     }
 
 
@@ -2733,7 +2837,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-
     private void getPrice() {
         if ((startCity.equals("casa") && destCity.equals("casa")) ||
                 (startCity.equals("rabat") && destCity.equals("rabat")) || (startCity.equals("sale") && destCity.equals("sale"))
@@ -2747,15 +2850,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-
                             double price1 = Math.ceil((distance) * Double.parseDouble(dataSnapshot.child("km").getValue(String.class)));
                             int price2 = (int) price1;
                             if (price2 < Double.parseDouble(dataSnapshot.child("minimum").getValue(String.class)))
                                 price2 = Integer.parseInt(dataSnapshot.child("minimum").getValue(String.class));
                             price.setText(price2 + " MAD");
-
-
                         }
 
                         @Override
@@ -2765,7 +2864,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     });
 
         } else {
-
             FirebaseDatabase.getInstance().getReference("FIXEDDESTS").
                     child(startCity).child("destinations").child(destCity).
                     child("price").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -2776,7 +2874,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
-
                 }
             });
 
@@ -2786,6 +2883,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void cancelCommandLayout() {
         orderDriverState = 1;
 
+        searchDestEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.search_icon, 0);
         AnimateConstraint.animate(context, endConstraint, 180, dpHeight - 20, 500, selectDest, findViewById(R.id.destArrow));
         destArrow.setVisibility(View.GONE);
         findViewById(R.id.gooContent).setVisibility(View.GONE);
@@ -2807,6 +2905,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void switchToCommandLayout() {
         orderDriverState = 2;
         positionButton.setVisibility(View.GONE);
+        searchDestEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
         AnimateConstraint.animate(context, endConstraint, dpHeight - 40, 180, 500, selectDest, findViewById(R.id.destArrow));
         AnimateConstraint.fadeIn(MapsActivity.this, findViewById(R.id.gooContent), 500, 10);
 
@@ -2837,118 +2936,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } else {
             gooButton.setVisibility(View.VISIBLE);
             searchDestEditText.setText("Destination non choisi.");
-//            price.setText("13 MAD");
         }
 
         menuButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                state = 0;
                 cancelCommandLayout();
             }
         });
-    }
-
-
-    int Score = 0;
-
-    private void startTheWaitGame() {
-    /*    final Handler handler = new Handler();
-        final Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                final ConstraintLayout gameLayout = (ConstraintLayout)  findViewById(R.id.gameLayout);
-                final GifImageButton gifFromResource = createGif();
-                gifFromResource.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Score += 30;
-                        //Kill The Monster
-                        createKillGif((int) gifFromResource.getX(), (int) gifFromResource.getY());
-                        gameLayout.removeView(gifFromResource);
-                        TextView txt = findViewById(R.id.score);
-                        txt.setText(""+Score);
-                    }
-                });
-
-                handler.postDelayed(this, new Random().nextInt(2000) + 500);
-            }
-        };
-        handler.postDelayed(runnable, 1000);
-*/
-    }
-
-    public void createKillGif(int x, int y) {
-
-/*
-        final GifImageButton gifFromResource = new GifImageButton( MapsActivity.this);
-        final ConstraintLayout gameLayout = (ConstraintLayout)  findViewById(R.id.gameLayout);
-
-
-        int gifHeight = 200;
-        int gifWidth = 270;
-
-        gifFromResource.setImageResource(R.mipmap.disappear);
-        gifFromResource.setLayoutParams(new LinearLayout.LayoutParams(
-                (int)  TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,  gifHeight, context.getResources().getDisplayMetrics()),
-                (int)   TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, gifWidth, context.getResources().getDisplayMetrics())
-        ));
-
-        gifFromResource.setBackgroundColor(0);
-        gifFromResource.setTranslationX(x);
-        gifFromResource.setTranslationY(y);
-
-        gameLayout.addView(gifFromResource);
-
-        final Handler handler = new Handler();
-        final Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                gameLayout.removeView(gifFromResource);
-            }
-        };
-        handler.postDelayed(runnable, 500);
-
-*/
-
-    }
-
-    public GifImageButton createGif() {
-/*
-        final GifImageButton gifFromResource = new GifImageButton( MapsActivity.this);
-        final ConstraintLayout gameLayout = (ConstraintLayout)  findViewById(R.id.gameLayout);
-
-
-        int gifHeight = 200;
-        int gifWidth = 270;
-
-        gifFromResource.setImageResource(R.mipmap.monster);
-        gifFromResource.setLayoutParams(new LinearLayout.LayoutParams(
-                (int)  TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,  gifHeight, context.getResources().getDisplayMetrics()),
-                (int)   TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, gifWidth, context.getResources().getDisplayMetrics())
-        ));
-
-        int yPos = new Random().nextInt(gameLayout.getHeight() - gifHeight);
-        int xPos = new Random().nextInt(gameLayout.getWidth() - gifWidth );
-
-        gifFromResource.setBackgroundColor(0);
-        gifFromResource.setTranslationX(xPos);
-        gifFromResource.setTranslationY(yPos);
-
-        gameLayout.addView(gifFromResource);
-
-        final Handler handler = new Handler();
-        final Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                gameLayout.removeView(gifFromResource);
-            }
-        };
-        handler.postDelayed(runnable, new Random().nextInt(400) + 400);
-
-
-        return gifFromResource;
-           */
-        return null;
     }
 
     private void hideSelectDestUI() {
@@ -2962,13 +2958,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         bottomMenu.setVisibility(View.VISIBLE);
         selectedOp.setVisibility(View.VISIBLE);
         shadowBg.setVisibility(View.VISIBLE);
-//        searchButton.setVisibility(View.VISIBLE);
 
         endConstraint.setVisibility(View.GONE);
         selectDest.setVisibility(View.GONE);
 
 
         searchEditText.setEnabled(true);
+
+        startConstraint.setVisibility(View.VISIBLE);
+        searchEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.search_icon, 0);
 
         AnimateConstraint.animate(MapsActivity.this, startConstraint, 80, (dpHeight - 130), 500);
 
@@ -3002,7 +3000,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         selectedOp.setVisibility(View.GONE);
         shadowBg.setVisibility(View.GONE);
 //        searchButton.setVisibility(View.GONE);
-
+        endConstraint.setVisibility(View.VISIBLE);
         searchEditText.setEnabled(false);
 
 
@@ -3018,6 +3016,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         AnimateConstraint.fadeIn(MapsActivity.this, endConstraint, 500, 10);
         AnimateConstraint.fadeIn(MapsActivity.this, selectDest, 500, 10);
 
+        searchEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
 
         findViewById(R.id.locationPin).setVisibility(View.GONE);
         findViewById(R.id.closestDriver).setVisibility(View.GONE);
@@ -3027,6 +3026,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         frameLayout.buildDrawingCache();
         frameTime.setText(closestDriverText.getText());
         Bitmap bm = frameLayout.getDrawingCache();
+
         Marker myMarker = mMap.addMarker(new MarkerOptions()
                 .position(startLatLng)
                 .icon(BitmapDescriptorFactory.fromBitmap(bm)));
@@ -3128,7 +3128,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     hideKeyboard(MapsActivity.this);
                     searchEditText.clearFocus();
                     searchEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-                    //lookForAddress();
+//                    lookForAddress();
                     return true;
                 }
                 return false;
@@ -3171,10 +3171,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void lookForAddress() {
-        //searchEditText.clearFocus();
-        //searchDestEditText.clearFocus();
-        //hideKeyboard(MapsActivity.this);
-        if ((searchEditText.getText().toString().length() == 0 && orderDriverState == 0) || (searchDestEditText.getText().toString().length() == 0 && orderDriverState == 1)) {
+        if ((searchEditText.getText().toString().length() == 0 && orderDriverState == 0) ||
+                (searchDestEditText.getText().toString().length() == 0 && orderDriverState == 1)) {
             findViewById(R.id.imageView111).setVisibility(View.VISIBLE);
             showSearchAddressStartUI();
             return;
@@ -3258,7 +3256,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             int Height = 67 * placeDataList.size();
-//            AnimateConstraint.animate(context, aR, HeightAbsolute, HeightAbsolute, 1);
+            AnimateConstraint.animate(context, aR, HeightAbsolute, HeightAbsolute, 1);
             AnimateConstraint.animate(context, favorite, 1, 1, 1);
             if (orderDriverState == 0) {
 //                searchButton.setVisibility(View.VISIBLE);
@@ -3298,45 +3296,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (orderDriverState != 0 && orderDriverState != 1)
                 return "";
 
-//            Geocoder geocoder = new Geocoder(mContext);
-//            double latitude = params[0].latitude;
-//            double longitude = params[0].longitude;
-//
-//            List<Address> addresses = null;
-//            String addressText = "";
-//
-//            try {
-//                addresses = geocoder.getFromLocation(latitude, longitude, 1);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//
-//            if (addresses != null && addresses.size() > 0) {
-//                Address address = addresses.get(0);
-//
-//                if (address != null) {
-//                    if (address.getThoroughfare() != null) {
-//                        addressText = String.format("%s, %s.",
-//                                address.getThoroughfare().length() > 0 ? address.getThoroughfare() : "",
-//                                address.getLocality());
-//                    } else {
-//                        addressText = "Address non trouvé";
-//                    }
-//                } else {
-//                    addressText = "Address non trouvé";
-//                }
-//
-//            }
-
-//            return addressText;
             return getCompleteAddressString(context, params[0].latitude, params[0].longitude);
         }
 
         @Override
         protected void onPostExecute(String addressText) {
-            // Setting the title for the marker.
-            // This will be displayed on taping the marker
-            // Placing a marker on the touched position
+            Log.e(TAG, "onPostExecute: " + addressText);
             if (courseScreenIsOn)
                 return;
             if (orderDriverState == 0)
@@ -3378,6 +3343,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .zoom(17)                   // Sets the zoom
                 .build();                   // Creates a CameraPosition from the builder
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+        Log.e(TAG, "goToLocation: " + lat);
+        Log.e(TAG, "goToLocation: " + lng);
+        searchEditText.setText(getCompleteAddressString(context, lat, lng));
+        searchDestEditText.setText(getCompleteAddressString(context, lat, lng));
+
 
     }
 
@@ -3423,6 +3394,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public static void showSearchAddressStartUI() {
+
+        X.setVisibility(View.VISIBLE);
         menuButton.setVisibility(View.VISIBLE);
         state = 0;
         placeDataList.clear();
@@ -3727,10 +3700,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //        } catch(SecurityException e)  {
 //            Log.e("Exception: %s", e.getMessage());
 //        }
+
     }
 
-    private static String getCompleteAddressString(Context context, double LATITUDE, double LONGITUDE) {
+    static String getCompleteAddressString(Context context, double LATITUDE, double LONGITUDE) {
         String strAdd = "";
+
         Geocoder geocoder = new Geocoder(context, Locale.getDefault());
         try {
             List<Address> addresses = geocoder.getFromLocation(LATITUDE, LONGITUDE, 1);
@@ -3747,7 +3722,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } catch (NullPointerException e) {
             e.printStackTrace();
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
+            Log.e(TAG, "getCompleteAddressString: " + e.getMessage());
         }
         return strAdd;
     }
@@ -3782,7 +3758,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-//                            Log.d("MapDemoActivity", "Error trying to get last GPS location");
                             e.printStackTrace();
                         }
                     });
@@ -3795,68 +3770,70 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (grantResult.length > 0 && grantResult[0] == PackageManager.PERMISSION_GRANTED) {
             getLastLocation();
-            try {
-                if (recordButton != null) {
-                    recordButton.setOnTouchListener(new View.OnTouchListener() {
-                        @Override
-                        public boolean onTouch(View v, MotionEvent event) {
-                            int eventaction = event.getAction();
-                            switch (eventaction) {
-                                case MotionEvent.ACTION_DOWN:
-                                    try {
-                                        recordButton.setScaleX((float) 1.3);
-                                        recordButton.setScaleY((float) 1.3);
-                                        myAudioRecorder.prepare();
-                                        myAudioRecorder.start();
-                                    } catch (NullPointerException e) {
-                                        e.printStackTrace();
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                    break;
-                                case MotionEvent.ACTION_UP:
-                                    try {
-                                        audioRecorded = true;
-                                        recordButton.setScaleX((float) 1);
-                                        recordButton.setScaleY((float) 1);
 
-                                        deleteAudio.setVisibility(View.VISIBLE);
-                                        deleteAudio.setOnClickListener(new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View v) {
-                                                newDialog.dismiss();
-                                            }
-                                        });
-                                        if (myAudioRecorder != null) {
-                                            myAudioRecorder.stop();
-                                            myAudioRecorder.release();
-                                            myAudioRecorder = null;
-                                        }
-                                        recordButton.setVisibility(View.GONE);
-                                        playAudio.setVisibility(View.VISIBLE);
-                                        setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
-                                    } catch (NullPointerException e) {
-                                        e.printStackTrace();
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                    break;
-                            }
-                            return false;
-                        }
 
-                    });
-                }
-            } catch (NullPointerException e) {
-                e.printStackTrace();
-            }
+            //            try {
+//                if (recordButton != null) {
+//                    recordButton.setOnTouchListener(new View.OnTouchListener() {
+//                        @Override
+//                        public boolean onTouch(View v, MotionEvent event) {
+//                            int eventaction = event.getAction();
+//                            switch (eventaction) {
+//                                case MotionEvent.ACTION_DOWN:
+//                                    try {
+//                                        recordButton.setScaleX((float) 1.3);
+//                                        recordButton.setScaleY((float) 1.3);
+//                                        myAudioRecorder.prepare();
+//                                        myAudioRecorder.start();
+//                                    } catch (NullPointerException e) {
+//                                        e.printStackTrace();
+//                                    } catch (Exception e) {
+//                                        e.printStackTrace();
+//                                    }
+//                                    break;
+//                                case MotionEvent.ACTION_UP:
+//                                    try {
+//                                        audioRecorded = true;
+//                                        recordButton.setScaleX((float) 1);
+//                                        recordButton.setScaleY((float) 1);
+//
+//                                        deleteAudio.setVisibility(View.VISIBLE);
+//                                        deleteAudio.setOnClickListener(new View.OnClickListener() {
+//                                            @Override
+//                                            public void onClick(View v) {
+//                                                newDialog.dismiss();
+//                                            }
+//                                        });
+//                                        if (myAudioRecorder != null) {
+//                                            myAudioRecorder.stop();
+//                                            myAudioRecorder.release();
+//                                            myAudioRecorder = null;
+//                                        }
+//                                        recordButton.setVisibility(View.GONE);
+//                                        playAudio.setVisibility(View.VISIBLE);
+//                                        setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
+//                                    } catch (NullPointerException e) {
+//                                        e.printStackTrace();
+//                                    } catch (Exception e) {
+//                                        e.printStackTrace();
+//                                    }
+//                                    break;
+//                            }
+//                            return false;
+//                        }
+//
+//                    });
+//                }
+//            } catch (NullPointerException e) {
+//                e.printStackTrace();
+//            }
+
         }
 
         if (requestCode == 10) {
             if (grantResult[0] == PackageManager.PERMISSION_GRANTED) {
                 showVoiceDialog();
             } else {
-                //User denied Permission.
             }
         }
     }
@@ -3947,15 +3924,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return "this string is passed to onPostExecute";
         }
 
-        // This is called from background thread but runs in UI
         @Override
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
-            //Draw the polyline
-            // Do things like update the progress bar
         }
 
-        // This runs in UI when background thread finishes
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
@@ -4164,6 +4137,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     String userId;
     SharedPreferences prefs;
 
+    private String userPromoCode = "";
+
     private class sendRequestsTask extends AsyncTask<String, Integer, String> {
         SharedPreferences prefs;
 
@@ -4190,7 +4165,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //            final int secondsDelay = 15000; // Time To Wait Before Sending Request To The Next Set O Drivers
 
             driverSize = driversKeys.size();
-            Log.e(TAG, "doInBackground: driverKeySize: " + driverSize);
+//            Log.e(TAG, "doInBackground: driverKeySize: " + driverSize);
 
             if (driverSize == 0) {
                 finishedSendReq = true;
@@ -4216,7 +4191,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     //Initialize The First Requests
                     if (counter == 0) {
-//                        Log.e(TAG, "run: if size: "+counter + Step );
+                        Log.e(TAG, "run: if size: " + counter + Step);
                         Log.e(TAG, "run: if driverSize: " + driversKeys.size());
                         driversKeysHold.clear();
                         for (int j = counter; j < (counter + Step) && j < driversKeys.size(); j++) {
@@ -4246,6 +4221,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                 data.put("distance", driversLocations.get(j));
                                 data.put("Refused", "0");
+
+//                                if (userPromoCode.equals(""))
+                                data.put("PROMOCODE", userPromoCode);
+
+
                                 pickupRequest.setValue(data);
 
                                 driversKeysHold.add(driversKeys.get(j));
@@ -4262,6 +4242,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                             if (driverSize == 0) {
 
                                                 stopSearchUI();
+                                                showAllUI();
                                                 finishedSendReq = true;
                                                 FirebaseDatabase.getInstance().getReference("COURSES").orderByChild("client").equalTo(userId).addListenerForSingleValueEvent(new ValueEventListener() {
                                                     @Override
@@ -4270,7 +4251,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                             //findViewById(R.id.commander).setVisibility(View.GONE);
                                                             //selectDest.setVisibility(View.GONE);
 
-
+//                                                            callLayout.setVisibility(View.VISIBLE);
                                                         }
                                                     }
 
@@ -4298,6 +4279,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                             stop = 0;
 
                                                             stopSearchUI();
+                                                            showAllUI();
                                                         } else {
 
                                                             for (DataSnapshot data : dataSnapshot.getChildren()) {
@@ -4316,7 +4298,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                                 });
 
 
-                                                                // startSearchUI();
+//                                                                 startSearchUI();
                                                             }
                                                             //findViewById(R.id.driverInfo).setVisibility(View.VISIBLE);
                                                         }
@@ -4333,6 +4315,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                             if (counter <= driversKeys.size())
                                                 handler.postDelayed(runnable, 0);
                                             stopSearchUI();
+                                            showAllUI();
                                             pickupRequest.removeEventListener(this);
                                         }
                                     }
@@ -4423,7 +4406,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void startSearchUI() {
-        final RippleBackground rippleBackground = (RippleBackground) findViewById(R.id.gooVoidContent);
         rippleBackground.startRippleAnimation();
         cancelRequest.setVisibility(View.VISIBLE);
 //        menuButton.setVisibility(View.GONE);
@@ -4432,9 +4414,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void stopSearchUI() {
         driversKeysHold.clear();
         AnimateConstraint.fadeIn(context, gooButton, 200, 10);
-        //gooButton.setVisibility(View.VISIBLE);
-        //gooButton.setAlpha(1);
-        final RippleBackground rippleBackground = (RippleBackground) findViewById(R.id.gooVoidContent);
         rippleBackground.stopRippleAnimation();
         menuButton.setVisibility(View.VISIBLE);
         cancelRequest.setVisibility(View.GONE);
@@ -4483,19 +4462,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             super.onBackPressed();
             return;
         }
+        if (courseScreenIsOn) {
+            rideCancelDialog();
+        } else if (rippleBackground.isRippleAnimationRunning()) {
+            rippleBackground.stopRippleAnimation();
+            stopSearchUI();
+            stop = 1;
+            showAllUI();
+            DatabaseReference pickupRequest = FirebaseDatabase.getInstance().
+                    getReference("PICKUPREQUEST")/*.child(driversKeys.get(h)).child(userId)*/;
+            pickupRequest.removeValue();
+        } else {
 
-        if (state == 1 || state == -1) {
-            state = 0;
-            hideSelectDestUI();
-            return;
+            if (state == 1 || state == -1) {
+                state = 0;
+                hideSelectDestUI();
+                return;
+            }
+
+            if (state == 2) {
+                state = 1;
+                cancelCommandLayout();
+                return;
+            }
         }
 
-        if (state == 2) {
-            state = 1;
-            cancelCommandLayout();
-            return;
-        }
-        if (state != 1 && state != 2) {
+
+        if (state != 1 && state != 2 && !courseScreenIsOn) {
             this.doubleBackToExitPressedOnce = true;
             Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
 
@@ -4509,7 +4502,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
     }
-
 
     public void updateViews() {
         Context context;
@@ -4566,15 +4558,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                         address = dataSnapshot.child("Address").getValue(String.class);
                         lat = dataSnapshot.child("Lat").getValue(String.class);
-                        Long =dataSnapshot.child("Long").getValue(String.class);
+                        Long = dataSnapshot.child("Long").getValue(String.class);
                         place workPlace = new place(address, address, lat, Long, R.drawable.mdaison_con);
 
                         fPlaceDataList.add(workPlace);
                         fPlaceAdapter.notifyDataSetChanged();
-
-                        Log.e(TAG, "onDataChange: "+address );
-                        Log.e(TAG, "onDataChange: "+lat );
-                        Log.e(TAG, "onDataChange: "+Long );
                     }
                 }
 
@@ -4591,12 +4579,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         homeLat = dataSnapshot.child("Lat").getValue(String.class);
                         homeLong = dataSnapshot.child("Long").getValue(String.class);
 
-                        place homePlace = new place(homeAddress, homeAddress, homeLat, homeLong,R.drawable.work_icon);
+                        place homePlace = new place(homeAddress, homeAddress, homeLat, homeLong, R.drawable.work_icon);
                         fPlaceDataList.add(homePlace);
                         fPlaceAdapter.notifyDataSetChanged();
-                        Log.e(TAG, "onDataChange:homeAddress "+homeAddress );
-                        Log.e(TAG, "onDataChange:homeLat "+homeLat );
-                        Log.e(TAG, "onDataChange:homeLong "+homeLong );
+                        Log.e(TAG, "onDataChange:homeAddress " + homeAddress);
+                        Log.e(TAG, "onDataChange:homeLat " + homeLat);
+                        Log.e(TAG, "onDataChange:homeLong " + homeLong);
                     }
                 }
 

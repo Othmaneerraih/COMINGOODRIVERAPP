@@ -12,6 +12,18 @@
         android:layout_height="match_parent"
         tools:context=".FevoriteLocationActivity" />
 
+    <ImageButton
+        android:id="@+id/my_position"
+        android:layout_width="40dp"
+        android:layout_height="37dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="@dimen/margin_large"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="80dp"
+        android:background="@color/transp"
+        android:scaleType="centerInside" />
+
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="50dp"
@@ -20,49 +32,32 @@
         android:layout_marginRight="20dp"
         android:clickable="false">
 
-        <!--<RelativeLayout-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="50dp"-->
-            <!--android:background="@android:color/white">-->
-
-
-            <EditText
-                android:id="@+id/search_edit_text"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/main_edit_text"
-                android:drawablePadding="30dp"
-                android:elevation="5dp"
-                android:ems="10"
-                android:fontFamily="@font/roboto_light"
-                android:hint="Address"
-                android:imeOptions="actionDone"
-                android:inputType="textPersonName"
-                android:paddingLeft="35dp"
-                android:paddingRight="10dp"
-                android:selectAllOnFocus="true"
-                android:textColor="@color/purpleColor"
-                android:textSize="14sp"
-                android:visibility="gone" />
+        <EditText
+            android:id="@+id/search_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/main_edit_text"
+            android:drawablePadding="30dp"
+            android:elevation="5dp"
+            android:ems="10"
+            android:fontFamily="@font/roboto_light"
+            android:hint="Address"
+            android:imeOptions="actionDone"
+            android:inputType="textPersonName"
+            android:paddingLeft="35dp"
+            android:paddingRight="10dp"
+            android:selectAllOnFocus="true"
+            android:textColor="@color/purpleColor"
+            android:textSize="14sp"
+            android:visibility="gone" />
 
         <fragment
             android:id="@+id/place_autocomplete_fragment"
             android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_centerInParent="true"/>
-
-        <!--</RelativeLayout>-->
-
-        <!--<de.hdodenhof.circleimageview.CircleImageView-->
-            <!--android:id="@+id/startPoint"-->
-            <!--android:layout_width="7dp"-->
-            <!--android:layout_height="7dp"-->
-            <!--android:layout_centerVertical="true"-->
-            <!--android:layout_marginStart="15dp"-->
-            <!--android:layout_marginLeft="15dp"-->
-            <!--android:elevation="5dp"-->
-            <!--android:src="@color/purpleColor" />-->
+            android:layout_centerInParent="true"
+            />
     </RelativeLayout>
 
 

@@ -1,14 +1,22 @@
 package com.comingoo.user.comingoo;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Handler;
+import android.os.SystemClock;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -18,23 +26,31 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Interpolator;
+import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 
+import com.firebase.geofire.GeoLocation;
+import com.firebase.geofire.GeoQuery;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -42,8 +58,15 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.List;
+import java.util.Locale;
+
+import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
 
 public class FevoriteLocationActivity extends AppCompatActivity
@@ -69,21 +92,27 @@ public class FevoriteLocationActivity extends AppCompatActivity
     private String febPlacelong = "";
     private String febPlaceAddress = "";
     private PlaceAutocompleteFragment autocompleteFragment;
+    private ImageButton positionButton;
+    private LatLng searchLatLng;
+
+    private GeoQuery geoQuery;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fevorite_location);
 
-//        getSupportActionBar().setTitle("Map Location Activity");
-
         mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFrag.getMapAsync(this);
         searchEt = (EditText) findViewById(R.id.search_edit_text);
         confirmBtn = (Button) findViewById(R.id.confirm_btn);
+        positionButton = (ImageButton) findViewById(R.id.my_position);
+
+        positionButton.setImageBitmap(scaleBitmap(40, 37, R.drawable.my_position_icon));
 
         autocompleteFragment = (PlaceAutocompleteFragment)
                 getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+
 
         position = getIntent().getIntExtra("position", 0);
         userId = getIntent().getStringExtra("userId");
@@ -108,27 +137,78 @@ public class FevoriteLocationActivity extends AppCompatActivity
             }
         });
 
-
-//        searchEt.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                searchEt.setVisibility(View.GONE);
-//                setAutocompleteFragmentAction();
-//            }
-//        });
+        positionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (searchLatLng != null) {
+                    getLastLocation();
+                }
+            }
+        });
 
         autocompleteFragment.getView().setBackgroundResource(R.drawable.main_edit_text);
 
         setAutocompleteFragmentAction();
 
+        AutocompleteFilter autocompleteFilter = new AutocompleteFilter.Builder()
+                .setTypeFilter(Place.TYPE_COUNTRY)
+                .setCountry("MA")
+                .build();
 
+        autocompleteFragment.setFilter(autocompleteFilter);
+    }
+
+    BitmapFactory.Options bOptions;
+    int imageHeight;
+    int imageWidth;
+    int lastImageHeight;
+    int lastImageWidth;
+    int inSampleSize;
+
+    public Bitmap scaleBitmap(int reqWidth, int reqHeight, int resId) {
+        // Raw height and width of image
+
+        bOptions = new BitmapFactory.Options();
+        bOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeResource(getResources(), resId, bOptions);
+        imageHeight = bOptions.outHeight;
+        imageWidth = bOptions.outWidth;
+
+        imageHeight = bOptions.outHeight;
+        imageWidth = bOptions.outWidth;
+        inSampleSize = 1;
+
+        if (imageHeight > reqHeight || imageWidth > reqWidth) {
+
+            lastImageHeight = imageHeight / 2;
+            lastImageWidth = lastImageWidth / 2;
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while ((lastImageHeight / inSampleSize) >= reqHeight
+                    && (lastImageWidth / inSampleSize) >= reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+
+
+        // First decode with inJustDecodeBounds=true to check dimensions
+        bOptions = new BitmapFactory.Options();
+        bOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeResource(getResources(), resId, bOptions);
+
+        // Calculate inSampleSize
+        bOptions.inSampleSize = inSampleSize;
+
+        // Decode bitmap with inSampleSize set
+        bOptions.inJustDecodeBounds = false;
+        return BitmapFactory.decodeResource(getResources(), resId, bOptions);
     }
 
     @Override
     public void onPause() {
         super.onPause();
 
-        //stop location updates when Activity is no longer active
         if (mGoogleApiClient != null) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }
@@ -137,24 +217,170 @@ public class FevoriteLocationActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
-        mGoogleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+//        mGoogleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        mGoogleMap.getUiSettings().setRotateGesturesEnabled(false);
+        mGoogleMap.setBuildingsEnabled(false);
 
-        //Initialize Google Play Services
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this,
-                    Manifest.permission.ACCESS_FINE_LOCATION)
-                    == PackageManager.PERMISSION_GRANTED) {
-                //Location Permission already granted
-                buildGoogleApiClient();
-                mGoogleMap.setMyLocationEnabled(true);
-            } else {
-                //Request Location Permission
-                checkLocationPermission();
-            }
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
         } else {
-            buildGoogleApiClient();
             mGoogleMap.setMyLocationEnabled(true);
+            mGoogleMap.getUiSettings().setMyLocationButtonEnabled(false);
+            getLastLocation();
         }
+
+
+
+        mGoogleMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+            @Override
+            public void onMapLoaded() {
+                searchEt.setText(getCompleteAddressString(getApplicationContext(), searchLatLng.latitude, searchLatLng.longitude));
+            }
+        });
+
+//        animateMarker(searchLatLng, false);
+    }
+
+    MarkerOptions markerOptions;
+
+    public void animateMarker( final LatLng toPosition,
+                              final boolean hideMarker) {
+        final Handler handler = new Handler();
+        final long start = SystemClock.uptimeMillis();
+        Projection proj = mGoogleMap.getProjection();
+        int height = 150;
+        int width = 80;
+        BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.depart_pin);
+        Bitmap b = bitmapdraw.getBitmap();
+        Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
+
+        markerOptions = new MarkerOptions().position(searchLatLng)
+                .icon(BitmapDescriptorFactory.fromBitmap(smallMarker));
+        Point startPoint = proj.toScreenLocation(markerOptions.getPosition());
+        final LatLng startLatLng = proj.fromScreenLocation(startPoint);
+        final long duration = 500;
+
+        final Interpolator interpolator = new LinearInterpolator();
+
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                long elapsed = SystemClock.uptimeMillis() - start;
+                float t = interpolator.getInterpolation((float) elapsed
+                        / duration);
+                double lng = t * toPosition.longitude + (1 - t)
+                        * startLatLng.longitude;
+                double lat = t * toPosition.latitude + (1 - t)
+                        * startLatLng.latitude;
+                mGoogleMap.addMarker(markerOptions).setPosition(new LatLng(lat, lng));
+
+                if (t < 1.0) {
+                    // Post again 16ms later.
+                    handler.postDelayed(this, 16);
+                } else {
+                    if (hideMarker) {
+                        mGoogleMap.addMarker(markerOptions).setVisible(false);
+                    } else {
+                        mGoogleMap.addMarker(markerOptions).setVisible(true);
+                    }
+                }
+            }
+        });
+    }
+
+    private class ReverseGeocodingTask extends AsyncTask<LatLng, Void, String> {
+        Context mContext;
+
+        public ReverseGeocodingTask(Context context) {
+            super();
+            mContext = context;
+        }
+
+        // Finding address using reverse geocoding
+        @Override
+        protected String doInBackground(LatLng... params) {
+            return getCompleteAddressString(getApplicationContext(), params[0].latitude, params[0].longitude);
+        }
+
+        @Override
+        protected void onPostExecute(String addressText) {
+            searchEt.setText(addressText);
+        }
+    }
+
+    public void getLastLocation() {
+        // Get last known recent location using new Google Play Services SDK (v11+)
+        FusedLocationProviderClient locationClient = getFusedLocationProviderClient(this);
+
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            locationClient.getLastLocation()
+                    .addOnSuccessListener(new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            // GPS location can be null if GPS is switched off
+                            if (location != null) {
+                                searchLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                                goToLocation(getApplicationContext(), searchLatLng.latitude, searchLatLng.longitude, null);
+                            }
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
+        }
+    }
+
+    private String getCompleteAddressString(Context context, double LATITUDE, double LONGITUDE) {
+        String strAdd = "";
+        Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(LATITUDE, LONGITUDE, 1);
+            if (addresses != null) {
+                Address returnedAddress = addresses.get(0);
+                StringBuilder strReturnedAddress = new StringBuilder("");
+
+                for (int i = 0; i <= returnedAddress.getMaxAddressLineIndex(); i++) {
+                    strReturnedAddress.append(returnedAddress.getAddressLine(i)).append("\n");
+                }
+                strAdd = strReturnedAddress.toString();
+            } else {
+            }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return strAdd;
+    }
+
+    public void goToLocation(Context context, Double lat, Double lng, place rPlace) {
+        mGoogleMap.clear();
+        int height = 150;
+        int width = 80;
+        BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.depart_pin);
+        Bitmap b = bitmapdraw.getBitmap();
+        Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
+
+        MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(lat, lng))
+                .icon(BitmapDescriptorFactory.fromBitmap(smallMarker));
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(new LatLng(lat, lng))      // Sets the center of the map to Mountain View
+                .zoom(17)                   // Sets the zoom
+                .build();                   // Creates a CameraPosition from the builder
+        mGoogleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        autocompleteFragment.setText(getCompleteAddressString(getApplicationContext(), lat, lng));
+        mGoogleMap.addMarker(markerOptions);
+
     }
 
     private void setAutocompleteFragmentAction() {
@@ -162,20 +388,8 @@ public class FevoriteLocationActivity extends AppCompatActivity
             @Override
             public void onPlaceSelected(Place place) {
                 mGoogleMap.clear();
-                // here is all data
-//                mGoogleMap.addMarker(new MarkerOptions().position(place.getLatLng()).title(place.getName().toString()));
                 mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
                 mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 12.0f));
-
-//                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-//                MarkerOptions markerOptions = new MarkerOptions();
-//                markerOptions.position(place.getLatLng());
-//                markerOptions.title("Current Position");
-
-
-//                markerOptions.icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons("depart_pin", 76, 56)));
-//                mCurrLocationMarker = mGoogleMap.addMarker(markerOptions);
-
 
                 int height = 150;
                 int width = 80;
@@ -281,16 +495,12 @@ public class FevoriteLocationActivity extends AppCompatActivity
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
 
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
                 new AlertDialog.Builder(this)
                         .setTitle("Location Permission Needed")
                         .setMessage("This app needs the Location permission, please accept to use location functionality")
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                //Prompt the user once explanation has been shown
                                 ActivityCompat.requestPermissions(FevoriteLocationActivity.this,
                                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                                         MY_PERMISSIONS_REQUEST_LOCATION);
@@ -318,8 +528,6 @@ public class FevoriteLocationActivity extends AppCompatActivity
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
-                    // permission was granted, yay! Do the
-                    // location-related task you need to do.
                     if (ContextCompat.checkSelfPermission(this,
                             Manifest.permission.ACCESS_FINE_LOCATION)
                             == PackageManager.PERMISSION_GRANTED) {
