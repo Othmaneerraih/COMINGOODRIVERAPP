@@ -143,7 +143,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import pl.droidsonroids.gif.GifImageButton;
 
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
@@ -220,6 +219,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     static ImageButton positionButton;
 
     private ImageButton cancelRequest;
+    private RippleBackground rippleBackground;
 
     private Button confirmDest;
 
@@ -407,7 +407,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (userId == null) {
                 userId = "123";
             }
-
 
             FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).addValueEventListener(new ValueEventListener() {
                 @Override
@@ -649,7 +648,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
-                if(mp.isPlaying()) {
+                if (mp.isPlaying()) {
                     mp.stop();
                     mp.release();
                 }
@@ -1007,11 +1006,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    boolean gotValue = false;
     private boolean courseScreenStageZero = false;
     private boolean courseScreenStageOne = false;
     private Marker driverPosMarker;
     private Marker startPositionMarker;
     private boolean blockingTimeOver = true;
+    String driver = "";
 
     private void handleCourseCallBack() {
         if (statusT.equals("4")) {
@@ -1051,7 +1052,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             courseScreenIsOn = true;
             mMap.clear();
 
-
             searchEditText.setEnabled(false);
             searchDestEditText.setEnabled(false);
             coverButton.setClickable(false);
@@ -1064,6 +1064,92 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             AnimateConstraint.fadeIn(context, bottomMenu, 500, 0);
             AnimateConstraint.fadeIn(context, selectedOpImage, 500, 0);
             AnimateConstraint.fadeIn(context, callLayout, 500, 0);
+
+            // inserting promo code under course table in firebase
+//            Map<String, Boolean> keyvaluePromoCode = new HashMap<>();
+//            if (userPromoCode.equals(""))
+//            keyvaluePromoCode.put("PROMOCODE", false);
+//            else keyvaluePromoCode.put("PROMOCODE", true);
+
+
+            if (userPromoCode.equals("")) {
+                FirebaseDatabase.getInstance().getReference("COURSES").child(driverIDT).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            FirebaseDatabase.getInstance().getReference("COURSES").child(driverIDT).child("PROMOCODE").setValue(false);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            } else{
+                FirebaseDatabase.getInstance().getReference("COURSES").child(driverIDT).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()){
+                            FirebaseDatabase.getInstance().getReference("COURSES").child(driverIDT).child("PROMOCODE").setValue(true);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+
+//            FirebaseDatabase.getInstance().getReference("COURSES").addValueEventListener(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                    if (dataSnapshot.exists()) {
+////                        for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
+////                            if (!gotValue) {
+////                                gotValue = true;
+////                                driver = childDataSnapshot.getKey();
+//                                if (userPromoCode.equals("")) {
+//                                    FirebaseDatabase.getInstance().getReference("COURSES").child(driverIDT).addValueEventListener(new ValueEventListener() {
+//                                        @Override
+//                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                                            if (dataSnapshot.exists()) {
+//                                                FirebaseDatabase.getInstance().getReference("COURSES").child(driverIDT).child("PROMOCODE").setValue(false);
+//                                            }
+//                                        }
+//
+//                                        @Override
+//                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                                        }
+//                                    });
+//                                } else{
+//                                    FirebaseDatabase.getInstance().getReference("COURSES").child(driverIDT).addValueEventListener(new ValueEventListener() {
+//                                        @Override
+//                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                                            if (dataSnapshot.exists()){
+//                                                FirebaseDatabase.getInstance().getReference("COURSES").child(driverIDT).child("PROMOCODE").setValue(true);
+//                                            }
+//                                        }
+//
+//                                        @Override
+//                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                                        }
+//                                    });
+//                            }
+////                        }
+//                    }
+//                }
+//
+//                @Override
+//                public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                }
+//            });
+
+
             findViewById(R.id.gooContent).setVisibility(View.GONE);
             cancelRequest.setVisibility(View.GONE);
 
@@ -1458,7 +1544,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
                         if (dataSnapshot.exists()) {
                             COURSE = dataSnapshot.getValue(String.class);
-                            FirebaseDatabase.getInstance().getReference("CLIENTFINISHEDCOURSES").child(userId).child(dataSnapshot.getValue(String.class)).addListenerForSingleValueEvent(new ValueEventListener() {
+                            FirebaseDatabase.getInstance().getReference("CLIENTFINISHEDCOURSES").child(userId).child(dataSnapshot.getValue(String.class)).
+                                    addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshott) {
                                     callLayout.setVisibility(View.GONE);
@@ -1789,8 +1876,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
                                                                 ImageButton nextBtn = newDialog.findViewById(R.id.imageButton3);
-
-
                                                                 newDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                                                                     @Override
                                                                     public void onDismiss(DialogInterface dialog) {
@@ -1803,6 +1888,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                                         }
                                                                     }
                                                                 });
+
                                                                 nextBtn.setOnClickListener(new View.OnClickListener() {
                                                                     @Override
                                                                     public void onClick(View v) {
@@ -1831,7 +1917,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                         }
                                                     }
                                                 }
-                                            }catch (Exception e){
+                                            } catch (Exception e) {
                                                 e.printStackTrace();
                                             }
                                         }
@@ -2038,7 +2124,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         pauseAudio.setVisibility(View.GONE);
                         playAudio.setVisibility(View.VISIBLE);
                         if (mediaPlayer.isPlaying())
-                        mediaPlayer.pause();
+                            mediaPlayer.pause();
                         playAudio.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -2108,6 +2194,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         promoCode.setText("PROMO CODE");
 
         callLayout = findViewById(R.id.callLayout);
+        callLayout.setVisibility(View.VISIBLE);
 
         ivCallDriver = findViewById(R.id.iv_call_driver);
 
@@ -2306,7 +2393,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         promoCode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showCustomDialog(MapsActivity.this);
+                showPromoCodeDialog(MapsActivity.this);
             }
         });
 
@@ -2343,7 +2430,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                } else Toast.makeText(getApplicationContext(), getString(R.string.inviteText), Toast.LENGTH_LONG).show();
+                } else
+                    Toast.makeText(getApplicationContext(), getString(R.string.inviteText), Toast.LENGTH_LONG).show();
             }
         });
 
@@ -2484,7 +2572,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 if (snapshot.hasChild("favouritePlace")) {
-                    // run some code
                 } else {
                     Map<String, String> dataFavPlace = new HashMap();
                     dataFavPlace.put("Home", "");
@@ -2523,6 +2610,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void initialize() {
+
+        rippleBackground = (RippleBackground) findViewById(R.id.gooVoidContent);
         frameLayout = findViewById(R.id.framelayout);
         frameLayout2 = findViewById(R.id.framelayout2);
         frameLayout3 = findViewById(R.id.framelayout3);
@@ -2584,7 +2673,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         destArrow.setVisibility(View.VISIBLE);
     }
 
-    public void showCustomDialog(final Context context) {
+    public void showPromoCodeDialog(final Context context) {
         final Dialog dialog = new Dialog(context);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -2615,13 +2704,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                         child("qsjkldjqld").child("value").addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        price.setText(dataSnapshot.getValue() + " MAD");
-                                        promoCode.setText(etPromoCode.getText().toString());
+                                        if (dataSnapshot.exists()) {
+                                            price.setText(dataSnapshot.getValue() + " MAD");
+                                            promoCode.setText(etPromoCode.getText().toString());
+                                            userPromoCode = etPromoCode.getText().toString();
+                                            dialog.dismiss();
+                                        }
                                     }
 
                                     @Override
                                     public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                                        dialog.dismiss();
                                     }
                                 });
 
@@ -2631,7 +2724,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                            dialog.dismiss();
                         }
                     });
 
@@ -3196,7 +3289,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         @Override
         protected void onPostExecute(String addressText) {
-            Log.e(TAG, "onPostExecute: "+addressText );
+            Log.e(TAG, "onPostExecute: " + addressText);
             if (courseScreenIsOn)
                 return;
             if (orderDriverState == 0)
@@ -3239,8 +3332,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .build();                   // Creates a CameraPosition from the builder
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
-        Log.e(TAG, "goToLocation: "+lat );
-        Log.e(TAG, "goToLocation: "+lng );
+        Log.e(TAG, "goToLocation: " + lat);
+        Log.e(TAG, "goToLocation: " + lng);
         searchEditText.setText(getCompleteAddressString(context, lat, lng));
         searchDestEditText.setText(getCompleteAddressString(context, lat, lng));
 
@@ -3598,7 +3691,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-     static  String getCompleteAddressString(Context context, double LATITUDE, double LONGITUDE) {
+    static String getCompleteAddressString(Context context, double LATITUDE, double LONGITUDE) {
         String strAdd = "";
 
         Geocoder geocoder = new Geocoder(context, Locale.getDefault());
@@ -3618,7 +3711,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             e.printStackTrace();
         } catch (Exception e) {
 //            e.printStackTrace();
-            Log.e(TAG, "getCompleteAddressString: "+e.getMessage() );
+            Log.e(TAG, "getCompleteAddressString: " + e.getMessage());
         }
         return strAdd;
     }
@@ -4032,6 +4125,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     String userId;
     SharedPreferences prefs;
 
+    private String userPromoCode = "";
+
     private class sendRequestsTask extends AsyncTask<String, Integer, String> {
         SharedPreferences prefs;
 
@@ -4114,6 +4209,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                 data.put("distance", driversLocations.get(j));
                                 data.put("Refused", "0");
+
+//                                if (userPromoCode.equals(""))
+                                data.put("PROMOCODE", userPromoCode);
+
+
                                 pickupRequest.setValue(data);
 
                                 driversKeysHold.add(driversKeys.get(j));
@@ -4294,7 +4394,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void startSearchUI() {
-        final RippleBackground rippleBackground = (RippleBackground) findViewById(R.id.gooVoidContent);
         rippleBackground.startRippleAnimation();
         cancelRequest.setVisibility(View.VISIBLE);
 //        menuButton.setVisibility(View.GONE);
@@ -4303,7 +4402,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void stopSearchUI() {
         driversKeysHold.clear();
         AnimateConstraint.fadeIn(context, gooButton, 200, 10);
-        final RippleBackground rippleBackground = (RippleBackground) findViewById(R.id.gooVoidContent);
         rippleBackground.stopRippleAnimation();
         menuButton.setVisibility(View.VISIBLE);
         cancelRequest.setVisibility(View.GONE);
@@ -4352,8 +4450,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             super.onBackPressed();
             return;
         }
-        if (courseScreenIsOn){
+        if (courseScreenIsOn) {
             rideCancelDialog();
+        } else if (rippleBackground.isRippleAnimationRunning()) {
+            rippleBackground.stopRippleAnimation();
+            stopSearchUI();
+            stop = 1;
+            showAllUI();
+            DatabaseReference pickupRequest = FirebaseDatabase.getInstance().
+                    getReference("PICKUPREQUEST")/*.child(driversKeys.get(h)).child(userId)*/;
+            pickupRequest.removeValue();
         } else {
 
             if (state == 1 || state == -1) {
@@ -4445,10 +4551,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                         fPlaceDataList.add(workPlace);
                         fPlaceAdapter.notifyDataSetChanged();
-
-                        Log.e(TAG, "onDataChange: " + address);
-                        Log.e(TAG, "onDataChange: " + lat);
-                        Log.e(TAG, "onDataChange: " + Long);
                     }
                 }
 
