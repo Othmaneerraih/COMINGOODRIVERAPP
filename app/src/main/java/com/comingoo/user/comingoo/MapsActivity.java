@@ -3198,6 +3198,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             // Setting the title for the marker.
             // This will be displayed on taping the marker
             // Placing a marker on the touched position
+            Log.e(TAG, "onPostExecute: "+addressText );
             if (courseScreenIsOn)
                 return;
             if (orderDriverState == 0)
@@ -3239,6 +3240,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .zoom(17)                   // Sets the zoom
                 .build();                   // Creates a CameraPosition from the builder
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+        Log.e(TAG, "goToLocation: "+lat );
+        Log.e(TAG, "goToLocation: "+lng );
+        searchEditText.setText(getCompleteAddressString(context, lat, lng));
+        searchDestEditText.setText(getCompleteAddressString(context, lat, lng));
+
 
     }
 
@@ -3593,8 +3600,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    private String getCompleteAddressString(Context context, double LATITUDE, double LONGITUDE) {
+     static  String getCompleteAddressString(Context context, double LATITUDE, double LONGITUDE) {
         String strAdd = "";
+
         Geocoder geocoder = new Geocoder(context, Locale.getDefault());
         try {
             List<Address> addresses = geocoder.getFromLocation(LATITUDE, LONGITUDE, 1);
@@ -3611,7 +3619,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } catch (NullPointerException e) {
             e.printStackTrace();
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
+            Log.e(TAG, "getCompleteAddressString: "+e.getMessage() );
         }
         return strAdd;
     }
