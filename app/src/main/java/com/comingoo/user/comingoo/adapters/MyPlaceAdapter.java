@@ -13,6 +13,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.comingoo.user.comingoo.FevoriteLocationActivity;
+import com.comingoo.user.comingoo.Interfaces.PickLocation;
 import com.comingoo.user.comingoo.MapsActivity;
 import com.comingoo.user.comingoo.R;
 import com.comingoo.user.comingoo.place;
@@ -24,12 +25,14 @@ public class MyPlaceAdapter extends RecyclerView.Adapter<MyPlaceAdapter.ViewHold
     private Context context;
     private boolean isAddButtonNeed;
     private String userId;
+    private PickLocation pickLocation;
 
-    public MyPlaceAdapter(Context context, List<place> myDataset, boolean isAddNeed, String userId) {
+    public MyPlaceAdapter(Context context, List<place> myDataset, boolean isAddNeed, String userId, PickLocation pickLocation) {
         this.mDataset = myDataset;
         this.context = context;
         this.userId = userId;
         this.isAddButtonNeed = isAddNeed;
+        this.pickLocation = pickLocation;
     }
 
     @Override
@@ -53,6 +56,7 @@ public class MyPlaceAdapter extends RecyclerView.Adapter<MyPlaceAdapter.ViewHold
             public void onClick(View view) {
                 MapsActivity.showSearchAddressStartUI();
                 MapsActivity.goToLocation(context, Double.parseDouble(newPlace.getLat()), Double.parseDouble(newPlace.getLng()), newPlace);
+                pickLocation.pickedLocation(newPlace);
             }
         });
 

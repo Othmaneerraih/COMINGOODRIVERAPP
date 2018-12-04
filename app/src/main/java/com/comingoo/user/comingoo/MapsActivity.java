@@ -377,7 +377,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void pickedLocation(place place) {
-
+        hideSearchAddressStartUI();
     }
 
     private class CheckUserTask extends AsyncTask<String, Integer, String> {
@@ -2235,13 +2235,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         rLocationView.setHasFixedSize(true);
         rLocationView.setLayoutManager(new LinearLayoutManager(this));
 
-        placeAdapter = new MyPlaceAdapter(getApplicationContext(), placeDataList, false, userId);
+        placeAdapter = new MyPlaceAdapter(getApplicationContext(), placeDataList, false, userId, this);
         mLocationView.setAdapter(placeAdapter);
 
         fPlaceAdapter = new FavouritePlaceAdapter(getApplicationContext(), fPlaceDataList, true, userId);
         fLocationView.setAdapter(fPlaceAdapter);
 
-        rPlaceAdapter = new MyPlaceAdapter(getApplicationContext(), rPlaceDataList, false, userId);
+        rPlaceAdapter = new MyPlaceAdapter(getApplicationContext(), rPlaceDataList, false, userId, this);
         rLocationView.setAdapter(rPlaceAdapter);
 
 
@@ -3190,14 +3190,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         protected String doInBackground(LatLng... params) {
             if (orderDriverState != 0 && orderDriverState != 1)
                 return "";
+
             return getCompleteAddressString(context, params[0].latitude, params[0].longitude);
         }
 
         @Override
         protected void onPostExecute(String addressText) {
-            // Setting the title for the marker.
-            // This will be displayed on taping the marker
-            // Placing a marker on the touched position
             Log.e(TAG, "onPostExecute: "+addressText );
             if (courseScreenIsOn)
                 return;

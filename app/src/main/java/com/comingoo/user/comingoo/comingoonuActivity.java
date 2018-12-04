@@ -39,7 +39,6 @@ public class comingoonuActivity extends AppCompatActivity {
     private ConstraintLayout changePasswordButton;
     private ImageButton backChangePassword;
 
-
     private TextView todayEarnings, userName, phoneNumber, emailAddress;
 
     private Button changePassBtn;
@@ -64,10 +63,10 @@ public class comingoonuActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comingoonu);
 
-        parametreLayout = (ConstraintLayout) findViewById(R.id.parametres_layout);
-        profileLayout = (ConstraintLayout) findViewById(R.id.profil_layout);
-        changePasswordLayout = (ConstraintLayout) findViewById(R.id.change_password);
-        portFeuilleLayout = (ConstraintLayout) findViewById(R.id.porte_feuille_layout);
+        parametreLayout =  findViewById(R.id.parametres_layout);
+        profileLayout =  findViewById(R.id.profil_layout);
+        changePasswordLayout = findViewById(R.id.change_password);
+        portFeuilleLayout = findViewById(R.id.porte_feuille_layout);
 
         paramsImage = (ImageView) findViewById(R.id.imageView13);
         profilImage = (ImageView) findViewById(R.id.imageView17);
