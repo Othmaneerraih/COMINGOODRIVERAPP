@@ -56,6 +56,7 @@ public class VoipCallingActivity extends AppCompatActivity {
 
     private Handler mHandler = new Handler();
     private int mHour, mMinute; // variables holding the hour and minute
+
     public Runnable mUpdate = new Runnable() {
 
         @Override

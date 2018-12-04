@@ -2,12 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.comingoo.user.comingoo">
 
-    <!--
-         The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
-         Google Maps Android API v2, but you must specify either coarse or fine
-         location permissions for the 'MyLocation' functionality. 
-    -->
-
     <uses-feature
         android:name="android.hardware.microphone"
         android:required="false" />
@@ -70,7 +64,7 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name="com.comingoo.user.comingoo.MapsActivity"
+            android:name=".MapsActivity"
             android:configChanges="orientation"
             android:fitsSystemWindows="true"
             android:label="@string/title_activity_maps"
@@ -88,26 +82,26 @@
             android:screenOrientation="portrait"/>
 
         <activity
-            android:name="com.comingoo.user.comingoo.CallActivity"
+            android:name=".CallActivity"
             android:configChanges="orientation"
             android:label="Comingoo"
             android:screenOrientation="portrait"></activity>
         <activity
-            android:name="com.comingoo.user.comingoo.signupActivity"
+            android:name=".signupActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name="com.comingoo.user.comingoo.signupConfirmActivity"
+            android:name=".signupConfirmActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name="com.comingoo.user.comingoo.signupFacebookActivity"
+            android:name=".signupFacebookActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.comingoo.user.comingoo.signupInfoActivity"
+            android:name=".signupInfoActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
 
@@ -116,7 +110,7 @@
             android:screenOrientation="portrait"></activity>
 
         <activity
-            android:name="com.comingoo.user.comingoo.loginActivity"
+            android:name=".loginActivity"
             android:configChanges="orientation"
             android:label="Comingoo"
             android:screenOrientation="portrait"
@@ -128,23 +122,23 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.comingoo.user.comingoo.historiqueActivity"
+            android:name=".historiqueActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.comingoo.user.comingoo.notificationActivity"
+            android:name=".notificationActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.comingoo.user.comingoo.aideActivity"
+            android:name=".aideActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.comingoo.user.comingoo.comingoonuActivity"
+            android:name=".comingoonuActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.comingoo.user.comingoo.inviteActivity"
+            android:name=".inviteActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"></activity>
     </application>

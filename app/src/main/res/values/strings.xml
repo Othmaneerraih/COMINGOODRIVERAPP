@@ -99,6 +99,7 @@
     <string name="sinch_app_secret">TfJrquo6qEmkV8DG/EXQPg==</string>
     <string name="sinch_envirentmnet_host">clientapi.sinch.com</string>
     <string name="title_activity_confirm_btn">Confirmer address</string>
+    <string name="txt_block_time_over">Your blocking time is not over yet.</string>
 
     <string-array name="blocked_users" tools:ignore="ExtraTranslation">
         <item>brightgupta18@gmail.com</item>
