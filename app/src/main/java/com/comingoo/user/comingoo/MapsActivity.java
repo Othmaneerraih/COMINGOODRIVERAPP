@@ -1575,8 +1575,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                             body.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) dpWidth, (int) dpWidth, R.drawable.finished_bg)));
 
                                             Button dialogButton = (Button) dialog.findViewById(R.id.button);
-                                            Button price = (Button) dialog.findViewById(R.id.button3);
+                                           final Button price = (Button) dialog.findViewById(R.id.button3);
                                             price.setText(dataSnapshott.child("price").getValue(String.class) + " MAD");
+
+//                                            Log.e(TAG, "onDataChange: ujjwal driver id1111: "+driverIDT );
+//                                            Log.e(TAG, "onDataChange: ujjwal driver id2222: "+dialogDriverId );
+//
+//                                            FirebaseDatabase.getInstance().getReference("COURSES").
+//                                                    child(dialogDriverId).child("price").addValueEventListener(new ValueEventListener() {
+//                                                @Override
+//                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                                                    if (dataSnapshot.exists()) {
+//                                                        Log.e(TAG, "onDataChange: " + dataSnapshot.getValue(Double.class));
+//                                                        try {
+//                                                            if (dataSnapshot.getValue(Double.class) != null) {
+//                                                                price.setText(dataSnapshot.getValue(Double.class) + " MAD");
+//                                                            }
+//                                                        } catch (Exception e) {
+//                                                            e.printStackTrace();
+//                                                        }
+//                                                    } else Log.e(TAG, "onDataChange: no value found for price ujjwal" );
+//                                                }
+//
+//                                                @Override
+//                                                public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                                                }
+//                                            });
 
                                             final Button star1 = (Button) dialog.findViewById(R.id.star1);
                                             final Button star2 = (Button) dialog.findViewById(R.id.star2);
