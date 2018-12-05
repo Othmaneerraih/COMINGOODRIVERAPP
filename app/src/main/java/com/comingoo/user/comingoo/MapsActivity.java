@@ -1557,8 +1557,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                     child(userId).child("PROMOCODE").removeValue();
 
 
-
-
                                             final Dialog dialog = new Dialog(context);
                                             dialogDriverId = dataSnapshott.child("driver").getValue(String.class);
                                             dialog.setContentView(R.layout.finished_course);
@@ -2659,7 +2657,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         place rPlace = gson.fromJson(json, place.class);
-        place Place = new place("Travail", "", "33.5725155", "-7.5962637", R.drawable.lieux_proches);
+        LatLng latLng = new LatLng(Double.parseDouble("33.5725155"), Double.parseDouble("-7.5962637"));
+        place Place = new place("Travail", /*getCompleteAddressString(context, latLng.latitude, latLng.longitude)*/
+                "Casablanca, Morocco", "33.5725155", "-7.5962637", R.drawable.lieux_proches);
 
         if (rPlace == null) {
             return Place;
@@ -2751,6 +2751,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void showFavoritsAndRecents() {
+        rPlaceDataList.clear();
         rPlaceDataList.add(getRecentPlaces(context));
         rPlaceAdapter.notifyDataSetChanged();
         AnimateConstraint.animate(MapsActivity.this, favorite, HeightAbsolute, 1, 100);
@@ -2761,17 +2762,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         findViewById(R.id.x).setVisibility(View.VISIBLE);
         findViewById(R.id.my_position).setVisibility(View.GONE);
         findViewById(R.id.adress_result).setVisibility(View.INVISIBLE);
-
-
-//          AnimateConstraint.animate(MapsActivity.this,fR,  fHeight, 1, 1);
-//         AnimateConstraint.animate(MapsActivity.this,rR,  rHeight, 1, 1);
     }
 
 
     //Check Start Position
     private boolean startPositionIsValid() {
         //PolyUtil.containsLocation(position.latitude, position.longitude, casaPoly, true);
-
         startCity = "casa";
 
 //        if(startLatLng != null)
@@ -3180,6 +3176,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (orderDriverState == 1) {
             startConstraint.setVisibility(View.INVISIBLE);
         }
+        placeDataList.clear();
         new LookForAddressTask().execute();
     }
 

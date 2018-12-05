@@ -61,7 +61,8 @@ public class MyPlaceAdapter extends RecyclerView.Adapter<MyPlaceAdapter.ViewHold
         });
 
         holder.title.setText(newPlace.getName());
-        holder.title.setText(newPlace.getName());
+        Log.e("MyPlace", "onBindViewHolder: "+newPlace.getName() );
+        Log.e("MyPlace", "onBindViewHolder: "+newPlace.getAddress() );
         holder.address.setText(newPlace.getAddress());
         holder.image.setImageResource(newPlace.getImage());
         holder.addBtn.setOnClickListener(new View.OnClickListener() {
