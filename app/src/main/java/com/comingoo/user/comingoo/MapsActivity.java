@@ -1576,7 +1576,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                             Button dialogButton = (Button) dialog.findViewById(R.id.button);
                                            final Button price = (Button) dialog.findViewById(R.id.button3);
-                                            price.setText(dataSnapshott.child("price").getValue(String.class) + " MAD");
+//                                            price.setText(dataSnapshott.child("price").getValue(String.class) + " MAD");
+
+
+                                            FirebaseDatabase.getInstance().getReference("COURSES").child(courseIDT).child("price").addValueEventListener(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                    try {
+                                                        if (dataSnapshot.getValue(Double.class) != null) {
+                                                            Log.e(TAG, "COURSES value onDataChange: " + dataSnapshot.getValue(Double.class));
+//
+                                                            double finalPriceOfCourse = dataSnapshot.getValue(Double.class);
+                                                            Log.e(TAG, "COURSES value finalPriceOfCourse: " + finalPriceOfCourse);
+                                                            price.setText(finalPriceOfCourse + " MAD");
+                                                        }
+//                                                    }
+                                                    } catch (Exception e) {
+                                                        e.printStackTrace();
+                                                    }
+                                                }
+
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                }
+                                            });
+
 
 //                                            Log.e(TAG, "onDataChange: ujjwal driver id1111: "+driverIDT );
 //                                            Log.e(TAG, "onDataChange: ujjwal driver id2222: "+dialogDriverId );
