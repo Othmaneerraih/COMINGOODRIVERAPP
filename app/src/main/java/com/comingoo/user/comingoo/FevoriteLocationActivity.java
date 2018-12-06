@@ -246,6 +246,7 @@ public class FevoriteLocationActivity extends AppCompatActivity
         mGoogleMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
             @Override
             public void onMapLoaded() {
+                autocompleteFragment.setText(getCompleteAddressString(getApplicationContext(), searchLatLng.latitude, searchLatLng.longitude));
                 searchEt.setText(getCompleteAddressString(getApplicationContext(), searchLatLng.latitude, searchLatLng.longitude));
             }
         });
@@ -321,7 +322,7 @@ public class FevoriteLocationActivity extends AppCompatActivity
         @Override
         protected void onPostExecute(String addressText) {
             searchEt.setText(addressText);
-
+            autocompleteFragment.setText(addressText);
             febPlaceLat = String.valueOf(lat);
             febPlacelong = String.valueOf(lon);
             febPlaceAddress = addressText;
