@@ -222,21 +222,26 @@ public class FevoriteLocationActivity extends AppCompatActivity
         mGoogleMap.setBuildingsEnabled(false);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         } else {
             mGoogleMap.setMyLocationEnabled(true);
             mGoogleMap.getUiSettings().setMyLocationButtonEnabled(false);
             getLastLocation();
         }
 
+        mGoogleMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
+            @Override
+            public void onCameraIdle() {
+                if (geoQuery != null) {
+                    geoQuery.setCenter(new GeoLocation(searchLatLng.latitude, searchLatLng.longitude));
+                }
 
+                searchLatLng = mGoogleMap.getCameraPosition().target;
+
+                new ReverseGeocodingTask(FevoriteLocationActivity.this).execute(searchLatLng);
+
+            }
+        });
 
         mGoogleMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
             @Override
@@ -250,7 +255,7 @@ public class FevoriteLocationActivity extends AppCompatActivity
 
     MarkerOptions markerOptions;
 
-    public void animateMarker( final LatLng toPosition,
+    public void animateMarker(final LatLng toPosition,
                               final boolean hideMarker) {
         final Handler handler = new Handler();
         final long start = SystemClock.uptimeMillis();
@@ -297,6 +302,8 @@ public class FevoriteLocationActivity extends AppCompatActivity
 
     private class ReverseGeocodingTask extends AsyncTask<LatLng, Void, String> {
         Context mContext;
+        double lat;
+        double lon;
 
         public ReverseGeocodingTask(Context context) {
             super();
@@ -306,12 +313,18 @@ public class FevoriteLocationActivity extends AppCompatActivity
         // Finding address using reverse geocoding
         @Override
         protected String doInBackground(LatLng... params) {
+            lon = params[0].longitude;
+            lat = params[0].latitude;
             return getCompleteAddressString(getApplicationContext(), params[0].latitude, params[0].longitude);
         }
 
         @Override
         protected void onPostExecute(String addressText) {
             searchEt.setText(addressText);
+
+            febPlaceLat = String.valueOf(lat);
+            febPlacelong = String.valueOf(lon);
+            febPlaceAddress = addressText;
         }
     }
 
@@ -379,7 +392,7 @@ public class FevoriteLocationActivity extends AppCompatActivity
                 .build();                   // Creates a CameraPosition from the builder
         mGoogleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         autocompleteFragment.setText(getCompleteAddressString(getApplicationContext(), lat, lng));
-        mGoogleMap.addMarker(markerOptions);
+//        mGoogleMap.addMarker(markerOptions);
 
     }
 
@@ -404,6 +417,7 @@ public class FevoriteLocationActivity extends AppCompatActivity
                         .zoom(17)                   // Sets the zoom
                         .build();
                 mGoogleMap.addMarker(markerOptions);
+
 
                 searchEt.setText(place.getName().toString());
                 febPlaceLat = String.valueOf(place.getLatLng().latitude);
