@@ -1472,6 +1472,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 callLayout.setVisibility(View.GONE);
                 voip_view.setVisibility(View.GONE);
 
+
                 if (preferenceTask.getCancelNumber() > 3) {
                     Toast.makeText(MapsActivity.this,
                             "Vous avez annulé beaucoup de fois, l’application va se bloquer pendant 1h",
@@ -1551,6 +1552,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                             callLayout.setVisibility(View.GONE);
                                             voip_view.setVisibility(View.GONE);
 
+                                            ivCross.setVisibility(View.GONE);
 
                                             // finishing promo code
                                             FirebaseDatabase.getInstance().getReference("clientUSERS").
