@@ -1580,29 +1580,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                             final Button price = (Button) dialog.findViewById(R.id.button3);
 //                                            price.setText(dataSnapshott.child("price").getValue(String.class) + " MAD");
 
+                                            if(courseIDT != null){
+                                                FirebaseDatabase.getInstance().getReference("COURSES").child(courseIDT).child("price").addValueEventListener(new ValueEventListener() {
+                                                    @Override
+                                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                        try {
+                                                            if (dataSnapshot.getValue(String.class) != null) {
+                                                                Log.e(TAG, "COURSES value onDataChange: " + dataSnapshot.getValue(String.class));
 //
-//                                            FirebaseDatabase.getInstance().getReference("COURSES").child(courseIDT).child("price").addValueEventListener(new ValueEventListener() {
-//                                                @Override
-//                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                                                    try {
-//                                                        if (dataSnapshot.getValue(Double.class) != null) {
-//                                                            Log.e(TAG, "COURSES value onDataChange: " + dataSnapshot.getValue(Double.class));
-////
-//                                                            double finalPriceOfCourse = dataSnapshot.getValue(Double.class);
-//                                                            Log.e(TAG, "COURSES value finalPriceOfCourse: " + finalPriceOfCourse);
-//                                                            price.setText(finalPriceOfCourse + " MAD");
-//                                                        }
-////                                                    }
-//                                                    } catch (Exception e) {
-//                                                        e.printStackTrace();
+                                                                double finalPriceOfCourse = Double.parseDouble(dataSnapshot.getValue(String.class));
+                                                                Log.e(TAG, "COURSES value finalPriceOfCourse: " + finalPriceOfCourse);
+                                                                price.setText(finalPriceOfCourse + " MAD");
+                                                            }
 //                                                    }
-//                                                }
-//
-//                                                @Override
-//                                                public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                                                }
-//                                            });
+                                                        } catch (Exception e) {
+                                                            e.printStackTrace();
+                                                        }
+                                                    }
+
+                                                    @Override
+                                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                    }
+                                                });
+
+                                            }
 
 
 //                                            Log.e(TAG, "onDataChange: ujjwal driver id1111: "+driverIDT );
