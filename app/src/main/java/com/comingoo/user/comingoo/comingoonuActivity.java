@@ -45,7 +45,6 @@ public class comingoonuActivity extends AppCompatActivity {
 
     private TextView langVal,depart,minimum,routePerKM,perHour;
 
-
     private ConstraintLayout tarifs;
     private ConstraintLayout tarifsLayout;
 
@@ -135,7 +134,10 @@ public class comingoonuActivity extends AppCompatActivity {
         FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.child("SOLDE").getValue(String.class) != null)
                 todayEarnings.setText(dataSnapshot.child("SOLDE").getValue(String.class) + " MAD");
+                else todayEarnings.setText("0 MAD");
+
                 useCV = Integer.parseInt(dataSnapshot.child("USECREDIT").getValue(String.class));
 
                 if(useCV == 0){
@@ -177,7 +179,6 @@ public class comingoonuActivity extends AppCompatActivity {
                 }
             }
         });
-
 
 
 
