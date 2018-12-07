@@ -1280,7 +1280,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             dialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
         }
 
-        ivCross = findViewById(R.id.iv_cancel_ride);
 
         if (statusT.equals("0")) {
             ivCross.setVisibility(View.VISIBLE);
@@ -1552,7 +1551,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                             callLayout.setVisibility(View.GONE);
                                             voip_view.setVisibility(View.GONE);
 
-                                            ivCross.setVisibility(View.GONE);
+                                            if (ivCross != null)
+                                                ivCross.setVisibility(View.GONE);
 
                                             // finishing promo code
                                             FirebaseDatabase.getInstance().getReference("clientUSERS").
@@ -1577,7 +1577,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                             body.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) dpWidth, (int) dpWidth, R.drawable.finished_bg)));
 
                                             Button dialogButton = (Button) dialog.findViewById(R.id.button);
-                                           final Button price = (Button) dialog.findViewById(R.id.button3);
+                                            final Button price = (Button) dialog.findViewById(R.id.button3);
 //                                            price.setText(dataSnapshott.child("price").getValue(String.class) + " MAD");
 
 //
@@ -2330,6 +2330,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         cancelRequest = (ImageButton) findViewById(R.id.cancelRequest);
 
         passer = (Button) findViewById(R.id.passer);
+        ivCross = findViewById(R.id.iv_cancel_ride);
 
         locationStartPin = (ImageView) findViewById(R.id.location_start_pin);
         locationDestPin = (ImageView) findViewById(R.id.location_dest_pin);
