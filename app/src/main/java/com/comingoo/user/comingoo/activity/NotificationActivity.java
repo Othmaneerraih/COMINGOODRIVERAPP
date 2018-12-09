@@ -1,34 +1,24 @@
 package com.comingoo.user.comingoo.activity;
 
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.comingoo.user.comingoo.adapters.NotificationAdapter;
 import com.comingoo.user.comingoo.async.CheckUserNotificationTask;
 import com.comingoo.user.comingoo.model.Notification;
 import com.comingoo.user.comingoo.R;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class notificationActivity extends AppCompatActivity {
+public class NotificationActivity extends AppCompatActivity {
 
     private RecyclerView mLocationView;
     private DatabaseReference mLocation;
@@ -55,7 +45,7 @@ public class notificationActivity extends AppCompatActivity {
         mLocationView.setHasFixedSize(true);
         mLocationView.setLayoutManager(new LinearLayoutManager(this));
 
-        cAdapter = new NotificationAdapter(NotificationData, userId, notificationActivity.this);
+        cAdapter = new NotificationAdapter(NotificationData, userId, NotificationActivity.this);
         mLocationView.setAdapter(cAdapter);
         new CheckUserNotificationTask(mLocation, cAdapter, NotificationData).execute();
 

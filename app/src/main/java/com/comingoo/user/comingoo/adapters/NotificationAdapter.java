@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import com.comingoo.user.comingoo.R;
 import com.comingoo.user.comingoo.activity.MapsActivity;
-import com.comingoo.user.comingoo.activity.notificationActivity;
 import com.comingoo.user.comingoo.model.Notification;
 import com.google.firebase.database.FirebaseDatabase;
 

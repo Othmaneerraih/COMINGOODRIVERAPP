@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class signupConfirmActivity extends AppCompatActivity {
+public class SignupConfirmActivity extends AppCompatActivity {
     private String phoneNumber;
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallBacks;
     static Activity context;
@@ -42,7 +42,7 @@ public class signupConfirmActivity extends AppCompatActivity {
     EditText code6;
 
     private String Email,name,password,imageURI;
-    private String TAG = "signupConfirmActivity";
+    private String TAG = "SignupConfirmActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +87,7 @@ public class signupConfirmActivity extends AppCompatActivity {
                                 signUpFirebase();
 
                             }else {
-                                Toast.makeText(signupConfirmActivity.this, "WRONG CODE PLEASE TRY AGAIN", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(SignupConfirmActivity.this, "WRONG CODE PLEASE TRY AGAIN", Toast.LENGTH_SHORT).show();
                                 findViewById(R.id.imageButton).setVisibility(View.VISIBLE);
                             }
                         }
@@ -96,7 +96,7 @@ public class signupConfirmActivity extends AppCompatActivity {
 
 
                 }else{
-                    Toast.makeText(signupConfirmActivity.this, "Please Enter Your OTP Code", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SignupConfirmActivity.this, "Please Enter Your OTP Code", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -133,14 +133,14 @@ public class signupConfirmActivity extends AppCompatActivity {
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if(!task.isSuccessful()){
                                         Log.e("signUpFacebookActivity", "onComplete: 1111 " );
-                                        Toast.makeText(signupConfirmActivity.this, "Error!!!", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(SignupConfirmActivity.this, "Error!!!", Toast.LENGTH_SHORT).show();
                                         FirebaseAuth.getInstance().getCurrentUser().delete();
                                         FirebaseAuth.getInstance().signOut();
                                     }else{
                                         Log.e("signUpFacebookActivity", "onComplete: 22222" );
                                         SharedPreferences prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
                                         prefs.edit().putString("userID", FirebaseAuth.getInstance().getCurrentUser().getUid()).apply();
-                                        startActivity(new Intent(signupConfirmActivity.this, MapsActivity.class));
+                                        startActivity(new Intent(SignupConfirmActivity.this, MapsActivity.class));
                                         finish();
                                     }
 

@@ -77,7 +77,7 @@ import com.comingoo.user.comingoo.adapters.FavouritePlaceAdapter;
 import com.comingoo.user.comingoo.adapters.MyPlaceAdapter;
 
 import com.comingoo.user.comingoo.model.FixedLocation;
-import com.comingoo.user.comingoo.model.place;
+import com.comingoo.user.comingoo.model.Place;
 import com.comingoo.user.comingoo.others.HttpConnection;
 import com.comingoo.user.comingoo.others.PathJSONParser;
 import com.firebase.geofire.GeoFire;
@@ -89,7 +89,6 @@ import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.location.places.AutocompletePrediction;
 import com.google.android.gms.location.places.AutocompletePredictionBufferResponse;
 import com.google.android.gms.location.places.GeoDataClient;
-import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceBufferResponse;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -178,9 +177,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     static RecyclerView rLocationView;
     public static FavouritePlaceAdapter fPlaceAdapter;
     public static MyPlaceAdapter rPlaceAdapter;
-    static ArrayList<place> placeDataList;
-    static ArrayList<place> fPlaceDataList;
-    static ArrayList<place> rPlaceDataList;
+    static ArrayList<Place> placeDataList;
+    static ArrayList<Place> fPlaceDataList;
+    static ArrayList<Place> rPlaceDataList;
 
     private static ConstraintLayout startConstraint;
     private ConstraintLayout endConstraint;
@@ -366,7 +365,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Call call;
 
     @Override
-    public void pickedLocation(place place) {
+    public void pickedLocation(Place place) {
         hideSearchAddressStartUI();
     }
 
@@ -404,7 +403,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     if (!dataSnapshot.exists()) {
                         prefs.edit().remove("userID");
                         FirebaseAuth.getInstance().signOut();
-                        Intent intent = new Intent(MapsActivity.this, loginActivity.class);
+                        Intent intent = new Intent(MapsActivity.this, LoginActivity.class);
                         startActivity(intent);
                         return;
                     } else {
@@ -419,7 +418,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         ComingoonYou.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                Intent intent = new Intent(MapsActivity.this, comingoonuActivity.class);
+                                Intent intent = new Intent(MapsActivity.this, ComingooAndYouActivity.class);
                                 intent.putExtra("image", dataSnapshot.child("image").getValue(String.class));
                                 intent.putExtra("name", dataSnapshot.child("fullName").getValue(String.class));
                                 intent.putExtra("email", dataSnapshot.child("email").getValue(String.class));
@@ -2081,7 +2080,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (userId == null || FirebaseAuth.getInstance().getCurrentUser() == null) {
             prefs.edit().remove("userID");
             FirebaseAuth.getInstance().signOut();
-            Intent intent = new Intent(MapsActivity.this, loginActivity.class);
+            Intent intent = new Intent(MapsActivity.this, LoginActivity.class);
             startActivity(intent);
             finish();
         }
@@ -2274,14 +2273,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Historique.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MapsActivity.this, historiqueActivity.class));
+                startActivity(new Intent(MapsActivity.this, HistoriqueActivity.class));
             }
         });
 
         findViewById(R.id.invite).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MapsActivity.this, inviteActivity.class));
+                startActivity(new Intent(MapsActivity.this, InviteActivity.class));
             }
         });
 
@@ -2297,13 +2296,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Inbox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MapsActivity.this, notificationActivity.class));
+                startActivity(new Intent(MapsActivity.this, NotificationActivity.class));
             }
         });
         Aide.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MapsActivity.this, aideActivity.class));
+                startActivity(new Intent(MapsActivity.this, AideActivity.class));
             }
         });
 
@@ -2558,7 +2557,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         favorite = (ConstraintLayout) findViewById(R.id.favorite_recent);
     }
 
-    public static place getRecentPlaces(Context context) {
+    public static Place getRecentPlaces(Context context) {
 
         SharedPreferences appSharedPrefs = PreferenceManager
                 .getDefaultSharedPreferences(context.getApplicationContext());
@@ -2566,9 +2565,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         String json = appSharedPrefs.getString("recent_places", "");
 
 
-        place rPlace = gson.fromJson(json, place.class);
+        Place rPlace = gson.fromJson(json, Place.class);
         LatLng latLng = new LatLng(Double.parseDouble("33.5725155"), Double.parseDouble("-7.5962637"));
-        place Place = new place("Travail", /*getCompleteAddressString(context, latLng.latitude, latLng.longitude)*/
+        Place Place = new Place("Travail", /*getCompleteAddressString(context, latLng.latitude, latLng.longitude)*/
                 "Casablanca, Morocco", "33.5725155", "-7.5962637", R.drawable.lieux_proches);
 
         if (rPlace == null) {
@@ -3120,8 +3119,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 @Override
                                 public void onComplete(@NonNull Task<PlaceBufferResponse> task) {
                                     if (task.isSuccessful() && task.getResult().getCount() > 0) {
-                                        for (Place gotPlace : task.getResult()) {
-                                            place Place = new place(gotPlace.getName().toString(),
+                                        for (com.google.android.gms.location.places.Place gotPlace : task.getResult()) {
+                                            Place Place = new Place(gotPlace.getName().toString(),
                                                     gotPlace.getAddress().toString(), "" + gotPlace.getLatLng().latitude,
                                                     "" + gotPlace.getLatLng().longitude, R.drawable.lieux_proches);
                                             placeDataList.add(Place);
@@ -3209,7 +3208,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    public static void saveRecentPlaces(Context context, place rplace) {
+    public static void saveRecentPlaces(Context context, Place rplace) {
         SharedPreferences appSharedPrefs = PreferenceManager
                 .getDefaultSharedPreferences(context.getApplicationContext());
         SharedPreferences.Editor prefsEditor = appSharedPrefs.edit();
@@ -3219,7 +3218,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         prefsEditor.commit();
     }
 
-    public static void goToLocation(Context context, Double lat, Double lng, place rPlace) {
+    public static void goToLocation(Context context, Double lat, Double lng, Place rPlace) {
         // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), 17));
         if (rPlace != null) {
             if (contains(rPlaceDataList, rPlace.name)) {
@@ -3243,8 +3242,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    static boolean contains(ArrayList<place> list, String name) {
-        for (place item : list) {
+    static boolean contains(ArrayList<Place> list, String name) {
+        for (Place item : list) {
             if (item.getName().equals(name)) {
                 return true;
             }
@@ -4320,7 +4319,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         address = dataSnapshot.child("Address").getValue(String.class);
                         lat = dataSnapshot.child("Lat").getValue(String.class);
                         Long = dataSnapshot.child("Long").getValue(String.class);
-                        place workPlace = new place(address, address, lat, Long, R.drawable.mdaison_con);
+                        Place workPlace = new Place(address, address, lat, Long, R.drawable.mdaison_con);
 
                         fPlaceDataList.add(workPlace);
                         fPlaceAdapter.notifyDataSetChanged();
@@ -4340,7 +4339,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         homeLat = dataSnapshot.child("Lat").getValue(String.class);
                         homeLong = dataSnapshot.child("Long").getValue(String.class);
 
-                        place homePlace = new place(homeAddress, homeAddress, homeLat, homeLong, R.drawable.work_icon);
+                        Place homePlace = new Place(homeAddress, homeAddress, homeLat, homeLong, R.drawable.work_icon);
                         fPlaceDataList.add(homePlace);
                         fPlaceAdapter.notifyDataSetChanged();
                         Log.e(TAG, "onDataChange:homeAddress " + homeAddress);

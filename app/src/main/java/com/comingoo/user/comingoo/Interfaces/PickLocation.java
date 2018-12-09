@@ -1,7 +1,7 @@
 package com.comingoo.user.comingoo.Interfaces;
 
-import com.comingoo.user.comingoo.model.place;
+import com.comingoo.user.comingoo.model.Place;
 
 public interface PickLocation {
-    void pickedLocation(place place);
+    void pickedLocation(Place place);
 }

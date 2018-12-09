@@ -13,17 +13,17 @@ import android.widget.TextView;
 import com.comingoo.user.comingoo.activity.FevoriteLocationActivity;
 import com.comingoo.user.comingoo.activity.MapsActivity;
 import com.comingoo.user.comingoo.R;
-import com.comingoo.user.comingoo.model.place;
+import com.comingoo.user.comingoo.model.Place;
 
 import java.util.List;
 
 public class FavouritePlaceAdapter  extends RecyclerView.Adapter<FavouritePlaceAdapter.ViewHolder> {
-    private List<place> mDataset;
+    private List<Place> mDataset;
     private Context context;
     private boolean isAddButtonNeed;
     private String userId;
 
-    public FavouritePlaceAdapter(Context context, List<place> myDataset, boolean isAddNeed, String userId) {
+    public FavouritePlaceAdapter(Context context, List<Place> myDataset, boolean isAddNeed, String userId) {
         this.mDataset = myDataset;
         this.userId = userId;
         this.context = context;
@@ -41,7 +41,7 @@ public class FavouritePlaceAdapter  extends RecyclerView.Adapter<FavouritePlaceA
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        final place newPlace = mDataset.get(position);
+        final Place newPlace = mDataset.get(position);
 
         if (isAddButtonNeed) holder.addBtn.setVisibility(View.VISIBLE);
         else holder.addBtn.setVisibility(View.GONE);

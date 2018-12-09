@@ -36,8 +36,8 @@ import java.util.Map;
 
 import static android.widget.Toast.makeText;
 
-public class signupFacebookActivity extends AppCompatActivity {
-    private String TAG = "signupFacebookActivity";
+public class SignupFacebookActivity extends AppCompatActivity {
+    private String TAG = "SignupFacebookActivity";
     private CallbackManager callbackManager;
     private AccessTokenTracker accessTokenTracker;
     private String fbUserFirstName = "", fbUserLastName = "",
@@ -105,14 +105,14 @@ public class signupFacebookActivity extends AppCompatActivity {
                                                             public void onComplete(@NonNull Task<Void> task) {
                                                                 if(!task.isSuccessful()){
                                                                     Log.e("signUpFacebookActivity", "onComplete: 1111 " );
-                                                                    Toast.makeText(signupFacebookActivity.this, "Error!!!", Toast.LENGTH_SHORT).show();
+                                                                    Toast.makeText(SignupFacebookActivity.this, "Error!!!", Toast.LENGTH_SHORT).show();
                                                                     FirebaseAuth.getInstance().getCurrentUser().delete();
                                                                     FirebaseAuth.getInstance().signOut();
                                                                 }else{
                                                                     Log.e("signUpFacebookActivity", "onComplete: 22222" );
                                                                     SharedPreferences prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
                                                                     prefs.edit().putString("userID", FirebaseAuth.getInstance().getCurrentUser().getUid()).apply();
-                                                                    startActivity(new Intent(signupFacebookActivity.this, MapsActivity.class));
+                                                                    startActivity(new Intent(SignupFacebookActivity.this, MapsActivity.class));
                                                                     finish();
                                                                 }
 
@@ -127,7 +127,7 @@ public class signupFacebookActivity extends AppCompatActivity {
                                             LoginManager.getInstance().logOut();
                                         }catch(Exception e){
                                             Log.e(TAG, "onFailed: "+e.getMessage() );
-                                            Toast.makeText(signupFacebookActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(SignupFacebookActivity.this, "Error", Toast.LENGTH_SHORT).show();
                                         }
                                     }
                                 });

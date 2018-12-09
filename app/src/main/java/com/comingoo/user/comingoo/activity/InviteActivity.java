@@ -14,7 +14,7 @@ import com.comingoo.user.comingoo.utility.LocalHelper;
 import com.comingoo.user.comingoo.R;
 
 
-public class inviteActivity extends AppCompatActivity {
+public class InviteActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +36,7 @@ public class inviteActivity extends AppCompatActivity {
         String language;
         language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
 
-        context = LocalHelper.setLocale(inviteActivity.this, language);
+        context = LocalHelper.setLocale(InviteActivity.this, language);
         resources = context.getResources();
 
         TextView textView33 = findViewById(R.id.textView33);
@@ -67,7 +67,7 @@ public class inviteActivity extends AppCompatActivity {
         try {
             this.startActivity(intent );
         } catch (android.content.ActivityNotFoundException ex) {
-            Toast.makeText(inviteActivity.this, "Facebook have not been installed.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(InviteActivity.this, "Facebook have not been installed.", Toast.LENGTH_SHORT).show();
         }
     }
 

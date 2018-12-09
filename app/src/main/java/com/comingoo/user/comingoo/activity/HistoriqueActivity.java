@@ -3,13 +3,10 @@ package com.comingoo.user.comingoo.activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.os.AsyncTask;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.TextView;
 
@@ -18,19 +15,14 @@ import com.comingoo.user.comingoo.utility.LocalHelper;
 import com.comingoo.user.comingoo.R;
 import com.comingoo.user.comingoo.adapters.HistoriqueAdapter;
 import com.comingoo.user.comingoo.model.Course;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
 
 
-public class historiqueActivity extends AppCompatActivity {
+public class HistoriqueActivity extends AppCompatActivity {
     private RecyclerView mLocationView;
     private DatabaseReference mLocation;
     private HistoriqueAdapter cAdapter;
@@ -47,7 +39,7 @@ public class historiqueActivity extends AppCompatActivity {
         setContentView(R.layout.activity_historique);
         language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
 
-        context = LocalHelper.setLocale(historiqueActivity.this, language);
+        context = LocalHelper.setLocale(HistoriqueActivity.this, language);
         resources = context.getResources();
 
 
@@ -85,7 +77,7 @@ public class historiqueActivity extends AppCompatActivity {
         Resources resources;
         String language;
         language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
-        context = LocalHelper.setLocale(historiqueActivity.this, language);
+        context = LocalHelper.setLocale(HistoriqueActivity.this, language);
         resources = context.getResources();
         TextView title = findViewById(R.id.title);
         //Set Texts
