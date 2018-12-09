@@ -82,16 +82,16 @@ public class VoipCallingActivity extends AppCompatActivity {
         setContentView(R.layout.content_voip_one);
         activity = this;
 
-        iv_back_voip_one = (ImageView) findViewById(R.id.iv_back_voip_one);
-        iv_user_image_voip_one = (CircleImageView) findViewById(R.id.iv_user_image_voip_one);
-        iv_cancel_call_voip_one = (CircleImageView) findViewById(R.id.iv_cancel_call_voip_one);
-        iv_recv_call_voip_one = (CircleImageView) findViewById(R.id.iv_recv_call_voip_one);
-        caller_name = (TextView) findViewById(R.id.callerName);
-        callState = (TextView) findViewById(R.id.callState);
+        iv_back_voip_one = findViewById(R.id.iv_back_voip_one);
+        iv_user_image_voip_one = findViewById(R.id.iv_user_image_voip_one);
+        iv_cancel_call_voip_one = findViewById(R.id.iv_cancel_call_voip_one);
+        iv_recv_call_voip_one = findViewById(R.id.iv_recv_call_voip_one);
+        caller_name = findViewById(R.id.callerName);
+        callState = findViewById(R.id.callState);
 
-        iv_mute = (CircleImageView) findViewById(R.id.iv_mute);
-        iv_loud = (CircleImageView) findViewById(R.id.iv_loud);
-        tv_name_voip_one = (TextView) findViewById(R.id.tv_name_voip_one);
+        iv_mute = findViewById(R.id.iv_mute);
+        iv_loud = findViewById(R.id.iv_loud);
+        tv_name_voip_one = findViewById(R.id.tv_name_voip_one);
 
 
         iv_recv_call_voip_one.setVisibility(View.GONE);

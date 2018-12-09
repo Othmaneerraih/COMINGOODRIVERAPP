@@ -95,27 +95,21 @@ public class loginActivity extends AppCompatActivity {
                                                 @Override
                                                 public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
                                                     if (!dataSnapshot.exists()) {
-//                                                        loginBtn.setVisibility(View.VISIBLE);
-//                                                        Toast.makeText(loginActivity.this, "Numéro erroné!!!", Toast.LENGTH_SHORT).show();
-
-//                                                        loginBtn.setVisibility(View.VISIBLE);
-//                                                        Toast.makeText(loginActivity.this, "Error!!!", Toast.LENGTH_SHORT).show();
 
                                                         String[] stringArray = getResources().getStringArray(R.array.blocked_users);
-                                                        Log.e("loginActivity", "onDataChange: "+stringArray[0] );
+                                                        Log.e("loginActivity", "onDataChange: " + stringArray[0]);
                                                         if (Arrays.asList(stringArray).contains(EMAIL)) {
                                                             // true
                                                             Toast.makeText(loginActivity.this, "This account is blocked", Toast.LENGTH_LONG).show();
                                                         } else {
                                                             Intent intent = new Intent(loginActivity.this, signupActivity.class);
-                                                            intent.putExtra("Email",  Email);
-                                                            intent.putExtra("name",  name);
-                                                            intent.putExtra("password",  password);
-                                                            intent.putExtra("imageURI",  imageURI);
+                                                            intent.putExtra("Email", Email);
+                                                            intent.putExtra("name", name);
+                                                            intent.putExtra("password", password);
+                                                            intent.putExtra("imageURI", imageURI);
                                                             startActivity(intent);
                                                             finish();
                                                         }
-
 
 
                                                     } else {
@@ -181,7 +175,7 @@ public class loginActivity extends AppCompatActivity {
 
     }
 
-    private String getDurationForRoute(String origin, String destination){
+    private String getDurationForRoute(String origin, String destination) {
         // - We need a context to access the API
         GeoApiContext geoApiContext = new GeoApiContext.Builder()
                 .apiKey(getResources().getString(R.string.google_maps_key))

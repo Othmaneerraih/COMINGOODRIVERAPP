@@ -100,9 +100,9 @@ public class FevoriteLocationActivity extends AppCompatActivity
 
         mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFrag.getMapAsync(this);
-        searchEt = (EditText) findViewById(R.id.search_edit_text);
-        confirmBtn = (Button) findViewById(R.id.confirm_btn);
-        positionButton = (ImageButton) findViewById(R.id.my_position);
+        searchEt = findViewById(R.id.search_edit_text);
+        confirmBtn = findViewById(R.id.confirm_btn);
+        positionButton = findViewById(R.id.my_position);
 
         positionButton.setImageBitmap(scaleBitmap(40, 37, R.drawable.my_position_icon));
 
@@ -356,7 +356,7 @@ public class FevoriteLocationActivity extends AppCompatActivity
             List<Address> addresses = geocoder.getFromLocation(LATITUDE, LONGITUDE, 1);
             if (addresses != null) {
                 Address returnedAddress = addresses.get(0);
-                StringBuilder strReturnedAddress = new StringBuilder("");
+                StringBuilder strReturnedAddress = new StringBuilder();
 
                 for (int i = 0; i <= returnedAddress.getMaxAddressLineIndex(); i++) {
                     strReturnedAddress.append(returnedAddress.getAddressLine(i)).append("\n");

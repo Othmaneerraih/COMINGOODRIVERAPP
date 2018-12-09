@@ -169,7 +169,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     static ProgressBar searchProgBar;
     static ProgressBar searchProgBarDest;
 
-    static TextView promoCode;
+    public static TextView promoCode;
 
     static RecyclerView mLocationView;
     public static MyPlaceAdapter placeAdapter;

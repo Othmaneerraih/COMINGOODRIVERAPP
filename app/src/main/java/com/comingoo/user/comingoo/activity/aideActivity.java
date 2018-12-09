@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.comingoo.user.comingoo.async.UpdateInfoAideTask;
 import com.comingoo.user.comingoo.utility.AnimateConstraint;
 import com.comingoo.user.comingoo.utility.LocalHelper;
 import com.comingoo.user.comingoo.R;
@@ -47,7 +48,6 @@ public class aideActivity extends AppCompatActivity {
     private EditText message;
     private TextView selectImage;
     private ImageView ivArrawOne, ivArrawTwo;
-
     private String userId;
 
     @Override
@@ -58,18 +58,18 @@ public class aideActivity extends AppCompatActivity {
         final SharedPreferences prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
         userId = prefs.getString("userID", null);
 
-        message = (EditText) findViewById(R.id.message);
-        selectImage = (TextView) findViewById(R.id.image_text);
+        message = findViewById(R.id.message);
+        selectImage = findViewById(R.id.image_text);
 
-        Q1 = (ConstraintLayout) findViewById(R.id.Q1);
-        A1 = (ConstraintLayout) findViewById(R.id.A1);
-        Q2 = (ConstraintLayout) findViewById(R.id.Q2);
-        A2 = (ConstraintLayout) findViewById(R.id.A2);
+        Q1 = findViewById(R.id.Q1);
+        A1 = findViewById(R.id.A1);
+        Q2 = findViewById(R.id.Q2);
+        A2 = findViewById(R.id.A2);
 
-        fc = (ConstraintLayout) findViewById(R.id.fc);
-        content = (ConstraintLayout) findViewById(R.id.content);
+        fc = findViewById(R.id.fc);
+        content = findViewById(R.id.content);
 
-        image = (ConstraintLayout) findViewById(R.id.add_image);
+        image = findViewById(R.id.add_image);
         ivArrawOne = findViewById(R.id.arrow1);
         ivArrawTwo = findViewById(R.id.arrow2);
 
@@ -107,7 +107,7 @@ public class aideActivity extends AppCompatActivity {
         findViewById(R.id.send).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new UpdateInfoTask().execute();
+                new UpdateInfoAideTask(aideActivity.this, userId, imageUri, message, selectImage).execute();
                 AnimateConstraint.animate(aideActivity.this, content, 1, 250, 500);
             }
         });
@@ -165,74 +165,6 @@ public class aideActivity extends AppCompatActivity {
 
         }
 
-    }
-
-    private boolean finished;
-
-    private class UpdateInfoTask extends AsyncTask<String, Integer, String> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            finished = false;
-        }
-
-        // This is run in a background thread
-        @Override
-        protected String doInBackground(String... params) {
-
-            final Map<String, String> data = new HashMap<>();
-            data.put("user", userId);
-            data.put("message", message.getText().toString());
-            if (imageUri != null) {
-
-                final StorageReference filepath = FirebaseStorage.getInstance().getReference("DRIVERCONTACTUS").child(userId);
-                filepath.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        filepath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(Uri uri) {
-                                data.put("image", uri.toString());
-                                FirebaseDatabase.getInstance().getReference("CONTACTUSCLIENT").push().setValue(data);
-                            }
-                        });
-                        finished = true;
-                    }
-                });
-
-                data.put("image", imageUri.toString());
-
-            } else {
-                data.put("image", "");
-                FirebaseDatabase.getInstance().getReference("CONTACTUSCLIENT").push().setValue(data);
-                finished = true;
-            }
-
-            while (!finished) {
-
-            }
-
-            return "this string is passed to onPostExecute";
-        }
-
-        // This is called from background thread but runs in UI
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-            super.onProgressUpdate(values);
-
-            // Do things like update the progress bar
-        }
-
-        // This runs in UI when background thread finishes
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-            // Do things like hide the progress bar or change a TextView
-
-            Toast.makeText(aideActivity.this, "message envoyé.", Toast.LENGTH_SHORT).show();
-            message.setText("");
-            selectImage.setText("Ajouter une image");
-        }
     }
 
     @Override

@@ -49,12 +49,12 @@ public class signupConfirmActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup_confirm);
 
-        code = (EditText) findViewById(R.id.code);
-        code2 = (EditText) findViewById(R.id.code2);
-        code3 = (EditText) findViewById(R.id.code3);
-        code4 = (EditText) findViewById(R.id.code4);
-        code5 = (EditText) findViewById(R.id.code5);
-        code6 = (EditText) findViewById(R.id.code6);
+        code = findViewById(R.id.code);
+        code2 = findViewById(R.id.code2);
+        code3 = findViewById(R.id.code3);
+        code4 = findViewById(R.id.code4);
+        code5 = findViewById(R.id.code5);
+        code6 = findViewById(R.id.code6);
 
 
         context = this;

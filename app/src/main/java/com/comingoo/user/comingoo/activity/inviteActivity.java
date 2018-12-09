@@ -39,9 +39,9 @@ public class inviteActivity extends AppCompatActivity {
         context = LocalHelper.setLocale(inviteActivity.this, language);
         resources = context.getResources();
 
-        TextView textView33 = (TextView) findViewById(R.id.textView33);
-        TextView textView37 = (TextView) findViewById(R.id.textView37);
-        Button button2 = (Button) findViewById(R.id.button2);
+        TextView textView33 = findViewById(R.id.textView33);
+        TextView textView37 = findViewById(R.id.textView37);
+        Button button2 = findViewById(R.id.button2);
 
 
 
