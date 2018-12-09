@@ -54,16 +54,9 @@ public class loginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-//            SharedPreferences prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
-//            prefs.edit().putString("userID", FirebaseAuth.getInstance().getCurrentUser().getUid()).apply();
             startActivity(new Intent(loginActivity.this, MapsActivity.class));
             finish();
         }
-
-//        phoneNumber = (EditText) findViewById(R.id.code);
-//        password = (EditText) findViewById(R.id.password);
-//        loginBtn = (ImageButton) findViewById(R.id.loginBtn);
-
 
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(this);
@@ -73,8 +66,6 @@ public class loginActivity extends AppCompatActivity {
         final String EMAIL = "email";
         final LoginButton loginButton = findViewById(R.id.login_button);
         loginButton.setReadPermissions(Arrays.asList(EMAIL));
-
-//        getDurationForRoute("Pabnartek Rd, Dhaka","Bridge, Z5478");
 
         LoginManager.getInstance().registerCallback(callbackManager,
                 new FacebookCallback<LoginResult>() {
@@ -162,14 +153,6 @@ public class loginActivity extends AppCompatActivity {
 
                                                 }
                                             });
-
-
-
-
-
-
-
-
 
                                             LoginManager.getInstance().logOut();
                                         } catch (Exception e) {

@@ -72,13 +72,6 @@ public class aideActivity extends AppCompatActivity {
 
         AnimateConstraint.animate(aideActivity.this, content, 250, 1, 0);
 
-//        fc.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                AnimateConstraint.animate(aideActivity.this, content, 70, 1, 500);
-//            }
-//        });
-
         findViewById(R.id.add_voice).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

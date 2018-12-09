@@ -251,7 +251,6 @@ public class FevoriteLocationActivity extends AppCompatActivity
             }
         });
 
-//        animateMarker(searchLatLng, false);
     }
 
     MarkerOptions markerOptions;

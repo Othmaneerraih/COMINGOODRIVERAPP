@@ -30,31 +30,22 @@ import java.util.Calendar;
 import java.util.Locale;
 
 public class comingoonuActivity extends AppCompatActivity {
+
     private int selectedScreen = 0;
     private ConstraintLayout parametreLayout, profileLayout, changePasswordLayout, portFeuilleLayout;
     private ImageView paramsImage, profilImage, portFImage;
-
     private ConstraintLayout pA, pR, pO;
-
     private ConstraintLayout changePasswordButton;
     private ImageButton backChangePassword;
-
     private TextView todayEarnings, userName, phoneNumber, emailAddress;
-
     private Button changePassBtn;
-
     private TextView langVal,depart,minimum,routePerKM,perHour;
-
     private ConstraintLayout tarifs;
     private ConstraintLayout tarifsLayout;
-
     private ConstraintLayout lang;
-
     private ImageButton useC;
     private int useCV = 0;
-
     private SharedPreferences sharedPreferences;
-
     private String language;
 
     @Override

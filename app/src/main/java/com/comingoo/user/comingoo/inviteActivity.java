@@ -59,8 +59,6 @@ public class inviteActivity extends AppCompatActivity {
 
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
-//        intent.setPackage("com.facebook.katana");
-//        intent.setPackage("com.android.twitter");
         intent .putExtra(Intent.EXTRA_TEXT, "Bonjour,\n" +
                 "Je vous invite a utiliser l'application Comingoo pour vos déplacements. www.comingoo.com/app");
         try {

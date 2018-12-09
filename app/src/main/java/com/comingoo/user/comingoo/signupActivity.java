@@ -115,9 +115,6 @@ public class signupActivity extends AppCompatActivity {
             }
         });
 
-
-
-
     }
 
     @Override

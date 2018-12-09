@@ -107,68 +107,6 @@ public class AnimateConstraint {
         final float yTranslation = 0.25f * height;
 
 
-
-        /*AnimationSet animSet = new AnimationSet(true);
-        animSet.setFillAfter(true);
-        animSet.setDuration(duration);
-        animSet.setInterpolator(new BounceInterpolator());
-        TranslateAnimation translate = new TranslateAnimation( 0, xTranslation , 0, yTranslation);
-        animSet.addAnimation(translate);
-        ScaleAnimation scale = new ScaleAnimation(1f, 0.65f, 1f, 0.65f, ScaleAnimation.RELATIVE_TO_PARENT, 0f, ScaleAnimation.RELATIVE_TO_PARENT, 0f);
-        animSet.addAnimation(scale);
-        animSet.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                contentBlocker.setVisibility(View.VISIBLE);
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        });
-        constraintLayout.startAnimation(animSet);
-
-
-
-
-        contentBlocker.setScaleY((float) 0.77);
-        contentBlocker.setScaleX((float) 0.865);
-        contentBlocker.setTranslationX((int) xTranslation);
-
-
-        contentBlocker.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                contentBlocker.setVisibility(View.GONE);
-                contentBlocker.setOnClickListener(null);
-
-
-                Animation anim = new ScaleAnimation(
-                        0.65f, 1f, // Start and end values for the X axis scaling
-                        0.65f, 1f); // Pivot point of Y scaling
-                anim.setFillAfter(true); // Needed to keep the result of the animation
-                anim.setDuration(duration);
-
-                Animation newAnim = new TranslateAnimation(
-                        0.9f, 0f,
-                        0.25f , 0f
-                );
-                newAnim.setFillAfter(true); // Needed to keep the result of the animation
-                newAnim.setDuration(duration);
-                constraintLayout.startAnimation(anim);
-                constraintLayout.startAnimation(newAnim);
-
-            }
-        });
-        */
-
-
         final double percentageScale = (1 - 0.6)/(duration / 20);
         final double percentageTranslation = (xTranslation)/(duration / 20);
 
@@ -237,9 +175,6 @@ public class AnimateConstraint {
             }
         };
         runnable.run();
-
-
-
 
     }
     static void expandCircleAnimation(final Context context, final View constraintLayout, float maxHeight, float maxWidth){

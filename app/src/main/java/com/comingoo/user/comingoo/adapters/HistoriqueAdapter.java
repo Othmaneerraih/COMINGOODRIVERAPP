@@ -58,36 +58,6 @@ public class HistoriqueAdapter extends RecyclerView.Adapter<HistoriqueAdapter.Vi
             }
         });
 
-//        final ConstraintLayout.LayoutParams params = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
-//        if (isExpn){
-//            Log.e("Historyad", "onBindViewHolder: Expaned" );
-//            params.setMargins(0,50,0,0);
-//            holder.endText.setLayoutParams(params);
-//        } else {
-//            Log.e("Historyad", "onBindViewHolder: Expaned not" );
-//            params.setMargins(0, 0, 0, 0);
-//            holder.endText.setLayoutParams(params);
-//        }
-
-//        holder.fc.setLayoutAnimationListener(new Animation.AnimationListener() {
-//            @Override
-//            public void onAnimationStart(Animation animation) {
-//                params.setMargins(0,20,0,0);
-//                holder.endText.setLayoutParams(params);
-//            }
-//
-//            @Override
-//            public void onAnimationEnd(Animation animation) {
-//                params.setMargins(0,0,0,0);
-//                holder.endText.setLayoutParams(params);
-//            }
-//
-//            @Override
-//            public void onAnimationRepeat(Animation animation) {
-//
-//            }
-//        });
-//
 
         holder.dateText.setText(newCourse.getDate());
         holder.date2.setText(newCourse.getDate());

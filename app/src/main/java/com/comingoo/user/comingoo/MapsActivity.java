@@ -151,7 +151,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     static GoogleMap mMap;
     private static EditText searchEditText;
     private static EditText searchDestEditText;
-    //    private ImageButton searchButton;
     private ImageButton searchButtonDest;
 
     static ConstraintLayout bottomMenu;
@@ -267,9 +266,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private Button passer;
 
-    ////////////////////////////////////////////
-
-
     private ConstraintLayout Acceuil;
     private ConstraintLayout Historique;
     private ConstraintLayout Inbox;
@@ -284,13 +280,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ConstraintLayout callLayout;
     private RatingBar rbDriverRating;
     private TextView driverNameL, iv_total_ride_number, iv_car_number, iv_total_rating_number;
-    //    private CircleImageView driverImageL;
     private CircularImageView driverImageL;
     private ImageView ivCallDriver, close_button;
     private CircleImageView ivCross;
-
-
-    ////////////////////////////////////////////
 
 
     private ArrayList<String> driversKeys;
@@ -299,8 +291,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private GeoQuery geoQuery;
 
-
-    ////////////////////////////////////////////
 
     BitmapFactory.Options bOptions;
     int imageHeight;
@@ -362,14 +352,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         destArrow.setImageBitmap(scaleBitmap(26, 190, R.drawable.arrow));
         menuButton.setImageBitmap(scaleBitmap(45, 45, R.drawable.home_icon));
         positionButton.setImageBitmap(scaleBitmap(40, 37, R.drawable.my_position_icon));
-
-        //citySelectLayout.setBackground(new BitmapDrawable(getResources(), scaleBitmap(115, 29, R.drawable.)));
-        //gooButton.setImageBitmap(scaleBitmap(20, 20, R.drawable.goo));
-//        gooBox.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) (dpWidth - 30), (int) ((dpWidth - 30) / 3.75), R.drawable.footer_min)));
         shadowBg.setImageBitmap(scaleBitmap((int) dpWidth, 80, R.drawable.shadow_bottom));
-
-
-//        gooBox.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) ((dpWidth - 30) / 3.75), context.getResources().getDisplayMetrics());
     }
 
     private String userName;
@@ -416,7 +399,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         FirebaseAuth.getInstance().signOut();
                         Intent intent = new Intent(MapsActivity.this, loginActivity.class);
                         startActivity(intent);
-//                        finish();
                         return;
                     } else {
                         userName = dataSnapshot.child("fullName").getValue(String.class);
@@ -433,7 +415,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 Intent intent = new Intent(MapsActivity.this, comingoonuActivity.class);
                                 intent.putExtra("image", dataSnapshot.child("image").getValue(String.class));
                                 intent.putExtra("name", dataSnapshot.child("fullName").getValue(String.class));
-//                                intent.putExtra("phone", dataSnapshot.child("phoneNumber").getValue(String.class));
                                 intent.putExtra("email", dataSnapshot.child("email").getValue(String.class));
                                 String callNumber = dataSnapshot.child("phoneNumber").getValue(String.class);
                                 if (callNumber.contains("+212")) {
@@ -1064,92 +1045,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             AnimateConstraint.fadeIn(context, bottomMenu, 500, 0);
             AnimateConstraint.fadeIn(context, selectedOpImage, 500, 0);
             AnimateConstraint.fadeIn(context, callLayout, 500, 0);
-
-            // inserting promo code under course table in firebase
-//            Map<String, Boolean> keyvaluePromoCode = new HashMap<>();
-//            if (userPromoCode.equals(""))
-//            keyvaluePromoCode.put("PROMOCODE", false);
-//            else keyvaluePromoCode.put("PROMOCODE", true);
-
-
-//            if (userPromoCode.equals("")) {
-//                FirebaseDatabase.getInstance().getReference("COURSES").child(driverIDT).addValueEventListener(new ValueEventListener() {
-//                    @Override
-//                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                        if (dataSnapshot.exists()) {
-//                            FirebaseDatabase.getInstance().getReference("COURSES").child(driverIDT).child("PROMOCODE").setValue(false);
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                    }
-//                });
-//            } else{
-//                FirebaseDatabase.getInstance().getReference("COURSES").child(driverIDT).addValueEventListener(new ValueEventListener() {
-//                    @Override
-//                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                        if (dataSnapshot.exists()){
-//                            FirebaseDatabase.getInstance().getReference("COURSES").child(driverIDT).child("PROMOCODE").setValue(true);
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                    }
-//                });
-//            }
-
-//            FirebaseDatabase.getInstance().getReference("COURSES").addValueEventListener(new ValueEventListener() {
-//                @Override
-//                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                    if (dataSnapshot.exists()) {
-////                        for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
-////                            if (!gotValue) {
-////                                gotValue = true;
-////                                driver = childDataSnapshot.getKey();
-//                                if (userPromoCode.equals("")) {
-//                                    FirebaseDatabase.getInstance().getReference("COURSES").child(driverIDT).addValueEventListener(new ValueEventListener() {
-//                                        @Override
-//                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                                            if (dataSnapshot.exists()) {
-//                                                FirebaseDatabase.getInstance().getReference("COURSES").child(driverIDT).child("PROMOCODE").setValue(false);
-//                                            }
-//                                        }
-//
-//                                        @Override
-//                                        public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                                        }
-//                                    });
-//                                } else{
-//                                    FirebaseDatabase.getInstance().getReference("COURSES").child(driverIDT).addValueEventListener(new ValueEventListener() {
-//                                        @Override
-//                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                                            if (dataSnapshot.exists()){
-//                                                FirebaseDatabase.getInstance().getReference("COURSES").child(driverIDT).child("PROMOCODE").setValue(true);
-//                                            }
-//                                        }
-//
-//                                        @Override
-//                                        public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                                        }
-//                                    });
-//                            }
-////                        }
-//                    }
-//                }
-//
-//                @Override
-//                public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                }
-//            });
-
-
             findViewById(R.id.gooContent).setVisibility(View.GONE);
             cancelRequest.setVisibility(View.GONE);
 
@@ -1173,29 +1068,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             LayerDrawable stars = (LayerDrawable) rbDriverRating.getProgressDrawable();
             stars.getDrawable(0).setColorFilter(Color.YELLOW, PorterDuff.Mode.SRC_ATOP);
 
-            if (
-//                    ContextCompat.checkSelfPermission(MapsActivity.this,
-//                    android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED ||
-//                    ContextCompat.checkSelfPermission(MapsActivity.this,
-//                            android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED ||
-                    ContextCompat.checkSelfPermission(MapsActivity.this,
-                            Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(MapsActivity.this,
+                    Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
                 ActivityCompat.requestPermissions(MapsActivity.this,
                         new String[]{
-//                                android.Manifest.permission.RECORD_AUDIO,
-//                                android.Manifest.permission.READ_PHONE_STATE,
-                                Manifest.permission.ACCESS_FINE_LOCATION},
-                        1);
+                                Manifest.permission.ACCESS_FINE_LOCATION
+                        }, 1);
             }
-
-//            ivCallDriver.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    Call call = sinchClient.getCallClient().callUser(driverIDT);
-//                    call.addCallListener(new SinchCallListener());
-//                }
-//            });
 
         }
 
@@ -1580,7 +1460,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                             final Button price = (Button) dialog.findViewById(R.id.button3);
 //                                            price.setText(dataSnapshott.child("price").getValue(String.class) + " MAD");
 
-                                            if(courseIDT != null){
+                                            if (courseIDT != null) {
                                                 FirebaseDatabase.getInstance().getReference("COURSES").child(courseIDT).child("price").addValueEventListener(new ValueEventListener() {
                                                     @Override
                                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -1605,32 +1485,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                 });
 
                                             }
-
-
-//                                            Log.e(TAG, "onDataChange: ujjwal driver id1111: "+driverIDT );
-//                                            Log.e(TAG, "onDataChange: ujjwal driver id2222: "+dialogDriverId );
-//
-//                                            FirebaseDatabase.getInstance().getReference("COURSES").
-//                                                    child(dialogDriverId).child("price").addValueEventListener(new ValueEventListener() {
-//                                                @Override
-//                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                                                    if (dataSnapshot.exists()) {
-//                                                        Log.e(TAG, "onDataChange: " + dataSnapshot.getValue(Double.class));
-//                                                        try {
-//                                                            if (dataSnapshot.getValue(Double.class) != null) {
-//                                                                price.setText(dataSnapshot.getValue(Double.class) + " MAD");
-//                                                            }
-//                                                        } catch (Exception e) {
-//                                                            e.printStackTrace();
-//                                                        }
-//                                                    } else Log.e(TAG, "onDataChange: no value found for price ujjwal" );
-//                                                }
-//
-//                                                @Override
-//                                                public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                                                }
-//                                            });
 
                                             final Button star1 = (Button) dialog.findViewById(R.id.star1);
                                             final Button star2 = (Button) dialog.findViewById(R.id.star2);
@@ -2427,12 +2281,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         findViewById(R.id.logout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                SharedPreferences prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
-//                prefs.edit().remove("userID");
-//                FirebaseAuth.getInstance().signOut();
-//                startActivity(new Intent(MapsActivity.this, loginActivity.class));
-//                finish();
-
                 String url = "https://www.comingoo.com/driver";
                 Intent i = new Intent(Intent.ACTION_VIEW);
                 i.setData(Uri.parse(url));
@@ -3050,7 +2898,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         bottomMenu.setVisibility(View.GONE);
         selectedOp.setVisibility(View.GONE);
         shadowBg.setVisibility(View.GONE);
-//        searchButton.setVisibility(View.GONE);
         endConstraint.setVisibility(View.VISIBLE);
         searchEditText.setEnabled(false);
 
@@ -3197,16 +3044,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 return false;
             }
         });
-//        searchButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                hideKeyboard(MapsActivity.this);
-//                searchEditText.clearFocus();
-//                searchButton.setVisibility(View.GONE);
-//                searchProgBar.setVisibility(View.VISIBLE);
-//                lookForAddress();
-//            }
-//        });
+
         searchButtonDest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -3383,13 +3221,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 rPlaceAdapter.notifyDataSetChanged();
             }
         }
-//        image1.setVisibility(View.INVISIBLE);
-//        image2.setVisibility(View.INVISIBLE);
-//        positionButton.setVisibility(View.VISIBLE);
-//        X.setVisibility(View.GONE);
-//        citySelectLayout.setVisibility(View.GONE);
-//        searchEditText.clearFocus();
-//        searchDestEditText.clearFocus();
+
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(new LatLng(lat, lng))      // Sets the center of the map to Mountain View
                 .zoom(17)                   // Sets the zoom
@@ -3414,8 +3246,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void hideSearchAddressStartUI() {
-        //bottomMenu.setVisibility(View.GONE);
-        //selectedOp.setVisibility(View.GONE);
         placeDataList.clear();
         placeAdapter.notifyDataSetChanged();
         findViewById(R.id.imageView7).setVisibility(View.INVISIBLE);
@@ -3726,33 +3556,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             e.printStackTrace();
         }
 
-//        try {
-////            if (mLocationPermissionGranted) {
-//            // Construct a FusedLocationProviderClient.
-//            FusedLocationProviderClient  mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-//                Task locationResult = mFusedLocationProviderClient.getLastLocation();
-//                locationResult.addOnCompleteListener(this, new OnCompleteListener() {
-//                    @Override
-//                    public void onComplete(@NonNull Task task) {
-//                        if (task.isSuccessful()) {
-//                            // Set the map's camera position to the current location of the device.
-//                           Location mLastKnownLocation = task.getResult();
-//                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-//                                    new LatLng(task.getResult().getLatitude(),
-//                                            mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
-//                        } else {
-//                            Log.d(TAG, "Current location is null. Using defaults.");
-//                            Log.e(TAG, "Exception: %s", task.getException());
-//                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM));
-//                            mMap.getUiSettings().setMyLocationButtonEnabled(false);
-//                        }
-//                    }
-//                });
-////            }
-//        } catch(SecurityException e)  {
-//            Log.e("Exception: %s", e.getMessage());
-//        }
-
     }
 
     static String getCompleteAddressString(Context context, double LATITUDE, double LONGITUDE) {
@@ -3774,7 +3577,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } catch (NullPointerException e) {
             e.printStackTrace();
         } catch (Exception e) {
-//            e.printStackTrace();
             Log.e(TAG, "getCompleteAddressString: " + e.getMessage());
         }
         return strAdd;
@@ -3822,63 +3624,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (grantResult.length > 0 && grantResult[0] == PackageManager.PERMISSION_GRANTED) {
             getLastLocation();
-
-
-            //            try {
-//                if (recordButton != null) {
-//                    recordButton.setOnTouchListener(new View.OnTouchListener() {
-//                        @Override
-//                        public boolean onTouch(View v, MotionEvent event) {
-//                            int eventaction = event.getAction();
-//                            switch (eventaction) {
-//                                case MotionEvent.ACTION_DOWN:
-//                                    try {
-//                                        recordButton.setScaleX((float) 1.3);
-//                                        recordButton.setScaleY((float) 1.3);
-//                                        myAudioRecorder.prepare();
-//                                        myAudioRecorder.start();
-//                                    } catch (NullPointerException e) {
-//                                        e.printStackTrace();
-//                                    } catch (Exception e) {
-//                                        e.printStackTrace();
-//                                    }
-//                                    break;
-//                                case MotionEvent.ACTION_UP:
-//                                    try {
-//                                        audioRecorded = true;
-//                                        recordButton.setScaleX((float) 1);
-//                                        recordButton.setScaleY((float) 1);
-//
-//                                        deleteAudio.setVisibility(View.VISIBLE);
-//                                        deleteAudio.setOnClickListener(new View.OnClickListener() {
-//                                            @Override
-//                                            public void onClick(View v) {
-//                                                newDialog.dismiss();
-//                                            }
-//                                        });
-//                                        if (myAudioRecorder != null) {
-//                                            myAudioRecorder.stop();
-//                                            myAudioRecorder.release();
-//                                            myAudioRecorder = null;
-//                                        }
-//                                        recordButton.setVisibility(View.GONE);
-//                                        playAudio.setVisibility(View.VISIBLE);
-//                                        setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
-//                                    } catch (NullPointerException e) {
-//                                        e.printStackTrace();
-//                                    } catch (Exception e) {
-//                                        e.printStackTrace();
-//                                    }
-//                                    break;
-//                            }
-//                            return false;
-//                        }
-//
-//                    });
-//                }
-//            } catch (NullPointerException e) {
-//                e.printStackTrace();
-//            }
 
         }
 
@@ -4008,8 +3753,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         }
                         distance /= 1000;
                         getPrice();
-//                        drawPolyGradiant(thePath, "#f9ad81" ,"#aba100",9, 6);
-//                        drawPolyGradiant(thePath, "#76b5f9", "#1c549d", 9, 4);
                         drawPolyLineOnMap(start, arrival);
                         builder.include(arrival);
                         int padding = 200;
@@ -4228,20 +3971,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 @Override
                 public void run() {
-                    // Do the task...
-//                    if (stop == 1 || counter >= driversKeys.size() || idInList(driversKeys.get(counter), driversKeysHold)) {
-//                        finishedSendReq = true;
-//                        handler.removeCallbacks(this);
-//                        driversKeys.clear();
-//                        driversKeysHold.clear();
-//                        geoQuery.setCenter(new GeoLocation(startLatLng.latitude, startLatLng.longitude));
-//                        counter = 0;
-//                        stop = 0;
-////                        return;
-//                    }
-
-
-                    //Initialize The First Requests
                     if (counter == 0) {
                         Log.e(TAG, "run: if size: " + counter + Step);
                         Log.e(TAG, "run: if driverSize: " + driversKeys.size());
@@ -4296,22 +4025,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                 stopSearchUI();
                                                 showAllUI();
                                                 finishedSendReq = true;
-                                                FirebaseDatabase.getInstance().getReference("COURSES").orderByChild("client").equalTo(userId).addListenerForSingleValueEvent(new ValueEventListener() {
-                                                    @Override
-                                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                        for (DataSnapshot data : dataSnapshot.getChildren()) {
-                                                            //findViewById(R.id.commander).setVisibility(View.GONE);
-                                                            //selectDest.setVisibility(View.GONE);
-
-//                                                            callLayout.setVisibility(View.VISIBLE);
-                                                        }
-                                                    }
-
-                                                    @Override
-                                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                                    }
-                                                });
                                                 counter = 0;
                                                 stop = 0;
                                                 pickupRequest.removeEventListener(this);
@@ -4324,8 +4037,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                             courseScreenIsOn = false;
                                                             finishedSendReq = true;
                                                             handler.removeCallbacks(runnable);
-//                                                            driversKeys.clear();
-//                                                            driversKeysHold.clear();
                                                             geoQuery.setCenter(new GeoLocation(startLatLng.latitude, startLatLng.longitude));
                                                             counter = 0;
                                                             stop = 0;
@@ -4348,11 +4059,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                                                     }
                                                                 });
-
-
-//                                                                 startSearchUI();
                                                             }
-                                                            //findViewById(R.id.driverInfo).setVisibility(View.VISIBLE);
                                                         }
                                                     }
 
@@ -4452,15 +4159,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-//            stopSearchUI();
-            // Do things like hide the progress bar or change a TextView
         }
     }
 
     private void startSearchUI() {
         rippleBackground.startRippleAnimation();
         cancelRequest.setVisibility(View.VISIBLE);
-//        menuButton.setVisibility(View.GONE);
     }
 
     private void stopSearchUI() {
@@ -4486,11 +4190,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 showAllUI();
                 for (int h = (counter - Step); h < (counter + Step) && h < driversKeys.size(); h++) {
 //                    //The Driver Has Not Answered The Pickup Call(Refused)
-//                    if (h >= 0) {
                     DatabaseReference pickupRequest = FirebaseDatabase.getInstance().
-                            getReference("PICKUPREQUEST")/*.child(driversKeys.get(h)).child(userId)*/;
+                            getReference("PICKUPREQUEST");
                     pickupRequest.removeValue();
-//                    }
                 }
             }
         });
@@ -4522,7 +4224,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             stop = 1;
             showAllUI();
             DatabaseReference pickupRequest = FirebaseDatabase.getInstance().
-                    getReference("PICKUPREQUEST")/*.child(driversKeys.get(h)).child(userId)*/;
+                    getReference("PICKUPREQUEST");
             pickupRequest.removeValue();
         } else {
 
@@ -4654,68 +4356,4 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             e.printStackTrace();
         }
     }
-
-//    private void gettingWorkHome(){
-////        fPlaceDataList.clear();
-//        try {
-//            prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
-//            userId = prefs.getString("userID", "");
-//            Log.e(TAG, "onResume: " + userId);
-//            FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child("Work").addListenerForSingleValueEvent(new ValueEventListener() {
-//                @Override
-//                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                    if (dataSnapshot.exists()) {
-//
-//                        address = dataSnapshot.child("Address").getValue(String.class);
-//                        lat = dataSnapshot.child("Lat").getValue(String.class);
-//                        Long =dataSnapshot.child("Long").getValue(String.class);
-//
-//                        Log.e(TAG, "onDataChange: "+address );
-//                        Log.e(TAG, "onDataChange: "+lat );
-//                        Log.e(TAG, "onDataChange: "+Long );
-//                    }
-//                }
-//
-//                @Override
-//                public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                }
-//            });
-//            FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child("Home").addListenerForSingleValueEvent(new ValueEventListener() {
-//                @Override
-//                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                    if (dataSnapshot.exists()) {
-//                        homeAddress = dataSnapshot.child("Address").getValue(String.class);
-//                        homeLat = dataSnapshot.child("Lat").getValue(String.class);
-//                        homeLong = dataSnapshot.child("Long").getValue(String.class);
-//
-//
-//                        Log.e(TAG, "onDataChange:homeAddress "+homeAddress );
-//                        Log.e(TAG, "onDataChange:homeLat "+homeLat );
-//                        Log.e(TAG, "onDataChange:homeLong "+homeLong );
-//                    }
-//                }
-//
-//                @Override
-//                public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                }
-//            });
-//
-//            place homePlace = new place(homeAddress, homeAddress, homeLat, homeLong,R.drawable.work_icon);
-//            place workPlace = new place(address, address, lat, Long, R.drawable.mdaison_con);
-//
-//            fPlaceDataList.add(homePlace);
-//            fPlaceDataList.add(workPlace);
-//            fPlaceAdapter.notifyDataSetChanged();
-//
-//
-//        } catch (DatabaseException e) {
-//            e.printStackTrace();
-//        } catch (NullPointerException e) {
-//            e.printStackTrace();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
 }

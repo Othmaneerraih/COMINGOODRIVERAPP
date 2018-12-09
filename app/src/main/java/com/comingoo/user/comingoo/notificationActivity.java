@@ -191,8 +191,6 @@ public class notificationActivity extends AppCompatActivity {
                                if(newCourse != null){
                                    if (newCourse.getCode() != null){
                                        MapsActivity.promoCode.setText(newCourse.getCode());
-//                                       SharedPreferences prefs = getSharedPreferences("COMINGOODRIVERDATA", MODE_PRIVATE);
-//                                       userId = prefs.getString("userId", null);
                                        FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("PROMOCODE").setValue(newCourse.getCode());
 
                                        finish();

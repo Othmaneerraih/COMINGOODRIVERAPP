@@ -55,8 +55,6 @@ public class historiqueActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
         userId = prefs.getString("userID", null);
 
-
-
         mLocation = FirebaseDatabase.getInstance().getReference("CLIENTFINISHEDCOURSES").child(userId);
         mLocation.keepSynced(true);
 
