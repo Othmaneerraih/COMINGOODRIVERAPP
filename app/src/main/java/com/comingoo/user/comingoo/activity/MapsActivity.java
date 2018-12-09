@@ -1,4 +1,4 @@
-package com.comingoo.user.comingoo;
+package com.comingoo.user.comingoo.activity;
 
 import android.Manifest;
 import android.app.Activity;
@@ -67,10 +67,17 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.comingoo.user.comingoo.utility.AnimateConstraint;
 import com.comingoo.user.comingoo.Interfaces.PickLocation;
+import com.comingoo.user.comingoo.utility.LocalHelper;
+import com.comingoo.user.comingoo.model.LocationInitializer;
+import com.comingoo.user.comingoo.R;
+import com.comingoo.user.comingoo.utility.SharedPreferenceTask;
 import com.comingoo.user.comingoo.adapters.FavouritePlaceAdapter;
 import com.comingoo.user.comingoo.adapters.MyPlaceAdapter;
 
+import com.comingoo.user.comingoo.model.FixedLocation;
+import com.comingoo.user.comingoo.model.place;
 import com.comingoo.user.comingoo.others.HttpConnection;
 import com.comingoo.user.comingoo.others.PathJSONParser;
 import com.firebase.geofire.GeoFire;

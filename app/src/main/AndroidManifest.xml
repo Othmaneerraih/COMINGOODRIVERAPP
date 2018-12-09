@@ -65,50 +65,50 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".MapsActivity"
+            android:name=".activity.MapsActivity"
             android:configChanges="orientation"
             android:fitsSystemWindows="true"
             android:label="@string/title_activity_maps"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
-            android:name="com.comingoo.user.comingoo.MainActivity"
+            android:name="com.comingoo.user.comingoo.activity.MainActivity"
             android:configChanges="orientation"
             android:label="Comingoo"
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".FevoriteLocationActivity"
+            android:name=".activity.FevoriteLocationActivity"
             android:configChanges="orientation"
             android:label="Comingoo"
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".signupActivity"
+            android:name=".activity.signupActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".signupConfirmActivity"
+            android:name=".activity.signupConfirmActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".signupFacebookActivity"
+            android:name=".activity.signupFacebookActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".signupInfoActivity"
-            android:configChanges="orientation"
-            android:screenOrientation="portrait" />
-
-        <activity
-            android:name="com.comingoo.user.comingoo.VoipCallingActivity"
+            android:name=".activity.signupInfoActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".loginActivity"
+            android:name="com.comingoo.user.comingoo.activity.VoipCallingActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".activity.loginActivity"
             android:configChanges="orientation"
             android:label="Comingoo"
             android:screenOrientation="portrait"
@@ -120,23 +120,23 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".historiqueActivity"
+            android:name=".activity.historiqueActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".notificationActivity"
+            android:name=".activity.notificationActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".aideActivity"
+            android:name=".activity.aideActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".comingoonuActivity"
+            android:name=".activity.comingoonuActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".inviteActivity"
+            android:name=".activity.inviteActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
     </application>

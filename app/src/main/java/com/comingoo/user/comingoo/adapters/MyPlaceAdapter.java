@@ -8,15 +8,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.comingoo.user.comingoo.FevoriteLocationActivity;
+import com.comingoo.user.comingoo.activity.FevoriteLocationActivity;
 import com.comingoo.user.comingoo.Interfaces.PickLocation;
-import com.comingoo.user.comingoo.MapsActivity;
+import com.comingoo.user.comingoo.activity.MapsActivity;
 import com.comingoo.user.comingoo.R;
-import com.comingoo.user.comingoo.place;
+import com.comingoo.user.comingoo.model.place;
 
 import java.util.List;
 

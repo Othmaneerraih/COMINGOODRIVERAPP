@@ -1,4 +1,4 @@
-package com.comingoo.user.comingoo;
+package com.comingoo.user.comingoo.utility;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 
 public class AnimateConstraint {
 
-    static void animate(final Context context, final View constraintLayout, final float reachedHeigth, final float currentHeight, int duration, final View ...opt){
+    public static void animate(final Context context, final View constraintLayout, final float reachedHeigth, final float currentHeight, int duration, final View... opt) {
 
         constraintLayout.setVisibility(View.VISIBLE);
 
@@ -20,7 +20,7 @@ public class AnimateConstraint {
         ValueAnimator anim = ValueAnimator.ofInt(constraintLayout.getMeasuredHeight(), height);
 
 
-        if(opt.length != 0){
+        if (opt.length != 0) {
             opt[0].setVisibility(View.GONE);
             fadeIn(context, opt[1], 500, 10);
         }
@@ -31,7 +31,7 @@ public class AnimateConstraint {
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
                 int val = (Integer) valueAnimator.getAnimatedValue();
                 ViewGroup.LayoutParams layoutParams = constraintLayout.getLayoutParams();
-                layoutParams.height =  val;
+                layoutParams.height = val;
                 constraintLayout.setLayoutParams(layoutParams);
             }
         });
@@ -39,7 +39,8 @@ public class AnimateConstraint {
         anim.start();
 
     }
-    static void animateWidth(final Context context, final View constraintLayout, final float reachedHeigth, final float currentHeight, int duration, final View ...opt){
+
+    public static void animateWidth(final Context context, final View constraintLayout, final float reachedHeigth, final float currentHeight, int duration, final View... opt) {
 
         constraintLayout.setVisibility(View.VISIBLE);
 
@@ -51,7 +52,7 @@ public class AnimateConstraint {
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
                 int val = (Integer) valueAnimator.getAnimatedValue();
                 ViewGroup.LayoutParams layoutParams = constraintLayout.getLayoutParams();
-                layoutParams.width =  val;
+                layoutParams.width = val;
                 constraintLayout.setLayoutParams(layoutParams);
             }
         });
@@ -59,7 +60,8 @@ public class AnimateConstraint {
         anim.start();
 
     }
-    static void fadeIn(Context context,final View constraintLayout, final int duration, final int howSmooth){
+
+    public static void fadeIn(Context context, final View constraintLayout, final int duration, final int howSmooth) {
         constraintLayout.setVisibility(View.VISIBLE);
 
         ObjectAnimator fadeIn = ObjectAnimator.ofFloat(constraintLayout, "alpha", 0f, 1f);
@@ -69,7 +71,8 @@ public class AnimateConstraint {
         mAnimationSet.play(fadeIn);
         mAnimationSet.start();
     }
-    static void fadeOut(Context context,final View constraintLayout, final int duration, final int howSmooth){
+
+    public static void fadeOut(Context context, final View constraintLayout, final int duration, final int howSmooth) {
         constraintLayout.setVisibility(View.VISIBLE);
 
         ObjectAnimator fadeIn = ObjectAnimator.ofFloat(constraintLayout, "alpha", 1f, 0f);
@@ -79,7 +82,8 @@ public class AnimateConstraint {
         mAnimationSet.play(fadeIn);
         mAnimationSet.start();
     }
-    static void animateCollapse(final Context context, final View constraintLayout, final float reachedHeigth, final float currentHeight, int duration){
+
+    public static void animateCollapse(final Context context, final View constraintLayout, final float reachedHeigth, final float currentHeight, int duration) {
 
         constraintLayout.setVisibility(View.VISIBLE);
 
@@ -92,14 +96,15 @@ public class AnimateConstraint {
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
                 int val = (Integer) valueAnimator.getAnimatedValue();
                 ViewGroup.LayoutParams layoutParams = constraintLayout.getLayoutParams();
-                layoutParams.height =  val;
+                layoutParams.height = val;
                 constraintLayout.setLayoutParams(layoutParams);
             }
         });
         anim.setDuration(duration);
         anim.start();
     }
-    static void resideAnimation(final Context context, final View constraintLayout, final View contentBlocker, final int screenWidth, final int screenHeight, final int duration){
+
+    public static void resideAnimation(final Context context, final View constraintLayout, final View contentBlocker, final int screenWidth, final int screenHeight, final int duration) {
 
         final int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) screenHeight, context.getResources().getDisplayMetrics());
         final int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) screenWidth, context.getResources().getDisplayMetrics());
@@ -107,8 +112,8 @@ public class AnimateConstraint {
         final float yTranslation = 0.25f * height;
 
 
-        final double percentageScale = (1 - 0.6)/(duration / 20);
-        final double percentageTranslation = (xTranslation)/(duration / 20);
+        final double percentageScale = (1 - 0.6) / (duration / 20);
+        final double percentageTranslation = (xTranslation) / (duration / 20);
 
         final Handler handler = new Handler();
         Runnable runnable = new Runnable() {
@@ -118,18 +123,18 @@ public class AnimateConstraint {
             public void run() {
                 double value = 1 - (percentageScale * i);
 
-                if((percentageTranslation*i) <= xTranslation){
-                constraintLayout.setTranslationX((int) (percentageTranslation*i));
-                contentBlocker.setTranslationX((int) (percentageTranslation*i));
+                if ((percentageTranslation * i) <= xTranslation) {
+                    constraintLayout.setTranslationX((int) (percentageTranslation * i));
+                    contentBlocker.setTranslationX((int) (percentageTranslation * i));
                 }
-                if(value >= 0.6) {
+                if (value >= 0.6) {
                     constraintLayout.setScaleY((float) value);
                     constraintLayout.setScaleX((float) value);
                 }
                 i++;
-                if(value > 0.6 || (percentageTranslation*i) < xTranslation ) {
+                if (value > 0.6 || (percentageTranslation * i) < xTranslation) {
                     handler.postDelayed(this, 20);
-                }else{
+                } else {
                     contentBlocker.setScaleY((float) (value + 0.12));
                     contentBlocker.setScaleX((float) (value + 0.215));
 
@@ -142,15 +147,16 @@ public class AnimateConstraint {
                             final Handler handler = new Handler();
                             Runnable runnable = new Runnable() {
                                 int i = 1;
+
                                 @Override
                                 public void run() {
                                     double value = 0.6 + (percentageScale * i);
 
-                                    if((xTranslation-(percentageTranslation*i)) >= 0){
-                                        constraintLayout.setTranslationX((int) (xTranslation-(percentageTranslation*i)));
-                                        contentBlocker.setTranslationX((int) (xTranslation-(percentageTranslation*i)));
+                                    if ((xTranslation - (percentageTranslation * i)) >= 0) {
+                                        constraintLayout.setTranslationX((int) (xTranslation - (percentageTranslation * i)));
+                                        contentBlocker.setTranslationX((int) (xTranslation - (percentageTranslation * i)));
                                     }
-                                    if(value <= 1) {
+                                    if (value <= 1) {
                                         constraintLayout.setScaleY((float) value);
                                         constraintLayout.setScaleX((float) value);
                                         contentBlocker.setScaleY((float) value);
@@ -159,7 +165,7 @@ public class AnimateConstraint {
 
 
                                     i++;
-                                    if(value < 1 ||(xTranslation-(percentageTranslation*i)) >= 0){
+                                    if (value < 1 || (xTranslation - (percentageTranslation * i)) >= 0) {
                                         handler.postDelayed(this, 20);
                                     } else {
                                         constraintLayout.setTranslationX(0);
@@ -177,7 +183,8 @@ public class AnimateConstraint {
         runnable.run();
 
     }
-    static void expandCircleAnimation(final Context context, final View constraintLayout, float maxHeight, float maxWidth){
+
+    static void expandCircleAnimation(final Context context, final View constraintLayout, float maxHeight, float maxWidth) {
         double Height = maxHeight + (maxHeight * 0.5) + maxHeight;
         double Width = maxWidth + (maxWidth * 0.5);
         animate(context, constraintLayout, (float) Height, 1, 650);

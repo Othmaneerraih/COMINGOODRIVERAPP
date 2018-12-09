@@ -347,7 +347,7 @@
             map:layout_constraintHorizontal_bias="0.0"
             map:layout_constraintStart_toStartOf="parent"
             map:layout_constraintTop_toTopOf="parent"
-            tools:context="com.comingoo.user.comingoo.MapsActivity" />
+            tools:context="com.comingoo.user.comingoo.activity.MapsActivity" />
 
 
         <android.support.constraint.ConstraintLayout
