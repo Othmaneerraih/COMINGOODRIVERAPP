@@ -2490,8 +2490,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if (snapshot.hasChild("favouritePlace")) {
                 } else {
                     Map<String, String> dataFavPlace = new HashMap();
-                    dataFavPlace.put("Home", "");
-                    dataFavPlace.put("Work", "");
+                    dataFavPlace.put(getString(R.string.txt_home), "");
+                    dataFavPlace.put(getString(R.string.txt_work), "");
                     FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientID).child("favouritePlace").setValue(dataFavPlace);
 
                     Map<String, String> homeSt = new HashMap();
@@ -2506,11 +2506,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     FirebaseDatabase.getInstance().
                             getReference("clientUSERS").child(clientID)
-                            .child("favouritePlace").child("Home").setValue(homeSt);
+                            .child("favouritePlace").child(getString(R.string.txt_home)).setValue(homeSt);
 
                     FirebaseDatabase.getInstance().
                             getReference("clientUSERS").child(clientID)
-                            .child("favouritePlace").child("Work").setValue(workSt);
+                            .child("favouritePlace").child(getString(R.string.txt_work)).setValue(workSt);
 
                 }
             }
@@ -4311,7 +4311,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
             userId = prefs.getString("userID", "");
             Log.e(TAG, "onResume: " + userId);
-            FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child("Work").addListenerForSingleValueEvent(new ValueEventListener() {
+            FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child(getString(R.string.txt_work)).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
@@ -4331,7 +4331,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 }
             });
-            FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child("Home").addListenerForSingleValueEvent(new ValueEventListener() {
+            FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child(getString(R.string.txt_home)).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
@@ -4342,9 +4342,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         Place homePlace = new Place(homeAddress, homeAddress, homeLat, homeLong, R.drawable.work_icon);
                         fPlaceDataList.add(homePlace);
                         fPlaceAdapter.notifyDataSetChanged();
-                        Log.e(TAG, "onDataChange:homeAddress " + homeAddress);
-                        Log.e(TAG, "onDataChange:homeLat " + homeLat);
-                        Log.e(TAG, "onDataChange:homeLong " + homeLong);
+//                        Log.e(TAG, "onDataChange:homeAddress " + homeAddress);
+//                        Log.e(TAG, "onDataChange:homeLat " + homeLat);
+//                        Log.e(TAG, "onDataChange:homeLong " + homeLong);
                     }
                 }
 
