@@ -895,6 +895,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                         double avgRating = totalRating / totalRatingPerson;
                                                         String avg = String.format("%.2f", avgRating);
                                                         String newString = avg.replace(",", ".");
+                                                        if (newString.equals("")){
+
+                                                            if (newString.equalsIgnoreCase("nan")){
+                                                                iv_total_rating_number.setText("4.0");
+                                                            }else
+                                                                iv_total_rating_number.setText(newString);
+                                                        } else
                                                         iv_total_rating_number.setText(newString);
 //                                                    int rating = Integer.parseInt(dataSnapshot.getValue(String.class)) + 1;
 //                                                    FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientId).child("rating").child(Integer.toString(RATE)).setValue("" + rating);
@@ -904,7 +911,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                                 @Override
                                                 public void onCancelled(@NonNull DatabaseError databaseError) {
-                                                    iv_total_rating_number.setText(4.5 + "");
+                                                    iv_total_rating_number.setText("4.0");
                                                 }
                                             });
 
@@ -1962,10 +1969,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             deleteAudio.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
+                                    if (mediaPlayer != null){
+                                        mediaPlayer.stop();
+                                        mediaPlayer.release();
+                                    }
                                     newDialog.dismiss();
                                     showVoiceDialog();
                                 }
                             });
+
                             if (myAudioRecorder != null) {
                                 myAudioRecorder.stop();
                                 myAudioRecorder.release();
@@ -2247,7 +2259,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         placeAdapter = new MyPlaceAdapter(getApplicationContext(), placeDataList, false, userId, this);
         mLocationView.setAdapter(placeAdapter);
 
-        fPlaceAdapter = new FavouritePlaceAdapter(getApplicationContext(), fPlaceDataList, true, userId);
+        fPlaceAdapter = new FavouritePlaceAdapter(getApplicationContext(), fPlaceDataList, true, userId, this);
         fLocationView.setAdapter(fPlaceAdapter);
 
         rPlaceAdapter = new MyPlaceAdapter(getApplicationContext(), rPlaceDataList, false, userId, this);
