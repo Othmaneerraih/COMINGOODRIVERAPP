@@ -144,6 +144,7 @@ import java.io.IOException;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -2562,24 +2563,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         favorite = findViewById(R.id.favorite_recent);
     }
 
-    public static Place getRecentPlaces(Context context) {
+    public static void getRecentPlaces(Context context) {
 
         SharedPreferences appSharedPrefs = PreferenceManager
                 .getDefaultSharedPreferences(context.getApplicationContext());
         Gson gson = new Gson();
         String json = appSharedPrefs.getString("recent_places", "");
 
-
-        Place rPlace = gson.fromJson(json, Place.class);
-        LatLng latLng = new LatLng(Double.parseDouble("33.5725155"), Double.parseDouble("-7.5962637"));
-        Place Place = new Place("Travail", /*getCompleteAddressString(context, latLng.latitude, latLng.longitude)*/
+        Place[] rPlace = gson.fromJson(json, Place[].class);
+        Place Place = new Place("Travail",
                 "Casablanca, Morocco", "33.5725155", "-7.5962637", R.drawable.lieux_proches);
 
-        if (rPlace == null) {
-            return Place;
+        if (rPlace == null || rPlace.length == 0) {
+            rPlaceDataList.add(Place);
         } else {
-            return rPlace;
+            rPlaceDataList.addAll(Arrays.asList(rPlace));
         }
+        rPlaceAdapter.notifyDataSetChanged();
     }
 
     private void hideAllUI() {
@@ -2666,13 +2666,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void showFavoritsAndRecents() {
         rPlaceDataList.clear();
-        rPlaceDataList.add(getRecentPlaces(context));
-        rPlaceAdapter.notifyDataSetChanged();
+        getRecentPlaces(context);
+
         AnimateConstraint.animate(MapsActivity.this, favorite, HeightAbsolute, 1, 100);
 
 
         findViewById(R.id.imageView7).setVisibility(View.VISIBLE);
-        //findViewById(R.id.imageView8).setVisibility(View.VISIBLE);
         findViewById(R.id.x).setVisibility(View.VISIBLE);
         findViewById(R.id.my_position).setVisibility(View.GONE);
         findViewById(R.id.adress_result).setVisibility(View.INVISIBLE);
@@ -3213,12 +3212,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    public static void saveRecentPlaces(Context context, Place rplace) {
+    public static void saveRecentPlaces(Context context, ArrayList<Place> rPlaceDataList) {
         SharedPreferences appSharedPrefs = PreferenceManager
                 .getDefaultSharedPreferences(context.getApplicationContext());
         SharedPreferences.Editor prefsEditor = appSharedPrefs.edit();
         Gson gson = new Gson();
-        String json = gson.toJson(rplace);
+        String json = gson.toJson(rPlaceDataList);
         prefsEditor.putString("recent_places", json);
         prefsEditor.commit();
     }
@@ -3226,9 +3225,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public static void goToLocation(Context context, Double lat, Double lng, Place rPlace) {
         // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), 17));
         if (rPlace != null) {
-            if (contains(rPlaceDataList, rPlace.name)) {
+            if (!contains(rPlaceDataList, rPlace)) {
                 rPlaceDataList.add(rPlace);
-                saveRecentPlaces(context, rPlace);
+                saveRecentPlaces(context, rPlaceDataList);
                 rPlaceAdapter.notifyDataSetChanged();
             }
         }
@@ -3247,9 +3246,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    static boolean contains(ArrayList<Place> list, String name) {
+    static boolean contains(ArrayList<Place> list, Place place) {
         for (Place item : list) {
-            if (item.getName().equals(name)) {
+            if (item.getName().equals(place.name) || item.getLat().equals(place.lat) || item.getLng().equals(place.lng) || item.getAddress().equals(place.address)) {
                 return true;
             }
         }
