@@ -26,6 +26,7 @@ import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 
@@ -89,6 +90,7 @@ public class FevoriteLocationActivity extends AppCompatActivity
     private PlaceAutocompleteFragment autocompleteFragment;
     private ImageButton positionButton;
     private LatLng searchLatLng;
+    private RelativeLayout pinLayout;
 
     private GeoQuery geoQuery;
 
@@ -102,6 +104,9 @@ public class FevoriteLocationActivity extends AppCompatActivity
         searchEt = findViewById(R.id.search_edit_text);
         confirmBtn = findViewById(R.id.confirm_btn);
         positionButton = findViewById(R.id.my_position);
+        pinLayout = findViewById(R.id.pin);
+
+        pinLayout.setVisibility(View.VISIBLE);
 
         positionButton.setImageBitmap(scaleBitmap(40, 37, R.drawable.my_position_icon));
 
@@ -398,9 +403,10 @@ public class FevoriteLocationActivity extends AppCompatActivity
                 mGoogleMap.clear();
                 mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
                 mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 12.0f));
+                pinLayout.setVisibility(View.GONE);
+                int height = 60;
+                int width = 30;
 
-                int height = 150;
-                int width = 80;
                 BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.depart_pin);
                 Bitmap b = bitmapdraw.getBitmap();
                 Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
