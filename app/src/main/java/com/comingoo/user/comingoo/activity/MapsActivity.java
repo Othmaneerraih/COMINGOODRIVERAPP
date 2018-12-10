@@ -141,7 +141,10 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -526,15 +529,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         dialog.setContentView(view);
 
         relativeLayout = dialog.findViewById(R.id.incoming_call_view);
-        iv_user_image_voip_one = (CircleImageView) dialog.findViewById(R.id.iv_user_image_voip_one);
-        iv_cancel_call_voip_one = (CircleImageView) dialog.findViewById(R.id.iv_cancel_call_voip_one);
-        iv_recv_call_voip_one = (CircleImageView) dialog.findViewById(R.id.iv_recv_call_voip_one);
-        caller_name = (TextView) dialog.findViewById(R.id.callerName);
-        callState = (TextView) dialog.findViewById(R.id.callState);
+        iv_user_image_voip_one = dialog.findViewById(R.id.iv_user_image_voip_one);
+        iv_cancel_call_voip_one = dialog.findViewById(R.id.iv_cancel_call_voip_one);
+        iv_recv_call_voip_one = dialog.findViewById(R.id.iv_recv_call_voip_one);
+        caller_name = dialog.findViewById(R.id.callerName);
+        callState = dialog.findViewById(R.id.callState);
 
         iv_mute = dialog.findViewById(R.id.iv_mute);
         iv_loud = dialog.findViewById(R.id.iv_loud);
-        tv_name_voip_one = (TextView) dialog.findViewById(R.id.tv_name_voip_one);
+        tv_name_voip_one = dialog.findViewById(R.id.tv_name_voip_one);
 
 
         iv_mute.setVisibility(View.GONE);
@@ -1026,8 +1029,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view) {
                 // mDrawer.openMenu(true);
-                ConstraintLayout contentConstraint = (ConstraintLayout) findViewById(R.id.contentLayout);
-                ConstraintLayout contentBlocker = (ConstraintLayout) findViewById(R.id.contentBlocker);
+                ConstraintLayout contentConstraint = findViewById(R.id.contentLayout);
+                ConstraintLayout contentBlocker = findViewById(R.id.contentBlocker);
                 AnimateConstraint.resideAnimation(context, contentConstraint, contentBlocker, (int) dpWidth, (int) dpHeight, 200);
             }
         });
@@ -1140,10 +1143,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             final Dialog dialog = new Dialog(context);
             dialog.setContentView(R.layout.custom);
 
-            Button dialogButton = (Button) dialog.findViewById(R.id.button);
+            Button dialogButton = dialog.findViewById(R.id.button);
 
-            TextView textView8 = (TextView) dialog.findViewById(R.id.textView8);
-            Button ddd = (Button) dialog.findViewById(R.id.button);
+            TextView textView8 = dialog.findViewById(R.id.textView8);
+            Button ddd = dialog.findViewById(R.id.button);
 
 
             //Set Texts
@@ -1253,12 +1256,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             try {
                 final Dialog dialog = new Dialog(context);
                 dialog.setContentView(R.layout.custom2);
-                TextView textView8 = (TextView) dialog.findViewById(R.id.textView8);
-                Button ddd = (Button) dialog.findViewById(R.id.button);
+                TextView textView8 = dialog.findViewById(R.id.textView8);
+                Button ddd = dialog.findViewById(R.id.button);
                 //Set Texts
                 textView8.setText(resources.getString(R.string.Votrechauffeurestarrivé));
                 ddd.setText(resources.getString(R.string.Daccord));
-                Button dialogButton = (Button) dialog.findViewById(R.id.button);
+                Button dialogButton = dialog.findViewById(R.id.button);
                 dialogButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -1407,6 +1410,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private String COURSE;
     private String choseBox;
     private String dialogDriverId;
+    private DecimalFormat df2 = new DecimalFormat(".##");
 
     private class checkFinishedCourse extends AsyncTask<String, Integer, String> {
         SharedPreferences prefs;
@@ -1450,8 +1454,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                             dialog.setContentView(R.layout.finished_course);
 
 
-                                            TextView textView13 = (TextView) dialog.findViewById(R.id.textView13);
-                                            TextView textView14 = (TextView) dialog.findViewById(R.id.textView14);
+                                            TextView textView13 = dialog.findViewById(R.id.textView13);
+                                            TextView textView14 = dialog.findViewById(R.id.textView14);
 
 
                                             //Set Texts
@@ -1459,12 +1463,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                             textView14.setText(resources.getString(R.string.Evaluezvotreéxperience));
 
 
-                                            RelativeLayout body = (RelativeLayout) dialog.findViewById(R.id.body);
+                                            RelativeLayout body = dialog.findViewById(R.id.body);
                                             body.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) dpWidth, (int) dpWidth, R.drawable.finished_bg)));
 
-                                            Button dialogButton = (Button) dialog.findViewById(R.id.button);
-                                            final Button price = (Button) dialog.findViewById(R.id.button3);
+                                            Button dialogButton = dialog.findViewById(R.id.button);
+                                            final Button price = dialog.findViewById(R.id.button3);
 //                                            price.setText(dataSnapshott.child("price").getValue(String.class) + " MAD");
+
 
                                             if (courseIDT != null) {
                                                 FirebaseDatabase.getInstance().getReference("COURSES").child(courseIDT).child("price").addValueEventListener(new ValueEventListener() {
@@ -1476,7 +1481,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //
                                                                 double finalPriceOfCourse = Double.parseDouble(dataSnapshot.getValue(String.class));
                                                                 Log.e(TAG, "COURSES value finalPriceOfCourse: " + finalPriceOfCourse);
-                                                                price.setText(finalPriceOfCourse + " MAD");
+                                                                df2.setRoundingMode(RoundingMode.UP);
+                                                                price.setText(df2.format(finalPriceOfCourse) + " MAD");
                                                             }
 //                                                    }
                                                         } catch (Exception e) {
@@ -1492,32 +1498,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                             }
 
-                                            final Button star1 = (Button) dialog.findViewById(R.id.star1);
-                                            final Button star2 = (Button) dialog.findViewById(R.id.star2);
-                                            final Button star3 = (Button) dialog.findViewById(R.id.star3);
-                                            final Button star4 = (Button) dialog.findViewById(R.id.star4);
-                                            final Button star5 = (Button) dialog.findViewById(R.id.star5);
+                                            final Button star1 = dialog.findViewById(R.id.star1);
+                                            final Button star2 = dialog.findViewById(R.id.star2);
+                                            final Button star3 = dialog.findViewById(R.id.star3);
+                                            final Button star4 = dialog.findViewById(R.id.star4);
+                                            final Button star5 = dialog.findViewById(R.id.star5);
 
-                                            final ImageButton im1 = (ImageButton) dialog.findViewById(R.id.imageView4);
-                                            final ImageButton im2 = (ImageButton) dialog.findViewById(R.id.imageView5);
-                                            final ImageButton im3 = (ImageButton) dialog.findViewById(R.id.imageView6);
-                                            final ImageButton im4 = (ImageButton) dialog.findViewById(R.id.imageView7);
-                                            final ImageButton im5 = (ImageButton) dialog.findViewById(R.id.imageView8);
+                                            final ImageButton im1 = dialog.findViewById(R.id.imageView4);
+                                            final ImageButton im2 = dialog.findViewById(R.id.imageView5);
+                                            final ImageButton im3 = dialog.findViewById(R.id.imageView6);
+                                            final ImageButton im4 = dialog.findViewById(R.id.imageView7);
+                                            final ImageButton im5 = dialog.findViewById(R.id.imageView8);
 
-                                            final ImageButton nextButton = (ImageButton) dialog.findViewById(R.id.next);
+                                            final ImageButton nextButton = dialog.findViewById(R.id.next);
 
-                                            final ImageView imot = (ImageView) dialog.findViewById(R.id.stars_rating);
+                                            final ImageView imot = dialog.findViewById(R.id.stars_rating);
 
                                             dialog.setCancelable(false);
                                             dialog.setCanceledOnTouchOutside(false);
 
                                             // defaul rate
                                             RATE = 4;
-                                            star1.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
-                                            star2.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
-                                            star3.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
-                                            star4.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.selected_star)));
-                                            star5.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
+                                            star1.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.normal_star)));
+                                            star2.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.normal_star)));
+                                            star3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.normal_star)));
+                                            star4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.selected_star)));
+                                            star5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.unselected_star)));
                                             imot.setImageBitmap(scaleBitmap(150, 150, R.drawable.four_stars));
 
 
@@ -1584,11 +1590,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                 public void onClick(View v) {
                                                     RATE = 1;
 
-                                                    star1.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.selected_star)));
-                                                    star2.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
-                                                    star3.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
-                                                    star4.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
-                                                    star5.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
+                                                    star1.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.selected_star)));
+                                                    star2.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.unselected_star)));
+                                                    star3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.unselected_star)));
+                                                    star4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.unselected_star)));
+                                                    star5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.unselected_star)));
 
                                                     imot.setImageBitmap(scaleBitmap(150, 150, R.drawable.one_star));
                                                 }
@@ -1598,11 +1604,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                 public void onClick(View v) {
                                                     RATE = 2;
 
-                                                    star1.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
-                                                    star2.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.selected_star)));
-                                                    star3.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
-                                                    star4.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
-                                                    star5.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
+                                                    star1.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.normal_star)));
+                                                    star2.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.selected_star)));
+                                                    star3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.unselected_star)));
+                                                    star4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.unselected_star)));
+                                                    star5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.unselected_star)));
 
                                                     imot.setImageBitmap(scaleBitmap(150, 150, R.drawable.two_stars));
                                                 }
@@ -1612,11 +1618,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                 public void onClick(View v) {
                                                     RATE = 3;
 
-                                                    star1.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
-                                                    star2.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
-                                                    star3.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.selected_star)));
-                                                    star4.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
-                                                    star5.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
+                                                    star1.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.normal_star)));
+                                                    star2.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.normal_star)));
+                                                    star3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.selected_star)));
+                                                    star4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.unselected_star)));
+                                                    star5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.unselected_star)));
 
                                                     imot.setImageBitmap(scaleBitmap(150, 150, R.drawable.three_stars));
                                                 }
@@ -1626,11 +1632,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                 public void onClick(View v) {
                                                     RATE = 4;
 
-                                                    star1.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
-                                                    star2.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
-                                                    star3.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
-                                                    star4.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.selected_star)));
-                                                    star5.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.unselected_star)));
+                                                    star1.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.normal_star)));
+                                                    star2.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.normal_star)));
+                                                    star3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.normal_star)));
+                                                    star4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.selected_star)));
+                                                    star5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.unselected_star)));
 
                                                     imot.setImageBitmap(scaleBitmap(150, 150, R.drawable.four_stars));
                                                 }
@@ -1640,11 +1646,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                 @Override
                                                 public void onClick(View v) {
                                                     RATE = 5;
-                                                    star1.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
-                                                    star2.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
-                                                    star3.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
-                                                    star4.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.normal_star)));
-                                                    star5.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) 45, (int) 45, R.drawable.selected_star)));
+                                                    star1.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.normal_star)));
+                                                    star2.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.normal_star)));
+                                                    star3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.normal_star)));
+                                                    star4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.normal_star)));
+                                                    star5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.selected_star)));
 
                                                     imot.setImageBitmap(scaleBitmap(150, 150, R.drawable.five_stars));
                                                 }
@@ -1689,13 +1695,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                                         newDialog.setContentView(R.layout.finished_course_2);
                                                                         choseBox = null;
 
-                                                                        TextView textView15 = (TextView) dialog.findViewById(R.id.textView15);
-                                                                        TextView textView16 = (TextView) dialog.findViewById(R.id.textView16);
-                                                                        Button button5 = (Button) dialog.findViewById(R.id.button5);
-                                                                        Button button7 = (Button) dialog.findViewById(R.id.button7);
-                                                                        Button button8 = (Button) dialog.findViewById(R.id.button8);
-                                                                        Button button9 = (Button) dialog.findViewById(R.id.button9);
-                                                                        Button button10 = (Button) dialog.findViewById(R.id.button10);
+                                                                        TextView textView15 = dialog.findViewById(R.id.textView15);
+                                                                        TextView textView16 = dialog.findViewById(R.id.textView16);
+                                                                        Button button5 = dialog.findViewById(R.id.button5);
+                                                                        Button button7 = dialog.findViewById(R.id.button7);
+                                                                        Button button8 = dialog.findViewById(R.id.button8);
+                                                                        Button button9 = dialog.findViewById(R.id.button9);
+                                                                        Button button10 = dialog.findViewById(R.id.button10);
 
 
                                                                         //Set Texts
@@ -1707,17 +1713,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                                         button9.setText(resources.getString(R.string.Itinéraire));
                                                                         button10.setText(resources.getString(R.string.Autre));
 
-                                                                        RelativeLayout body = (RelativeLayout) newDialog.findViewById(R.id.body);
+                                                                        RelativeLayout body = newDialog.findViewById(R.id.body);
                                                                         body.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) dpWidth, (int) dpWidth, R.drawable.finished_bg)));
 
-                                                                        final Button opt1 = (Button) newDialog.findViewById(R.id.button5);
-                                                                        final Button opt2 = (Button) newDialog.findViewById(R.id.button6);
-                                                                        final Button opt3 = (Button) newDialog.findViewById(R.id.button7);
-                                                                        final Button opt4 = (Button) newDialog.findViewById(R.id.button8);
-                                                                        final Button opt5 = (Button) newDialog.findViewById(R.id.button9);
-                                                                        final Button opt6 = (Button) newDialog.findViewById(R.id.button10);
+                                                                        final Button opt1 = newDialog.findViewById(R.id.button5);
+                                                                        final Button opt2 = newDialog.findViewById(R.id.button6);
+                                                                        final Button opt3 = newDialog.findViewById(R.id.button7);
+                                                                        final Button opt4 = newDialog.findViewById(R.id.button8);
+                                                                        final Button opt5 = newDialog.findViewById(R.id.button9);
+                                                                        final Button opt6 = newDialog.findViewById(R.id.button10);
 
-                                                                        final EditText messageText = (EditText) newDialog.findViewById(R.id.editText);
+                                                                        final EditText messageText = newDialog.findViewById(R.id.editText);
 
                                                                         opt1.setOnClickListener(new View.OnClickListener() {
                                                                             @Override
@@ -1905,9 +1911,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         final Dialog newDialog = new Dialog(context);
         newDialog.setContentView(R.layout.voice_record);
 
-        TextView textView18 = (TextView) newDialog.findViewById(R.id.tv_destination);
-        TextView textView19 = (TextView) newDialog.findViewById(R.id.textView19);
-        TextView textView20 = (TextView) newDialog.findViewById(R.id.textView20);
+        TextView textView18 = newDialog.findViewById(R.id.tv_destination);
+        TextView textView19 = newDialog.findViewById(R.id.textView19);
+        TextView textView20 = newDialog.findViewById(R.id.textView20);
 
 
         //Set Texts
@@ -1916,14 +1922,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         textView20.setText(resources.getString(R.string.Record));
 
 
-        ImageButton nextBtn = (ImageButton) newDialog.findViewById(R.id.imageButton6);
-        TextView name = (TextView) newDialog.findViewById(R.id.textView17);
+        ImageButton nextBtn = newDialog.findViewById(R.id.imageButton6);
+        TextView name = newDialog.findViewById(R.id.textView17);
 
 
-        recordButton = (ImageButton) newDialog.findViewById(R.id.recordAudio);
-        playAudio = (ImageButton) newDialog.findViewById(R.id.playAudio);
-        pauseAudio = (ImageButton) newDialog.findViewById(R.id.pauseAudio);
-        deleteAudio = (ImageButton) newDialog.findViewById(R.id.deleteAudio);
+        recordButton = newDialog.findViewById(R.id.recordAudio);
+        playAudio = newDialog.findViewById(R.id.playAudio);
+        pauseAudio = newDialog.findViewById(R.id.pauseAudio);
+        deleteAudio = newDialog.findViewById(R.id.deleteAudio);
         final MediaPlayer mediaPlayer = new MediaPlayer();
 
 
@@ -2119,15 +2125,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         ivCallDriver = findViewById(R.id.iv_call_driver);
 
-        driverNameL = (TextView) findViewById(R.id.tv_driver_name);
-        iv_total_rating_number = (TextView) findViewById(R.id.iv_total_rating_number);
+        driverNameL = findViewById(R.id.tv_driver_name);
+        iv_total_rating_number = findViewById(R.id.iv_total_rating_number);
         driverImageL = findViewById(R.id.iv_driver_image);
-        iv_car_number = (TextView) findViewById(R.id.iv_car_number);
-        iv_total_ride_number = (TextView) findViewById(R.id.iv_total_ride_number);
+        iv_car_number = findViewById(R.id.iv_car_number);
+        iv_total_ride_number = findViewById(R.id.iv_total_ride_number);
         rbDriverRating = findViewById(R.id.rb_user);
         voip_view = findViewById(R.id.voip_view);
-        tv_appelle_voip = (TextView) findViewById(R.id.tv_appelle_voip);
-        tv_appelle_telephone = (TextView) findViewById(R.id.tv_appelle_telephone);
+        tv_appelle_voip = findViewById(R.id.tv_appelle_voip);
+        tv_appelle_telephone = findViewById(R.id.tv_appelle_telephone);
 
         close_button = findViewById(R.id.close_button);
 
@@ -2145,15 +2151,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         driversLocations = new ArrayList<String>();
         driversKeysHold = new ArrayList<String>();
 
-        locationPinDest = (ImageView) findViewById(R.id.locationPinDest);
-        locationPinDriver = (ImageView) findViewById(R.id.driver_pin);
-        profileImage = (ImageView) findViewById(R.id.profile_image);
-        tvUserName = (TextView) findViewById(R.id.textView3);
-        selectedOpImage = (CircleImageView) findViewById(R.id.selectedOperation);
-        deleviryButton = (ImageButton) findViewById(R.id.deliveryButton);
-        carButton = (ImageButton) findViewById(R.id.carButton);
-        selectCity = (ImageButton) findViewById(R.id.imageButton4);
-        destArrow = (ImageView) findViewById(R.id.destArrow);
+        locationPinDest = findViewById(R.id.locationPinDest);
+        locationPinDriver = findViewById(R.id.driver_pin);
+        profileImage = findViewById(R.id.profile_image);
+        tvUserName = findViewById(R.id.textView3);
+        selectedOpImage = findViewById(R.id.selectedOperation);
+        deleviryButton = findViewById(R.id.deliveryButton);
+        carButton = findViewById(R.id.carButton);
+        selectCity = findViewById(R.id.imageButton4);
+        destArrow = findViewById(R.id.destArrow);
 
         if (ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(MapsActivity.this,
@@ -2175,33 +2181,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         sinchClient.getCallClient().addCallClientListener(new SinchCallClientListener());
 
-        price = (TextView) findViewById(R.id.tv_mad);
+        price = findViewById(R.id.tv_mad);
         fixedLocations = new ArrayList<>();
         context = MapsActivity.this;
         orderDriverState = 0;
-        citySelectLayout = (ConstraintLayout) findViewById(R.id.select_city);
-        city = (TextView) findViewById(R.id.city);
-        image1 = (ImageView) findViewById(R.id.imageView7);
-        image2 = (ImageView) findViewById(R.id.imageView8);
-        X = (ImageButton) findViewById(R.id.x);
-        positionButton = (ImageButton) findViewById(R.id.my_position);
+        citySelectLayout = findViewById(R.id.select_city);
+        city = findViewById(R.id.city);
+        image1 = findViewById(R.id.imageView7);
+        image2 = findViewById(R.id.imageView8);
+        X = findViewById(R.id.x);
+        positionButton = findViewById(R.id.my_position);
         gooBox = findViewById(R.id.gooBox);
 
-        coverButton = (Button) findViewById(R.id.coverButton);
+        coverButton = findViewById(R.id.coverButton);
 
-        cancelRequest = (ImageButton) findViewById(R.id.cancelRequest);
+        cancelRequest = findViewById(R.id.cancelRequest);
 
-        passer = (Button) findViewById(R.id.passer);
+        passer = findViewById(R.id.passer);
         ivCross = findViewById(R.id.iv_cancel_ride);
 
-        locationStartPin = (ImageView) findViewById(R.id.location_start_pin);
-        locationDestPin = (ImageView) findViewById(R.id.location_dest_pin);
-        locationPinStart = (ImageView) findViewById(R.id.locationPin);
+        locationStartPin = findViewById(R.id.location_start_pin);
+        locationDestPin = findViewById(R.id.location_dest_pin);
+        locationPinStart = findViewById(R.id.locationPin);
 
-        menuButton = (ImageButton) findViewById(R.id.menu_button);
+        menuButton = findViewById(R.id.menu_button);
 
 
-        gooButton = (ImageButton) findViewById(R.id.gooButton);
+        gooButton = findViewById(R.id.gooButton);
 
         searchLoc = "Casablanca";
 
@@ -2216,9 +2222,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         HeightAbsolute = (int) dpHeight - (200);
 
 
-        aR = (ConstraintLayout) findViewById(R.id.adress_result);
-        fR = (ConstraintLayout) findViewById(R.id.favorite);
-        rR = (ConstraintLayout) findViewById(R.id.recent);
+        aR = findViewById(R.id.adress_result);
+        fR = findViewById(R.id.favorite);
+        rR = findViewById(R.id.recent);
 
         userLatLng = null;
         startLatLng = null;
@@ -2232,15 +2238,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         fPlaceDataList = new ArrayList<>();
         rPlaceDataList = new ArrayList<>();
 
-        mLocationView = (RecyclerView) findViewById(R.id.my_recycler_view);
+        mLocationView = findViewById(R.id.my_recycler_view);
         mLocationView.setHasFixedSize(true);
         mLocationView.setLayoutManager(new LinearLayoutManager(this));
 
-        fLocationView = (RecyclerView) findViewById(R.id.favorite_recycler);
+        fLocationView = findViewById(R.id.favorite_recycler);
         fLocationView.setHasFixedSize(true);
         fLocationView.setLayoutManager(new LinearLayoutManager(this));
 
-        rLocationView = (RecyclerView) findViewById(R.id.recent_recycler);
+        rLocationView = findViewById(R.id.recent_recycler);
         rLocationView.setHasFixedSize(true);
         rLocationView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -2316,8 +2322,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         int fHeight = 170;
         int rHeight = HeightAbsolute - fHeight - 5;
 
-        fR.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) fHeight, context.getResources().getDisplayMetrics());
-        rR.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) rHeight, context.getResources().getDisplayMetrics());
+        fR.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, fHeight, context.getResources().getDisplayMetrics());
+        rR.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, rHeight, context.getResources().getDisplayMetrics());
 
         loadImages();
         updateViews();
@@ -2527,54 +2533,53 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void initialize() {
 
-        rippleBackground = (RippleBackground) findViewById(R.id.gooVoidContent);
+        rippleBackground = findViewById(R.id.gooVoidContent);
         frameLayout = findViewById(R.id.framelayout);
         frameLayout2 = findViewById(R.id.framelayout2);
         frameLayout3 = findViewById(R.id.framelayout3);
         frameTime = findViewById(R.id.closestDriverPin);
         closestDriverText = findViewById(R.id.closestDriver);
 
-        searchEditText = (EditText) findViewById(R.id.search_edit_text);
+        searchEditText = findViewById(R.id.search_edit_text);
 //        searchButton = (ImageButton) findViewById(R.id.search_address_button);
-        searchButtonDest = (ImageButton) findViewById(R.id.search_dest_address_button);
+        searchButtonDest = findViewById(R.id.search_dest_address_button);
 
-        searchDestEditText = (EditText) findViewById(R.id.search_dest_edit_text);
+        searchDestEditText = findViewById(R.id.search_dest_edit_text);
 
-        searchProgBar = (ProgressBar) findViewById(R.id.search_prog_bar);
-        searchProgBarDest = (ProgressBar) findViewById(R.id.search_dest_prog_bar);
+        searchProgBar = findViewById(R.id.search_prog_bar);
+        searchProgBarDest = findViewById(R.id.search_dest_prog_bar);
 
-        bottomMenu = (ConstraintLayout) findViewById(R.id.bottomMenu);
-        selectedOp = (CircleImageView) findViewById(R.id.selectedOperation);
-        shadowBg = (ImageView) findViewById(R.id.shadow_bg);
-        selectStart = (ConstraintLayout) findViewById(R.id.select_start);
-        selectDest = (ConstraintLayout) findViewById(R.id.select_dest);
-        confirmStart = (Button) findViewById(R.id.confirm_start);
-        confirmDest = (Button) findViewById(R.id.confirm_dest);
+        bottomMenu = findViewById(R.id.bottomMenu);
+        selectedOp = findViewById(R.id.selectedOperation);
+        shadowBg = findViewById(R.id.shadow_bg);
+        selectStart = findViewById(R.id.select_start);
+        selectDest = findViewById(R.id.select_dest);
+        confirmStart = findViewById(R.id.confirm_start);
+        confirmDest = findViewById(R.id.confirm_dest);
 
-        startConstraint = (ConstraintLayout) findViewById(R.id.start_edit_text);
-        endConstraint = (ConstraintLayout) findViewById(R.id.dest_edit_text);
+        startConstraint = findViewById(R.id.start_edit_text);
+        endConstraint = findViewById(R.id.dest_edit_text);
 
-        favorite = (ConstraintLayout) findViewById(R.id.favorite_recent);
+        favorite = findViewById(R.id.favorite_recent);
     }
 
-    public static Place getRecentPlaces(Context context) {
+    public static void getRecentPlaces(Context context) {
 
         SharedPreferences appSharedPrefs = PreferenceManager
                 .getDefaultSharedPreferences(context.getApplicationContext());
         Gson gson = new Gson();
         String json = appSharedPrefs.getString("recent_places", "");
 
-
-        Place rPlace = gson.fromJson(json, Place.class);
-        LatLng latLng = new LatLng(Double.parseDouble("33.5725155"), Double.parseDouble("-7.5962637"));
-        Place Place = new Place("Travail", /*getCompleteAddressString(context, latLng.latitude, latLng.longitude)*/
+        Place[] rPlace = gson.fromJson(json, Place[].class);
+        Place Place = new Place("Travail",
                 "Casablanca, Morocco", "33.5725155", "-7.5962637", R.drawable.lieux_proches);
 
-        if (rPlace == null) {
-            return Place;
+        if (rPlace == null || rPlace.length == 0) {
+            rPlaceDataList.add(Place);
         } else {
-            return rPlace;
+            rPlaceDataList.addAll(Arrays.asList(rPlace));
         }
+        rPlaceAdapter.notifyDataSetChanged();
     }
 
     private void hideAllUI() {
@@ -2661,13 +2666,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void showFavoritsAndRecents() {
         rPlaceDataList.clear();
-        rPlaceDataList.add(getRecentPlaces(context));
-        rPlaceAdapter.notifyDataSetChanged();
+        getRecentPlaces(context);
+
         AnimateConstraint.animate(MapsActivity.this, favorite, HeightAbsolute, 1, 100);
 
 
         findViewById(R.id.imageView7).setVisibility(View.VISIBLE);
-        //findViewById(R.id.imageView8).setVisibility(View.VISIBLE);
         findViewById(R.id.x).setVisibility(View.VISIBLE);
         findViewById(R.id.my_position).setVisibility(View.GONE);
         findViewById(R.id.adress_result).setVisibility(View.INVISIBLE);
@@ -2885,8 +2889,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View v) {
                 // mDrawer.openMenu(true);
-                ConstraintLayout contentConstraint = (ConstraintLayout) findViewById(R.id.contentLayout);
-                ConstraintLayout contentBlocker = (ConstraintLayout) findViewById(R.id.contentBlocker);
+                ConstraintLayout contentConstraint = findViewById(R.id.contentLayout);
+                ConstraintLayout contentBlocker = findViewById(R.id.contentBlocker);
                 AnimateConstraint.resideAnimation(context, contentConstraint, contentBlocker, (int) dpWidth, (int) dpHeight, 200);
             }
         });
@@ -3208,12 +3212,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    public static void saveRecentPlaces(Context context, Place rplace) {
+    public static void saveRecentPlaces(Context context, ArrayList<Place> rPlaceDataList) {
         SharedPreferences appSharedPrefs = PreferenceManager
                 .getDefaultSharedPreferences(context.getApplicationContext());
         SharedPreferences.Editor prefsEditor = appSharedPrefs.edit();
         Gson gson = new Gson();
-        String json = gson.toJson(rplace);
+        String json = gson.toJson(rPlaceDataList);
         prefsEditor.putString("recent_places", json);
         prefsEditor.commit();
     }
@@ -3221,9 +3225,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public static void goToLocation(Context context, Double lat, Double lng, Place rPlace) {
         // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), 17));
         if (rPlace != null) {
-            if (contains(rPlaceDataList, rPlace.name)) {
+            if (!contains(rPlaceDataList, rPlace)) {
                 rPlaceDataList.add(rPlace);
-                saveRecentPlaces(context, rPlace);
+                saveRecentPlaces(context, rPlaceDataList);
                 rPlaceAdapter.notifyDataSetChanged();
             }
         }
@@ -3242,9 +3246,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    static boolean contains(ArrayList<Place> list, String name) {
+    static boolean contains(ArrayList<Place> list, Place place) {
         for (Place item : list) {
-            if (item.getName().equals(name)) {
+            if (item.getName().equals(place.name) || item.getLat().equals(place.lat) || item.getLng().equals(place.lng) || item.getAddress().equals(place.address)) {
                 return true;
             }
         }
@@ -3572,7 +3576,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             List<Address> addresses = geocoder.getFromLocation(LATITUDE, LONGITUDE, 1);
             if (addresses != null) {
                 Address returnedAddress = addresses.get(0);
-                StringBuilder strReturnedAddress = new StringBuilder("");
+                StringBuilder strReturnedAddress = new StringBuilder();
 
                 for (int i = 0; i <= returnedAddress.getMaxAddressLineIndex(); i++) {
                     strReturnedAddress.append(returnedAddress.getAddressLine(i)).append("\n");
@@ -3799,23 +3803,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         for (int i = 0; i < quality - 1; i++) {
 
-            float percent = (float) (1 / (float) (2 * quality)) + (float) i / (float) quality;
+            float percent = 1 / (float) (2 * quality) + (float) i / (float) quality;
             int color = Color.argb(255,
                     (Red > finalRed) ? (int) (Red - ((Red - finalRed) * percent)) : (int) (Red + ((finalRed - Red) * percent)),
                     (Green > finalGreen) ? (int) (Green - ((Green - finalGreen) * percent)) : (int) (Green + ((finalGreen - Green) * percent)),
                     (Blue > finalBlue) ? (int) (Blue - ((Blue - finalBlue) * percent)) : (int) (Blue + ((finalBlue - Blue) * percent)));
 
-            PolylineOptions opts = new PolylineOptions().geodesic(false).addAll(thePath.subList((int) ((Size / quality) * i), (int) (Size / quality) * (i + 2))).color(color).width(width + 1);
+            PolylineOptions opts = new PolylineOptions().geodesic(false).addAll(thePath.subList((Size / quality) * i, Size / quality * (i + 2))).color(color).width(width + 1);
             mMap.addPolyline(opts);
         }
 
-        float percentage = (float) (1 / (float) (2 * quality)) + (float) (quality - 1) / (float) quality;
+        float percentage = 1 / (float) (2 * quality) + (float) (quality - 1) / (float) quality;
         int color = Color.argb(255,
                 (Red > finalRed) ? (int) (Red - ((Red - finalRed) * percentage)) : (int) (Red + ((finalRed - Red) * percentage)),
                 (Green > finalGreen) ? (int) (Green - ((Green - finalGreen) * percentage)) : (int) (Green + ((finalGreen - Green) * percentage)),
                 (Blue > finalBlue) ? (int) (Blue - ((Blue - finalBlue) * percentage)) : (int) (Blue + ((finalBlue - Blue) * percentage)));
 
-        PolylineOptions opts = new PolylineOptions().geodesic(false).addAll(thePath.subList((int) ((Size / quality) * (quality - 1)), (int) (Size / quality) * (quality))).color(color).width(width + 1);
+        PolylineOptions opts = new PolylineOptions().geodesic(false).addAll(thePath.subList((Size / quality) * (quality - 1), Size / quality * (quality))).color(color).width(width + 1);
         mMap.addPolyline(opts);
 
         for (int i = 0; i < (Size - 1); i++) {
@@ -4272,17 +4276,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         context = LocalHelper.setLocale(MapsActivity.this, language);
         resources = context.getResources();
 
-        TextView textView7 = (TextView) findViewById(R.id.textView7);
-        TextView textView8 = (TextView) findViewById(R.id.textView8);
-        TextView textView9 = (TextView) findViewById(R.id.textView9);
-        TextView textVie = (TextView) findViewById(R.id.textVie);
-        TextView textView12 = (TextView) findViewById(R.id.textView12);
-        TextView textView11 = (TextView) findViewById(R.id.textView11);
-        TextView textView = (TextView) findViewById(R.id.textView);
-        TextView textView2 = (TextView) findViewById(R.id.textView2);
-        Button confirm_start = (Button) findViewById(R.id.confirm_start);
-        Button confirm_dest = (Button) findViewById(R.id.confirm_dest);
-        Button passer = (Button) findViewById(R.id.passer);
+        TextView textView7 = findViewById(R.id.textView7);
+        TextView textView8 = findViewById(R.id.textView8);
+        TextView textView9 = findViewById(R.id.textView9);
+        TextView textVie = findViewById(R.id.textVie);
+        TextView textView12 = findViewById(R.id.textView12);
+        TextView textView11 = findViewById(R.id.textView11);
+        TextView textView = findViewById(R.id.textView);
+        TextView textView2 = findViewById(R.id.textView2);
+        Button confirm_start = findViewById(R.id.confirm_start);
+        Button confirm_dest = findViewById(R.id.confirm_dest);
+        Button passer = findViewById(R.id.passer);
 
 
         //Set Texts
@@ -4306,6 +4310,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onResume() {
         super.onResume();
+        updateViews();
         fPlaceDataList.clear();
         try {
             prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
