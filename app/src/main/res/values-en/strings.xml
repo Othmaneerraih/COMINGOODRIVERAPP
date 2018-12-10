@@ -88,6 +88,9 @@
     <string name="passer">Pass</string>
     <string name="driver_arrived_txt">At Comingoo, we ride in the front</string>
 
+    <string name="txt_home">Home</string>
+    <string name="txt_work">Work</string>
+
     <string name="sinch_app_key">05a626b9-33a4-4b83-b7bc-2d49062ea9ae</string>
     <string name="sinch_app_secret">TfJrquo6qEmkV8DG/EXQPg==</string>
     <string name="sinch_envirentmnet_host">clientapi.sinch.com</string>
