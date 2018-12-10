@@ -4306,6 +4306,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onResume() {
         super.onResume();
+        updateViews();
         fPlaceDataList.clear();
         try {
             prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
