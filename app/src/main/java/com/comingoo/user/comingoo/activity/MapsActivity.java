@@ -4342,9 +4342,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         Place homePlace = new Place(homeAddress, homeAddress, homeLat, homeLong, R.drawable.work_icon);
                         fPlaceDataList.add(homePlace);
                         fPlaceAdapter.notifyDataSetChanged();
-//                        Log.e(TAG, "onDataChange:homeAddress " + homeAddress);
-//                        Log.e(TAG, "onDataChange:homeLat " + homeLat);
-//                        Log.e(TAG, "onDataChange:homeLong " + homeLong);
                     }
                 }
 
