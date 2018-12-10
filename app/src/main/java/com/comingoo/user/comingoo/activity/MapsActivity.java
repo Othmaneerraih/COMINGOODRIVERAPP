@@ -141,6 +141,8 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -1407,6 +1409,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private String COURSE;
     private String choseBox;
     private String dialogDriverId;
+    private DecimalFormat df2 = new DecimalFormat(".##");
 
     private class checkFinishedCourse extends AsyncTask<String, Integer, String> {
         SharedPreferences prefs;
@@ -1466,6 +1469,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                             final Button price = dialog.findViewById(R.id.button3);
 //                                            price.setText(dataSnapshott.child("price").getValue(String.class) + " MAD");
 
+
                                             if (courseIDT != null) {
                                                 FirebaseDatabase.getInstance().getReference("COURSES").child(courseIDT).child("price").addValueEventListener(new ValueEventListener() {
                                                     @Override
@@ -1476,7 +1480,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //
                                                                 double finalPriceOfCourse = Double.parseDouble(dataSnapshot.getValue(String.class));
                                                                 Log.e(TAG, "COURSES value finalPriceOfCourse: " + finalPriceOfCourse);
-                                                                price.setText(finalPriceOfCourse + " MAD");
+                                                                df2.setRoundingMode(RoundingMode.UP);
+                                                                price.setText(df2.format(finalPriceOfCourse) + " MAD");
                                                             }
 //                                                    }
                                                         } catch (Exception e) {
