@@ -3236,6 +3236,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), 17));
         if (rPlace != null) {
             if (!contains(rPlaceDataList, rPlace)) {
+                rPlace.setImage(R.drawable.lieux_proches);
                 rPlaceDataList.add(rPlace);
                 saveRecentPlaces(context, rPlaceDataList);
                 rPlaceAdapter.notifyDataSetChanged();
