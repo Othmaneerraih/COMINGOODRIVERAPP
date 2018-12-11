@@ -67,6 +67,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.comingoo.user.comingoo.async.ReadTask;
+import com.comingoo.user.comingoo.async.ReverseGeocodingTask;
 import com.comingoo.user.comingoo.utility.AnimateConstraint;
 import com.comingoo.user.comingoo.Interfaces.PickLocation;
 import com.comingoo.user.comingoo.utility.LocalHelper;
@@ -80,6 +82,7 @@ import com.comingoo.user.comingoo.model.FixedLocation;
 import com.comingoo.user.comingoo.model.Place;
 import com.comingoo.user.comingoo.others.HttpConnection;
 import com.comingoo.user.comingoo.others.PathJSONParser;
+import com.comingoo.user.comingoo.utility.Utility;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
@@ -156,12 +159,15 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, PickLocation {
+
     private static final String TAG = "MapsActivity";
+
+    // global Variable
+
     static GoogleMap mMap;
     private static EditText searchEditText;
     private static EditText searchDestEditText;
     private ImageButton searchButtonDest;
-
     static ConstraintLayout bottomMenu;
     static CircleImageView selectedOp;
     static ImageView shadowBg;
@@ -170,92 +176,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     static Button confirmStart;
     static ProgressBar searchProgBar;
     static ProgressBar searchProgBarDest;
-
     public static TextView promoCode;
-
     static RecyclerView mLocationView;
     public static MyPlaceAdapter placeAdapter;
-
     static RecyclerView fLocationView;
     static RecyclerView rLocationView;
     public static FavouritePlaceAdapter fPlaceAdapter;
     public static MyPlaceAdapter rPlaceAdapter;
-    static ArrayList<Place> placeDataList;
-    static ArrayList<Place> fPlaceDataList;
-    static ArrayList<Place> rPlaceDataList;
-
     private static ConstraintLayout startConstraint;
     private ConstraintLayout endConstraint;
-
-    private GeoDataClient mGeoDataClient;
-    static int state = 0;
-
-    private LatLng userLatLng;
-    private LatLng startLatLng;
-    private LatLng destLatLng;
-
-    private static int orderDriverState;
-
+    private static ConstraintLayout favorite;
     private FrameLayout frameLayout;
     private FrameLayout frameLayout2;
     private FrameLayout frameLayout3;
     private TextView frameTime;
     private TextView closestDriverText;
-
-    private static ConstraintLayout favorite;
-    static Context context;
-
     static ConstraintLayout aR;
     static ConstraintLayout rR;
     static ConstraintLayout fR;
-
-    private static final String APP_KEY = "185d9822-a953-4af6-a780-b0af1fd31bf7";
-    private static final String APP_SECRET = "ZiJ6FqH5UEWYbkMZd1rWbw==";
-    private static final String ENVIRONMENT = "sandbox.sinch.com";
-
-
-    private float density;
-    private float dpHeight;
-    private float dpWidth;
-
-    static Window gWindow;
     static Button coverButton;
-
     static ImageView image1;
     static ImageView image2;
     static ImageButton X;
     static ImageButton positionButton;
-
-    private ImageButton cancelRequest;
-    private RippleBackground rippleBackground;
-
-    private Button confirmDest;
-
-    int Height;
-
-    int HeightAbsolute;
-
-    static ConstraintLayout citySelectLayout;
-
-    private String searchLoc;
-    private static TextView city;
-
-    static ImageButton menuButton;
-    private FlowingDrawer mDrawer;
-
-    private ImageButton gooButton;
-
-    private String clientID;
-
-    private String startCity;
-    private String destCity;
-
-    private ArrayList<FixedLocation> fixedLocations;
-
-    private float distance;
     private TextView price;
-
-
     private ImageView locationStartPin;
     private ImageView locationDestPin;
     private ImageView locationPinStart;
@@ -268,45 +212,66 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ImageButton deleviryButton;
     private ImageButton carButton;
     private ImageButton selectCity;
-
     private RelativeLayout gooBox;
-
-    private ConstraintLayout gooVoid;
-
     private Button passer;
-
-    private ConstraintLayout Acceuil;
     private ConstraintLayout Historique;
     private ConstraintLayout Inbox;
     private ConstraintLayout ComingoonYou;
     private ConstraintLayout Aide;
-    private ConstraintLayout logout;
-
-
-    Resources resources;
-    String language;
-
     private ConstraintLayout callLayout;
     private RatingBar rbDriverRating;
     private TextView driverNameL, iv_total_ride_number, iv_car_number, iv_total_rating_number;
     private CircularImageView driverImageL;
     private ImageView ivCallDriver, close_button;
     private CircleImageView ivCross;
+    private ImageButton cancelRequest;
+    private RippleBackground rippleBackground;
+    private Button confirmDest;
+    static ConstraintLayout citySelectLayout;
+    private static TextView city;
+    static ImageButton menuButton;
+    private ImageButton gooButton;
 
 
+    static ArrayList<Place> placeDataList;
+    static ArrayList<Place> fPlaceDataList;
+    static ArrayList<Place> rPlaceDataList;
+    private GeoDataClient mGeoDataClient;
+    static int state = 0;
+    private LatLng userLatLng;
+    private LatLng startLatLng;
+    private LatLng destLatLng;
+    private static int orderDriverState;
+    static Context context;
+    private static final String APP_KEY = "185d9822-a953-4af6-a780-b0af1fd31bf7";
+    private static final String APP_SECRET = "ZiJ6FqH5UEWYbkMZd1rWbw==";
+    private static final String ENVIRONMENT = "sandbox.sinch.com";
+    private float density;
+    private float dpHeight;
+    private float dpWidth;
+    static Window gWindow;
+    int HeightAbsolute;
+    private String searchLoc;
+    private String clientID;
+    private String startCity;
+    private String destCity;
+    private ArrayList<FixedLocation> fixedLocations;
+    private float distance;
+    private Resources resources;
+    private String language;
     private ArrayList<String> driversKeys;
     private ArrayList<String> driversLocations;
     private ArrayList<String> driversKeysHold;
-
     private GeoQuery geoQuery;
-
-
     BitmapFactory.Options bOptions;
     int imageHeight;
     int imageWidth;
     int lastImageHeight;
     int lastImageWidth;
     int inSampleSize;
+    private String userName;
+    private Call call;
+    static Utility utility;
 
     public Bitmap scaleBitmap(int reqWidth, int reqHeight, int resId) {
         // Raw height and width of image
@@ -363,9 +328,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         positionButton.setImageBitmap(scaleBitmap(40, 37, R.drawable.my_position_icon));
         shadowBg.setImageBitmap(scaleBitmap((int) dpWidth, 80, R.drawable.shadow_bottom));
     }
-
-    private String userName;
-    private Call call;
 
     @Override
     public void pickedLocation(Place place) {
@@ -492,7 +454,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    //    AudioManager audioManager;
     boolean isLoud = false;
     MediaPlayer mp;
     TextView callState, caller_name, tv_name_voip_one;
@@ -752,8 +713,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private String driverName;
     private String driverCarName;
     private String driverCarDescription;
-    private boolean finished1 = false;
-    private boolean finished2 = false;
 
 
     private class checkCourseTask extends AsyncTask<String, Integer, String> {
@@ -788,20 +747,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 startPositionT = new LatLng(Double.parseDouble(data.child("startLat").getValue(String.class)),
                                         Double.parseDouble(data.child("startLong").getValue(String.class)));
 
-
                                 driverLocT = new Location("");
                                 startLocT = new Location("");
-
-
                                 startText = data.child("startAddress").getValue(String.class);
                                 endText = data.child("endAddress").getValue(String.class);
-
                                 driverLocT.setLatitude(driverPosT.latitude);
                                 driverLocT.setLatitude(driverPosT.longitude);
-
                                 startLocT.setLatitude(startPositionT.latitude);
                                 startLocT.setLatitude(startPositionT.longitude);
-
 
                                 FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(driverIDT).addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
@@ -833,14 +786,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                         double avgRating = totalRating / totalRatingPerson;
                                                         String avg = String.format("%.2f", avgRating);
                                                         String newString = avg.replace(",", ".");
-                                                        if (newString.equals("")){
+                                                        if (newString.equals("")) {
 
-                                                            if (newString.equalsIgnoreCase("nan")){
+                                                            if (newString.equalsIgnoreCase("nan")) {
                                                                 iv_total_rating_number.setText("4.0");
-                                                            }else
+                                                            } else
                                                                 iv_total_rating_number.setText(newString);
                                                         } else
-                                                        iv_total_rating_number.setText(newString);
+                                                            iv_total_rating_number.setText(newString);
 //                                                    int rating = Integer.parseInt(dataSnapshot.getValue(String.class)) + 1;
 //                                                    FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientId).child("rating").child(Integer.toString(RATE)).setValue("" + rating);
 
@@ -900,7 +853,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     }
                                 });
 
-
                             }
                         } catch (NullPointerException e) {
                             e.printStackTrace();
@@ -938,13 +890,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    boolean gotValue = false;
     private boolean courseScreenStageZero = false;
     private boolean courseScreenStageOne = false;
     private Marker driverPosMarker;
     private Marker startPositionMarker;
     private boolean blockingTimeOver = true;
-    String driver = "";
 
     private void handleCourseCallBack() {
         if (statusT.equals("4")) {
@@ -970,7 +920,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         menuButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // mDrawer.openMenu(true);
                 ConstraintLayout contentConstraint = findViewById(R.id.contentLayout);
                 ConstraintLayout contentBlocker = findViewById(R.id.contentBlocker);
                 AnimateConstraint.resideAnimation(context, contentConstraint, contentBlocker, (int) dpWidth, (int) dpHeight, 200);
@@ -1029,7 +978,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
 
         }
-
 
         if (statusT.equals("0") && !courseScreenStageZero) {
             if (!userLevel.equals("2")) {
@@ -1246,15 +1194,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .icon(BitmapDescriptorFactory.fromBitmap(bm)));
         }
 
-        if (statusT.equals("3")) {
-
-        }
-
-
-        if (statusT.equals("5")) {
-
-        }
-
     }
 
     private void rideCancelDialog() {
@@ -1369,6 +1308,38 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         @Override
         protected String doInBackground(String... params) {
             try {
+                final Dialog dialog = new Dialog(context);
+                dialog.setContentView(R.layout.finished_course);
+
+                TextView textView13 = dialog.findViewById(R.id.textView13);
+                TextView textView14 = dialog.findViewById(R.id.textView14);
+                textView13.setText(resources.getString(R.string.Montanttotalàpayer));
+                textView14.setText(resources.getString(R.string.Evaluezvotreéxperience));
+
+                RelativeLayout body = dialog.findViewById(R.id.body);
+                body.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) dpWidth, (int) dpWidth, R.drawable.finished_bg)));
+
+                Button dialogButton = dialog.findViewById(R.id.button);
+                final Button price = dialog.findViewById(R.id.button3);
+
+                final Button star1 = dialog.findViewById(R.id.star1);
+                final Button star2 = dialog.findViewById(R.id.star2);
+                final Button star3 = dialog.findViewById(R.id.star3);
+                final Button star4 = dialog.findViewById(R.id.star4);
+                final Button star5 = dialog.findViewById(R.id.star5);
+                final ImageButton im1 = dialog.findViewById(R.id.imageView4);
+                final ImageButton im2 = dialog.findViewById(R.id.imageView5);
+                final ImageButton im3 = dialog.findViewById(R.id.imageView6);
+                final ImageButton im4 = dialog.findViewById(R.id.imageView7);
+                final ImageButton im5 = dialog.findViewById(R.id.imageView8);
+
+                final ImageButton nextButton = dialog.findViewById(R.id.next);
+
+                final ImageView imot = dialog.findViewById(R.id.stars_rating);
+
+                dialog.setCancelable(false);
+                dialog.setCanceledOnTouchOutside(false);
+
                 FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("COURSE").addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
@@ -1378,38 +1349,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(@NonNull DataSnapshot dataSnapshott) {
+
+                                            dialogDriverId = dataSnapshott.child("driver").getValue(String.class);
                                             callLayout.setVisibility(View.GONE);
                                             voip_view.setVisibility(View.GONE);
-
                                             if (ivCross != null)
                                                 ivCross.setVisibility(View.GONE);
 
                                             // finishing promo code
                                             FirebaseDatabase.getInstance().getReference("clientUSERS").
                                                     child(userId).child("PROMOCODE").removeValue();
-
-
-                                            final Dialog dialog = new Dialog(context);
-                                            dialogDriverId = dataSnapshott.child("driver").getValue(String.class);
-                                            dialog.setContentView(R.layout.finished_course);
-
-
-                                            TextView textView13 = dialog.findViewById(R.id.textView13);
-                                            TextView textView14 = dialog.findViewById(R.id.textView14);
-
-
-                                            //Set Texts
-                                            textView13.setText(resources.getString(R.string.Montanttotalàpayer));
-                                            textView14.setText(resources.getString(R.string.Evaluezvotreéxperience));
-
-
-                                            RelativeLayout body = dialog.findViewById(R.id.body);
-                                            body.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) dpWidth, (int) dpWidth, R.drawable.finished_bg)));
-
-                                            Button dialogButton = dialog.findViewById(R.id.button);
-                                            final Button price = dialog.findViewById(R.id.button3);
-//                                            price.setText(dataSnapshott.child("price").getValue(String.class) + " MAD");
-
 
                                             if (courseIDT != null) {
                                                 FirebaseDatabase.getInstance().getReference("COURSES").child(courseIDT).child("price").addValueEventListener(new ValueEventListener() {
@@ -1437,25 +1386,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                 });
 
                                             }
-
-                                            final Button star1 = dialog.findViewById(R.id.star1);
-                                            final Button star2 = dialog.findViewById(R.id.star2);
-                                            final Button star3 = dialog.findViewById(R.id.star3);
-                                            final Button star4 = dialog.findViewById(R.id.star4);
-                                            final Button star5 = dialog.findViewById(R.id.star5);
-
-                                            final ImageButton im1 = dialog.findViewById(R.id.imageView4);
-                                            final ImageButton im2 = dialog.findViewById(R.id.imageView5);
-                                            final ImageButton im3 = dialog.findViewById(R.id.imageView6);
-                                            final ImageButton im4 = dialog.findViewById(R.id.imageView7);
-                                            final ImageButton im5 = dialog.findViewById(R.id.imageView8);
-
-                                            final ImageButton nextButton = dialog.findViewById(R.id.next);
-
-                                            final ImageView imot = dialog.findViewById(R.id.stars_rating);
-
-                                            dialog.setCancelable(false);
-                                            dialog.setCanceledOnTouchOutside(false);
 
                                             // defaul rate
                                             RATE = 4;
@@ -1742,19 +1672,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
                                                                         ImageButton nextBtn = newDialog.findViewById(R.id.imageButton3);
-//                                                                        newDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-//                                                                            @Override
-//                                                                            public void onDismiss(DialogInterface dialog) {
-//                                                                                if (ContextCompat.checkSelfPermission(MapsActivity.this,
-//                                                                                        Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-//                                                                                    ActivityCompat.requestPermissions(MapsActivity.this,
-//                                                                                            new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 10);
-//                                                                                } else {
-//                                                                                    showVoiceDialog();
-//                                                                                }
-//                                                                            }
-//                                                                        });
-
                                                                         nextBtn.setOnClickListener(new View.OnClickListener() {
                                                                             @Override
                                                                             public void onClick(View v) {
@@ -1907,7 +1824,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             deleteAudio.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    if (mediaPlayer != null){
+                                    if (mediaPlayer != null) {
                                         mediaPlayer.stop();
                                         mediaPlayer.release();
                                     }
@@ -1972,7 +1889,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         newDialog.show();
     }
 
-    boolean isPlaying = false;
 
     private void setupPlayAudio(final String outputeFile,
                                 final View playAudio, final View pauseAudio, final MediaPlayer mediaPlayer) {
@@ -2068,6 +1984,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         callLayout.setVisibility(View.VISIBLE);
 
         ivCallDriver = findViewById(R.id.iv_call_driver);
+        utility = new Utility();
 
         driverNameL = findViewById(R.id.tv_driver_name);
         iv_total_rating_number = findViewById(R.id.iv_total_rating_number);
@@ -2204,12 +2121,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         rLocationView.setAdapter(rPlaceAdapter);
 
 
-        Acceuil = findViewById(R.id.acceuil);
+        ConstraintLayout acceuil = findViewById(R.id.acceuil);
         Historique = findViewById(R.id.historique);
         Inbox = findViewById(R.id.inbox);
         ComingoonYou = findViewById(R.id.comingoonyou);
         Aide = findViewById(R.id.aide);
-        logout = findViewById(R.id.logout);
+        ConstraintLayout logout = findViewById(R.id.logout);
 
         ivCallDriver.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -2323,7 +2240,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         menuButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // mDrawer.openMenu(true);
                 ConstraintLayout contentConstraint = findViewById(R.id.contentLayout);
                 ConstraintLayout contentBlocker = findViewById(R.id.contentBlocker);
                 AnimateConstraint.resideAnimation(context, contentConstraint, contentBlocker, (int) dpWidth, (int) dpHeight, 200);
@@ -2834,7 +2750,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         menuButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // mDrawer.openMenu(true);
                 ConstraintLayout contentConstraint = findViewById(R.id.contentLayout);
                 ConstraintLayout contentBlocker = findViewById(R.id.contentBlocker);
                 AnimateConstraint.resideAnimation(context, contentConstraint, contentBlocker, (int) dpWidth, (int) dpHeight, 200);
@@ -3127,36 +3042,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    private class ReverseGeocodingTask extends AsyncTask<LatLng, Void, String> {
-        Context mContext;
-
-        public ReverseGeocodingTask(Context context) {
-            super();
-            mContext = context;
-        }
-
-        // Finding address using reverse geocoding
-        @Override
-        protected String doInBackground(LatLng... params) {
-            if (orderDriverState != 0 && orderDriverState != 1)
-                return "";
-
-            return getCompleteAddressString(context, params[0].latitude, params[0].longitude);
-        }
-
-        @Override
-        protected void onPostExecute(String addressText) {
-            Log.e(TAG, "onPostExecute: " + addressText);
-            if (courseScreenIsOn)
-                return;
-            if (orderDriverState == 0)
-                searchEditText.setText(addressText);
-            if (orderDriverState == 1)
-                searchDestEditText.setText(addressText);
-
-        }
-    }
-
     public static void saveRecentPlaces(Context context, ArrayList<Place> rPlaceDataList) {
         SharedPreferences appSharedPrefs = PreferenceManager
                 .getDefaultSharedPreferences(context.getApplicationContext());
@@ -3185,8 +3070,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         Log.e(TAG, "goToLocation: " + lat);
         Log.e(TAG, "goToLocation: " + lng);
-        searchEditText.setText(getCompleteAddressString(context, lat, lng));
-        searchDestEditText.setText(getCompleteAddressString(context, lat, lng));
+        searchEditText.setText(utility.getCompleteAddressString(context, lat, lng));
+        searchDestEditText.setText(utility.getCompleteAddressString(context, lat, lng));
 
 
     }
@@ -3345,7 +3230,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             String distance = "" + (loc.distanceTo(loca) / 1000);
 
 
-                            searchEditText.setText(getCompleteAddressString(context, startLatLng.latitude, startLatLng.longitude));
+                            searchEditText.setText(utility.getCompleteAddressString(context, startLatLng.latitude, startLatLng.longitude));
 
 
                             for (int j = 0; j < driversKeys.size(); j++) {
@@ -3484,13 +3369,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                     startLatLng = mMap.getCameraPosition().target;
                     if (!courseScreenIsOn)
-                        new ReverseGeocodingTask(MapsActivity.this).execute(startLatLng);
+                        new ReverseGeocodingTask(MapsActivity.this, orderDriverState, searchEditText, searchDestEditText, courseScreenIsOn).execute(startLatLng);
                 }
 
                 if (orderDriverState == 1) {
                     destLatLng = mMap.getCameraPosition().target;
                     if (!courseScreenIsOn)
-                        new ReverseGeocodingTask(MapsActivity.this).execute(destLatLng);
+                        new ReverseGeocodingTask(MapsActivity.this, orderDriverState, searchEditText, searchDestEditText, courseScreenIsOn).execute(destLatLng);
                 }
             }
         });
@@ -3498,7 +3383,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
             @Override
             public void onMapLoaded() {
-                searchEditText.setText(getCompleteAddressString(context, startLatLng.latitude, startLatLng.longitude));
+                searchEditText.setText(utility.getCompleteAddressString(context, startLatLng.latitude, startLatLng.longitude));
             }
         });
 
@@ -3511,30 +3396,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             e.printStackTrace();
         }
 
-    }
-
-    static String getCompleteAddressString(Context context, double LATITUDE, double LONGITUDE) {
-        String strAdd = "";
-
-        Geocoder geocoder = new Geocoder(context, Locale.getDefault());
-        try {
-            List<Address> addresses = geocoder.getFromLocation(LATITUDE, LONGITUDE, 1);
-            if (addresses != null) {
-                Address returnedAddress = addresses.get(0);
-                StringBuilder strReturnedAddress = new StringBuilder();
-
-                for (int i = 0; i <= returnedAddress.getMaxAddressLineIndex(); i++) {
-                    strReturnedAddress.append(returnedAddress.getAddressLine(i)).append("\n");
-                }
-                strAdd = strReturnedAddress.toString();
-            } else {
-            }
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            Log.e(TAG, "getCompleteAddressString: " + e.getMessage());
-        }
-        return strAdd;
     }
 
     public static void hideKeyboard(Activity activity) {
@@ -3735,55 +3596,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    private void drawPolyGradiant(List<LatLng> thePath, String startColor, String endColor, int width, int quality) {
-
-        int Size = thePath.size();
-
-        int Red = Integer.valueOf(startColor.substring(1, 3), 16);
-        int Green = Integer.valueOf(startColor.substring(3, 5), 16);
-        int Blue = Integer.valueOf(startColor.substring(5, 7), 16);
-        int finalRed = Integer.valueOf(endColor.substring(1, 3), 16);
-        int finalGreen = Integer.valueOf(endColor.substring(3, 5), 16);
-        int finalBlue = Integer.valueOf(endColor.substring(5, 7), 16);
-
-        for (int i = 0; i < quality - 1; i++) {
-
-            float percent = 1 / (float) (2 * quality) + (float) i / (float) quality;
-            int color = Color.argb(255,
-                    (Red > finalRed) ? (int) (Red - ((Red - finalRed) * percent)) : (int) (Red + ((finalRed - Red) * percent)),
-                    (Green > finalGreen) ? (int) (Green - ((Green - finalGreen) * percent)) : (int) (Green + ((finalGreen - Green) * percent)),
-                    (Blue > finalBlue) ? (int) (Blue - ((Blue - finalBlue) * percent)) : (int) (Blue + ((finalBlue - Blue) * percent)));
-
-            PolylineOptions opts = new PolylineOptions().geodesic(false).addAll(thePath.subList((Size / quality) * i, Size / quality * (i + 2))).color(color).width(width + 1);
-            mMap.addPolyline(opts);
-        }
-
-        float percentage = 1 / (float) (2 * quality) + (float) (quality - 1) / (float) quality;
-        int color = Color.argb(255,
-                (Red > finalRed) ? (int) (Red - ((Red - finalRed) * percentage)) : (int) (Red + ((finalRed - Red) * percentage)),
-                (Green > finalGreen) ? (int) (Green - ((Green - finalGreen) * percentage)) : (int) (Green + ((finalGreen - Green) * percentage)),
-                (Blue > finalBlue) ? (int) (Blue - ((Blue - finalBlue) * percentage)) : (int) (Blue + ((finalBlue - Blue) * percentage)));
-
-        PolylineOptions opts = new PolylineOptions().geodesic(false).addAll(thePath.subList((Size / quality) * (quality - 1), Size / quality * (quality))).color(color).width(width + 1);
-        mMap.addPolyline(opts);
-
-        for (int i = 0; i < (Size - 1); i++) {
-
-            float percent = ((float) i / (float) Size);
-            int usedColor = Color.argb(255,
-                    (Red > finalRed) ? (int) (Red - ((Red - finalRed) * percent)) : (int) (Red + ((finalRed - Red) * percent)),
-                    (Green > finalGreen) ? (int) (Green - ((Green - finalGreen) * percent)) : (int) (Green + ((finalGreen - Green) * percent)),
-                    (Blue > finalBlue) ? (int) (Blue - ((Blue - finalBlue) * percent)) : (int) (Blue + ((finalBlue - Blue) * percent)));
-
-            opts = new PolylineOptions().add(thePath.get(i)).geodesic(false).add(thePath.get(i + 1)).color(usedColor).width(width);
-            mMap.addPolyline(opts);
-        }
-    }
-
     public void drawPolyLineOnMap(LatLng currentLatitude, LatLng currentLongitude) {
         String url = getMapsApiDirectionsUrl(currentLatitude, currentLongitude);
         Log.e(TAG, "drawPolyLineOnMap: " + url);
-        ReadTask downloadTask = new ReadTask();
+        ReadTask downloadTask = new ReadTask(getApplicationContext(),mMap);
         downloadTask.execute(url);
     }
 
@@ -3808,76 +3624,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 + "AIzaSyA69yMLMZGzJzaa1pHoNIk9yGYqyhsa_lw" + "&sensor=true";
 
         return url;
-    }
-
-    private class ReadTask extends AsyncTask<String, Void, String> {
-        @Override
-        protected String doInBackground(String... url) {
-            String data = "";
-            try {
-                HttpConnection http = new HttpConnection();
-                data = http.readUrl(url[0]);
-            } catch (Exception e) {
-            }
-            return data;
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            new ReadTask.ParserTask().execute(s);
-        }
-
-        private class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String, String>>>> {
-
-            @Override
-            protected List<List<HashMap<String, String>>> doInBackground(String... jsonData) {
-
-                JSONObject jObject;
-                List<List<HashMap<String, String>>> routes = null;
-
-                try {
-                    jObject = new JSONObject(jsonData[0]);
-                    PathJSONParser parser = new PathJSONParser();
-                    routes = parser.parse(jObject);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return routes;
-            }
-
-            @Override
-            protected void onPostExecute(List<List<HashMap<String, String>>> routes) {
-                ArrayList<LatLng> points = null;
-                PolylineOptions polyLineOptions = null;
-
-                // traversing through routes
-                for (int i = 0; i < routes.size(); i++) {
-                    points = new ArrayList<>();
-                    polyLineOptions = new PolylineOptions();
-                    List<HashMap<String, String>> path = routes.get(i);
-
-                    for (int j = 0; j < path.size(); j++) {
-                        HashMap<String, String> point = path.get(j);
-
-                        double lat = Double.parseDouble(point.get("lat"));
-                        double lng = Double.parseDouble(point.get("lng"));
-                        LatLng position = new LatLng(lat, lng);
-                        points.add(position);
-                    }
-
-                    polyLineOptions.addAll(points);
-                    polyLineOptions.color(Color.BLUE);
-
-                }
-                if (polyLineOptions == null) {
-                    Toast.makeText(getApplicationContext(), "Something went wrong to draw path", Toast.LENGTH_LONG).show();
-                } else {
-                    mMap.addPolyline(polyLineOptions);
-                }
-            }
-        }
-
     }
 
     private int driverSize;
@@ -4155,15 +3901,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
-
-    public boolean idInList(final String ID, final List<String> idList) {
-        for (String userId : idList) {
-            if (ID.equals(userId)) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     boolean doubleBackToExitPressedOnce = false;
 
