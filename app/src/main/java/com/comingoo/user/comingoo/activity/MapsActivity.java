@@ -1700,14 +1700,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                                         newDialog.setContentView(R.layout.finished_course_2);
                                                                         choseBox = null;
 
-                                                                        TextView textView15 = dialog.findViewById(R.id.textView15);
-                                                                        TextView textView16 = dialog.findViewById(R.id.textView16);
-                                                                        Button button5 = dialog.findViewById(R.id.button5);
-                                                                        Button button7 = dialog.findViewById(R.id.button7);
-                                                                        Button button8 = dialog.findViewById(R.id.button8);
-                                                                        Button button9 = dialog.findViewById(R.id.button9);
-                                                                        Button button10 = dialog.findViewById(R.id.button10);
-
+                                                                        TextView textView15 = newDialog.findViewById(R.id.textView15);
+                                                                        TextView textView16 = newDialog.findViewById(R.id.textView16);
+                                                                        Button button5 = newDialog.findViewById(R.id.button5);
+                                                                        Button button7 = newDialog.findViewById(R.id.button7);
+                                                                        Button button8 = newDialog.findViewById(R.id.button8);
+                                                                        Button button9 = newDialog.findViewById(R.id.button9);
+                                                                        Button button10 = newDialog.findViewById(R.id.button10);
 
                                                                         //Set Texts
                                                                         textView15.setText(resources.getString(R.string.Noussommesdésolé));
@@ -1808,18 +1807,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
                                                                         ImageButton nextBtn = newDialog.findViewById(R.id.imageButton3);
-                                                                        newDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                                                                            @Override
-                                                                            public void onDismiss(DialogInterface dialog) {
-                                                                                if (ContextCompat.checkSelfPermission(MapsActivity.this,
-                                                                                        Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                                                                                    ActivityCompat.requestPermissions(MapsActivity.this,
-                                                                                            new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 10);
-                                                                                } else {
-                                                                                    showVoiceDialog();
-                                                                                }
-                                                                            }
-                                                                        });
+//                                                                        newDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+//                                                                            @Override
+//                                                                            public void onDismiss(DialogInterface dialog) {
+//                                                                                if (ContextCompat.checkSelfPermission(MapsActivity.this,
+//                                                                                        Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+//                                                                                    ActivityCompat.requestPermissions(MapsActivity.this,
+//                                                                                            new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 10);
+//                                                                                } else {
+//                                                                                    showVoiceDialog();
+//                                                                                }
+//                                                                            }
+//                                                                        });
 
                                                                         nextBtn.setOnClickListener(new View.OnClickListener() {
                                                                             @Override
