@@ -3018,10 +3018,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             AnimateConstraint.animate(context, aR, HeightAbsolute, HeightAbsolute, 1);
             AnimateConstraint.animate(context, favorite, 1, 1, 1);
             if (orderDriverState == 0) {
-//                searchButton.setVisibility(View.VISIBLE);
                 findViewById(R.id.imageView111).setVisibility(View.VISIBLE);
                 aR.setVisibility(View.VISIBLE);
-                //if(Height > (dpHeight - (270)))
                 getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
                 selectStart.setVisibility(View.GONE);
                 selectedOp.setVisibility(View.GONE);
