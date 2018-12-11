@@ -28,6 +28,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Locale;
@@ -50,6 +51,7 @@ public class ComingooAndYouActivity extends AppCompatActivity {
     private int useCV = 0;
     private SharedPreferences sharedPreferences;
     private String language;
+    private DecimalFormat df2 = new DecimalFormat(".##");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,13 +126,15 @@ public class ComingooAndYouActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
         final String userId = prefs.getString("userID", null);
 
+        df2.setRoundingMode(RoundingMode.UP);
 
         FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.child("SOLDE").getValue(String.class) != null)
-                    todayEarnings.setText(dataSnapshot.child("SOLDE").getValue(String.class) + " MAD");
-                else todayEarnings.setText("0 MAD");
+                if (dataSnapshot.child("SOLDE").getValue(String.class) != null) {
+                    double earnings = Double.parseDouble(dataSnapshot.child("SOLDE").getValue(String.class));
+                    todayEarnings.setText(df2.format(earnings) + " MAD");
+                } else todayEarnings.setText("0 MAD");
 
                 useCV = Integer.parseInt(dataSnapshot.child("USECREDIT").getValue(String.class));
 
