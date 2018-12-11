@@ -337,7 +337,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private class CheckUserTask extends AsyncTask<String, Integer, String> {
         SharedPreferences prefs;
         String userId;
-        String image;
 
         // Runs in UI before background thread is called
         @Override
@@ -3390,8 +3389,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         try {
             new checkCourseTask().execute();
-        } catch (NullPointerException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
