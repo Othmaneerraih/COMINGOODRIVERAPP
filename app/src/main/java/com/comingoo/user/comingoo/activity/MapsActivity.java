@@ -1147,19 +1147,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
 
             courseScreenStageZero = true;
+
             final Dialog dialog = new Dialog(context);
             dialog.setContentView(R.layout.custom);
-
             Button dialogButton = dialog.findViewById(R.id.button);
 
             TextView textView8 = dialog.findViewById(R.id.textView8);
             Button ddd = dialog.findViewById(R.id.button);
 
-
             //Set Texts
             textView8.setText(resources.getString(R.string.Votrechauffeurestenroute));
             ddd.setText(resources.getString(R.string.Daccord));
-
 
             dialogButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -2606,6 +2604,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         searchDestEditText.setVisibility(View.VISIBLE);
         gooBox.setVisibility(View.VISIBLE);
         destArrow.setVisibility(View.VISIBLE);
+        callLayout.setVisibility(View.GONE);
     }
 
     public void showPromoCodeDialog(final Context context) {
@@ -2870,7 +2869,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void hideSelectDestUI() {
         orderDriverState = 0;
-
+        callLayout.setVisibility(View.GONE);
+        ivCross.setVisibility(View.GONE);
         coverButton.setClickable(true);
 
         hideSearchAddressStartUI();
@@ -3077,7 +3077,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 lookForAddress();
             }
         });
-
 
     }
 
@@ -3298,7 +3297,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public static void showSearchAddressStartUI() {
-
         X.setVisibility(View.VISIBLE);
         menuButton.setVisibility(View.VISIBLE);
         state = 0;
@@ -3477,6 +3475,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (distanceKmTime >= 10) distanceKmTime -= (distanceKmTime * (distanceKmTime / 100));
 
             if (!courseScreenIsOn) {
+                callLayout.setVisibility(View.GONE);
                 closestDriverText.setText((int) distanceKmTime + "\nmin");
                 if (orderDriverState == 1) {
                     if (closestDriverText.getText().toString().startsWith("-")) {
@@ -3495,7 +3494,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         } else {
             if (!courseScreenIsOn) {
-
+                callLayout.setVisibility(View.GONE);
                 closestDriverText.setText("4\nmin");
                 frameTime.setText("4\nMin");
                 if (orderDriverState == 1) {
@@ -4073,6 +4072,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                                                         if (dataSnapshot.exists()) {
                                                                             // driverName.setText(dataSnapshot.child("fullName").getValue(String.class));
+                                                                            callLayout.setVisibility(View.VISIBLE);
                                                                         }
                                                                     }
 
@@ -4195,6 +4195,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         rippleBackground.stopRippleAnimation();
         menuButton.setVisibility(View.VISIBLE);
         cancelRequest.setVisibility(View.GONE);
+        callLayout.setVisibility(View.GONE);
         gooButton.setClickable(true);
         driversKeys.clear();
         driversKeysHold.clear();

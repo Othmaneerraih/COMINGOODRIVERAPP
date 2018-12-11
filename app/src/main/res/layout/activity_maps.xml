@@ -568,7 +568,7 @@
 
         <ImageView
             android:id="@+id/imageView5"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="198dp"
             android:adjustViewBounds="false"
             android:background="@drawable/trans_fade"
