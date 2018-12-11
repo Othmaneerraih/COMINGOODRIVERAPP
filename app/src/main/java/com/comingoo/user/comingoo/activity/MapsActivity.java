@@ -455,18 +455,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         @Override
         public void onIncomingCall(CallClient callClient, Call incomingCall) {
             call = incomingCall;
-
             Toast.makeText(MapsActivity.this, "incoming call", Toast.LENGTH_SHORT).show();
-            try {
-                if (VoipCallingActivity.activity != null)
-                    if (!VoipCallingActivity.activity.isFinishing())
-                        VoipCallingActivity.activity.finish();
-                showDialog(MapsActivity.this, call);
-            } catch (NullPointerException e) {
-                e.printStackTrace();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+//            try {
+//                if (VoipCallingActivity.activity != null)
+//                    if (!VoipCallingActivity.activity.isFinishing())
+//                        VoipCallingActivity.activity.finish();
+//                showDialog(MapsActivity.this, call);
+//            } catch (NullPointerException e) {
+//                e.printStackTrace();
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+            showDialog(MapsActivity.this, call);
         }
 
 
