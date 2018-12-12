@@ -199,6 +199,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     static ImageView image2;
     static ImageButton X;
     static ImageButton positionButton;
+
     private TextView price;
     private ImageView locationStartPin;
     private ImageView locationDestPin;
@@ -1083,6 +1084,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (statusT.equals("1") && !courseScreenStageOne) {
             ivCross.setVisibility(View.GONE);
+            voip_view.setVisibility(View.GONE);
             if (!userLevel.equals("2")) {
                 ivCallDriver.setVisibility(View.VISIBLE);
                 ivCallDriver.setOnClickListener(new View.OnClickListener() {
@@ -1251,6 +1253,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
                 alertDialog.dismiss();
                 ivCross.setVisibility(View.GONE);
+                voip_view.setVisibility(View.GONE);
             }
         });
 
@@ -1347,6 +1350,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                             voip_view.setVisibility(View.GONE);
                                             if (ivCross != null)
                                                 ivCross.setVisibility(View.GONE);
+                                            if (voip_view != null)
+                                                voip_view.setVisibility(View.GONE);
 
                                             // finishing promo code
                                             FirebaseDatabase.getInstance().getReference("clientUSERS").
@@ -2714,6 +2719,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         callLayout.setVisibility(View.GONE);
         ivCross.setVisibility(View.GONE);
         coverButton.setClickable(true);
+        voip_view.setVisibility(View.GONE);
 
         hideSearchAddressStartUI();
         confirmStart.setVisibility(View.VISIBLE);
