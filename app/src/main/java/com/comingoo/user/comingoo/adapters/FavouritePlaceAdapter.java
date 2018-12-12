@@ -54,9 +54,6 @@ public class FavouritePlaceAdapter  extends RecyclerView.Adapter<FavouritePlaceA
             public void onClick(View view) {
                 if (newPlace.getLat() != null && newPlace.getLng() != null) {
                     if (!newPlace.getLat().isEmpty() && !newPlace.getLng().isEmpty()) {
-                        MapsActivity.showSearchAddressStartUI();
-                        MapsActivity.goToLocation(context, Double.parseDouble(newPlace.
-                                getLat()), Double.parseDouble(newPlace.getLng()), newPlace);
                         pickLocation.pickedLocation(newPlace);
                     }
                 }

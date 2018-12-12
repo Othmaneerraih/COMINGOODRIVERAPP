@@ -160,6 +160,7 @@ import static com.google.android.gms.location.LocationServices.getFusedLocationP
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, PickLocation {
     private static final String TAG = "MapsActivity";
+
     static GoogleMap mMap;
     private static EditText searchEditText;
     private static EditText searchDestEditText;
@@ -187,31 +188,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private FrameLayout frameLayout3;
     private TextView frameTime;
     private TextView closestDriverText;
-
-//<<<<<<< HEAD
-
-//    private static ConstraintLayout favorite;
-//    static Context context;
-
     static ConstraintLayout constLayoutAddressResult;
     static ConstraintLayout constLayoutRecentPlace;
     static ConstraintLayout constFavouritePlace;
-
-//    private static final String APP_KEY = "185d9822-a953-4af6-a780-b0af1fd31bf7";
-//    private static final String APP_SECRET = "ZiJ6FqH5UEWYbkMZd1rWbw==";
-//    private static final String ENVIRONMENT = "sandbox.sinch.com";
-//
-//
-//    private float density;
-//    private float dpHeight;
-//    private float dpWidth;
-
-//    static Window gWindow;
-//=======
-//    static ConstraintLayout aR;
-//    static ConstraintLayout rR;
-//    static ConstraintLayout fR;
-//>>>>>>> 63241831ef9dc3346210a94864c795c8d7c2b069
     static Button coverButton;
     static ImageView image1;
     static ImageView image2;
@@ -349,8 +328,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void pickedLocation(Place place) {
+        showSearchAddressStartUI();
+        goToLocation(context, Double.parseDouble(place.
+                getLat()), Double.parseDouble(place.getLng()), place);
         hideSearchAddressStartUI();
-//        showSearchAddressStartUI();
     }
 
     private class CheckUserTask extends AsyncTask<String, Integer, String> {
