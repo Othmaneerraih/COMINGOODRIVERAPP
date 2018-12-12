@@ -333,8 +333,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         showSearchAddressStartUI();
         goToLocation(context, Double.parseDouble(place.
                 getLat()), Double.parseDouble(place.getLng()), place);
-
-        hideSearchAddressStartUI();
+        Log.e(TAG, "pickedLocation: ");
+//        hideSearchAddressStartUI();
     }
 
     private class CheckUserTask extends AsyncTask<String, Integer, String> {
@@ -2301,8 +2301,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     if (startPositionIsValid()) {
                         orderDriverState = 1;
                         showSelectDestUI();
-//                    menuButton.setVisibility(View.GONE);
-
                         state = 1;
                     }
                 } catch (Exception e) {
@@ -2322,70 +2320,71 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         setSearchFunc();
 
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientID);
-        rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                if (snapshot.hasChild("rating")) {
-                    // run some code
-                } else {
-                    Map<String, String> dataRating = new HashMap();
-                    dataRating.put("1", "0");
-                    dataRating.put("2", "0");
-                    dataRating.put("3", "0");
-                    dataRating.put("4", "0");
-                    dataRating.put("5", "0");
-                    FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientID).child("rating").setValue(dataRating);
+        if (clientID !=null) {
+            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientID);
+            rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+                    if (snapshot.hasChild("rating")) {
+                        // run some code
+                    } else {
+                        Map<String, String> dataRating = new HashMap();
+                        dataRating.put("1", "0");
+                        dataRating.put("2", "0");
+                        dataRating.put("3", "0");
+                        dataRating.put("4", "0");
+                        dataRating.put("5", "0");
+                        FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientID).child("rating").setValue(dataRating);
+                    }
                 }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-
-        DatabaseReference rootFavPlace = FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientID);
-        rootFavPlace.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                if (snapshot.hasChild("favouritePlace")) {
-                } else {
-                    Map<String, String> dataFavPlace = new HashMap();
-                    dataFavPlace.put(getString(R.string.txt_home), "");
-                    dataFavPlace.put(getString(R.string.txt_work), "");
-                    FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientID).child("favouritePlace").setValue(dataFavPlace);
-
-                    Map<String, String> homeSt = new HashMap();
-                    homeSt.put("Lat", "");
-                    homeSt.put("Long", "");
-                    homeSt.put("Address", "");
-
-                    Map<String, String> workSt = new HashMap();
-                    workSt.put("Lat", "");
-                    workSt.put("Long", "");
-                    workSt.put("Address", "");
-
-                    FirebaseDatabase.getInstance().
-                            getReference("clientUSERS").child(clientID)
-                            .child("favouritePlace").child(getString(R.string.txt_home)).setValue(homeSt);
-
-                    FirebaseDatabase.getInstance().
-                            getReference("clientUSERS").child(clientID)
-                            .child("favouritePlace").child(getString(R.string.txt_work)).setValue(workSt);
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
                 }
-            }
+            });
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            }
-        });
+            DatabaseReference rootFavPlace = FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientID);
+            rootFavPlace.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+                    if (snapshot.hasChild("favouritePlace")) {
+                    } else {
+                        Map<String, String> dataFavPlace = new HashMap();
+                        dataFavPlace.put(getString(R.string.txt_home), "");
+                        dataFavPlace.put(getString(R.string.txt_work), "");
+                        FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientID).child("favouritePlace").setValue(dataFavPlace);
 
+                        Map<String, String> homeSt = new HashMap();
+                        homeSt.put("Lat", "");
+                        homeSt.put("Long", "");
+                        homeSt.put("Address", "");
+
+                        Map<String, String> workSt = new HashMap();
+                        workSt.put("Lat", "");
+                        workSt.put("Long", "");
+                        workSt.put("Address", "");
+
+                        FirebaseDatabase.getInstance().
+                                getReference("clientUSERS").child(clientID)
+                                .child("favouritePlace").child(getString(R.string.txt_home)).setValue(homeSt);
+
+                        FirebaseDatabase.getInstance().
+                                getReference("clientUSERS").child(clientID)
+                                .child("favouritePlace").child(getString(R.string.txt_work)).setValue(workSt);
+
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
 //        gettingWorkHome();
-        //This change is for making conflict
+
     }
 
     private void initialize() {
@@ -2527,8 +2526,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         getRecentPlaces(context);
 
         AnimateConstraint.animate(MapsActivity.this, favorite, HeightAbsolute, 1, 100);
-
-
         findViewById(R.id.imageView7).setVisibility(View.VISIBLE);
         findViewById(R.id.x).setVisibility(View.VISIBLE);
         findViewById(R.id.my_position).setVisibility(View.GONE);
@@ -2831,7 +2828,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onFocusChange(View view, boolean b) {
                 if (b) {
-                    // hideSearchAddressStartUI();
+                     hideSearchAddressStartUI();
                     searchEditText.addTextChangedListener(new TextWatcher() {
                         @Override
                         public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -2841,6 +2838,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         @Override
                         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                             txt = this;
+                            hideSearchAddressStartUI();
+//                            showSearchAddressStartUI();
+                            state = -1;
+                            showFavoritsAndRecents();
                             if (searchEditText.getText().toString().length() >= 3) {
                                 lookForAddress();
                             }
@@ -2861,7 +2862,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onFocusChange(View view, boolean b) {
                 if (b) {
-                    // hideSearchAddressStartUI();
+                     hideSearchAddressStartUI();
                     searchDestEditText.addTextChangedListener(new TextWatcher() {
                         @Override
                         public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -2871,6 +2872,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         @Override
                         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                             txtDest = this;
+//                            hideSearchAddressStartUI();
+//                            showSearchAddressStartUI();
+
+                            state = -1;
+                            showFavoritsAndRecents();
+
                             if (searchDestEditText.getText().toString().length() >= 3) {
                                 lookForAddress();
                             }
@@ -2887,6 +2894,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             }
         });
+
 
         searchEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -3065,12 +3073,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .build();                   // Creates a CameraPosition from the builder
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
-        Log.e(TAG, "goToLocation: " + lat);
-        Log.e(TAG, "goToLocation: " + lng);
+        Log.e(TAG, "goToLocation: " + lat + " goToLocation: " + lng);
+
         searchEditText.setText(utility.getCompleteAddressString(context, lat, lng));
         searchDestEditText.setText(utility.getCompleteAddressString(context, lat, lng));
-
-
     }
 
     static boolean contains(ArrayList<Place> list, Place place) {
