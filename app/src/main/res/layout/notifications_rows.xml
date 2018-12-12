@@ -87,7 +87,7 @@
             app:layout_constraintStart_toEndOf="@+id/imageView8" />
 
         <Button
-            android:id="@+id/promoCode"
+            android:id="@+id/tv_promo_code"
             android:layout_width="wrap_content"
             android:layout_height="30dp"
             android:layout_marginBottom="16dp"

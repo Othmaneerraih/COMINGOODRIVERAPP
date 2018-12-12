@@ -28,11 +28,11 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/textView18"
+            android:id="@+id/tv_destination"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="@dimen/margin_normal"
             android:fontFamily="@font/roboto_light"
             android:text="@string/Appreciate"
             android:textColor="@android:color/white"
@@ -44,12 +44,12 @@
             android:id="@+id/textView19"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="6dp"
             android:fontFamily="@font/roboto"
             android:text="@string/PS"
             android:textColor="@android:color/white"
-            app:layout_constraintStart_toStartOf="@+id/textView18"
-            app:layout_constraintTop_toBottomOf="@+id/textView18" />
+            app:layout_constraintStart_toStartOf="@+id/tv_destination"
+            app:layout_constraintTop_toBottomOf="@+id/tv_destination" />
 
         <RelativeLayout
             android:layout_width="100dp"

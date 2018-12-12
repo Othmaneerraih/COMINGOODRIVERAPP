@@ -13,6 +13,10 @@
     <string name="Aide">Aide</string>
     <string name="Sedeconnecter">Devenir driver ? <a href="https://www.comingoo.com/driver"></a></string>
 
+
+    <string name="txt_home">Maison</string>
+    <string name="txt_work">Travail</string>
+
     <string name="Lieuxfavoris">Lieux favoris:</string>
     <string name="Lieuxrécents">Lieux récents:</string>
     <string name="Ajouterladestination">Ajouter la destination</string>
@@ -98,6 +102,8 @@
     <string name="sinch_app_key">04ae7d45-1084-4fb5-9d7c-08d82527d191</string>
     <string name="sinch_app_secret">TfJrquo6qEmkV8DG/EXQPg==</string>
     <string name="sinch_envirentmnet_host">clientapi.sinch.com</string>
+    <string name="title_activity_confirm_btn">Confirmer address</string>
+    <string name="txt_block_time_over">Your blocking time is not over yet.</string>
 
     <string-array name="blocked_users" tools:ignore="ExtraTranslation">
         <item>brightgupta18@gmail.com</item>

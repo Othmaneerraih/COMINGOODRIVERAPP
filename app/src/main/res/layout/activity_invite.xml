@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/online_button"
-    tools:context="com.comingoo.user.comingoo.inviteActivity">
+    tools:context="com.comingoo.user.comingoo.activity.InviteActivity">
 
     <ImageView
         android:id="@+id/imageView25"

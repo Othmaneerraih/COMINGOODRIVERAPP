@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
-    tools:context="com.comingoo.user.comingoo.loginActivity">
+    tools:context="com.comingoo.user.comingoo.activity.LoginActivity">
 
     <ImageView
         android:id="@+id/title_image"
@@ -18,14 +18,17 @@
 
     <com.facebook.login.widget.LoginButton
         android:id="@+id/login_button"
-        android:layout_width="300dp"
+        android:layout_width="match_parent"
         android:layout_height="200dp"
         android:layout_below="@+id/title_image"
-        android:layout_alignParentEnd="true"
         android:layout_marginTop="75dp"
-        android:layout_marginEnd="24dp" />
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_alignStart="@+id/layout_view"
+        android:layout_alignEnd="@+id/layout_view"/>
 
     <RelativeLayout
+        android:id="@+id/layout_view"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_below="@+id/title_image"
@@ -99,7 +102,7 @@
 </RelativeLayout>
 
 
-    <!--<?xml version="1.0" encoding="utf-8"?>--><!--<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"--><!--xmlns:app="http://schemas.android.com/apk/res-auto"--><!--xmlns:tools="http://schemas.android.com/tools"--><!--android:layout_width="match_parent"--><!--android:layout_height="match_parent"--><!--android:background="@android:color/white"--><!--tools:context=".loginActivity">-->
+    <!--<?xml version="1.0" encoding="utf-8"?>--><!--<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"--><!--xmlns:app="http://schemas.android.com/apk/res-auto"--><!--xmlns:tools="http://schemas.android.com/tools"--><!--android:layout_width="match_parent"--><!--android:layout_height="match_parent"--><!--android:background="@android:color/white"--><!--tools:context=".LoginActivity">-->
 
     <!--<TextView--><!--android:id="@+id/textView5"--><!--android:layout_width="wrap_content"--><!--android:layout_height="wrap_content"--><!--android:layout_marginStart="32dp"--><!--android:layout_marginTop="40dp"--><!--android:fontFamily="@font/roboto_thin"--><!--android:text="@string/SeConnecter"--><!--android:textColor="@android:color/white"--><!--android:textSize="50sp"--><!--app:layout_constraintStart_toStartOf="parent"--><!--app:layout_constraintTop_toTopOf="parent" />-->
 

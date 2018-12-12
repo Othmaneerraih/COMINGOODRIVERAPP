@@ -2,12 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.comingoo.user.comingoo">
 
-    <!--
-         The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
-         Google Maps Android API v2, but you must specify either coarse or fine
-         location permissions for the 'MyLocation' functionality. 
-    -->
-
     <uses-feature
         android:name="android.hardware.microphone"
         android:required="false" />
@@ -20,14 +14,16 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
 
     <application
         android:allowBackup="true"
+        android:hardwareAccelerated="false"
         android:icon="@mipmap/logo_user"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:roundIcon="@mipmap/icon_user_round"
         android:screenOrientation="portrait"
         android:supportsRtl="true"
@@ -42,7 +38,9 @@
              sign the APK for publishing.
              You can define the keys for the debug and release targets in src/debug/ and src/release/. 
         -->
-
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
@@ -67,48 +65,50 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name="com.comingoo.user.comingoo.MapsActivity"
+            android:name=".activity.MapsActivity"
             android:configChanges="orientation"
             android:fitsSystemWindows="true"
             android:label="@string/title_activity_maps"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan|stateHidden"></activity>
+            android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
-            android:name="com.comingoo.user.comingoo.MainActivity"
+            android:name="com.comingoo.user.comingoo.activity.MainActivity"
             android:configChanges="orientation"
             android:label="Comingoo"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
 
         <activity
-            android:name="com.comingoo.user.comingoo.CallActivity"
+            android:name=".activity.FevoriteLocationActivity"
             android:configChanges="orientation"
             android:label="Comingoo"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
+
         <activity
-            android:name="com.comingoo.user.comingoo.signupActivity"
+            android:name=".activity.SignupActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name="com.comingoo.user.comingoo.signupConfirmActivity"
+            android:name=".activity.SignupConfirmActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name="com.comingoo.user.comingoo.signupFacebookActivity"
+            android:name=".activity.SignupFacebookActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.comingoo.user.comingoo.signupInfoActivity"
+            android:name=".activity.SignupInfoActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
 
-        <activity android:name="com.comingoo.user.comingoo.VoipCallingActivity"
+        <activity
+            android:name="com.comingoo.user.comingoo.activity.VoipCallingActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
 
         <activity
-            android:name="com.comingoo.user.comingoo.loginActivity"
+            android:name=".activity.LoginActivity"
             android:configChanges="orientation"
             android:label="Comingoo"
             android:screenOrientation="portrait"
@@ -120,25 +120,25 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.comingoo.user.comingoo.historiqueActivity"
+            android:name=".activity.HistoriqueActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.comingoo.user.comingoo.notificationActivity"
+            android:name=".activity.NotificationActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.comingoo.user.comingoo.aideActivity"
+            android:name=".activity.AideActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.comingoo.user.comingoo.comingoonuActivity"
+            android:name=".activity.ComingooAndYouActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.comingoo.user.comingoo.inviteActivity"
+            android:name=".activity.InviteActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

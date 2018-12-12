@@ -2,69 +2,139 @@
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent" android:layout_height="60dp"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:layout_marginTop="0dp"
+    android:layout_marginBottom="0dp"
+    android:elevation="0dp"
     android:paddingLeft="20dp"
     android:paddingRight="20dp"
     app:cardBackgroundColor="@android:color/transparent"
-    android:elevation="0dp"
-    app:cardElevation="0dp"
-    android:layout_marginBottom="0dp"
-    android:layout_marginTop="0dp">
+    app:cardElevation="0dp">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <RelativeLayout
+        android:id="@+id/click_view"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:layout_marginLeft="5dp"
+        android:layout_marginTop="0dp"
         android:layout_marginEnd="10dp"
         android:layout_marginRight="10dp"
         android:layout_marginBottom="0dp"
-        android:layout_marginTop="0dp"
-        android:gravity="center"
-        android:background="@android:color/transparent"
-        android:orientation="horizontal">
+        android:background="@android:color/transparent">
 
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="53dp"
+            android:layout_width="25dp"
             android:layout_height="30dp"
-            android:layout_marginBottom="5dp"
-            android:layout_marginLeft="10dp"
             android:layout_marginStart="10dp"
+            android:layout_marginLeft="10dp"
             android:layout_marginTop="8dp"
-            android:layout_weight="1"
+            android:layout_marginBottom="5dp"
             android:scaleType="fitXY"
             app:srcCompat="@drawable/lieux_proches" />
 
+        <ImageView
+            android:id="@+id/add_btn"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginRight="6dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/add_icon" />
+
         <LinearLayout
+            android:id="@+id/ll_fav_address"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
             android:layout_marginStart="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="@dimen/margin_xlarge"
+            android:layout_marginEnd="@dimen/margin_xlarge"
+            android:layout_marginTop="@dimen/margin_normal"
             android:layout_marginBottom="2dp"
-            android:layout_marginTop="5dp"
-            android:layout_weight="1"
+            android:layout_toLeftOf="@+id/add_btn"
+            android:layout_toRightOf="@+id/imageView"
             android:orientation="vertical">
 
             <TextView
                 android:id="@+id/title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Travaille"
                 android:fontFamily="@font/roboto"
-                android:textSize="12sp"
-                android:textColor="@color/purpleColor"/>
+                android:text="Travaille"
+                android:textColor="@color/purpleColor"
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/address"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Café le Visar"
                 android:fontFamily="@font/roboto"
+                android:text="Café le Visar"
                 android:textColor="@color/colorAddress"
                 android:textSize="10sp" />
         </LinearLayout>
 
-    </LinearLayout>
+
+    </RelativeLayout>
+
+
+    <!--<LinearLayout-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginStart="5dp"-->
+    <!--android:layout_marginLeft="5dp"-->
+    <!--android:layout_marginEnd="10dp"-->
+    <!--android:layout_marginRight="10dp"-->
+    <!--android:layout_marginBottom="0dp"-->
+    <!--android:layout_marginTop="0dp"-->
+    <!--android:gravity="center"-->
+    <!--android:background="@android:color/transparent"-->
+    <!--android:orientation="horizontal">-->
+
+    <!--<ImageView-->
+    <!--android:id="@+id/imageView"-->
+    <!--android:layout_width="53dp"-->
+    <!--android:layout_height="30dp"-->
+    <!--android:layout_marginBottom="5dp"-->
+    <!--android:layout_marginLeft="10dp"-->
+    <!--android:layout_marginStart="10dp"-->
+    <!--android:layout_marginTop="8dp"-->
+    <!--android:layout_weight="1"-->
+    <!--android:scaleType="fitXY"-->
+    <!--app:srcCompat="@drawable/lieux_proches" />-->
+
+    <!--<LinearLayout-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginLeft="20dp"-->
+    <!--android:layout_marginStart="20dp"-->
+    <!--android:layout_marginBottom="2dp"-->
+    <!--android:layout_marginTop="5dp"-->
+    <!--android:layout_weight="1"-->
+    <!--android:orientation="vertical">-->
+
+    <!--<TextView-->
+    <!--android:id="@+id/title"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:text="Travaille"-->
+    <!--android:fontFamily="@font/roboto"-->
+    <!--android:textSize="12sp"-->
+    <!--android:textColor="@color/purpleColor"/>-->
+
+    <!--<TextView-->
+    <!--android:id="@+id/address"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:text="Café le Visar"-->
+    <!--android:fontFamily="@font/roboto"-->
+    <!--android:textColor="@color/colorAddress"-->
+    <!--android:textSize="10sp" />-->
+    <!--</LinearLayout>-->
+
+    <!--</LinearLayout>-->
 
 </android.support.v7.widget.CardView>
