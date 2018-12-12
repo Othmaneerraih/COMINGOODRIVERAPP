@@ -230,9 +230,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private RippleBackground rippleBackground;
 
     private Button confirmDest;
-
-    int Height;
-
     int HeightAbsolute;
 
     static ConstraintLayout citySelectLayout;

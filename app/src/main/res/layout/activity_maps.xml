@@ -580,7 +580,7 @@
 
         <ImageView
             android:id="@+id/imageView7"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="69dp"
             android:adjustViewBounds="false"
             android:background="@drawable/trans_fade"
@@ -594,7 +594,7 @@
 
         <ImageView
             android:id="@+id/imageView111"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="69dp"
             android:adjustViewBounds="false"
             android:background="@drawable/trans_fade"
