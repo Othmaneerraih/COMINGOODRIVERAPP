@@ -159,7 +159,10 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, PickLocation {
+
     private static final String TAG = "MapsActivity";
+
+    // global Variable
 
     static GoogleMap mMap;
     private static EditText searchEditText;
@@ -188,9 +191,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private FrameLayout frameLayout3;
     private TextView frameTime;
     private TextView closestDriverText;
-    static ConstraintLayout constLayoutAddressResult;
-    static ConstraintLayout constLayoutRecentPlace;
-    static ConstraintLayout constFavouritePlace;
+    static ConstraintLayout aR;
+    static ConstraintLayout rR;
+    static ConstraintLayout fR;
     static Button coverButton;
     static ImageView image1;
     static ImageView image2;
@@ -229,7 +232,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     static ImageButton menuButton;
     private ImageButton gooButton;
 
-
     static ArrayList<Place> placeDataList;
     static ArrayList<Place> fPlaceDataList;
     static ArrayList<Place> rPlaceDataList;
@@ -247,12 +249,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private float dpHeight;
     private float dpWidth;
     static Window gWindow;
-    static int HeightAbsolute;
+    int HeightAbsolute;
     private String searchLoc;
     private String clientID;
     private String startCity;
     private String destCity;
-    private ArrayList<FixedLocation> fixedLocations;
     private float distance;
     private Resources resources;
     private String language;
@@ -331,6 +332,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         showSearchAddressStartUI();
         goToLocation(context, Double.parseDouble(place.
                 getLat()), Double.parseDouble(place.getLng()), place);
+
         hideSearchAddressStartUI();
     }
 
@@ -437,17 +439,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         public void onIncomingCall(CallClient callClient, Call incomingCall) {
             call = incomingCall;
             Toast.makeText(MapsActivity.this, "incoming call", Toast.LENGTH_SHORT).show();
-//            try {
-//                if (VoipCallingActivity.activity != null)
-//                    if (!VoipCallingActivity.activity.isFinishing())
-//                        VoipCallingActivity.activity.finish();
-//                showDialog(MapsActivity.this, call);
-//            } catch (NullPointerException e) {
-//                e.printStackTrace();
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
             showDialog(MapsActivity.this, call);
+
         }
 
 
@@ -498,6 +491,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         iv_mute = dialog.findViewById(R.id.iv_mute);
         iv_loud = dialog.findViewById(R.id.iv_loud);
         tv_name_voip_one = dialog.findViewById(R.id.tv_name_voip_one);
+
 
         iv_mute.setVisibility(View.GONE);
         iv_loud.setVisibility(View.GONE);
@@ -2041,7 +2035,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         sinchClient.getCallClient().addCallClientListener(new SinchCallClientListener());
 
         price = findViewById(R.id.tv_mad);
-        fixedLocations = new ArrayList<>();
+        ArrayList<FixedLocation> fixedLocations = new ArrayList<>();
         context = MapsActivity.this;
         orderDriverState = 0;
         citySelectLayout = findViewById(R.id.select_city);
@@ -2081,9 +2075,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         HeightAbsolute = (int) dpHeight - (200);
 
 
-        constLayoutAddressResult = findViewById(R.id.adress_result);
-        constFavouritePlace = findViewById(R.id.favorite);
-        constLayoutRecentPlace = findViewById(R.id.recent);
+        aR = findViewById(R.id.adress_result);
+        fR = findViewById(R.id.favorite);
+        rR = findViewById(R.id.recent);
 
         userLatLng = null;
         startLatLng = null;
@@ -2181,8 +2175,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         int fHeight = 170;
         int rHeight = HeightAbsolute - fHeight - 5;
 
-        constFavouritePlace.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, fHeight, context.getResources().getDisplayMetrics());
-        constLayoutRecentPlace.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, rHeight, context.getResources().getDisplayMetrics());
+        fR.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, fHeight, context.getResources().getDisplayMetrics());
+        rR.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, rHeight, context.getResources().getDisplayMetrics());
 
         loadImages();
         updateViews();
@@ -2441,10 +2435,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void hideAllUI() {
-        startConstraint.setVisibility(View.GONE);
-        searchDestEditText.setVisibility(View.GONE);
-        gooBox.setVisibility(View.GONE);
-        destArrow.setVisibility(View.GONE);
+        startConstraint.setVisibility(View.INVISIBLE);
+        searchDestEditText.setVisibility(View.INVISIBLE);
+        gooBox.setVisibility(View.INVISIBLE);
+        destArrow.setVisibility(View.INVISIBLE);
     }
 
     private void showAllUI() {
@@ -2527,12 +2521,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         rPlaceDataList.clear();
         getRecentPlaces(context);
 
-        AnimateConstraint.animate(context, favorite, HeightAbsolute, 1, 100);
+        AnimateConstraint.animate(MapsActivity.this, favorite, HeightAbsolute, 1, 100);
+
 
         findViewById(R.id.imageView7).setVisibility(View.VISIBLE);
         findViewById(R.id.x).setVisibility(View.VISIBLE);
         findViewById(R.id.my_position).setVisibility(View.GONE);
-        findViewById(R.id.adress_result).setVisibility(View.GONE);
+        findViewById(R.id.adress_result).setVisibility(View.INVISIBLE);
     }
 
 
@@ -2934,7 +2929,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return;
         }
         if (orderDriverState == 1) {
-            startConstraint.setVisibility(View.GONE);
+            startConstraint.setVisibility(View.INVISIBLE);
         }
         placeDataList.clear();
         new LookForAddressTask().execute();
@@ -3013,11 +3008,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             int Height = 67 * placeDataList.size();
-            AnimateConstraint.animate(context, constLayoutAddressResult, HeightAbsolute, HeightAbsolute, 1);
+            AnimateConstraint.animate(context, aR, HeightAbsolute, HeightAbsolute, 1);
             AnimateConstraint.animate(context, favorite, 1, 1, 1);
             if (orderDriverState == 0) {
                 findViewById(R.id.imageView111).setVisibility(View.VISIBLE);
-                constLayoutAddressResult.setVisibility(View.VISIBLE);
+                aR.setVisibility(View.VISIBLE);
                 getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
                 selectStart.setVisibility(View.GONE);
                 selectedOp.setVisibility(View.GONE);
@@ -3027,7 +3022,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             if (orderDriverState == 1) {
                 searchButtonDest.setVisibility(View.VISIBLE);
-                constLayoutAddressResult.setVisibility(View.VISIBLE);
+                aR.setVisibility(View.VISIBLE);
                 //if(Height > (dpHeight - (270)))
                 getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
                 selectDest.setVisibility(View.GONE);
@@ -3084,27 +3079,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void hideSearchAddressStartUI() {
         placeDataList.clear();
         placeAdapter.notifyDataSetChanged();
-        findViewById(R.id.imageView7).setVisibility(View.GONE);
-        findViewById(R.id.imageView8).setVisibility(View.GONE);
-        favorite.setVisibility(View.GONE);
-        constLayoutAddressResult.setVisibility(View.GONE);
-        findViewById(R.id.imageView111).setVisibility(View.GONE);
+        findViewById(R.id.imageView7).setVisibility(View.INVISIBLE);
+        findViewById(R.id.imageView8).setVisibility(View.INVISIBLE);
+        favorite.setVisibility(View.INVISIBLE);
+        aR.setVisibility(View.INVISIBLE);
+        findViewById(R.id.imageView111).setVisibility(View.INVISIBLE);
 
         if (favorite.getHeight() >= HeightAbsolute)
             AnimateConstraint.animateCollapse(context, favorite, 1, HeightAbsolute, 300);
-
-//        if (constFavouritePlace.getHeight() >= HeightAbsolute)
-//            AnimateConstraint.animateCollapse(context, constFavouritePlace, 1, HeightAbsolute, 300);
-//
-//        if (constLayoutRecentPlace.getHeight() >= HeightAbsolute)
-//            AnimateConstraint.animateCollapse(context, constLayoutRecentPlace, 1, HeightAbsolute, 300);
-
-        if (constLayoutAddressResult.getHeight() >= HeightAbsolute)
-            AnimateConstraint.animateCollapse(context, constLayoutAddressResult, 1, HeightAbsolute, 300);
+        if (aR.getHeight() >= HeightAbsolute)
+            AnimateConstraint.animateCollapse(context, aR, 1, HeightAbsolute, 300);
 
 
-        findViewById(R.id.imageView7).setVisibility(View.GONE);
-        findViewById(R.id.imageView8).setVisibility(View.GONE);
+        findViewById(R.id.imageView7).setVisibility(View.INVISIBLE);
+        findViewById(R.id.imageView8).setVisibility(View.INVISIBLE);
         coverButton.setVisibility(View.VISIBLE);
         hideKeyboard((Activity) context);
         startConstraint.setVisibility(View.VISIBLE);
@@ -3130,14 +3118,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         searchDestEditText.clearFocus();
 
         AnimateConstraint.animate(context, favorite, 1, 1, 1);
-
-        AnimateConstraint.animate(context, constLayoutAddressResult, 1, 1, 1);
-        AnimateConstraint.animate(context, constFavouritePlace, 1, 1, 1);
-
-        AnimateConstraint.animate(context, constLayoutRecentPlace, 1, 1, 1);
-
-//        showFavoritsAndRecents();
-
+        AnimateConstraint.animate(context, aR, 1, 1, 1);
         //gWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         coverButton.setVisibility(View.VISIBLE);
         hideKeyboard((Activity) context);
