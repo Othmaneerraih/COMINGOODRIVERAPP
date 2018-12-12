@@ -188,35 +188,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private TextView frameTime;
     private TextView closestDriverText;
 
-//<<<<<<< HEAD
-
-//    private static ConstraintLayout favorite;
-//    static Context context;
-
     static ConstraintLayout constLayoutAddressResult;
     static ConstraintLayout constLayoutRecentPlace;
     static ConstraintLayout constFavouritePlace;
 
-//    private static final String APP_KEY = "185d9822-a953-4af6-a780-b0af1fd31bf7";
-//    private static final String APP_SECRET = "ZiJ6FqH5UEWYbkMZd1rWbw==";
-//    private static final String ENVIRONMENT = "sandbox.sinch.com";
-//
-//
-//    private float density;
-//    private float dpHeight;
-//    private float dpWidth;
-
-//    static Window gWindow;
-//=======
-//    static ConstraintLayout aR;
-//    static ConstraintLayout rR;
-//    static ConstraintLayout fR;
-//>>>>>>> 63241831ef9dc3346210a94864c795c8d7c2b069
     static Button coverButton;
     static ImageView image1;
     static ImageView image2;
     static ImageButton X;
     static ImageButton positionButton;
+
     private TextView price;
     private ImageView locationStartPin;
     private ImageView locationDestPin;
@@ -1108,6 +1089,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (statusT.equals("1") && !courseScreenStageOne) {
             ivCross.setVisibility(View.GONE);
+            voip_view.setVisibility(View.GONE);
             if (!userLevel.equals("2")) {
                 ivCallDriver.setVisibility(View.VISIBLE);
                 ivCallDriver.setOnClickListener(new View.OnClickListener() {
@@ -1276,6 +1258,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
                 alertDialog.dismiss();
                 ivCross.setVisibility(View.GONE);
+                voip_view.setVisibility(View.GONE);
             }
         });
 
@@ -1372,6 +1355,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                             voip_view.setVisibility(View.GONE);
                                             if (ivCross != null)
                                                 ivCross.setVisibility(View.GONE);
+                                            if (voip_view != null)
+                                                voip_view.setVisibility(View.GONE);
 
                                             // finishing promo code
                                             FirebaseDatabase.getInstance().getReference("clientUSERS").
@@ -2738,6 +2723,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         callLayout.setVisibility(View.GONE);
         ivCross.setVisibility(View.GONE);
         coverButton.setClickable(true);
+        voip_view.setVisibility(View.GONE);
 
         hideSearchAddressStartUI();
         confirmStart.setVisibility(View.VISIBLE);
@@ -3103,11 +3089,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void hideSearchAddressStartUI() {
         placeDataList.clear();
         placeAdapter.notifyDataSetChanged();
-        findViewById(R.id.imageView7).setVisibility(View.GONE);
-        findViewById(R.id.imageView8).setVisibility(View.GONE);
-        favorite.setVisibility(View.GONE);
-        constLayoutAddressResult.setVisibility(View.GONE);
-        findViewById(R.id.imageView111).setVisibility(View.GONE);
+        findViewById(R.id.imageView7).setVisibility(View.INVISIBLE);
+        findViewById(R.id.imageView8).setVisibility(View.INVISIBLE);
+        favorite.setVisibility(View.INVISIBLE);
+        constLayoutAddressResult.setVisibility(View.INVISIBLE);
+        findViewById(R.id.imageView111).setVisibility(View.INVISIBLE);
 
         if (favorite.getHeight() >= HeightAbsolute)
             AnimateConstraint.animateCollapse(context, favorite, 1, HeightAbsolute, 300);
@@ -3122,8 +3108,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             AnimateConstraint.animateCollapse(context, constLayoutAddressResult, 1, HeightAbsolute, 300);
 
 
-        findViewById(R.id.imageView7).setVisibility(View.GONE);
-        findViewById(R.id.imageView8).setVisibility(View.GONE);
         coverButton.setVisibility(View.VISIBLE);
         hideKeyboard((Activity) context);
         startConstraint.setVisibility(View.VISIBLE);
