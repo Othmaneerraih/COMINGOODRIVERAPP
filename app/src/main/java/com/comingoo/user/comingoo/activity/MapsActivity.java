@@ -1303,7 +1303,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         @Override
         protected String doInBackground(String... params) {
             try {
-                final Dialog dialog = new Dialog(context);
+                final Dialog dialog = new Dialog(MapsActivity.this);
                 dialog.setContentView(R.layout.finished_course);
 
                 TextView textView13 = dialog.findViewById(R.id.textView13);
@@ -1731,6 +1731,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     }
                 });
+            } catch (WindowManager.BadTokenException e) {
+                e.printStackTrace();
             } catch (Exception e) {
                 e.printStackTrace();
             }
