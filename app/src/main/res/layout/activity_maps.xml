@@ -608,7 +608,7 @@
 
         <ImageView
             android:id="@+id/imageView8"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="69dp"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
@@ -873,11 +873,9 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
-
-
         <ImageView
             android:id="@+id/shadow_bg"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="80dp"
             android:alpha="0.3"
             android:visibility="visible"
@@ -1126,7 +1124,7 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@android:color/white"
-            android:visibility="invisible"
+            android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@+id/favorite_recent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -1158,7 +1156,7 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@android:color/white"
-            android:visibility="invisible"
+            android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@+id/buttonsLayout"
             app:layout_constraintStart_toStartOf="parent">
 
@@ -1191,7 +1189,6 @@
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView"></android.support.v7.widget.RecyclerView>
-
 
                 <TextView
                     android:id="@+id/textView"
