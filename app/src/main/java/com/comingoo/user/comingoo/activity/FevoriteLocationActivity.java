@@ -1,4 +1,4 @@
-package com.comingoo.user.comingoo;
+package com.comingoo.user.comingoo.activity;
 
 import android.Manifest;
 import android.content.Context;
@@ -6,34 +6,32 @@ import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 
+import com.comingoo.user.comingoo.R;
+import com.comingoo.user.comingoo.model.Place;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
 import com.google.android.gms.common.ConnectionResult;
@@ -44,7 +42,6 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.AutocompleteFilter;
-import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -60,7 +57,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.List;
@@ -94,6 +90,7 @@ public class FevoriteLocationActivity extends AppCompatActivity
     private PlaceAutocompleteFragment autocompleteFragment;
     private ImageButton positionButton;
     private LatLng searchLatLng;
+    private RelativeLayout pinLayout;
 
     private GeoQuery geoQuery;
 
@@ -104,9 +101,12 @@ public class FevoriteLocationActivity extends AppCompatActivity
 
         mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFrag.getMapAsync(this);
-        searchEt = (EditText) findViewById(R.id.search_edit_text);
-        confirmBtn = (Button) findViewById(R.id.confirm_btn);
-        positionButton = (ImageButton) findViewById(R.id.my_position);
+        searchEt = findViewById(R.id.search_edit_text);
+        confirmBtn = findViewById(R.id.confirm_btn);
+        positionButton = findViewById(R.id.my_position);
+        pinLayout = findViewById(R.id.pin);
+
+        pinLayout.setVisibility(View.VISIBLE);
 
         positionButton.setImageBitmap(scaleBitmap(40, 37, R.drawable.my_position_icon));
 
@@ -151,7 +151,7 @@ public class FevoriteLocationActivity extends AppCompatActivity
         setAutocompleteFragmentAction();
 
         AutocompleteFilter autocompleteFilter = new AutocompleteFilter.Builder()
-                .setTypeFilter(Place.TYPE_COUNTRY)
+                .setTypeFilter(com.google.android.gms.location.places.Place.TYPE_COUNTRY)
                 .setCountry("MA")
                 .build();
 
@@ -251,7 +251,6 @@ public class FevoriteLocationActivity extends AppCompatActivity
             }
         });
 
-//        animateMarker(searchLatLng, false);
     }
 
     MarkerOptions markerOptions;
@@ -361,7 +360,7 @@ public class FevoriteLocationActivity extends AppCompatActivity
             List<Address> addresses = geocoder.getFromLocation(LATITUDE, LONGITUDE, 1);
             if (addresses != null) {
                 Address returnedAddress = addresses.get(0);
-                StringBuilder strReturnedAddress = new StringBuilder("");
+                StringBuilder strReturnedAddress = new StringBuilder();
 
                 for (int i = 0; i <= returnedAddress.getMaxAddressLineIndex(); i++) {
                     strReturnedAddress.append(returnedAddress.getAddressLine(i)).append("\n");
@@ -377,7 +376,7 @@ public class FevoriteLocationActivity extends AppCompatActivity
         return strAdd;
     }
 
-    public void goToLocation(Context context, Double lat, Double lng, place rPlace) {
+    public void goToLocation(Context context, Double lat, Double lng, Place rPlace) {
         mGoogleMap.clear();
         int height = 150;
         int width = 80;
@@ -400,13 +399,14 @@ public class FevoriteLocationActivity extends AppCompatActivity
     private void setAutocompleteFragmentAction() {
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
-            public void onPlaceSelected(Place place) {
+            public void onPlaceSelected(com.google.android.gms.location.places.Place place) {
                 mGoogleMap.clear();
                 mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
                 mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 12.0f));
+                pinLayout.setVisibility(View.GONE);
+                int height = 60;
+                int width = 30;
 
-                int height = 150;
-                int width = 80;
                 BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.depart_pin);
                 Bitmap b = bitmapdraw.getBitmap();
                 Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);

@@ -1,4 +1,4 @@
-package com.comingoo.user.comingoo;
+package com.comingoo.user.comingoo.activity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.comingoo.user.comingoo.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
@@ -28,7 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class signupConfirmActivity extends AppCompatActivity {
+public class SignupConfirmActivity extends AppCompatActivity {
     private String phoneNumber;
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallBacks;
     static Activity context;
@@ -41,19 +42,19 @@ public class signupConfirmActivity extends AppCompatActivity {
     EditText code6;
 
     private String Email,name,password,imageURI;
-    private String TAG = "signupConfirmActivity";
+    private String TAG = "SignupConfirmActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup_confirm);
 
-        code = (EditText) findViewById(R.id.code);
-        code2 = (EditText) findViewById(R.id.code2);
-        code3 = (EditText) findViewById(R.id.code3);
-        code4 = (EditText) findViewById(R.id.code4);
-        code5 = (EditText) findViewById(R.id.code5);
-        code6 = (EditText) findViewById(R.id.code6);
+        code = findViewById(R.id.code);
+        code2 = findViewById(R.id.code2);
+        code3 = findViewById(R.id.code3);
+        code4 = findViewById(R.id.code4);
+        code5 = findViewById(R.id.code5);
+        code6 = findViewById(R.id.code6);
 
 
         context = this;
@@ -86,7 +87,7 @@ public class signupConfirmActivity extends AppCompatActivity {
                                 signUpFirebase();
 
                             }else {
-                                Toast.makeText(signupConfirmActivity.this, "WRONG CODE PLEASE TRY AGAIN", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(SignupConfirmActivity.this, "WRONG CODE PLEASE TRY AGAIN", Toast.LENGTH_SHORT).show();
                                 findViewById(R.id.imageButton).setVisibility(View.VISIBLE);
                             }
                         }
@@ -95,7 +96,7 @@ public class signupConfirmActivity extends AppCompatActivity {
 
 
                 }else{
-                    Toast.makeText(signupConfirmActivity.this, "Please Enter Your OTP Code", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SignupConfirmActivity.this, "Please Enter Your OTP Code", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -132,14 +133,14 @@ public class signupConfirmActivity extends AppCompatActivity {
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if(!task.isSuccessful()){
                                         Log.e("signUpFacebookActivity", "onComplete: 1111 " );
-                                        Toast.makeText(signupConfirmActivity.this, "Error!!!", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(SignupConfirmActivity.this, "Error!!!", Toast.LENGTH_SHORT).show();
                                         FirebaseAuth.getInstance().getCurrentUser().delete();
                                         FirebaseAuth.getInstance().signOut();
                                     }else{
                                         Log.e("signUpFacebookActivity", "onComplete: 22222" );
                                         SharedPreferences prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
                                         prefs.edit().putString("userID", FirebaseAuth.getInstance().getCurrentUser().getUid()).apply();
-                                        startActivity(new Intent(signupConfirmActivity.this, MapsActivity.class));
+                                        startActivity(new Intent(SignupConfirmActivity.this, MapsActivity.class));
                                         finish();
                                     }
 
@@ -157,12 +158,7 @@ public class signupConfirmActivity extends AppCompatActivity {
 
 
     private void removeUserFromFireBase(){
-
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-// Get auth credentials from the user for re-authentication. The example below shows
-// email and password credentials but there are multiple possible providers,
-// such as GoogleAuthProvider or FacebookAuthProvider.
         AuthCredential credential = EmailAuthProvider
                 .getCredential(Email, password);
 
@@ -174,49 +170,6 @@ public class signupConfirmActivity extends AppCompatActivity {
                         Log.d(TAG, "User re-authenticated.");
                     }
                 });
-//        Log.d(TAG, "ingreso a deleteAccount");
-//        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-//        final FirebaseUser currentUser = firebaseAuth.getCurrentUser();
-//        currentUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-//            @Override
-//            public void onComplete(@NonNull Task<Void> task) {
-//                if (task.isSuccessful()) {
-//                    Log.d(TAG,"OK! Works fine!");
-//                    signUpFirebase();
-//                } else {
-//                    Log.w(TAG,"Something is wrong!");
-//                }
-//            }
-//        });
-
-
-
-//        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-//
-//        // Get auth credentials from the user for re-authentication. The example below shows
-//        // email and password credentials but there are multiple possible providers,
-//        // such as GoogleAuthProvider or FacebookAuthProvider.
-//        AuthCredential credential = EmailAuthProvider
-//                .getCredential(Email, password);
-//
-//        // Prompt the user to re-provide their sign-in credentials
-//        user.reauthenticate(credential)
-//                .addOnCompleteListener(new OnCompleteListener<Void>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<Void> task) {
-//                        user.delete()
-//                                .addOnCompleteListener(new OnCompleteListener<Void>() {
-//                                    @Override
-//                                    public void onComplete(@NonNull Task<Void> task) {
-//                                        if (task.isSuccessful()) {
-//                                            Log.d(TAG, "User account deleted.");
-//                                            signUpFirebase();
-//                                        }
-//                                    }
-//                                });
-//
-//                    }
-//                });
     }
 
     private void edittextFlow(){

@@ -3,7 +3,6 @@ package com.comingoo.user.comingoo.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,24 +10,27 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.comingoo.user.comingoo.FevoriteLocationActivity;
-import com.comingoo.user.comingoo.MapsActivity;
+import com.comingoo.user.comingoo.Interfaces.PickLocation;
+import com.comingoo.user.comingoo.activity.FevoriteLocationActivity;
+import com.comingoo.user.comingoo.activity.MapsActivity;
 import com.comingoo.user.comingoo.R;
-import com.comingoo.user.comingoo.place;
+import com.comingoo.user.comingoo.model.Place;
 
 import java.util.List;
 
 public class FavouritePlaceAdapter  extends RecyclerView.Adapter<FavouritePlaceAdapter.ViewHolder> {
-    private List<place> mDataset;
+    private List<Place> mDataset;
     private Context context;
     private boolean isAddButtonNeed;
     private String userId;
+    private PickLocation pickLocation;
 
-    public FavouritePlaceAdapter(Context context, List<place> myDataset, boolean isAddNeed, String userId) {
+    public FavouritePlaceAdapter(Context context, List<Place> myDataset, boolean isAddNeed, String userId, PickLocation pickLocation) {
         this.mDataset = myDataset;
         this.userId = userId;
         this.context = context;
         this.isAddButtonNeed = isAddNeed;
+        this.pickLocation = pickLocation;
     }
 
     @Override
@@ -42,7 +44,7 @@ public class FavouritePlaceAdapter  extends RecyclerView.Adapter<FavouritePlaceA
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        final place newPlace = mDataset.get(position);
+        final Place newPlace = mDataset.get(position);
 
         if (isAddButtonNeed) holder.addBtn.setVisibility(View.VISIBLE);
         else holder.addBtn.setVisibility(View.GONE);
@@ -52,9 +54,7 @@ public class FavouritePlaceAdapter  extends RecyclerView.Adapter<FavouritePlaceA
             public void onClick(View view) {
                 if (newPlace.getLat() != null && newPlace.getLng() != null) {
                     if (!newPlace.getLat().isEmpty() && !newPlace.getLng().isEmpty()) {
-                        MapsActivity.showSearchAddressStartUI();
-                        MapsActivity.goToLocation(context, Double.parseDouble(newPlace.
-                                getLat()), Double.parseDouble(newPlace.getLng()), newPlace);
+                        pickLocation.pickedLocation(newPlace);
                     }
                 }
             }

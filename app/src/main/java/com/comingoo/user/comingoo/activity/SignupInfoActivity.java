@@ -1,10 +1,12 @@
-package com.comingoo.user.comingoo;
+package com.comingoo.user.comingoo.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.comingoo.user.comingoo.R;
 
-public class signupInfoActivity extends AppCompatActivity {
+
+public class SignupInfoActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
