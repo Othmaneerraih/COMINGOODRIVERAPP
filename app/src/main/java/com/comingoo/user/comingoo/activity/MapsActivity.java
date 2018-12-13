@@ -416,7 +416,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 if (callNumber != null && callNumber.contains("+212")) {
                                     callNumber = callNumber.replace("+212", "");
                                 }
-                                intent.putExtra("phone", callNumber);
+                                intent.putExtra("phone", "0"+callNumber);
                                 startActivity(intent);
                             }
                         });
@@ -982,7 +982,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 }
 
                                 Intent intent = new Intent(Intent.ACTION_DIAL);
-                                intent.setData(Uri.parse("tel:" + callNumber));
+                                intent.setData(Uri.parse("tel:" + "0"+callNumber));
                                 startActivity(intent);
                             } catch (Exception e) {
                                 e.printStackTrace();
