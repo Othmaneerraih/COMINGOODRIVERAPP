@@ -2938,6 +2938,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
             AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
+                    .setTypeFilter(AutocompleteFilter.TYPE_FILTER_ADDRESS)
                     .setCountry("MA")
                     .build();
 
