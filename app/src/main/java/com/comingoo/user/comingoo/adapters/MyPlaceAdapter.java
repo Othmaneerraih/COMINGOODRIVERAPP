@@ -50,12 +50,23 @@ public class MyPlaceAdapter extends RecyclerView.Adapter<MyPlaceAdapter.ViewHold
         if (isAddButtonNeed) holder.addBtn.setVisibility(View.VISIBLE);
         else holder.addBtn.setVisibility(View.GONE);
 
+//        holder.clickView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                MapsActivity.showSearchAddressStartUI();
+//                MapsActivity.goToLocation(context, Double.parseDouble(newPlace.getLat()), Double.parseDouble(newPlace.getLng()), newPlace);
+//                pickLocation.pickedLocation(newPlace);
+//            }
+//        });
+
         holder.clickView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MapsActivity.showSearchAddressStartUI();
-                MapsActivity.goToLocation(context, Double.parseDouble(newPlace.getLat()), Double.parseDouble(newPlace.getLng()), newPlace);
-                pickLocation.pickedLocation(newPlace);
+                if (newPlace.getLat() != null && newPlace.getLng() != null) {
+                    if (!newPlace.getLat().isEmpty() && !newPlace.getLng().isEmpty()) {
+                        pickLocation.pickedLocation(newPlace);
+                    }
+                }
             }
         });
 
