@@ -1258,10 +1258,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
-
-    ////////////////////////////////////////////////////
-
-
     int RATE = 0;
     String tagStatus;
     private String COURSE;
@@ -1328,8 +1324,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                             Button dialogButton = dialog.findViewById(R.id.button);
                                             final Button price = dialog.findViewById(R.id.button3);
-//                                            price.setText(dataSnapshott.child("price").getValue(String.class) + " MAD");
-
 
                                             if (courseIDT != null) {
                                                 FirebaseDatabase.getInstance().getReference("COURSES").child(courseIDT).child("price").addValueEventListener(new ValueEventListener() {
@@ -1339,7 +1333,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                             if (dataSnapshot.getValue(String.class) != null) {
                                                                 Log.e(TAG, "COURSES value onDataChange: " + dataSnapshot.getValue(String.class));
 //
-                                                                double finalPriceOfCourse = Double.parseDouble(dataSnapshot.getValue(String.class));
+                                                                double finalPriceOfCourse = Double.parseDouble(Objects.requireNonNull(dataSnapshot.getValue(String.class)));
                                                                 Log.e(TAG, "COURSES value finalPriceOfCourse: " + finalPriceOfCourse);
                                                                 df2.setRoundingMode(RoundingMode.UP);
                                                                 price.setText(df2.format(finalPriceOfCourse) + " MAD");
