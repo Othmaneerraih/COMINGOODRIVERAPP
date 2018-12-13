@@ -42,6 +42,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Objects;
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -66,7 +68,7 @@ public class LoginActivity extends AppCompatActivity {
 
         final String EMAIL = "email";
         final LoginButton loginButton = findViewById(R.id.login_button);
-        loginButton.setReadPermissions(Arrays.asList(EMAIL));
+        loginButton.setReadPermissions(Collections.singletonList(EMAIL));
 
         LoginManager.getInstance().registerCallback(callbackManager,
                 new FacebookCallback<LoginResult>() {
@@ -128,13 +130,13 @@ public class LoginActivity extends AppCompatActivity {
                                                                             startActivity(new Intent(LoginActivity.this, MapsActivity.class));
                                                                             finish();
                                                                         } else {
-                                                                            Toast.makeText(LoginActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                                                            Toast.makeText(LoginActivity.this, Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
                                                                         }
                                                                     }
                                                                 });
                                                             } else {
 //                                                                loginBtn.setVisibility(View.VISIBLE);
-                                                                Toast.makeText(LoginActivity.this, "Error!!!", Toast.LENGTH_SHORT).show();
+                                                                Toast.makeText(LoginActivity.this, "not get your emaill address", Toast.LENGTH_SHORT).show();
                                                             }
 
 
@@ -151,7 +153,7 @@ public class LoginActivity extends AppCompatActivity {
 
                                             LoginManager.getInstance().logOut();
                                         } catch (Exception e) {
-                                            Toast.makeText(LoginActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                                         }
                                     }
                                 });
@@ -173,35 +175,6 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });
 
-    }
-
-    private String getDurationForRoute(String origin, String destination) {
-        // - We need a context to access the API
-        GeoApiContext geoApiContext = new GeoApiContext.Builder()
-                .apiKey(getResources().getString(R.string.google_maps_key))
-                .build();
-
-        // - Perform the actual request
-        DirectionsResult directionsResult = null;
-        try {
-            directionsResult = DirectionsApi.newRequest(geoApiContext)
-                    .mode(TravelMode.DRIVING)
-                    .origin(origin)
-                    .destination(destination)
-                    .await();
-        } catch (ApiException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        // - Parse the result
-        DirectionsRoute route = directionsResult.routes[0];
-        DirectionsLeg leg = route.legs[0];
-        Duration duration = leg.duration;
-        return duration.humanReadable;
     }
 
     @Override

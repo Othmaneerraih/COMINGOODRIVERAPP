@@ -9,11 +9,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
@@ -51,6 +53,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
@@ -330,7 +333,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void pickedLocation(Place place) {
-        showSearchAddressStartUI();
+//        showSearchAddressStartUI();
         goToLocation(context, Double.parseDouble(place.
                 getLat()), Double.parseDouble(place.getLng()), place);
 
@@ -2005,8 +2008,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
 
-        driversKeys = new ArrayList<String>();
-        driversLocations = new ArrayList<String>();
+        driversKeys = new ArrayList<>();
+        driversLocations = new ArrayList<>();
         driversKeysHold = new ArrayList<String>();
 
         locationPinDest = findViewById(R.id.locationPinDest);
@@ -2040,7 +2043,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         sinchClient.getCallClient().addCallClientListener(new SinchCallClientListener());
 
         price = findViewById(R.id.tv_mad);
-        ArrayList<FixedLocation> fixedLocations = new ArrayList<>();
         context = MapsActivity.this;
         orderDriverState = 0;
         citySelectLayout = findViewById(R.id.select_city);
@@ -2205,8 +2207,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     try {
                         new LookForDriverTask().execute();
                         new sendRequestsTask().execute();
-                    } catch (NullPointerException e) {
-                        e.printStackTrace();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -2325,7 +2325,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientID);
         rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot snapshot) {
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.hasChild("rating")) {
                     // run some code
                 } else {
@@ -2349,7 +2349,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         DatabaseReference rootFavPlace = FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientID);
         rootFavPlace.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot snapshot) {
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.hasChild("favouritePlace")) {
                 } else {
                     Map<String, String> dataFavPlace = new HashMap();
@@ -2383,7 +2383,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             }
         });
-
 //        gettingWorkHome();
         //This change is for making conflict
     }
@@ -3081,6 +3080,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         return false;
     }
+
+
 
     public void hideSearchAddressStartUI() {
         placeDataList.clear();
