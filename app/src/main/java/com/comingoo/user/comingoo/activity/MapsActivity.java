@@ -351,11 +351,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void pickedLocation(Place place) {
+        searchEditText.setFocusable(false);
+        searchEditText.setFocusableInTouchMode(false);
+        coverButton.setClickable(false);
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(new LatLng(Double.parseDouble(place.getLat()), Double.parseDouble(place.getLng())))
                 .zoom(17)                   // Sets the zoom
                 .build();                   // Creates a CameraPosition from the builder
-        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+//        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+
+
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), new GoogleMap.CancelableCallback() {
+            @Override
+            public void onFinish() {
+                searchEditText.setFocusable(true);
+                searchEditText.setFocusableInTouchMode(true);
+                coverButton.setClickable(true);
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+        });
+
+
         hideSearchAddressStartUI();
         isFocusableNeeded = false;
     }
@@ -3051,6 +3072,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (orderDriverState == 1) {
             selectDest.setVisibility(View.VISIBLE);
         }
+
     }
 
     private void showSearchAddressStartUI() {
