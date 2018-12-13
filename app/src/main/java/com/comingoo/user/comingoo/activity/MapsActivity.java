@@ -214,6 +214,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private String searchLoc;
     private TextView city;
 
+    private boolean gotValue = false;
+    private boolean courseScreenStageZero = false;
+    private boolean courseScreenStageOne = false;
+    private Marker driverPosMarker;
+    private Marker startPositionMarker;
+    private boolean blockingTimeOver = true;
+    private String driver = "";
+
     private ImageButton menuButton;
     private FlowingDrawer mDrawer;
     private ImageButton gooButton;
@@ -548,7 +556,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 iv_cancel_call_voip_one.setLayoutParams(params);
                 mp.stop();
 
-//                    Calendar c = Calendar.getInstance();
                 mHour = 00;//c.get(Calendar.HOUR_OF_DAY);
                 mMinute = 00;//c.get(Calendar.MINUTE);
                 caller_name.setText(mHour + ":" + mMinute);
@@ -678,8 +685,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
         final Window window = dialog.getWindow();
-        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
-        window.setGravity(Gravity.CENTER);
+        if (window != null) {
+            window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+        }
+        if (window != null) {
+            window.setGravity(Gravity.CENTER);
+        }
         dialog.show();
     }
 
@@ -812,27 +823,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                                         }
                                                     });
-
                                                 }
 
                                                 @Override
                                                 public void onCancelled(@NonNull DatabaseError databaseError) {
-
                                                 }
                                             });
-
                                         }
-
-
                                     }
 
                                     @Override
                                     public void onCancelled(@NonNull DatabaseError databaseError) {
-
                                     }
                                 });
-
-
                             }
                         } catch (NullPointerException e) {
                             e.printStackTrace();
@@ -845,7 +848,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
-
                 }
             });
 
@@ -869,14 +871,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             // Do things like hide the progress bar or change a TextView
         }
     }
-
-    private boolean gotValue = false;
-    private boolean courseScreenStageZero = false;
-    private boolean courseScreenStageOne = false;
-    private Marker driverPosMarker;
-    private Marker startPositionMarker;
-    private boolean blockingTimeOver = true;
-    private String driver = "";
 
     private void handleCourseCallBack() {
         if (statusT.equals("4")) {
