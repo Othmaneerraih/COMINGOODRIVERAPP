@@ -358,9 +358,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .target(new LatLng(Double.parseDouble(place.getLat()), Double.parseDouble(place.getLng())))
                 .zoom(17)                   // Sets the zoom
                 .build();                   // Creates a CameraPosition from the builder
-//        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-
-
 
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), new GoogleMap.CancelableCallback() {
             @Override
