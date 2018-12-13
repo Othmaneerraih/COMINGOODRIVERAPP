@@ -375,9 +375,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .build();                   // Creates a CameraPosition from the builder
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         hideSearchAddressStartUI();
-//        hideAllUI();
-//        hideSelectDestUI();
-//        hideKeyboard(MapsActivity.this);
+        searchEditText.setFocusable(false);
+        searchEditText.setFocusableInTouchMode(false);
+
+        searchDestEditText.setFocusableInTouchMode(false);
+        searchDestEditText.setFocusable(false);
 
     }
 
@@ -2977,6 +2979,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         findViewById(R.id.coverButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                searchEditText.setFocusable(true);
+                searchEditText.setFocusableInTouchMode(true);
+                searchDestEditText.setFocusableInTouchMode(true);
+                searchDestEditText.setFocusable(true);
+
+
                 selectStart.setVisibility(View.GONE);
                 findViewById(R.id.shadow).setVisibility(View.GONE);
                 bottomMenu.setVisibility(View.GONE);
@@ -2987,6 +2996,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 showFavoritsAndRecents();
             }
         });
+
 
         searchEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -3018,6 +3028,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             }
         });
+
+
         searchDestEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
@@ -3187,7 +3199,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 selectedOp.setVisibility(View.GONE);
                 bottomMenu.setVisibility(View.GONE);
                 findViewById(R.id.shadow).setVisibility(View.GONE);
-//                hideSearchAddressStartUI();
             }
 
             if (orderDriverState == 1) {
