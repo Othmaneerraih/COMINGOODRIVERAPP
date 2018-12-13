@@ -1922,8 +1922,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         try {
             new CheckUserTask().execute();
             new checkFinishedCourse().execute();
-        } catch (NullPointerException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1933,7 +1931,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(this);
+        }
 
         String language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
 
@@ -3012,7 +3012,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void goToLocation(Context context, Double lat, Double lng, Place rPlace) {
-        // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), 17));
+         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), 17));
         if (rPlace != null) {
             if (!contains(rPlaceDataList, rPlace)) {
                 rPlace.setImage(R.drawable.lieux_proches);
@@ -3045,7 +3045,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         return false;
     }
-
 
 
     public void hideSearchAddressStartUI() {
@@ -3567,7 +3566,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void drawPolyLineOnMap(LatLng currentLatitude, LatLng currentLongitude) {
         String url = getMapsApiDirectionsUrl(currentLatitude, currentLongitude);
         Log.e(TAG, "drawPolyLineOnMap: " + url);
-        ReadTask downloadTask = new ReadTask(getApplicationContext(),mMap);
+        ReadTask downloadTask = new ReadTask(getApplicationContext(), mMap);
         downloadTask.execute(url);
     }
 
