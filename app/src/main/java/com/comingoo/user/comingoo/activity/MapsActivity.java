@@ -538,7 +538,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         audioManager.setSpeakerphoneOn(false);
 
         mp = MediaPlayer.create(this, R.raw.ring);
-        mp.setLooping(false);
         mp.start();
 
         call.addCallListener(new CallListener() {
@@ -609,15 +608,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         switch (am.getRingerMode()) {
             case 0:
-
                 mp.start();
                 break;
             case 1:
-
                 mp.start();
                 break;
             case 2:
-
                 mp.start();
                 break;
         }
@@ -627,7 +623,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onCompletion(MediaPlayer mediaPlayer) {
                 if (mp.isPlaying()) {
                     mp.stop();
-                    mp.release();
                 }
                 audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, origionalVolume, 0);
             }
