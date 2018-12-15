@@ -151,7 +151,7 @@ public class FevoriteLocationActivity extends AppCompatActivity
         setAutocompleteFragmentAction();
 
         AutocompleteFilter autocompleteFilter = new AutocompleteFilter.Builder()
-                .setTypeFilter(AutocompleteFilter.TYPE_FILTER_ADDRESS)
+                .setTypeFilter(AutocompleteFilter.TYPE_FILTER_ESTABLISHMENT)
                 .setCountry("MA")
                 .build();
 
