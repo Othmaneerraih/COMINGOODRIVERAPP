@@ -311,7 +311,7 @@ public class VoipCallingActivity extends AppCompatActivity {
         public void onIncomingCall(CallClient callClient, Call incomingCall) {
             call = incomingCall;
             Toast.makeText(VoipCallingActivity.this, "incoming call", Toast.LENGTH_SHORT).show();
-            call.answer();
+//            call.answer();
             call.addCallListener(new SinchCallListener());
         }
     }
