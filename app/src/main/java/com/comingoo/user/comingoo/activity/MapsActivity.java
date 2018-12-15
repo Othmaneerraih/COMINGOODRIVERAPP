@@ -3109,7 +3109,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         findViewById(R.id.imageView8).setVisibility(View.INVISIBLE);
         coverButton.setVisibility(View.VISIBLE);
         hideKeyboard(MapsActivity.this);
-        favorite.setBackgroundColor(Color.TRANSPARENT);
         startConstraint.setVisibility(View.VISIBLE);
         if (orderDriverState == 0) {
             selectStart.setVisibility(View.VISIBLE);

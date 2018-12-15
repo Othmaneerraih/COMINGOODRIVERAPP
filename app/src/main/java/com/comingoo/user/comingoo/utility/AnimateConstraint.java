@@ -1,10 +1,13 @@
 package com.comingoo.user.comingoo.utility;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 
+import android.graphics.Color;
 import android.os.Handler;
 import android.util.TypedValue;
 import android.view.View;
@@ -100,6 +103,16 @@ public class AnimateConstraint {
                 constraintLayout.setLayoutParams(layoutParams);
             }
         });
+
+        anim.addListener(new AnimatorListenerAdapter()
+        {
+            @Override
+            public void onAnimationEnd(Animator animation)
+            {
+                constraintLayout.setBackgroundColor(Color.TRANSPARENT);
+            }
+        });
+
         anim.setDuration(duration);
         anim.start();
     }
