@@ -2835,6 +2835,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 selectedOp.setVisibility(View.GONE);
                 selectDest.setVisibility(View.GONE);
                 findViewById(R.id.coverButton).setVisibility(View.GONE);
+                favorite.setBackgroundColor(Color.WHITE);
                 isFocusableNeeded = true;
                 state = -1;
                 showFavoritsAndRecents();
@@ -3104,11 +3105,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             AnimateConstraint.animateCollapse(MapsActivity.this, favorite, 1, HeightAbsolute, 300);
         if (aR.getHeight() >= HeightAbsolute)
             AnimateConstraint.animateCollapse(MapsActivity.this, aR, 1, HeightAbsolute, 300);
-
         findViewById(R.id.imageView7).setVisibility(View.INVISIBLE);
         findViewById(R.id.imageView8).setVisibility(View.INVISIBLE);
         coverButton.setVisibility(View.VISIBLE);
         hideKeyboard(MapsActivity.this);
+        favorite.setBackgroundColor(Color.TRANSPARENT);
         startConstraint.setVisibility(View.VISIBLE);
         if (orderDriverState == 0) {
             selectStart.setVisibility(View.VISIBLE);
