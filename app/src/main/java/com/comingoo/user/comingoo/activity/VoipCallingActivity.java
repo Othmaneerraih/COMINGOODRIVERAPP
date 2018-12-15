@@ -2,6 +2,7 @@ package com.comingoo.user.comingoo.activity;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -263,6 +264,9 @@ public class VoipCallingActivity extends AppCompatActivity {
             Log.e(TAG, "onCallEnded: ");
             call = null;
             mHandler.removeCallbacks(mUpdate);
+            Intent returnIntent = new Intent();
+            returnIntent.putExtra("result",1);
+            setResult(RESULT_OK,returnIntent);
             finish();
         }
 
