@@ -74,7 +74,6 @@ import com.comingoo.user.comingoo.R;
 import com.comingoo.user.comingoo.utility.SharedPreferenceTask;
 import com.comingoo.user.comingoo.adapters.FavouritePlaceAdapter;
 import com.comingoo.user.comingoo.adapters.MyPlaceAdapter;
-import com.comingoo.user.comingoo.model.FixedLocation;
 import com.comingoo.user.comingoo.model.Place;
 import com.comingoo.user.comingoo.utility.Utility;
 import com.firebase.geofire.GeoFire;
@@ -531,6 +530,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         TextView tv_name_voip_one = dialog.findViewById(R.id.tv_name_voip_one);
         iv_mute.setVisibility(View.GONE);
         iv_loud.setVisibility(View.GONE);
+        iv_recv_call_voip_one.setEnabled(true);
+        iv_recv_call_voip_one.setClickable(true);
 
         final AudioManager audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
         audioManager.setMode(AudioManager.MODE_IN_CALL);
@@ -663,10 +664,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         iv_recv_call_voip_one.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 if (mp.isPlaying()) mp.stop();
                 call.answer();
                 audioManager.setMicrophoneMute(false);
                 audioManager.setSpeakerphoneOn(false);
+
+                iv_recv_call_voip_one.setEnabled(false);
+                iv_recv_call_voip_one.setClickable(false);
             }
         });
 
@@ -1009,12 +1014,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     @Override
                     public void onClick(View v) {
                         if (!driverIDT.isEmpty()) {
+                            tv_appelle_voip.setClickable(false);
+                            tv_appelle_voip.setEnabled(false);
+
                             Intent intent = new Intent(MapsActivity.this, VoipCallingActivity.class);
                             intent.putExtra("driverId", driverIDT);
                             intent.putExtra("clientId", clientID);
                             intent.putExtra("driverName", driverName);
                             intent.putExtra("driverImage", driverImage);
-                            startActivity(intent);
+//                            startActivity(intent);
+                            startActivityForResult(intent,1);
+
                         }
                     }
                 });
@@ -1117,6 +1127,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     @Override
                     public void onClick(View v) {
                         if (!driverIDT.isEmpty()) {
+                            tv_appelle_voip.setClickable(false);
+                            tv_appelle_voip.setEnabled(false);
                             Intent intent = new Intent(MapsActivity.this, VoipCallingActivity.class);
                             intent.putExtra("driverId", driverIDT);
                             intent.putExtra("clientId", clientID);
@@ -1182,6 +1194,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.addMarker(new MarkerOptions()
                     .position(driverPosT)
                     .icon(BitmapDescriptorFactory.fromBitmap(bm)));
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // TODO Auto-generated method stub
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 1 && RESULT_OK == -1 && data.hasExtra("result")) {
+            tv_appelle_voip.setClickable(true);
+            tv_appelle_voip.setEnabled(true);
         }
     }
 
@@ -1983,6 +2006,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         voip_view = findViewById(R.id.voip_view);
         tv_appelle_voip = findViewById(R.id.tv_appelle_voip);
         tv_appelle_telephone = findViewById(R.id.tv_appelle_telephone);
+
+        tv_appelle_voip.setClickable(true);
+        tv_appelle_voip.setEnabled(true);
 
         close_button = findViewById(R.id.close_button);
 
