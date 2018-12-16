@@ -177,6 +177,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private TextView tv_appelle_voip, tv_appelle_telephone;
     private LinearLayout voip_view;
 
+    private RecyclerView mLocationView;
     private ArrayList<Place> rPlaceDataList;
     private ConstraintLayout startConstraint;
     private ConstraintLayout endConstraint;
@@ -194,6 +195,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private TextView closestDriverText;
     private ConstraintLayout favorite;
     private ConstraintLayout aR;
+    private ConstraintLayout fR;
 
     private final String APP_KEY = "185d9822-a953-4af6-a780-b0af1fd31bf7";
     private final String APP_SECRET = "ZiJ6FqH5UEWYbkMZd1rWbw==";
@@ -2108,7 +2110,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         aR = findViewById(R.id.adress_result);
-        ConstraintLayout fR = findViewById(R.id.favorite);
+        fR = findViewById(R.id.favorite);
         ConstraintLayout rR = findViewById(R.id.recent);
 
         userLatLng = null;
@@ -2123,7 +2125,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         fPlaceDataList = new ArrayList<>();
         rPlaceDataList = new ArrayList<>();
 
-        RecyclerView mLocationView = findViewById(R.id.my_recycler_view);
+        mLocationView = findViewById(R.id.my_recycler_view);
         mLocationView.setHasFixedSize(true);
         mLocationView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -2995,6 +2997,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                     "" + gotPlace.getLatLng().longitude, R.drawable.lieux_proches);
                                             placeDataList.add(Place);
                                         }
+                                        favorite.setBackgroundColor(Color.WHITE);
+                                        mLocationView.setBackgroundColor(Color.WHITE);
+                                        fR.setBackgroundColor(Color.WHITE);
+                                        aR.setBackgroundColor(Color.WHITE);
                                         placeAdapter.notifyDataSetChanged();
                                         finished = true;
                                     } else {
