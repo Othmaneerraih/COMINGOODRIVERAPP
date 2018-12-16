@@ -401,9 +401,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Looper.myLooper();
             }
             clientID = userId;
-            if (userId == null) {
-                userId = "123";
-            }
 
             FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).addValueEventListener(new ValueEventListener() {
                 @Override
@@ -453,7 +450,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 }
             });
-
 
             return "";
         }
@@ -3462,7 +3458,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             //Execute Directions API request
             GeoApiContext context = new GeoApiContext.Builder()
-                    .apiKey("AIzaSyDKndcnw3IXjPPsP1gmkFLbeuLDfHXxc4o")
+                    .apiKey(getResources().getString(R.string.google_maps_key))
                     .build();
             DirectionsApiRequest req = DirectionsApi.getDirections(context, start.latitude + ","
                     + start.longitude, arrival.latitude + "," + arrival.longitude);
