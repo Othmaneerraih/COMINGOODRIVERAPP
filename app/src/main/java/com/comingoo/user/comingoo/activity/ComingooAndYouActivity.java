@@ -178,28 +178,6 @@ public class ComingooAndYouActivity extends AppCompatActivity {
             }
         });
 
-
-        String Month;
-        String day;
-        Month = getDateMonth(GetUnixTime());
-        day = getDateDay(GetUnixTime());
-        if (Month.equals("01")) Month = "Janvier";
-        if (Month.equals("02")) Month = "Février";
-        if (Month.equals("03")) Month = "Mars";
-        if (Month.equals("04")) Month = "Avril";
-        if (Month.equals("05")) Month = "Mai";
-        if (Month.equals("06")) Month = "Juin";
-        if (Month.equals("07")) Month = "Juillet";
-        if (Month.equals("08")) Month = "Aout";
-        if (Month.equals("09")) Month = "Septembre";
-        if (Month.equals("10")) Month = "Octobre";
-        if (Month.equals("11")) Month = "Novembre";
-        if (Month.equals("12")) Month = "Décembre";
-
-        TextView d = findViewById(R.id.date);
-        d.setText(Month + " " + day);
-
-
         changePassBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -383,6 +361,26 @@ public class ComingooAndYouActivity extends AppCompatActivity {
         textView71.setText(resources.getString(R.string.Enattenteparheure));
         textView72.setText(resources.getString(R.string.sapplique));
         textView76.setText(resources.getString(R.string.pénalité));
+
+        String Month;
+        String day;
+        Month = getDateMonth(GetUnixTime());
+        day = getDateDay(GetUnixTime());
+        if (Month.equals("01")) Month = resources.getString(R.string.jan);
+        if (Month.equals("02")) Month = resources.getString(R.string.feb);
+        if (Month.equals("03")) Month = resources.getString(R.string.mar);
+        if (Month.equals("04")) Month = resources.getString(R.string.apr);
+        if (Month.equals("05")) Month = resources.getString(R.string.may);
+        if (Month.equals("06")) Month = resources.getString(R.string.jun);
+        if (Month.equals("07")) Month = resources.getString(R.string.jul);
+        if (Month.equals("08")) Month = resources.getString(R.string.aug);
+        if (Month.equals("09")) Month = resources.getString(R.string.sep);
+        if (Month.equals("10")) Month = resources.getString(R.string.oct);
+        if (Month.equals("11")) Month = resources.getString(R.string.nov);
+        if (Month.equals("12")) Month = resources.getString(R.string.dec);
+
+        TextView d = findViewById(R.id.date);
+        d.setText(Month + " " + day);
     }
 
     private void updatePassword(final String oldPassword, final String newPassword, final String confirmPassword) {

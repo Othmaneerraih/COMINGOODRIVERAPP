@@ -105,6 +105,20 @@
     <string name="title_activity_confirm_btn">Confirmer address</string>
     <string name="txt_block_time_over">Your blocking time is not over yet.</string>
 
+
+    <string name="jan">Janvier</string>
+    <string name="feb">Février</string>
+    <string name="mar">Mars</string>
+    <string name="apr">Avril</string>
+    <string name="may">Mai</string>
+    <string name="jun">Juin</string>
+    <string name="jul">Juillet</string>
+    <string name="aug">Aout</string>
+    <string name="sep">Septembre</string>
+    <string name="oct">Octobre</string>
+    <string name="nov">Novembre</string>
+    <string name="dec">Décembre</string>
+
     <string-array name="blocked_users" tools:ignore="ExtraTranslation">
         <item>brightgupta18@gmail.com</item>
     </string-array>

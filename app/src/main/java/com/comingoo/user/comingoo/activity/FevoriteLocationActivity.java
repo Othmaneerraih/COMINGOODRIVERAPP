@@ -98,7 +98,7 @@ public class FevoriteLocationActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fevorite_location);
-
+        checkLocationPermission();
         mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFrag.getMapAsync(this);
         searchEt = findViewById(R.id.search_edit_text);
@@ -547,7 +547,6 @@ public class FevoriteLocationActivity extends AppCompatActivity
                 } else {
                     Toast.makeText(this, "permission denied", Toast.LENGTH_LONG).show();
                 }
-                return;
             }
         }
     }

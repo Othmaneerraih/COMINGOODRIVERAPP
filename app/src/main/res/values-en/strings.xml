@@ -91,6 +91,19 @@
     <string name="txt_home">Home</string>
     <string name="txt_work">Work</string>
 
+    <string name="jan">January</string>
+    <string name="feb">February</string>
+    <string name="mar">March</string>
+    <string name="apr">April</string>
+    <string name="may">May</string>
+    <string name="jun">Jun</string>
+    <string name="jul">July</string>
+    <string name="aug">August</string>
+    <string name="sep">September</string>
+    <string name="oct">October</string>
+    <string name="nov">November</string>
+    <string name="dec">December</string>
+
     <string name="sinch_app_key">05a626b9-33a4-4b83-b7bc-2d49062ea9ae</string>
     <string name="sinch_app_secret">TfJrquo6qEmkV8DG/EXQPg==</string>
     <string name="sinch_envirentmnet_host">clientapi.sinch.com</string>
