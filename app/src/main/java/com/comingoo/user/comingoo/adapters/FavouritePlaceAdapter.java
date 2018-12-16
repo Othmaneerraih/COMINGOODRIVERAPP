@@ -24,17 +24,15 @@ public class FavouritePlaceAdapter  extends RecyclerView.Adapter<FavouritePlaceA
     private List<Place> mDataset;
     private Context context;
     private boolean isAddButtonNeed;
-//    private Resources resources;
     private String userId;
     private PickLocation pickLocation;
 
-    public FavouritePlaceAdapter(Context context, List<Place> myDataset, boolean isAddNeed, String userId, PickLocation pickLocation, Resources resources) {
+    public FavouritePlaceAdapter(Context context, List<Place> myDataset, boolean isAddNeed, String userId, PickLocation pickLocation) {
         this.mDataset = myDataset;
         this.userId = userId;
         this.context = context;
         this.isAddButtonNeed = isAddNeed;
         this.pickLocation = pickLocation;
-//        this.resources = resources;
     }
 
     @Override

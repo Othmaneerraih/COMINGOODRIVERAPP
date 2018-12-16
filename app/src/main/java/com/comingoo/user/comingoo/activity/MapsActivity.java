@@ -1616,13 +1616,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                 }
                                             });
 
-                                            dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                                                @Override
-                                                public void onDismiss(DialogInterface dialog) {
-                                                    showVoiceDialog();
-                                                }
-                                            });
-
                                             nextButton.setOnClickListener(new View.OnClickListener() {
                                                 @Override
                                                 public void onClick(View v) {
@@ -1646,6 +1639,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                                     }
                                                                 });
                                                                 FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("COURSE").removeValue();
+
                                                                 if (RATE > 3) {
                                                                     if (ContextCompat.checkSelfPermission(MapsActivity.this,
                                                                             Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -1655,7 +1649,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                                         showVoiceDialog();
                                                                     }
                                                                 } else {
-
                                                                     try {
                                                                         final Dialog newDialog = new Dialog(MapsActivity.this);
                                                                         newDialog.setContentView(R.layout.finished_course_2);
@@ -1766,6 +1759,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                                             }
                                                                         });
 
+                                                                        newDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                                                                            @Override
+                                                                            public void onDismiss(DialogInterface dialog) {
+                                                                                if (ContextCompat.checkSelfPermission(MapsActivity.this,
+                                                                                        Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                                                                                    ActivityCompat.requestPermissions(MapsActivity.this,
+                                                                                            new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 10);
+                                                                                } else {
+                                                                                    showVoiceDialog();
+                                                                                }
+                                                                            }
+                                                                        });
 
                                                                         ImageButton nextBtn = newDialog.findViewById(R.id.imageButton3);
 
@@ -1854,8 +1859,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             callLayout.setVisibility(View.GONE);
         }
     }
-
-    // checking with debug point
 
     private void showVoiceDialog() {
         final Dialog newDialog = new Dialog(MapsActivity.this);
@@ -2204,7 +2207,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         placeAdapter = new MyPlaceAdapter(getApplicationContext(), placeDataList, false, userId, this);
         mLocationView.setAdapter(placeAdapter);
 
-        fPlaceAdapter = new FavouritePlaceAdapter(getApplicationContext(), fPlaceDataList, true, userId, this, resources);
+        fPlaceAdapter = new FavouritePlaceAdapter(getApplicationContext(), fPlaceDataList, true, userId, this);
         fLocationView.setAdapter(fPlaceAdapter);
 
         rPlaceAdapter = new MyPlaceAdapter(getApplicationContext(), rPlaceDataList, false, userId, this);

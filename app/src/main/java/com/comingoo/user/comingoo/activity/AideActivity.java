@@ -66,6 +66,10 @@ public class AideActivity extends AppCompatActivity {
         ivArrawTwo = findViewById(R.id.arrow2);
 
         AnimateConstraint.animate(AideActivity.this, content, 250, 1, 0);
+        String language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
+
+        Context co = LocalHelper.setLocale(AideActivity.this, language);
+       final Resources resources = co.getResources();
 
         findViewById(R.id.add_voice).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,7 +82,7 @@ public class AideActivity extends AppCompatActivity {
                 if (intent.resolveActivity(getPackageManager()) != null) {
                     startActivityForResult(intent, 10);
                 } else {
-                    Toast.makeText(AideActivity.this, "", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AideActivity.this, resources.getString(R.string.txt_device_no_support_speech), Toast.LENGTH_SHORT).show();
                 }
             }
         });
