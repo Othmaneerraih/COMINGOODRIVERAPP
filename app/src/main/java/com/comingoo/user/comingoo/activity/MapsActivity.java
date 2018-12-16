@@ -374,7 +374,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-
+        if (!contains(rPlaceDataList, place)) {
+            place.setImage(R.drawable.lieux_proches);
+            rPlaceDataList.add(place);
+            saveRecentPlaces(MapsActivity.this, rPlaceDataList);
+            rPlaceAdapter.notifyDataSetChanged();
+        }
         hideSearchAddressStartUI();
         isFocusableNeeded = false;
     }
@@ -3063,15 +3068,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void goToLocation(Context context, Double lat, Double lng, Place rPlace) {
-        if (rPlace != null) {
-            if (!contains(rPlaceDataList, rPlace)) {
-                rPlace.setImage(R.drawable.lieux_proches);
-                rPlaceDataList.add(rPlace);
-                saveRecentPlaces(context, rPlaceDataList);
-                rPlaceAdapter.notifyDataSetChanged();
-            }
-        }
-
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(new LatLng(lat, lng))      // Sets the center of the map to Mountain View
                 .zoom(17)                   // Sets the zoom
