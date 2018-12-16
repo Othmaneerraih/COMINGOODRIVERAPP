@@ -136,7 +136,7 @@ public class LoginActivity extends AppCompatActivity {
                                                                 });
                                                             } else {
 //                                                                loginBtn.setVisibility(View.VISIBLE);
-                                                                Toast.makeText(LoginActivity.this, "not get your emaill address", Toast.LENGTH_SHORT).show();
+                                                                Toast.makeText(LoginActivity.this, "not get your email address", Toast.LENGTH_SHORT).show();
                                                             }
 
 

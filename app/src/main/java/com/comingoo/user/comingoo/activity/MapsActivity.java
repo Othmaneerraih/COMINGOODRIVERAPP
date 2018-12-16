@@ -404,9 +404,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Looper.myLooper();
             }
             clientID = userId;
-            if (userId == null) {
-                userId = "123";
-            }
 
             FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).addValueEventListener(new ValueEventListener() {
                 @Override
@@ -456,7 +453,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 }
             });
-
 
             return "";
         }
@@ -1249,8 +1245,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //        if (!gps_enabled && !network_enabled) {
         // notify user
         AlertDialog.Builder dialog = new AlertDialog.Builder(MapsActivity.this);
-        dialog.setMessage(getResources().getString(R.string.txt_location_permission));
-        dialog.setPositiveButton(getResources().getString(R.string.txt_open_location), new DialogInterface.OnClickListener() {
+        dialog.setMessage(resources.getString(R.string.txt_location_permission));
+        dialog.setPositiveButton(resources.getString(R.string.txt_open_location), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface paramDialogInterface, int paramInt) {
                 // TODO Auto-generated method stub
@@ -2208,7 +2204,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         placeAdapter = new MyPlaceAdapter(getApplicationContext(), placeDataList, false, userId, this);
         mLocationView.setAdapter(placeAdapter);
 
-        fPlaceAdapter = new FavouritePlaceAdapter(getApplicationContext(), fPlaceDataList, true, userId, this);
+        fPlaceAdapter = new FavouritePlaceAdapter(getApplicationContext(), fPlaceDataList, true, userId, this, resources);
         fLocationView.setAdapter(fPlaceAdapter);
 
         rPlaceAdapter = new MyPlaceAdapter(getApplicationContext(), rPlaceDataList, false, userId, this);
@@ -3534,7 +3530,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             //Execute Directions API request
             GeoApiContext context = new GeoApiContext.Builder()
-                    .apiKey("AIzaSyDKndcnw3IXjPPsP1gmkFLbeuLDfHXxc4o")
+                    .apiKey(getResources().getString(R.string.google_maps_key))
                     .build();
             DirectionsApiRequest req = DirectionsApi.getDirections(context, start.latitude + ","
                     + start.longitude, arrival.latitude + "," + arrival.longitude);
@@ -4027,7 +4023,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
             userId = prefs.getString("userID", "");
             Log.e(TAG, "onResume: " + userId);
-            FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child(getString(R.string.txt_work)).addListenerForSingleValueEvent(new ValueEventListener() {
+            FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child(resources.getString(R.string.txt_work)).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
@@ -4047,7 +4043,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 }
             });
-            FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child(getString(R.string.txt_home)).addListenerForSingleValueEvent(new ValueEventListener() {
+            FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child(resources.getString(R.string.txt_home)).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
