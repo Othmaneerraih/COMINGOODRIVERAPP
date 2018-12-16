@@ -2309,10 +2309,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         confirmDest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (destPositionIsValid()) {
-                    switchToCommandLayout();
-                } else {
-
+                if (!searchDestEditText.getText().toString().equals("")) {
+                    if (destPositionIsValid()) {
+                        switchToCommandLayout();
+                    }
                 }
             }
         });
@@ -2390,12 +2390,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View view) {
                 //Begin Selecting Destination Phase
                 try {
-                    if (startPositionIsValid()) {
-                        orderDriverState = 1;
-                        showSelectDestUI();
-//                    menuButton.setVisibility(View.GONE);
-
-                        state = 1;
+                    if (!searchEditText.getText().toString().equals("")) {
+                        if (startPositionIsValid()) {
+                            orderDriverState = 1;
+                            showSelectDestUI();
+                            state = 1;
+                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -3388,7 +3388,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.getUiSettings().setRotateGesturesEnabled(false);
         mMap.setBuildingsEnabled(false);
 
-        Log.e(TAG, "onMapReady: " );
+        Log.e(TAG, "onMapReady: ");
 
         if (!isLocationEnabled(MapsActivity.this))
             checkLocationService();

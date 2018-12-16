@@ -16,6 +16,7 @@
 
     <string name="txt_home">Maison</string>
     <string name="txt_work">Travail</string>
+    <string name="txt_device_no_support_speech">Su dispositivo no admite entrada de voz</string>
 
 
 

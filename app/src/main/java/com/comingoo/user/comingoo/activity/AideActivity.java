@@ -78,7 +78,7 @@ public class AideActivity extends AppCompatActivity {
                 if (intent.resolveActivity(getPackageManager()) != null) {
                     startActivityForResult(intent, 10);
                 } else {
-                    Toast.makeText(AideActivity.this, "Your Device Don't Support Speech Input", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AideActivity.this, "", Toast.LENGTH_SHORT).show();
                 }
             }
         });
