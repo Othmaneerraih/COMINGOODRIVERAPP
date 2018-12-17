@@ -7,6 +7,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -19,6 +20,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.location.Location;
+import android.location.LocationManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
@@ -30,6 +32,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
@@ -39,6 +42,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -81,7 +85,16 @@ import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
 import com.firebase.geofire.GeoQueryDataEventListener;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.location.places.AutocompletePrediction;
 import com.google.android.gms.location.places.AutocompletePredictionBufferResponse;
@@ -168,20 +181,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private MyPlaceAdapter rPlaceAdapter;
     private ArrayList<Place> placeDataList;
     private ArrayList<Place> fPlaceDataList;
-
     private boolean audioRecorded = false;
     private ImageButton recordButton, playAudio, pauseAudio, deleteAudio;
     private String outputeFile;
     private boolean courseScreenIsOn = false;
-
     private TextView tv_appelle_voip, tv_appelle_telephone;
     private LinearLayout voip_view;
-
+    private RecyclerView mLocationView;
     private ArrayList<Place> rPlaceDataList;
     private ConstraintLayout startConstraint;
     private ConstraintLayout endConstraint;
     private GeoDataClient mGeoDataClient;
     private int state = 0;
+
+    private String language;
+    private Context co;
     private LatLng userLatLng;
     private LatLng startLatLng;
     private LatLng destLatLng;
@@ -194,11 +208,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private TextView closestDriverText;
     private ConstraintLayout favorite;
     private ConstraintLayout aR;
-
-    private final String APP_KEY = "185d9822-a953-4af6-a780-b0af1fd31bf7";
-    private final String APP_SECRET = "ZiJ6FqH5UEWYbkMZd1rWbw==";
-    private final String ENVIRONMENT = "sandbox.sinch.com";
-
+    private ConstraintLayout fR;
     private float dpHeight;
     private float dpWidth;
     private Button coverButton;
@@ -212,23 +222,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ConstraintLayout citySelectLayout;
     private String searchLoc;
     private TextView city;
-
-    private boolean gotValue = false;
     private boolean courseScreenStageZero = false;
     private boolean courseScreenStageOne = false;
     private Marker driverPosMarker;
     private Marker startPositionMarker;
     private boolean blockingTimeOver = true;
-    private String driver = "";
-
     private ImageButton menuButton;
-    private FlowingDrawer mDrawer;
     private ImageButton gooButton;
     private String clientID;
     private String startCity;
     private String destCity;
     private float distance;
     private TextView price;
+
+
     private ImageView locationStartPin;
     private ImageView locationDestPin;
     private ImageView locationPinStart;
@@ -242,10 +249,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ImageButton carButton;
     private ImageButton selectCity;
     private RelativeLayout gooBox;
-    private ConstraintLayout gooVoid;
     private ConstraintLayout ComingoonYou;
     private Utility utility;
-
     private boolean isLoud = false;
     private MediaPlayer mp;
     private TextView callState;
@@ -255,13 +260,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private CircleImageView iv_loud;
     private CircleImageView iv_recv_call_voip_one;
     private RelativeLayout.LayoutParams params;
-
     private Handler mHandler = new Handler();
-    private int mHour, mMinute; // variables holding the hour and minute
-
+    private int mHour, mMinute;
     private Resources resources;
     private ConstraintLayout callLayout;
     private RatingBar rbDriverRating;
+
+
     private TextView driverNameL, iv_total_ride_number, iv_car_number, iv_total_rating_number;
     private CircularImageView driverImageL;
     private ImageView ivCallDriver, close_button;
@@ -272,27 +277,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GeoQuery geoQuery;
     private int lastImageWidth;
     private String userName;
-
-    ///////////////////////////////////////////////////
     private String courseIDT;
     private String statusT = "4";
     private String clientIdT;
     private String driverIDT;
     private LatLng driverPosT;
     private LatLng startPositionT;
-
     private Location driverLocT;
     private Location startLocT;
-
     private String driverPhone;
     private String driverImage;
     private String userLevel;
-
     private String startText;
     private String endText;
     private String driverName;
     private String driverCarName;
     private String driverCarDescription;
+    protected static final int REQUEST_CHECK_SETTINGS = 0x1;
 
     private Bitmap scaleBitmap(int reqWidth, int reqHeight, int resId) {
         // Raw height and width of image
@@ -353,6 +354,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         searchEditText.setFocusable(false);
         searchEditText.setFocusableInTouchMode(false);
         coverButton.setClickable(false);
+        positionButton.setVisibility(View.VISIBLE);
+        findViewById(R.id.shadow).setVisibility(View.VISIBLE);
+
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(new LatLng(Double.parseDouble(place.getLat()), Double.parseDouble(place.getLng())))
                 .zoom(17)                   // Sets the zoom
@@ -372,7 +376,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-
+        if (!contains(rPlaceDataList, place)) {
+            place.setImage(R.drawable.lieux_proches);
+            rPlaceDataList.add(place);
+            saveRecentPlaces(MapsActivity.this, rPlaceDataList);
+            rPlaceAdapter.notifyDataSetChanged();
+        }
         hideSearchAddressStartUI();
         isFocusableNeeded = false;
     }
@@ -401,9 +410,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Looper.myLooper();
             }
             clientID = userId;
-            if (userId == null) {
-                userId = "123";
-            }
 
             FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).addValueEventListener(new ValueEventListener() {
                 @Override
@@ -454,7 +460,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             });
 
-
             return "";
         }
 
@@ -478,8 +483,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private class SinchCallClientListener implements CallClientListener {
         @Override
         public void onIncomingCall(CallClient callClient, Call incomingCall) {
-
-            Toast.makeText(MapsActivity.this, "incoming call", Toast.LENGTH_SHORT).show();
+            Log.e(TAG, "onIncomingCall: ");
+            Toast.makeText(MapsActivity.this, resources.getString(R.string.incoming_call_txt), Toast.LENGTH_SHORT).show();
             try {
                 if (VoipCallingActivity.activity != null)
                     if (!VoipCallingActivity.activity.isFinishing())
@@ -531,7 +536,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         TextView tv_name_voip_one = dialog.findViewById(R.id.tv_name_voip_one);
         iv_mute.setVisibility(View.GONE);
         iv_loud.setVisibility(View.GONE);
-        iv_recv_call_voip_one.setEnabled(true);
+//        iv_recv_call_voip_one.setEnabled(true);
         iv_recv_call_voip_one.setClickable(true);
 
         final AudioManager audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
@@ -640,7 +645,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         caller_name.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
         caller_name.setTypeface(null, Typeface.NORMAL);      // for Normal Text
 
-        caller_name.setText(driverName + " vous appelle");
+        caller_name.setText(driverName + resources.getString(R.string.vous_apple_txt));
         tv_name_voip_one.setText(driverName);
         if (!driverImage.isEmpty()) {
             Picasso.get().load(driverImage).into(iv_user_image_voip_one);
@@ -668,7 +673,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 audioManager.setMicrophoneMute(false);
                 audioManager.setSpeakerphoneOn(false);
 
-                iv_recv_call_voip_one.setEnabled(false);
+//                iv_recv_call_voip_one.setEnabled(false);
                 iv_recv_call_voip_one.setClickable(false);
             }
         });
@@ -1035,31 +1040,37 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
 
                 courseScreenStageZero = true;
+                try {
 
-                final Dialog dialog = new Dialog(MapsActivity.this);
-                dialog.setContentView(R.layout.custom);
-                Button dialogButton = dialog.findViewById(R.id.button);
+                    final Dialog dialog = new Dialog(MapsActivity.this);
+                    dialog.setContentView(R.layout.custom);
+                    Button dialogButton = dialog.findViewById(R.id.button);
 
-                TextView textView8 = dialog.findViewById(R.id.textView8);
-                Button ddd = dialog.findViewById(R.id.button);
+                    TextView textView8 = dialog.findViewById(R.id.textView8);
+                    Button ddd = dialog.findViewById(R.id.button);
 
-                //Set Texts
-                textView8.setText(resources.getString(R.string.Votrechauffeurestenroute));
-                ddd.setText(resources.getString(R.string.Daccord));
+                    //Set Texts
+                    textView8.setText(resources.getString(R.string.Votrechauffeurestenroute));
+                    ddd.setText(resources.getString(R.string.Daccord));
 
-                dialogButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                    }
-                });
-                dialog.show();
+                    dialogButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                        }
+                    });
+                    dialog.show();
 
-                WindowManager.LayoutParams lp = Objects.requireNonNull(dialog.getWindow()).getAttributes();
-                lp.dimAmount = 0.5f;
-                dialog.getWindow().setAttributes(lp);
-                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                dialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
+                    WindowManager.LayoutParams lp = Objects.requireNonNull(dialog.getWindow()).getAttributes();
+                    lp.dimAmount = 0.5f;
+                    dialog.getWindow().setAttributes(lp);
+                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                    dialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
+                } catch (WindowManager.BadTokenException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
 
 
@@ -1204,11 +1215,116 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         .icon(BitmapDescriptorFactory.fromBitmap(bm)));
             }
 
-        }catch (WindowManager.BadTokenException e){
+        } catch (WindowManager.BadTokenException e) {
             e.printStackTrace();
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static boolean isLocationEnabled(Context context) {
+        int locationMode = 0;
+        String locationProviders;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            try {
+                locationMode = Settings.Secure.getInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE);
+
+            } catch (Settings.SettingNotFoundException e) {
+                e.printStackTrace();
+                return false;
+            }
+
+            return locationMode != Settings.Secure.LOCATION_MODE_OFF;
+
+        } else {
+            locationProviders = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+            return !TextUtils.isEmpty(locationProviders);
+        }
+
+
+    }
+
+    private void checkLocationService() {
+//        LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+//        boolean gps_enabled = false;
+//        boolean network_enabled = false;
+//
+//        try {
+//            gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+//        } catch (Exception ex) {
+//        }
+//
+//        try {
+//            network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+//        } catch (Exception ex) {
+//        }
+//
+//        if (!gps_enabled && !network_enabled) {
+        // notify user
+        AlertDialog.Builder dialog = new AlertDialog.Builder(MapsActivity.this);
+        dialog.setMessage(resources.getString(R.string.txt_location_permission));
+        dialog.setPositiveButton(resources.getString(R.string.txt_open_location), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                // TODO Auto-generated method stub
+                Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                startActivity(myIntent);
+                //get gps
+            }
+        });
+
+        dialog.setNegativeButton(getString(R.string.txt_cancel), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                // TODO Auto-generated method stub
+
+            }
+        });
+        dialog.show();
+//        }
+    }
+
+
+    private void displayLocationSettingsRequest(Context context) {
+        GoogleApiClient googleApiClient = new GoogleApiClient.Builder(context)
+                .addApi(LocationServices.API).build();
+        googleApiClient.connect();
+
+        LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(10000);
+        locationRequest.setFastestInterval(10000 / 2);
+
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(locationRequest);
+        builder.setAlwaysShow(true);
+
+        PendingResult<LocationSettingsResult> result = LocationServices.SettingsApi.checkLocationSettings(googleApiClient, builder.build());
+        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+            @Override
+            public void onResult(LocationSettingsResult result) {
+                final Status status = result.getStatus();
+                switch (status.getStatusCode()) {
+                    case LocationSettingsStatusCodes.SUCCESS:
+                        Log.i(TAG, "All location settings are satisfied.");
+                        break;
+                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                        Log.i(TAG, "Location settings are not satisfied. Show the user a dialog to upgrade location settings ");
+
+                        try {
+                            // Show the dialog by calling startResolutionForResult(), and check the result
+                            // in onActivityResult().
+                            status.startResolutionForResult(MapsActivity.this, REQUEST_CHECK_SETTINGS);
+                        } catch (IntentSender.SendIntentException e) {
+                            Log.i(TAG, "PendingIntent unable to execute request.");
+                        }
+                        break;
+                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                        Log.i(TAG, "Location settings are inadequate, and cannot be fixed here. Dialog not created.");
+                        break;
+                }
+            }
+        });
     }
 
     @Override
@@ -1219,6 +1335,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (requestCode == 1 && RESULT_OK == -1 && data.hasExtra("result")) {
             tv_appelle_voip.setClickable(true);
             tv_appelle_voip.setEnabled(true);
+        }
+
+        switch (requestCode) {
+            // Check for the integer request code originally supplied to startResolutionForResult().
+            case REQUEST_CHECK_SETTINGS:
+                switch (resultCode) {
+                    case Activity.RESULT_OK:
+                        Log.i(TAG, "User agreed to make required location settings changes.");
+                        getLastLocation();
+                        break;
+                    case Activity.RESULT_CANCELED:
+                        Log.i(TAG, "User chose not to make required location settings changes.");
+                        break;
+                }
+                break;
         }
     }
 
@@ -1268,7 +1399,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 if (preferenceTask.getCancelNumber() > 3) {
                     Toast.makeText(MapsActivity.this,
-                            "Vous avez annulé beaucoup de fois, l’application va se bloquer pendant 1h",
+                            resources.getString(R.string.vous_avez_txt),
                             Toast.LENGTH_LONG).show();
 
                     blockingTimeOver = false;
@@ -1439,7 +1570,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                     im3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.exellent_service_unselected)));
                                                     im4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.expert_en_navigation_unselected)));
                                                     im5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.voiture_propre_unselected)));
-                                                    tagStatus = "bonneVoirture";
+                                                    tagStatus = resources.getString(R.string.voirture_txt);
+                                                    ;
 
                                                 }
                                             });
@@ -1451,7 +1583,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                     im3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.exellent_service_unselected)));
                                                     im4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.expert_en_navigation_unselected)));
                                                     im5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.voiture_propre_unselected)));
-                                                    tagStatus = "bonneMusic";
+                                                    tagStatus = resources.getString(R.string.bonne_music_txt);
 
                                                 }
                                             });
@@ -1463,7 +1595,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                     im3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.exellent_service)));
                                                     im4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.expert_en_navigation_unselected)));
                                                     im5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.voiture_propre_unselected)));
-                                                    tagStatus = "exellentService";
+                                                    tagStatus = resources.getString(R.string.exilent_service_txt);
                                                 }
                                             });
                                             im4.setOnClickListener(new View.OnClickListener() {
@@ -1474,7 +1606,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                     im3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.exellent_service_unselected)));
                                                     im4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.expert_en_navigation)));
                                                     im5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.voiture_propre_unselected)));
-                                                    tagStatus = "expertNavigation";
+                                                    tagStatus = resources.getString(R.string.expert_navagation_txt);
                                                 }
                                             });
                                             im5.setOnClickListener(new View.OnClickListener() {
@@ -1485,7 +1617,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                     im3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.exellent_service_unselected)));
                                                     im4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.expert_en_navigation_unselected)));
                                                     im5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.voiture_propre)));
-                                                    tagStatus = "voiturePropre";
+                                                    tagStatus = resources.getString(R.string.voiture_propre_txt);
                                                 }
                                             });
 
@@ -1560,13 +1692,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                 }
                                             });
 
-                                            dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                                                @Override
-                                                public void onDismiss(DialogInterface dialog) {
-                                                    showVoiceDialog();
-                                                }
-                                            });
-
                                             nextButton.setOnClickListener(new View.OnClickListener() {
                                                 @Override
                                                 public void onClick(View v) {
@@ -1590,6 +1715,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                                     }
                                                                 });
                                                                 FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("COURSE").removeValue();
+
                                                                 if (RATE > 3) {
                                                                     if (ContextCompat.checkSelfPermission(MapsActivity.this,
                                                                             Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -1599,7 +1725,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                                         showVoiceDialog();
                                                                     }
                                                                 } else {
-
                                                                     try {
                                                                         final Dialog newDialog = new Dialog(MapsActivity.this);
                                                                         newDialog.setContentView(R.layout.finished_course_2);
@@ -1644,7 +1769,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                                                 opt5.setBackgroundResource(R.drawable.select_box);
                                                                                 opt6.setBackgroundResource(R.drawable.select_box);
 
-                                                                                choseBox = "Heure d'arrivée";
+                                                                                choseBox = resources.getString(R.string.arrive_txt);
                                                                             }
                                                                         });
                                                                         opt2.setOnClickListener(new View.OnClickListener() {
@@ -1657,7 +1782,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                                                 opt5.setBackgroundResource(R.drawable.select_box);
                                                                                 opt6.setBackgroundResource(R.drawable.select_box);
 
-                                                                                choseBox = "Service";
+                                                                                choseBox = resources.getString(R.string.service_txt);
                                                                             }
                                                                         });
                                                                         opt3.setOnClickListener(new View.OnClickListener() {
@@ -1670,7 +1795,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                                                 opt5.setBackgroundResource(R.drawable.select_box);
                                                                                 opt6.setBackgroundResource(R.drawable.select_box);
 
-                                                                                choseBox = "Etat de la voiture";
+                                                                                choseBox = resources.getString(R.string.voiture_txt);
                                                                             }
                                                                         });
                                                                         opt4.setOnClickListener(new View.OnClickListener() {
@@ -1682,7 +1807,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                                                 opt4.setBackgroundResource(R.drawable.box_shadow);
                                                                                 opt5.setBackgroundResource(R.drawable.select_box);
                                                                                 opt6.setBackgroundResource(R.drawable.select_box);
-                                                                                choseBox = "Conduite";
+                                                                                choseBox = resources.getString(R.string.conduite_txt);
                                                                             }
                                                                         });
                                                                         opt5.setOnClickListener(new View.OnClickListener() {
@@ -1694,7 +1819,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                                                 opt4.setBackgroundResource(R.drawable.select_box);
                                                                                 opt5.setBackgroundResource(R.drawable.box_shadow);
                                                                                 opt6.setBackgroundResource(R.drawable.select_box);
-                                                                                choseBox = "Itinéraire";
+                                                                                choseBox = resources.getString(R.string.itineraire_txt);
                                                                             }
                                                                         });
                                                                         opt6.setOnClickListener(new View.OnClickListener() {
@@ -1706,10 +1831,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                                                 opt4.setBackgroundResource(R.drawable.select_box);
                                                                                 opt5.setBackgroundResource(R.drawable.select_box);
                                                                                 opt6.setBackgroundResource(R.drawable.box_shadow);
-                                                                                choseBox = "Autre";
+                                                                                choseBox = resources.getString(R.string.autre_txt);
                                                                             }
                                                                         });
 
+                                                                        newDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                                                                            @Override
+                                                                            public void onDismiss(DialogInterface dialog) {
+                                                                                if (ContextCompat.checkSelfPermission(MapsActivity.this,
+                                                                                        Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                                                                                    ActivityCompat.requestPermissions(MapsActivity.this,
+                                                                                            new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 10);
+                                                                                } else {
+                                                                                    showVoiceDialog();
+                                                                                }
+                                                                            }
+                                                                        });
 
                                                                         ImageButton nextBtn = newDialog.findViewById(R.id.imageButton3);
 
@@ -1798,8 +1935,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             callLayout.setVisibility(View.GONE);
         }
     }
-
-    // checking with debug point
 
     private void showVoiceDialog() {
         final Dialog newDialog = new Dialog(MapsActivity.this);
@@ -1907,7 +2042,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             child(Objects.requireNonNull(userId)).child(COURSE + ".3gp");
                     filepath.putFile(Uri.fromFile(new File(outputeFile)));
                 }
-                Toast.makeText(MapsActivity.this, "Thank you", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MapsActivity.this, resources.getString(R.string.thank_you_txt), Toast.LENGTH_SHORT).show();
                 newDialog.dismiss();
             }
         });
@@ -1969,6 +2104,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //LeakCanary.install(getApplication());
+        displayLocationSettingsRequest(MapsActivity.this);
         SharedPreferences prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
         String userId = prefs.getString("userID", null);
 
@@ -1981,9 +2117,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             finish();
         }
 
-        if (ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(MapsActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-        }
+//        if (ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//            ActivityCompat.requestPermissions(MapsActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+//        }
 
         try {
             new CheckUserTask().execute();
@@ -2001,14 +2137,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mapFragment.getMapAsync(this);
         }
 
-        String language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
+        language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
 
-        Context co = LocalHelper.setLocale(MapsActivity.this, language);
+        co = LocalHelper.setLocale(MapsActivity.this, language);
         resources = co.getResources();
 
 
         promoCode = findViewById(R.id.promoCode);
-        promoCode.setText("PROMO CODE");
+        promoCode.setText(resources.getString(R.string.promocode_txt));
 
         callLayout = findViewById(R.id.callLayout);
         callLayout.setVisibility(View.VISIBLE);
@@ -2056,20 +2192,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         selectCity = findViewById(R.id.imageButton4);
         destArrow = findViewById(R.id.destArrow);
 
-        if (ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.RECORD_AUDIO) !=
-                PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this,
-                android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(MapsActivity.this,
-                    new String[]{android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.READ_PHONE_STATE},
-                    1);
-        }
+//        if (ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.RECORD_AUDIO) !=
+//                PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this,
+//                android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+//            ActivityCompat.requestPermissions(MapsActivity.this,
+//                    new String[]{android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.READ_PHONE_STATE},
+//                    1);
+//        }
 
         SinchClient sinchClient = Sinch.getSinchClientBuilder()
                 .context(this)
                 .userId(userId)
-                .applicationKey(APP_KEY)
-                .applicationSecret(APP_SECRET)
-                .environmentHost(ENVIRONMENT)
+                .applicationKey(getResources().getString(R.string.sinch_app_key))
+                .applicationSecret(getResources().getString(R.string.sinch_app_secret))
+                .environmentHost(getResources().getString(R.string.sinch_envirentmnet_host))
                 .build();
 
         sinchClient.setSupportCalling(true);
@@ -2118,7 +2254,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         aR = findViewById(R.id.adress_result);
-        ConstraintLayout fR = findViewById(R.id.favorite);
+        fR = findViewById(R.id.favorite);
         ConstraintLayout rR = findViewById(R.id.recent);
 
         userLatLng = null;
@@ -2133,7 +2269,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         fPlaceDataList = new ArrayList<>();
         rPlaceDataList = new ArrayList<>();
 
-        RecyclerView mLocationView = findViewById(R.id.my_recycler_view);
+        mLocationView = findViewById(R.id.my_recycler_view);
         mLocationView.setHasFixedSize(true);
         mLocationView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -2253,10 +2389,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         confirmDest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (destPositionIsValid()) {
-                    switchToCommandLayout();
-                } else {
-
+                if (!searchDestEditText.getText().toString().equals("")) {
+                    if (destPositionIsValid()) {
+                        switchToCommandLayout();
+                    }
                 }
             }
         });
@@ -2334,12 +2470,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View view) {
                 //Begin Selecting Destination Phase
                 try {
-                    if (startPositionIsValid()) {
-                        orderDriverState = 1;
-                        showSelectDestUI();
-//                    menuButton.setVisibility(View.GONE);
-
-                        state = 1;
+                    if (!searchEditText.getText().toString().equals("")) {
+                        if (startPositionIsValid()) {
+                            orderDriverState = 1;
+                            showSelectDestUI();
+                            state = 1;
+                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -2532,7 +2668,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 });
 
                             } else
-                                Toast.makeText(getApplicationContext(), "Promo Code is expired", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(), resources.getString(R.string.promoce_expired_txt), Toast.LENGTH_LONG).show();
                         }
 
                         @Override
@@ -2542,7 +2678,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     });
 
                 } else
-                    Toast.makeText(getApplicationContext(), "Please Enter Promo Code", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), resources.getString(R.string.promocode_validation_txt), Toast.LENGTH_LONG).show();
             }
         });
 
@@ -2590,7 +2726,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.missingRabatPoly(), true)) {
             startCity = "rabat";
         } else {
-            Toast.makeText(MapsActivity.this, "On est seulement disponible sur Casablanca!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MapsActivity.this, resources.getString(R.string.sur_casablanca_txt), Toast.LENGTH_SHORT).show();
             return false;
         }
 
@@ -2685,7 +2821,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         AnimateConstraint.animate(MapsActivity.this, endConstraint, 180, dpHeight - 20, 500, selectDest, findViewById(R.id.destArrow));
         destArrow.setVisibility(View.GONE);
         findViewById(R.id.gooContent).setVisibility(View.GONE);
-
+        positionButton.setVisibility(View.VISIBLE);
         startConstraint.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) (dpHeight - 42), getResources().getDisplayMetrics());
         shadowBg.setVisibility(View.VISIBLE);
         searchButtonDest.setVisibility(View.VISIBLE);
@@ -2746,7 +2882,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         ivCross.setVisibility(View.GONE);
         coverButton.setClickable(true);
         voip_view.setVisibility(View.GONE);
-
+        positionButton.setVisibility(View.VISIBLE);
         hideSearchAddressStartUI();
         confirmStart.setVisibility(View.VISIBLE);
         findViewById(R.id.shadow).setVisibility(View.VISIBLE);
@@ -3005,6 +3141,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                     "" + gotPlace.getLatLng().longitude, R.drawable.lieux_proches);
                                             placeDataList.add(Place);
                                         }
+                                        favorite.setBackgroundColor(Color.WHITE);
+                                        mLocationView.setBackgroundColor(Color.WHITE);
+                                        fR.setBackgroundColor(Color.WHITE);
+                                        aR.setBackgroundColor(Color.WHITE);
                                         placeAdapter.notifyDataSetChanged();
                                         finished = true;
                                     } else {
@@ -3067,15 +3207,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void goToLocation(Context context, Double lat, Double lng, Place rPlace) {
-        if (rPlace != null) {
-            if (!contains(rPlaceDataList, rPlace)) {
-                rPlace.setImage(R.drawable.lieux_proches);
-                rPlaceDataList.add(rPlace);
-                saveRecentPlaces(context, rPlaceDataList);
-                rPlaceAdapter.notifyDataSetChanged();
-            }
-        }
-
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(new LatLng(lat, lng))      // Sets the center of the map to Mountain View
                 .zoom(17)                   // Sets the zoom
@@ -3332,14 +3463,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.getUiSettings().setRotateGesturesEnabled(false);
         mMap.setBuildingsEnabled(false);
 
-        if (ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(MapsActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-        } else {
-            mMap.setMyLocationEnabled(true);
-            mMap.getUiSettings().setMyLocationButtonEnabled(false);
-            getLastLocation();
-            if (userLatLng != null)
-                startLatLng = userLatLng;
+        Log.e(TAG, "onMapReady: ");
+
+        if (!isLocationEnabled(MapsActivity.this))
+            checkLocationService();
+        else {
+            if (ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(MapsActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            } else {
+                mMap.setMyLocationEnabled(true);
+                mMap.getUiSettings().setMyLocationButtonEnabled(false);
+                getLastLocation();
+                if (userLatLng != null)
+                    startLatLng = userLatLng;
+            }
         }
 
         mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
@@ -3468,7 +3605,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             //Execute Directions API request
             GeoApiContext context = new GeoApiContext.Builder()
-                    .apiKey("AIzaSyDKndcnw3IXjPPsP1gmkFLbeuLDfHXxc4o")
+                    .apiKey(getResources().getString(R.string.google_maps_key))
                     .build();
             DirectionsApiRequest req = DirectionsApi.getDirections(context, start.latitude + ","
                     + start.longitude, arrival.latitude + "," + arrival.longitude);
@@ -3703,7 +3840,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                     @Override
                                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                                         if (!dataSnapshot.exists()) {
-                                                            Toast.makeText(MapsActivity.this, "No Driver Found Please Try Again", Toast.LENGTH_SHORT).show();
+                                                            Toast.makeText(MapsActivity.this, resources.getString(R.string.no_driver_txt), Toast.LENGTH_SHORT).show();
                                                             courseScreenIsOn = false;
                                                             finishedSendReq = true;
                                                             handler.removeCallbacks(runnable);
@@ -3889,7 +4026,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (state != 1 && state != 2 && !courseScreenIsOn) {
             this.doubleBackToExitPressedOnce = true;
-            Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, resources.getString(R.string.back_exit_txt), Toast.LENGTH_SHORT).show();
 
             new Handler().postDelayed(new Runnable() {
 
@@ -3902,13 +4039,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void updateViews() {
-        Context context;
-        Resources resources;
-        String language;
-        language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
-
-        context = LocalHelper.setLocale(MapsActivity.this, language);
-        resources = context.getResources();
 
         TextView textView7 = findViewById(R.id.textView7);
         TextView textView8 = findViewById(R.id.textView8);
@@ -3943,8 +4073,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onResume() {
         super.onResume();
+
+        language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
+        co = LocalHelper.setLocale(MapsActivity.this, language);
+        resources = co.getResources();
+
         updateViews();
         fPlaceDataList.clear();
+        Log.e(TAG, "onResume: ");
+
+//        if (isLocationEnabled(MapsActivity.this)) {
+//            if (ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//                ActivityCompat.requestPermissions(MapsActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+//            } else {
+//                getLastLocation();
+//            }
+//        } else {
+//            getLastLocation();
+//        }
+
         try {
             prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
             userId = prefs.getString("userID", "");

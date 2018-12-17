@@ -1,6 +1,8 @@
 package com.comingoo.user.comingoo.activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,6 +13,7 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.comingoo.user.comingoo.R;
+import com.comingoo.user.comingoo.utility.LocalHelper;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.PhoneAuthCredential;
@@ -28,11 +31,12 @@ public class SignupActivity extends AppCompatActivity {
     private ImageButton registerButton;
     private EditText phoneNumberField;
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallBacks;
-    private FirebaseAuth mAuth;
-    private FirebaseDatabase firebaseDatabase;
     private DatabaseReference mRef;
-
-    private String Email,name,phoneNumber,password,imageURI;
+    private Resources resources;
+    private String Email;
+    private String name;
+    private String password;
+    private String imageURI;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,18 +44,23 @@ public class SignupActivity extends AppCompatActivity {
         setContentView(R.layout.activity_signup);
 
 
-        firebaseDatabase = FirebaseDatabase.getInstance();
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         mRef = firebaseDatabase.getReference("clientUSERS");
-        mAuth = FirebaseAuth.getInstance();
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
         phoneNumberField =  findViewById(R.id.code);
         registerButton = findViewById(R.id.continuer);
 
-        phoneNumber = getIntent().getStringExtra("phoneNumber");
+        String phoneNumber = getIntent().getStringExtra("phoneNumber");
         Email = getIntent().getStringExtra("Email");
         name = getIntent().getStringExtra("name");
         password = getIntent().getStringExtra("password");
         imageURI = getIntent().getStringExtra("imageURI");
+
+        String language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
+        Context context = LocalHelper.setLocale(SignupActivity.this, language);
+        resources = context.getResources();
+
 
         mCallBacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             @Override
@@ -94,7 +103,7 @@ public class SignupActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull com.google.firebase.database.DataSnapshot dataSnapshot) {
                         if(dataSnapshot.exists()){
-                            Toast.makeText(SignupActivity.this, "Number Already in Database", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(SignupActivity.this, resources.getString(R.string.database_checking_txt), Toast.LENGTH_SHORT).show();
                             registerButton.setVisibility(View.VISIBLE);
                         }else {
                             String phoneNumber = "+212" + phoneNumberField.getText();

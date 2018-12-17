@@ -88,12 +88,78 @@
     <string name="passer">Pass</string>
     <string name="driver_arrived_txt">At Comingoo, we ride in the front</string>
 
+
+
+
+    <string name="speech_input_warning_txt">Your Device Don\'t Support Speech Input</string>
+    <string name="location_permission_txt">Location Permission Needed</string>
+    <string name="location_permission_warning_txt">This app needs the Location permission, please accept to use location functionality</string>
+    <string name="ok_txt"> OK </string>
+    <string name="permission_denied_txt">permission denied</string>
+    <string name="fb_not_installed_txt">Facebook have not been installed. </string>
+    <string name="no_email_txt">Not get your email address</string>
+    <string name="account_blocked_txt">This account is blocked</string>
+    <string name="database_checking_txt">Number Already in Database</string>
+    <string name="wrong_code_txt">WRONG CODE PLEASE TRY AGAIN</string>
+    <string name="enter_otp_txt">Please Enter Your OTP Code</string>
+    <string name="error_txt">Error!!!</string>
+    <string name="incoming_call_txt">Incoming call</string>
+    <string name="thank_you_txt">Thank you</string>
+    <string name="promocode_txt">PROMO CODE</string>
+    <string name="promoce_expired_txt">Promo Code is expired</string>
+    <string name="promocode_validation_txt">Please Enter Promo Code</string>
+    <string name="no_driver_txt">No Driver Found Please Try Again</string>
+    <string name="back_exit_txt">Please click BACK again to exit</string>
+    <string name="expert_navagation_txt">expertNavigation</string>
+    <string name="exilent_service_txt">exellentService</string>
+    <string name="service_txt">Service</string>
+    <string name="draw_path_warning_txt">Something went wrong to draw path</string>
+
+
+    <string name="bonne_music_txt">Good Music</string>
+    <string name="image_warning_txt">Add an image</string>
+    <string name="message_warning_txt">Message sent.</string>
+    <string name="autre_txt">Other</string>
+    <string name="itineraire_txt">Route</string>
+    <string name="conduite_txt">Conduct</string>
+    <string name="voiture_txt">State of the car</string>
+    <string name="arrive_txt">Arriving time</string>
+    <string name="voirture_txt">Good car</string>
+    <string name="voiture_propre_txt">Clean car</string>
+    <string name="sur_casablanca_txt">We are only available on Casablanca!</string>
+    <string name="vous_apple_txt">is calling you</string>
+    <string name="vous_avez_txt">You canceled a lot of times, the application will hang for 1h</string>
+    <string name="image_choisi_txt">Chosen image</string>
+    <string name="invite_txt">Hello, I invite you to use the Comingoo application for your travels. www.comingoo.com/app</string>
+
+
+
     <string name="txt_home">Home</string>
     <string name="txt_work">Work</string>
 
-    <string name="sinch_app_key">05a626b9-33a4-4b83-b7bc-2d49062ea9ae</string>
-    <string name="sinch_app_secret">TfJrquo6qEmkV8DG/EXQPg==</string>
-    <string name="sinch_envirentmnet_host">clientapi.sinch.com</string>
+    <string name="txt_cancel">cancel</string>
+    <string name="txt_open_location">Open location settings</string>
+    <string name="txt_location_permission">Location service is not enabled</string>
+
+    <string name="txt_device_no_support_speech">Your Device Don\'t Support Speech Input</string>
+
+    <string name="jan">January</string>
+    <string name="feb">February</string>
+    <string name="mar">March</string>
+    <string name="apr">April</string>
+    <string name="may">May</string>
+    <string name="jun">Jun</string>
+    <string name="jul">July</string>
+    <string name="aug">August</string>
+    <string name="sep">September</string>
+    <string name="oct">October</string>
+    <string name="nov">November</string>
+    <string name="dec">December</string>
+
+    <string name="sinch_app_key">185d9822-a953-4af6-a780-b0af1fd31bf7</string>
+    <string name="sinch_app_secret">ZiJ6FqH5UEWYbkMZd1rWbw==</string>
+    <string name="sinch_envirentmnet_host">sandbox.sinch.com</string>
+
     <string name="title_activity_confirm_btn">Confirm address</string>
 
     <string name="txt_block_time_over">Your blocking time is not over yet.</string>

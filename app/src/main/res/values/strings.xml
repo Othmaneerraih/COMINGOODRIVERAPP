@@ -14,8 +14,55 @@
     <string name="Sedeconnecter">Devenir driver ? <a href="https://www.comingoo.com/driver"></a></string>
 
 
+
+    <string name="bonne_music_txt">bonne Music</string>
+    <string name="image_warning_txt">Ajouter une image</string>
+    <string name="message_warning_txt">message envoyé.</string>
+    <string name="autre_txt">Autre</string>
+    <string name="itineraire_txt">Itinéraire</string>
+    <string name="conduite_txt">Conduite</string>
+    <string name="voiture_txt">Etat de la voiture</string>
+    <string name="arrive_txt">Heure d\'arrivée</string>
+    <string name="voirture_txt">bonneVoirture</string>
+    <string name="voiture_propre_txt">voiturePropre</string>
+    <string name="sur_casablanca_txt">On est seulement disponible sur Casablanca!</string>
+    <string name="vous_apple_txt">vous appelle</string>
+    <string name="vous_avez_txt">Vous avez annulé beaucoup de fois, l’application va se bloquer pendant 1h</string>
+    <string name="image_choisi_txt">image choisi</string>
+    <string name="invite_txt">Bonjour, Je vous invite a utiliser l\'application Comingoo pour vos déplacements. www.comingoo.com/app</string>
+
+
+
+    <string name="speech_input_warning_txt">Votre appareil ne prend pas en charge la saisie vocale</string>
+    <string name="location_permission_txt">Emplacement requis</string>
+    <string name="location_permission_warning_txt">Cette application a besoin de l\'autorisation d\'emplacement. Veuillez accepter d\'utiliser la fonctionnalité d\'emplacement.</string>
+    <string name="ok_txt">D\'accord</string>
+    <string name="permission_denied_txt">permission refusée</string>
+    <string name="fb_not_installed_txt">Facebook n\'a pas été installé.</string>
+    <string name="no_email_txt">Ne pas obtenir votre adresse email</string>
+    <string name="account_blocked_txt">Ce compte est bloqué</string>
+    <string name="database_checking_txt">Nombre déjà dans la base de données</string>
+    <string name="wrong_code_txt">MAUVAIS CODE VEUILLEZ ESSAYER À NOUVEAU</string>
+    <string name="enter_otp_txt">S\'il vous plaît entrez votre code OTP</string>
+    <string name="error_txt">Erreur!!!</string>
+    <string name="incoming_call_txt">Appel entrant</string>
+    <string name="thank_you_txt">Je vous remercie</string>
+    <string name="promocode_txt">CODE PROMO</string>
+    <string name="promoce_expired_txt">Le code promo a expiré</string>
+    <string name="promocode_validation_txt">S\'il vous plaît entrer le code promo</string>
+    <string name="no_driver_txt">Aucun pilote trouvé, veuillez réessayer</string>
+    <string name="back_exit_txt">Veuillez cliquer à nouveau sur RETOUR pour quitter.</string>
+    <string name="expert_navagation_txt">navigationexpert</string>
+    <string name="exilent_service_txt">excellentservice</string>
+    <string name="service_txt">Un service</string>
+    <string name="draw_path_warning_txt">Quelque chose a mal tourné pour tracer le chemin</string>
     <string name="txt_home">Maison</string>
     <string name="txt_work">Travail</string>
+    <string name="txt_device_no_support_speech">Su dispositivo no admite entrada de voz</string>
+
+    <string name="txt_cancel">cancelar</string>
+    <string name="txt_open_location">configuración de ubicación abierta</string>
+    <string name="txt_location_permission">El servicio de localización no está habilitado.</string>
 
     <string name="Lieuxfavoris">Lieux favoris:</string>
     <string name="Lieuxrécents">Lieux récents:</string>
@@ -99,11 +146,25 @@
     <!--<string name="sinch_app_secret">gVW3Tm0140e9i17wRwUzzw==</string>-->
     <!--<string name="sinch_envirentmnet_host">clientapi.sinch.com</string>-->
 
-    <string name="sinch_app_key">04ae7d45-1084-4fb5-9d7c-08d82527d191</string>
-    <string name="sinch_app_secret">TfJrquo6qEmkV8DG/EXQPg==</string>
-    <string name="sinch_envirentmnet_host">clientapi.sinch.com</string>
+    <string name="sinch_app_key">185d9822-a953-4af6-a780-b0af1fd31bf7</string>
+    <string name="sinch_app_secret">ZiJ6FqH5UEWYbkMZd1rWbw==</string>
+    <string name="sinch_envirentmnet_host">sandbox.sinch.com</string>
     <string name="title_activity_confirm_btn">Confirmer address</string>
     <string name="txt_block_time_over">Your blocking time is not over yet.</string>
+
+
+    <string name="jan">Janvier</string>
+    <string name="feb">Février</string>
+    <string name="mar">Mars</string>
+    <string name="apr">Avril</string>
+    <string name="may">Mai</string>
+    <string name="jun">Juin</string>
+    <string name="jul">Juillet</string>
+    <string name="aug">Aout</string>
+    <string name="sep">Septembre</string>
+    <string name="oct">Octobre</string>
+    <string name="nov">Novembre</string>
+    <string name="dec">Décembre</string>
 
     <string-array name="blocked_users" tools:ignore="ExtraTranslation">
         <item>brightgupta18@gmail.com</item>

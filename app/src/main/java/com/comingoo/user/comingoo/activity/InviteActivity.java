@@ -32,7 +32,7 @@ public class InviteActivity extends AppCompatActivity {
 
     public void updateViews(){
         Context context;
-        Resources resources;
+        final Resources resources;
         String language;
         language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
 
@@ -53,21 +53,20 @@ public class InviteActivity extends AppCompatActivity {
         button2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                shareSocialMedia();
+                shareSocialMedia(resources);
             }
         });
     }
 
-    private void shareSocialMedia(){
+    private void shareSocialMedia(Resources resources){
 
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
-        intent .putExtra(Intent.EXTRA_TEXT, "Bonjour,\n" +
-                "Je vous invite a utiliser l'application Comingoo pour vos déplacements. www.comingoo.com/app");
+        intent .putExtra(Intent.EXTRA_TEXT, resources.getString(R.string.invite_txt));
         try {
             this.startActivity(intent );
         } catch (android.content.ActivityNotFoundException ex) {
-            Toast.makeText(InviteActivity.this, "Facebook have not been installed.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(InviteActivity.this, resources.getString(R.string.facebookText), Toast.LENGTH_SHORT).show();
         }
     }
 

@@ -1,7 +1,9 @@
 package com.comingoo.user.comingoo.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,6 +12,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.comingoo.user.comingoo.R;
+import com.comingoo.user.comingoo.utility.LocalHelper;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -50,6 +53,8 @@ public class LoginActivity extends AppCompatActivity {
     private EditText phoneNumber;
     private EditText password;
     private CallbackManager callbackManager;
+    private Resources resources;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +74,10 @@ public class LoginActivity extends AppCompatActivity {
         final String EMAIL = "email";
         final LoginButton loginButton = findViewById(R.id.login_button);
         loginButton.setReadPermissions(Collections.singletonList(EMAIL));
+
+        String language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
+        Context context = LocalHelper.setLocale(LoginActivity.this, language);
+        resources = context.getResources();
 
         LoginManager.getInstance().registerCallback(callbackManager,
                 new FacebookCallback<LoginResult>() {
@@ -102,7 +111,7 @@ public class LoginActivity extends AppCompatActivity {
                                                         Log.e("LoginActivity", "onDataChange: " + stringArray[0]);
                                                         if (Arrays.asList(stringArray).contains(EMAIL)) {
                                                             // true
-                                                            Toast.makeText(LoginActivity.this, "This account is blocked", Toast.LENGTH_LONG).show();
+                                                            Toast.makeText(LoginActivity.this, resources.getString(R.string.account_blocked_txt), Toast.LENGTH_LONG).show();
                                                         } else {
                                                             Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
                                                             intent.putExtra("Email", Email);
@@ -136,7 +145,7 @@ public class LoginActivity extends AppCompatActivity {
                                                                 });
                                                             } else {
 //                                                                loginBtn.setVisibility(View.VISIBLE);
-                                                                Toast.makeText(LoginActivity.this, "not get your emaill address", Toast.LENGTH_SHORT).show();
+                                                                Toast.makeText(LoginActivity.this, resources.getString(R.string.no_email_txt), Toast.LENGTH_SHORT).show();
                                                             }
 
 
