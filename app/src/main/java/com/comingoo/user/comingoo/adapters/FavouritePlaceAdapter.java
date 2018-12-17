@@ -2,6 +2,7 @@ package com.comingoo.user.comingoo.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,10 +16,11 @@ import com.comingoo.user.comingoo.activity.FevoriteLocationActivity;
 import com.comingoo.user.comingoo.activity.MapsActivity;
 import com.comingoo.user.comingoo.R;
 import com.comingoo.user.comingoo.model.Place;
+import com.comingoo.user.comingoo.utility.LocalHelper;
 
 import java.util.List;
 
-public class FavouritePlaceAdapter  extends RecyclerView.Adapter<FavouritePlaceAdapter.ViewHolder> {
+public class FavouritePlaceAdapter extends RecyclerView.Adapter<FavouritePlaceAdapter.ViewHolder> {
     private List<Place> mDataset;
     private Context context;
     private boolean isAddButtonNeed;
@@ -60,9 +62,15 @@ public class FavouritePlaceAdapter  extends RecyclerView.Adapter<FavouritePlaceA
             }
         });
 
-        if (position ==0)
-        holder.title.setText("Work");
-        else if (position == 1) holder.title.setText("Home");
+        String language = context.getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
+
+        Context co = LocalHelper.setLocale(context, language);
+        Resources resources = co.getResources();
+
+
+        if (position == 0)
+            holder.title.setText(resources.getString(R.string.txt_work));
+        else if (position == 1) holder.title.setText(resources.getString(R.string.txt_home));
 
         holder.address.setText(newPlace.getAddress());
 

@@ -59,7 +59,7 @@
 
         <ImageView
             android:id="@+id/divider"
-            android:layout_width="2dp"
+            android:layout_width="1dp"
             android:layout_height="match_parent"
             android:layout_alignParentTop="true"
             android:layout_alignParentBottom="true"
@@ -71,8 +71,10 @@
             android:id="@+id/textView44"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
+            android:layout_alignLeft="@+id/divider"
+            android:layout_centerVertical="true"
             android:layout_marginStart="20dp"
+            android:layout_marginLeft="20dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:fontFamily="@font/roboto_light"

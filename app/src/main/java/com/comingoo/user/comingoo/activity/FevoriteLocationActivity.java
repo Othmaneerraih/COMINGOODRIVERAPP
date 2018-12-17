@@ -98,7 +98,7 @@ public class FevoriteLocationActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fevorite_location);
-
+        checkLocationPermission();
         mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFrag.getMapAsync(this);
         searchEt = findViewById(R.id.search_edit_text);
@@ -151,7 +151,7 @@ public class FevoriteLocationActivity extends AppCompatActivity
         setAutocompleteFragmentAction();
 
         AutocompleteFilter autocompleteFilter = new AutocompleteFilter.Builder()
-                .setTypeFilter(com.google.android.gms.location.places.Place.TYPE_COUNTRY)
+                .setTypeFilter(AutocompleteFilter.TYPE_FILTER_ESTABLISHMENT)
                 .setCountry("MA")
                 .build();
 
@@ -164,6 +164,8 @@ public class FevoriteLocationActivity extends AppCompatActivity
     int lastImageHeight;
     int lastImageWidth;
     int inSampleSize;
+    int height = 150;
+    int width = 80;
 
     public Bitmap scaleBitmap(int reqWidth, int reqHeight, int resId) {
         // Raw height and width of image
@@ -235,11 +237,8 @@ public class FevoriteLocationActivity extends AppCompatActivity
                 if (geoQuery != null) {
                     geoQuery.setCenter(new GeoLocation(searchLatLng.latitude, searchLatLng.longitude));
                 }
-
                 searchLatLng = mGoogleMap.getCameraPosition().target;
-
                 new ReverseGeocodingTask(FevoriteLocationActivity.this).execute(searchLatLng);
-
             }
         });
 
@@ -260,8 +259,6 @@ public class FevoriteLocationActivity extends AppCompatActivity
         final Handler handler = new Handler();
         final long start = SystemClock.uptimeMillis();
         Projection proj = mGoogleMap.getProjection();
-        int height = 150;
-        int width = 80;
         BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.depart_pin);
         Bitmap b = bitmapdraw.getBitmap();
         Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
@@ -320,8 +317,8 @@ public class FevoriteLocationActivity extends AppCompatActivity
 
         @Override
         protected void onPostExecute(String addressText) {
-            searchEt.setText(addressText);
-            autocompleteFragment.setText(addressText);
+//            searchEt.setText(addressText);
+//            autocompleteFragment.setText(addressText);
             febPlaceLat = String.valueOf(lat);
             febPlacelong = String.valueOf(lon);
             febPlaceAddress = addressText;
@@ -378,8 +375,6 @@ public class FevoriteLocationActivity extends AppCompatActivity
 
     public void goToLocation(Context context, Double lat, Double lng, Place rPlace) {
         mGoogleMap.clear();
-        int height = 150;
-        int width = 80;
         BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.depart_pin);
         Bitmap b = bitmapdraw.getBitmap();
         Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
@@ -404,9 +399,6 @@ public class FevoriteLocationActivity extends AppCompatActivity
                 mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
                 mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 12.0f));
                 pinLayout.setVisibility(View.GONE);
-                int height = 60;
-                int width = 30;
-
                 BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.depart_pin);
                 Bitmap b = bitmapdraw.getBitmap();
                 Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
@@ -481,8 +473,7 @@ public class FevoriteLocationActivity extends AppCompatActivity
 //        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons("depart_pin", 56, 76)));
 //        mCurrLocationMarker = mGoogleMap.addMarker(markerOptions);
 
-        int height = 150;
-        int width = 80;
+
         BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.depart_pin);
         Bitmap b = bitmapdraw.getBitmap();
         Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
@@ -556,18 +547,8 @@ public class FevoriteLocationActivity extends AppCompatActivity
                 } else {
                     Toast.makeText(this, "permission denied", Toast.LENGTH_LONG).show();
                 }
-                return;
             }
-
-            // other 'case' lines to check for other
-            // permissions this app might request
         }
-    }
-
-    public Bitmap resizeMapIcons(String iconName, int width, int height) {
-        Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(), getResources().getIdentifier(iconName, "drawable", getPackageName()));
-        Bitmap resizedBitmap = Bitmap.createScaledBitmap(imageBitmap, width, height, false);
-        return resizedBitmap;
     }
 
 }
