@@ -356,7 +356,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         coverButton.setClickable(false);
         positionButton.setVisibility(View.VISIBLE);
         findViewById(R.id.shadow).setVisibility(View.VISIBLE);
-        
+
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(new LatLng(Double.parseDouble(place.getLat()), Double.parseDouble(place.getLng())))
                 .zoom(17)                   // Sets the zoom
@@ -483,7 +483,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private class SinchCallClientListener implements CallClientListener {
         @Override
         public void onIncomingCall(CallClient callClient, Call incomingCall) {
-
+            Log.e(TAG, "onIncomingCall: ");
             Toast.makeText(MapsActivity.this, resources.getString(R.string.incoming_call_txt), Toast.LENGTH_SHORT).show();
             try {
                 if (VoipCallingActivity.activity != null)
@@ -536,7 +536,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         TextView tv_name_voip_one = dialog.findViewById(R.id.tv_name_voip_one);
         iv_mute.setVisibility(View.GONE);
         iv_loud.setVisibility(View.GONE);
-        iv_recv_call_voip_one.setEnabled(true);
+//        iv_recv_call_voip_one.setEnabled(true);
         iv_recv_call_voip_one.setClickable(true);
 
         final AudioManager audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
@@ -676,7 +676,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 audioManager.setMicrophoneMute(false);
                 audioManager.setSpeakerphoneOn(false);
 
-                iv_recv_call_voip_one.setEnabled(false);
+//                iv_recv_call_voip_one.setEnabled(false);
                 iv_recv_call_voip_one.setClickable(false);
             }
         });
@@ -1038,31 +1038,37 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
 
                 courseScreenStageZero = true;
+                try {
 
-                final Dialog dialog = new Dialog(MapsActivity.this);
-                dialog.setContentView(R.layout.custom);
-                Button dialogButton = dialog.findViewById(R.id.button);
+                    final Dialog dialog = new Dialog(MapsActivity.this);
+                    dialog.setContentView(R.layout.custom);
+                    Button dialogButton = dialog.findViewById(R.id.button);
 
-                TextView textView8 = dialog.findViewById(R.id.textView8);
-                Button ddd = dialog.findViewById(R.id.button);
+                    TextView textView8 = dialog.findViewById(R.id.textView8);
+                    Button ddd = dialog.findViewById(R.id.button);
 
-                //Set Texts
-                textView8.setText(resources.getString(R.string.Votrechauffeurestenroute));
-                ddd.setText(resources.getString(R.string.Daccord));
+                    //Set Texts
+                    textView8.setText(resources.getString(R.string.Votrechauffeurestenroute));
+                    ddd.setText(resources.getString(R.string.Daccord));
 
-                dialogButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                    }
-                });
-                dialog.show();
+                    dialogButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                        }
+                    });
+                    dialog.show();
 
-                WindowManager.LayoutParams lp = Objects.requireNonNull(dialog.getWindow()).getAttributes();
-                lp.dimAmount = 0.5f;
-                dialog.getWindow().setAttributes(lp);
-                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                dialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
+                    WindowManager.LayoutParams lp = Objects.requireNonNull(dialog.getWindow()).getAttributes();
+                    lp.dimAmount = 0.5f;
+                    dialog.getWindow().setAttributes(lp);
+                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                    dialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
+                } catch (WindowManager.BadTokenException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
 
 
@@ -1558,7 +1564,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                     im3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.exellent_service_unselected)));
                                                     im4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.expert_en_navigation_unselected)));
                                                     im5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.voiture_propre_unselected)));
-                                                    tagStatus = resources.getString(R.string.voirture_txt);;
+                                                    tagStatus = resources.getString(R.string.voirture_txt);
+                                                    ;
 
                                                 }
                                             });
@@ -4069,21 +4076,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         fPlaceDataList.clear();
         Log.e(TAG, "onResume: ");
 
-        if (isLocationEnabled(MapsActivity.this)) {
-            if (ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(MapsActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-            } else {
-                getLastLocation();
-            }
-        } else {
-            getLastLocation();
-        }
+//        if (isLocationEnabled(MapsActivity.this)) {
+//            if (ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//                ActivityCompat.requestPermissions(MapsActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+//            } else {
+//                getLastLocation();
+//            }
+//        } else {
+//            getLastLocation();
+//        }
 
         try {
             prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
             userId = prefs.getString("userID", "");
             Log.e(TAG, "onResume: " + userId);
-            FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child(resources.getString(R.string.txt_work)).addListenerForSingleValueEvent(new ValueEventListener() {
+            FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child(getString(R.string.txt_work)).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
@@ -4103,7 +4110,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 }
             });
-            FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child(resources.getString(R.string.txt_home)).addListenerForSingleValueEvent(new ValueEventListener() {
+            FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child(getString(R.string.txt_home)).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
