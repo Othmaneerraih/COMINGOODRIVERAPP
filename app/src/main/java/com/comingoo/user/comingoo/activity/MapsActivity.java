@@ -182,6 +182,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ConstraintLayout startConstraint;
     private ConstraintLayout endConstraint;
     private GeoDataClient mGeoDataClient;
+    private Context co;
+    private String language;
     private int state = 0;
     private LatLng userLatLng;
     private LatLng startLatLng;
@@ -196,11 +198,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ConstraintLayout favorite;
     private ConstraintLayout aR;
     private ConstraintLayout fR;
-
-    private final String APP_KEY = "185d9822-a953-4af6-a780-b0af1fd31bf7";
-    private final String APP_SECRET = "ZiJ6FqH5UEWYbkMZd1rWbw==";
-    private final String ENVIRONMENT = "sandbox.sinch.com";
-
     private float dpHeight;
     private float dpWidth;
     private Button coverButton;
@@ -482,7 +479,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         @Override
         public void onIncomingCall(CallClient callClient, Call incomingCall) {
 
-            Toast.makeText(MapsActivity.this, "incoming call", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MapsActivity.this, resources.getString(R.string.incoming_call_txt), Toast.LENGTH_SHORT).show();
             try {
                 if (VoipCallingActivity.activity != null)
                     if (!VoipCallingActivity.activity.isFinishing())
@@ -646,7 +643,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         caller_name.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
         caller_name.setTypeface(null, Typeface.NORMAL);      // for Normal Text
 
-        caller_name.setText(driverName + " vous appelle");
+        caller_name.setText(driverName + resources.getString(R.string.vous_apple_txt));
         tv_name_voip_one.setText(driverName);
         if (!driverImage.isEmpty()) {
             Picasso.get().load(driverImage).into(iv_user_image_voip_one);
@@ -1265,7 +1262,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 if (preferenceTask.getCancelNumber() > 3) {
                     Toast.makeText(MapsActivity.this,
-                            "Vous avez annulé beaucoup de fois, l’application va se bloquer pendant 1h",
+                            resources.getString(R.string.vous_avez_txt),
                             Toast.LENGTH_LONG).show();
 
                     blockingTimeOver = false;
@@ -1436,7 +1433,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                     im3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.exellent_service_unselected)));
                                                     im4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.expert_en_navigation_unselected)));
                                                     im5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.voiture_propre_unselected)));
-                                                    tagStatus = "bonneVoirture";
+                                                    tagStatus = resources.getString(R.string.voirture_txt);;
 
                                                 }
                                             });
@@ -1448,7 +1445,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                     im3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.exellent_service_unselected)));
                                                     im4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.expert_en_navigation_unselected)));
                                                     im5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.voiture_propre_unselected)));
-                                                    tagStatus = "bonneMusic";
+                                                    tagStatus = resources.getString(R.string.bonne_music_txt);
 
                                                 }
                                             });
@@ -1460,7 +1457,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                     im3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.exellent_service)));
                                                     im4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.expert_en_navigation_unselected)));
                                                     im5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.voiture_propre_unselected)));
-                                                    tagStatus = "exellentService";
+                                                    tagStatus = resources.getString(R.string.exilent_service_txt);
                                                 }
                                             });
                                             im4.setOnClickListener(new View.OnClickListener() {
@@ -1471,7 +1468,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                     im3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.exellent_service_unselected)));
                                                     im4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.expert_en_navigation)));
                                                     im5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.voiture_propre_unselected)));
-                                                    tagStatus = "expertNavigation";
+                                                    tagStatus = resources.getString(R.string.expert_navagation_txt);
                                                 }
                                             });
                                             im5.setOnClickListener(new View.OnClickListener() {
@@ -1482,7 +1479,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                     im3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.exellent_service_unselected)));
                                                     im4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.expert_en_navigation_unselected)));
                                                     im5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.voiture_propre)));
-                                                    tagStatus = "voiturePropre";
+                                                    tagStatus = resources.getString(R.string.voiture_propre_txt);
                                                 }
                                             });
 
@@ -1641,7 +1638,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                                                 opt5.setBackgroundResource(R.drawable.select_box);
                                                                                 opt6.setBackgroundResource(R.drawable.select_box);
 
-                                                                                choseBox = "Heure d'arrivée";
+                                                                                choseBox = resources.getString(R.string.arrive_txt);
                                                                             }
                                                                         });
                                                                         opt2.setOnClickListener(new View.OnClickListener() {
@@ -1654,7 +1651,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                                                 opt5.setBackgroundResource(R.drawable.select_box);
                                                                                 opt6.setBackgroundResource(R.drawable.select_box);
 
-                                                                                choseBox = "Service";
+                                                                                choseBox = resources.getString(R.string.service_txt);
                                                                             }
                                                                         });
                                                                         opt3.setOnClickListener(new View.OnClickListener() {
@@ -1667,7 +1664,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                                                 opt5.setBackgroundResource(R.drawable.select_box);
                                                                                 opt6.setBackgroundResource(R.drawable.select_box);
 
-                                                                                choseBox = "Etat de la voiture";
+                                                                                choseBox = resources.getString(R.string.voiture_txt);
                                                                             }
                                                                         });
                                                                         opt4.setOnClickListener(new View.OnClickListener() {
@@ -1679,7 +1676,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                                                 opt4.setBackgroundResource(R.drawable.box_shadow);
                                                                                 opt5.setBackgroundResource(R.drawable.select_box);
                                                                                 opt6.setBackgroundResource(R.drawable.select_box);
-                                                                                choseBox = "Conduite";
+                                                                                choseBox = resources.getString(R.string.conduite_txt);
                                                                             }
                                                                         });
                                                                         opt5.setOnClickListener(new View.OnClickListener() {
@@ -1691,7 +1688,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                                                 opt4.setBackgroundResource(R.drawable.select_box);
                                                                                 opt5.setBackgroundResource(R.drawable.box_shadow);
                                                                                 opt6.setBackgroundResource(R.drawable.select_box);
-                                                                                choseBox = "Itinéraire";
+                                                                                choseBox = resources.getString(R.string.itineraire_txt);
                                                                             }
                                                                         });
                                                                         opt6.setOnClickListener(new View.OnClickListener() {
@@ -1703,7 +1700,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                                                 opt4.setBackgroundResource(R.drawable.select_box);
                                                                                 opt5.setBackgroundResource(R.drawable.select_box);
                                                                                 opt6.setBackgroundResource(R.drawable.box_shadow);
-                                                                                choseBox = "Autre";
+                                                                                choseBox = resources.getString(R.string.autre_txt);
                                                                             }
                                                                         });
 
@@ -1904,7 +1901,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             child(Objects.requireNonNull(userId)).child(COURSE + ".3gp");
                     filepath.putFile(Uri.fromFile(new File(outputeFile)));
                 }
-                Toast.makeText(MapsActivity.this, "Thank you", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MapsActivity.this, resources.getString(R.string.thank_you_txt), Toast.LENGTH_SHORT).show();
                 newDialog.dismiss();
             }
         });
@@ -1998,14 +1995,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mapFragment.getMapAsync(this);
         }
 
-        String language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
+        language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
 
-        Context co = LocalHelper.setLocale(MapsActivity.this, language);
+        co = LocalHelper.setLocale(MapsActivity.this, language);
         resources = co.getResources();
 
 
         promoCode = findViewById(R.id.promoCode);
-        promoCode.setText("PROMO CODE");
+        promoCode.setText(resources.getString(R.string.promocode_txt));
 
         callLayout = findViewById(R.id.callLayout);
         callLayout.setVisibility(View.VISIBLE);
@@ -2064,9 +2061,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SinchClient sinchClient = Sinch.getSinchClientBuilder()
                 .context(this)
                 .userId(userId)
-                .applicationKey(APP_KEY)
-                .applicationSecret(APP_SECRET)
-                .environmentHost(ENVIRONMENT)
+                .applicationKey(getResources().getString(R.string.sinch_app_key))
+                .applicationSecret(getResources().getString(R.string.sinch_app_secret))
+                .environmentHost(getResources().getString(R.string.sinch_envirentmnet_host))
                 .build();
 
         sinchClient.setSupportCalling(true);
@@ -2529,7 +2526,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 });
 
                             } else
-                                Toast.makeText(getApplicationContext(), "Promo Code is expired", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(), resources.getString(R.string.promoce_expired_txt), Toast.LENGTH_LONG).show();
                         }
 
                         @Override
@@ -2539,7 +2536,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     });
 
                 } else
-                    Toast.makeText(getApplicationContext(), "Please Enter Promo Code", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), resources.getString(R.string.promocode_validation_txt), Toast.LENGTH_LONG).show();
             }
         });
 
@@ -2587,7 +2584,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.missingRabatPoly(), true)) {
             startCity = "rabat";
         } else {
-            Toast.makeText(MapsActivity.this, "On est seulement disponible sur Casablanca!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MapsActivity.this, resources.getString(R.string.sur_casablanca_txt), Toast.LENGTH_SHORT).show();
             return false;
         }
 
@@ -3695,7 +3692,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                     @Override
                                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                                         if (!dataSnapshot.exists()) {
-                                                            Toast.makeText(MapsActivity.this, "No Driver Found Please Try Again", Toast.LENGTH_SHORT).show();
+                                                            Toast.makeText(MapsActivity.this, resources.getString(R.string.no_driver_txt), Toast.LENGTH_SHORT).show();
                                                             courseScreenIsOn = false;
                                                             finishedSendReq = true;
                                                             handler.removeCallbacks(runnable);
@@ -3881,7 +3878,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (state != 1 && state != 2 && !courseScreenIsOn) {
             this.doubleBackToExitPressedOnce = true;
-            Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, resources.getString(R.string.back_exit_txt), Toast.LENGTH_SHORT).show();
 
             new Handler().postDelayed(new Runnable() {
 

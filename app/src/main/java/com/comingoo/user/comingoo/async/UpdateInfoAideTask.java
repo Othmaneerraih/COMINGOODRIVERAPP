@@ -1,12 +1,15 @@
 package com.comingoo.user.comingoo.async;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.comingoo.user.comingoo.R;
+import com.comingoo.user.comingoo.utility.LocalHelper;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -23,6 +26,7 @@ public class UpdateInfoAideTask extends AsyncTask<String, Integer, String> {
     private Uri imageUri;
     private EditText message;
     private TextView selectImage;
+    private Resources resources;
 
     @Override
     protected void onPreExecute() {
@@ -36,6 +40,11 @@ public class UpdateInfoAideTask extends AsyncTask<String, Integer, String> {
         this.imageUri = imageUri;
         this.message = message;
         this.selectImage = selectImage;
+
+        String language = context.getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
+        Context co = LocalHelper.setLocale(context, language);
+        resources = co.getResources();
+
     }
 
     // This is run in a background thread
@@ -85,8 +94,8 @@ public class UpdateInfoAideTask extends AsyncTask<String, Integer, String> {
         super.onPostExecute(result);
         // Do things like hide the progress bar or change a TextView
 
-        Toast.makeText(context, "message envoyé.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, resources.getString(R.string.message_warning_txt), Toast.LENGTH_SHORT).show();
         message.setText("");
-        selectImage.setText("Ajouter une image");
+        selectImage.setText(resources.getString(R.string.image_warning_txt));
     }
 }

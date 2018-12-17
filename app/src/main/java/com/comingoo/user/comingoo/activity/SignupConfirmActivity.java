@@ -1,8 +1,10 @@
 package com.comingoo.user.comingoo.activity;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,6 +16,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.comingoo.user.comingoo.R;
+import com.comingoo.user.comingoo.utility.LocalHelper;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
@@ -32,14 +35,13 @@ import java.util.Map;
 public class SignupConfirmActivity extends AppCompatActivity {
     private String phoneNumber;
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallBacks;
-    static Activity context;
-
-    EditText code;
-    EditText code2;
-    EditText code3;
-    EditText code4;
-    EditText code5;
-    EditText code6;
+    private Resources resources;
+    private EditText code;
+    private EditText code2;
+    private EditText code3;
+    private EditText code4;
+    private EditText code5;
+    private EditText code6;
 
     private String Email,name,password,imageURI;
     private String TAG = "SignupConfirmActivity";
@@ -56,14 +58,16 @@ public class SignupConfirmActivity extends AppCompatActivity {
         code5 = findViewById(R.id.code5);
         code6 = findViewById(R.id.code6);
 
-
-        context = this;
-
         phoneNumber = getIntent().getStringExtra("phoneNumber");
         Email = getIntent().getStringExtra("Email");
         name = getIntent().getStringExtra("name");
         password = getIntent().getStringExtra("password");
         imageURI = getIntent().getStringExtra("imageURI");
+
+        String language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
+        Context context = LocalHelper.setLocale(SignupConfirmActivity.this, language);
+        resources = context.getResources();
+
 
         edittextFlow();
 
@@ -87,7 +91,7 @@ public class SignupConfirmActivity extends AppCompatActivity {
                                 signUpFirebase();
 
                             }else {
-                                Toast.makeText(SignupConfirmActivity.this, "WRONG CODE PLEASE TRY AGAIN", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(SignupConfirmActivity.this, resources.getString(R.string.wrong_code_txt), Toast.LENGTH_SHORT).show();
                                 findViewById(R.id.imageButton).setVisibility(View.VISIBLE);
                             }
                         }
@@ -96,16 +100,12 @@ public class SignupConfirmActivity extends AppCompatActivity {
 
 
                 }else{
-                    Toast.makeText(SignupConfirmActivity.this, "Please Enter Your OTP Code", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SignupConfirmActivity.this, resources.getString(R.string.enter_otp_txt), Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
     }
-    static void Dest(){
-        context.finish();
-    }
-
 
     private void signUpFirebase(){
         FirebaseAuth.getInstance().createUserWithEmailAndPassword(Email, password).
@@ -133,7 +133,7 @@ public class SignupConfirmActivity extends AppCompatActivity {
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if(!task.isSuccessful()){
                                         Log.e("signUpFacebookActivity", "onComplete: 1111 " );
-                                        Toast.makeText(SignupConfirmActivity.this, "Error!!!", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(SignupConfirmActivity.this, resources.getString(R.string.error_txt), Toast.LENGTH_SHORT).show();
                                         FirebaseAuth.getInstance().getCurrentUser().delete();
                                         FirebaseAuth.getInstance().signOut();
                                     }else{

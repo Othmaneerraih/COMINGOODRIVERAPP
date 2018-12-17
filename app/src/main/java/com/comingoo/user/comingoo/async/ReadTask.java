@@ -1,12 +1,16 @@
 package com.comingoo.user.comingoo.async;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
+import com.comingoo.user.comingoo.R;
+import com.comingoo.user.comingoo.activity.AideActivity;
 import com.comingoo.user.comingoo.others.HttpConnection;
 import com.comingoo.user.comingoo.others.PathJSONParser;
+import com.comingoo.user.comingoo.utility.LocalHelper;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -20,10 +24,14 @@ import java.util.List;
 public class ReadTask extends AsyncTask<String, Void, String> {
     private Context context;
     private GoogleMap mMap;
+    private Resources resources;
 
     public  ReadTask(Context context, GoogleMap mMap){
         this.context = context;
         this.mMap = mMap;
+        String language = context.getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
+        Context co = LocalHelper.setLocale(context, language);
+        resources = co.getResources();
     }
     @Override
     protected String doInBackground(String... url) {
@@ -85,7 +93,7 @@ public class ReadTask extends AsyncTask<String, Void, String> {
 
             }
             if (polyLineOptions == null) {
-                Toast.makeText(context, "Something went wrong to draw path", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, resources.getString(R.string.draw_path_warning_txt), Toast.LENGTH_LONG).show();
             } else {
                 mMap.addPolyline(polyLineOptions);
             }
