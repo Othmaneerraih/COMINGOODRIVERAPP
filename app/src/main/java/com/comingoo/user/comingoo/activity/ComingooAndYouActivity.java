@@ -51,7 +51,7 @@ public class ComingooAndYouActivity extends AppCompatActivity {
     private int useCV = 0;
     private SharedPreferences sharedPreferences;
     private String language;
-    private DecimalFormat df2 = new DecimalFormat(".##");
+    private DecimalFormat df2 = new DecimalFormat("0.##");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

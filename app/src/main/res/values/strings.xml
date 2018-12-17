@@ -16,6 +16,15 @@
 
     <string name="txt_home">Maison</string>
     <string name="txt_work">Travail</string>
+    <string name="txt_device_no_support_speech">Su dispositivo no admite entrada de voz</string>
+
+
+
+    <string name="txt_cancel">cancelar</string>
+    <string name="txt_open_location">configuración de ubicación abierta</string>
+    <string name="txt_location_permission">El servicio de localización no está habilitado.</string>
+
+
 
     <string name="Lieuxfavoris">Lieux favoris:</string>
     <string name="Lieuxrécents">Lieux récents:</string>

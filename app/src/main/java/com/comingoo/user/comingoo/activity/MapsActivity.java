@@ -19,6 +19,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.location.Location;
+import android.location.LocationManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
@@ -30,6 +31,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
@@ -39,6 +41,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -1194,11 +1197,74 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         .icon(BitmapDescriptorFactory.fromBitmap(bm)));
             }
 
-        }catch (WindowManager.BadTokenException e){
+        } catch (WindowManager.BadTokenException e) {
             e.printStackTrace();
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static boolean isLocationEnabled(Context context) {
+        int locationMode = 0;
+        String locationProviders;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            try {
+                locationMode = Settings.Secure.getInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE);
+
+            } catch (Settings.SettingNotFoundException e) {
+                e.printStackTrace();
+                return false;
+            }
+
+            return locationMode != Settings.Secure.LOCATION_MODE_OFF;
+
+        } else {
+            locationProviders = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+            return !TextUtils.isEmpty(locationProviders);
+        }
+
+
+    }
+
+    private void checkLocationService() {
+//        LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+//        boolean gps_enabled = false;
+//        boolean network_enabled = false;
+//
+//        try {
+//            gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+//        } catch (Exception ex) {
+//        }
+//
+//        try {
+//            network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+//        } catch (Exception ex) {
+//        }
+//
+//        if (!gps_enabled && !network_enabled) {
+        // notify user
+        AlertDialog.Builder dialog = new AlertDialog.Builder(MapsActivity.this);
+        dialog.setMessage(resources.getString(R.string.txt_location_permission));
+        dialog.setPositiveButton(resources.getString(R.string.txt_open_location), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                // TODO Auto-generated method stub
+                Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                startActivity(myIntent);
+                //get gps
+            }
+        });
+
+        dialog.setNegativeButton(getString(R.string.txt_cancel), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                // TODO Auto-generated method stub
+
+            }
+        });
+        dialog.show();
+//        }
     }
 
     @Override
@@ -1550,13 +1616,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                 }
                                             });
 
-                                            dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                                                @Override
-                                                public void onDismiss(DialogInterface dialog) {
-                                                    showVoiceDialog();
-                                                }
-                                            });
-
                                             nextButton.setOnClickListener(new View.OnClickListener() {
                                                 @Override
                                                 public void onClick(View v) {
@@ -1580,6 +1639,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                                     }
                                                                 });
                                                                 FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("COURSE").removeValue();
+
                                                                 if (RATE > 3) {
                                                                     if (ContextCompat.checkSelfPermission(MapsActivity.this,
                                                                             Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -1589,7 +1649,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                                         showVoiceDialog();
                                                                     }
                                                                 } else {
-
                                                                     try {
                                                                         final Dialog newDialog = new Dialog(MapsActivity.this);
                                                                         newDialog.setContentView(R.layout.finished_course_2);
@@ -1700,6 +1759,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                                             }
                                                                         });
 
+                                                                        newDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                                                                            @Override
+                                                                            public void onDismiss(DialogInterface dialog) {
+                                                                                if (ContextCompat.checkSelfPermission(MapsActivity.this,
+                                                                                        Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                                                                                    ActivityCompat.requestPermissions(MapsActivity.this,
+                                                                                            new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 10);
+                                                                                } else {
+                                                                                    showVoiceDialog();
+                                                                                }
+                                                                            }
+                                                                        });
 
                                                                         ImageButton nextBtn = newDialog.findViewById(R.id.imageButton3);
 
@@ -1788,8 +1859,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             callLayout.setVisibility(View.GONE);
         }
     }
-
-    // checking with debug point
 
     private void showVoiceDialog() {
         final Dialog newDialog = new Dialog(MapsActivity.this);
@@ -1971,9 +2040,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             finish();
         }
 
-        if (ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(MapsActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-        }
+//        if (ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//            ActivityCompat.requestPermissions(MapsActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+//        }
 
         try {
             new CheckUserTask().execute();
@@ -2046,13 +2115,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         selectCity = findViewById(R.id.imageButton4);
         destArrow = findViewById(R.id.destArrow);
 
-        if (ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.RECORD_AUDIO) !=
-                PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this,
-                android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(MapsActivity.this,
-                    new String[]{android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.READ_PHONE_STATE},
-                    1);
-        }
+//        if (ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.RECORD_AUDIO) !=
+//                PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this,
+//                android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+//            ActivityCompat.requestPermissions(MapsActivity.this,
+//                    new String[]{android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.READ_PHONE_STATE},
+//                    1);
+//        }
 
         SinchClient sinchClient = Sinch.getSinchClientBuilder()
                 .context(this)
@@ -2243,10 +2312,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         confirmDest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (destPositionIsValid()) {
-                    switchToCommandLayout();
-                } else {
-
+                if (!searchDestEditText.getText().toString().equals("")) {
+                    if (destPositionIsValid()) {
+                        switchToCommandLayout();
+                    }
                 }
             }
         });
@@ -2324,12 +2393,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View view) {
                 //Begin Selecting Destination Phase
                 try {
-                    if (startPositionIsValid()) {
-                        orderDriverState = 1;
-                        showSelectDestUI();
-//                    menuButton.setVisibility(View.GONE);
-
-                        state = 1;
+                    if (!searchEditText.getText().toString().equals("")) {
+                        if (startPositionIsValid()) {
+                            orderDriverState = 1;
+                            showSelectDestUI();
+                            state = 1;
+                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -3322,14 +3391,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.getUiSettings().setRotateGesturesEnabled(false);
         mMap.setBuildingsEnabled(false);
 
-        if (ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(MapsActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-        } else {
-            mMap.setMyLocationEnabled(true);
-            mMap.getUiSettings().setMyLocationButtonEnabled(false);
-            getLastLocation();
-            if (userLatLng != null)
-                startLatLng = userLatLng;
+        Log.e(TAG, "onMapReady: ");
+
+        if (!isLocationEnabled(MapsActivity.this))
+            checkLocationService();
+        else {
+            if (ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(MapsActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            } else {
+                mMap.setMyLocationEnabled(true);
+                mMap.getUiSettings().setMyLocationButtonEnabled(false);
+                getLastLocation();
+                if (userLatLng != null)
+                    startLatLng = userLatLng;
+            }
         }
 
         mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
@@ -3935,11 +4010,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onResume();
         updateViews();
         fPlaceDataList.clear();
+        Log.e(TAG, "onResume: ");
+
+        if (isLocationEnabled(MapsActivity.this)) {
+            if (ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(MapsActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            } else {
+                getLastLocation();
+            }
+        } else {
+            getLastLocation();
+        }
+
         try {
             prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
             userId = prefs.getString("userID", "");
             Log.e(TAG, "onResume: " + userId);
-            FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child(getString(R.string.txt_work)).addListenerForSingleValueEvent(new ValueEventListener() {
+            FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child(resources.getString(R.string.txt_work)).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
@@ -3959,7 +4046,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 }
             });
-            FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child(getString(R.string.txt_home)).addListenerForSingleValueEvent(new ValueEventListener() {
+            FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child(resources.getString(R.string.txt_home)).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
