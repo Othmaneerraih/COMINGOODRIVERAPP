@@ -181,7 +181,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GeoDataClient mGeoDataClient;
     private int state = 0;
 
-
+    private String language;
+    private Context co;
     private LatLng userLatLng;
     private LatLng startLatLng;
     private LatLng destLatLng;
@@ -1984,9 +1985,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mapFragment.getMapAsync(this);
         }
 
-        String language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
+        language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
 
-        Context co = LocalHelper.setLocale(MapsActivity.this, language);
+        co = LocalHelper.setLocale(MapsActivity.this, language);
         resources = co.getResources();
 
 
@@ -2238,8 +2239,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View view) {
                 if (destPositionIsValid()) {
                     switchToCommandLayout();
-                } else {
-
                 }
             }
         });
@@ -3880,13 +3879,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void updateViews() {
-        Context context;
-        Resources resources;
-        String language;
-        language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
-
-        context = LocalHelper.setLocale(MapsActivity.this, language);
-        resources = context.getResources();
 
         TextView textView7 = findViewById(R.id.textView7);
         TextView textView8 = findViewById(R.id.textView8);
@@ -3921,6 +3913,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onResume() {
         super.onResume();
+
+        language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
+        co = LocalHelper.setLocale(MapsActivity.this, language);
+        resources = co.getResources();
+
         updateViews();
         fPlaceDataList.clear();
         try {
