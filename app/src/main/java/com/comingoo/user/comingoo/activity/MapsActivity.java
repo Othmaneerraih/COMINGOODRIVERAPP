@@ -340,6 +340,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         searchEditText.setFocusable(false);
         searchEditText.setFocusableInTouchMode(false);
         coverButton.setClickable(false);
+        positionButton.setVisibility(View.VISIBLE);
         findViewById(R.id.shadow).setVisibility(View.VISIBLE);
         
         CameraPosition cameraPosition = new CameraPosition.Builder()
@@ -2667,7 +2668,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         AnimateConstraint.animate(MapsActivity.this, endConstraint, 180, dpHeight - 20, 500, selectDest, findViewById(R.id.destArrow));
         destArrow.setVisibility(View.GONE);
         findViewById(R.id.gooContent).setVisibility(View.GONE);
-
+        positionButton.setVisibility(View.VISIBLE);
         startConstraint.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) (dpHeight - 42), getResources().getDisplayMetrics());
         shadowBg.setVisibility(View.VISIBLE);
         searchButtonDest.setVisibility(View.VISIBLE);
@@ -2728,7 +2729,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         ivCross.setVisibility(View.GONE);
         coverButton.setClickable(true);
         voip_view.setVisibility(View.GONE);
-
+        positionButton.setVisibility(View.VISIBLE);
         hideSearchAddressStartUI();
         confirmStart.setVisibility(View.VISIBLE);
         findViewById(R.id.shadow).setVisibility(View.VISIBLE);
