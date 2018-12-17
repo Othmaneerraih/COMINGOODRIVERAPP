@@ -352,6 +352,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         searchEditText.setFocusable(false);
         searchEditText.setFocusableInTouchMode(false);
         coverButton.setClickable(false);
+        findViewById(R.id.shadow).setVisibility(View.VISIBLE);
+        
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(new LatLng(Double.parseDouble(place.getLat()), Double.parseDouble(place.getLng())))
                 .zoom(17)                   // Sets the zoom
