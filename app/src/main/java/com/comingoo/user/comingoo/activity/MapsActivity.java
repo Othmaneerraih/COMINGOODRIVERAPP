@@ -168,23 +168,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private MyPlaceAdapter rPlaceAdapter;
     private ArrayList<Place> placeDataList;
     private ArrayList<Place> fPlaceDataList;
-
     private boolean audioRecorded = false;
     private ImageButton recordButton, playAudio, pauseAudio, deleteAudio;
     private String outputeFile;
     private boolean courseScreenIsOn = false;
-
     private TextView tv_appelle_voip, tv_appelle_telephone;
     private LinearLayout voip_view;
-
     private RecyclerView mLocationView;
     private ArrayList<Place> rPlaceDataList;
     private ConstraintLayout startConstraint;
     private ConstraintLayout endConstraint;
     private GeoDataClient mGeoDataClient;
-    private Context co;
-    private String language;
     private int state = 0;
+
+
     private LatLng userLatLng;
     private LatLng startLatLng;
     private LatLng destLatLng;
@@ -211,23 +208,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ConstraintLayout citySelectLayout;
     private String searchLoc;
     private TextView city;
-
-    private boolean gotValue = false;
     private boolean courseScreenStageZero = false;
     private boolean courseScreenStageOne = false;
     private Marker driverPosMarker;
     private Marker startPositionMarker;
     private boolean blockingTimeOver = true;
-    private String driver = "";
-
     private ImageButton menuButton;
-    private FlowingDrawer mDrawer;
     private ImageButton gooButton;
     private String clientID;
     private String startCity;
     private String destCity;
     private float distance;
     private TextView price;
+
+
     private ImageView locationStartPin;
     private ImageView locationDestPin;
     private ImageView locationPinStart;
@@ -241,10 +235,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ImageButton carButton;
     private ImageButton selectCity;
     private RelativeLayout gooBox;
-    private ConstraintLayout gooVoid;
     private ConstraintLayout ComingoonYou;
     private Utility utility;
-
     private boolean isLoud = false;
     private MediaPlayer mp;
     private TextView callState;
@@ -254,13 +246,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private CircleImageView iv_loud;
     private CircleImageView iv_recv_call_voip_one;
     private RelativeLayout.LayoutParams params;
-
     private Handler mHandler = new Handler();
-    private int mHour, mMinute; // variables holding the hour and minute
-
+    private int mHour, mMinute;
     private Resources resources;
     private ConstraintLayout callLayout;
     private RatingBar rbDriverRating;
+
+
     private TextView driverNameL, iv_total_ride_number, iv_car_number, iv_total_rating_number;
     private CircularImageView driverImageL;
     private ImageView ivCallDriver, close_button;
@@ -271,22 +263,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GeoQuery geoQuery;
     private int lastImageWidth;
     private String userName;
-
-    ///////////////////////////////////////////////////
     private String courseIDT;
     private String statusT = "4";
     private String clientIdT;
     private String driverIDT;
     private LatLng driverPosT;
     private LatLng startPositionT;
-
     private Location driverLocT;
     private Location startLocT;
-
     private String driverPhone;
     private String driverImage;
     private String userLevel;
-
     private String startText;
     private String endText;
     private String driverName;
@@ -1997,9 +1984,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mapFragment.getMapAsync(this);
         }
 
-        language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
+        String language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
 
-        co = LocalHelper.setLocale(MapsActivity.this, language);
+        Context co = LocalHelper.setLocale(MapsActivity.this, language);
         resources = co.getResources();
 
 
