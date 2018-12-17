@@ -72,6 +72,10 @@ public class AideActivity extends AppCompatActivity {
         resources = context.getResources();
 
         AnimateConstraint.animate(AideActivity.this, content, 250, 1, 0);
+        String language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
+
+        Context co = LocalHelper.setLocale(AideActivity.this, language);
+       final Resources resources = co.getResources();
 
         findViewById(R.id.add_voice).setOnClickListener(new View.OnClickListener() {
             @Override
