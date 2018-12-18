@@ -56,8 +56,6 @@ public class VoipCallingActivity extends AppCompatActivity {
     private CircleImageView iv_loud;
     private CircleImageView iv_recv_call_voip_one;
 
-
-
     private Context context;
     private Resources resources;
     private String language;
@@ -114,14 +112,6 @@ public class VoipCallingActivity extends AppCompatActivity {
         language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
         context = LocalHelper.setLocale(VoipCallingActivity.this, language);
         resources = context.getResources();
-
-
-        if (ContextCompat.checkSelfPermission(VoipCallingActivity.this, android.Manifest.permission.RECORD_AUDIO)
-                != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(VoipCallingActivity.this, android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(VoipCallingActivity.this,
-                    new String[]{android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.READ_PHONE_STATE},
-                    1);
-        }
 
         caller_name.setVisibility(View.VISIBLE);
         caller_name.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
@@ -183,7 +173,6 @@ public class VoipCallingActivity extends AppCompatActivity {
 
             }
         });
-
 
         iv_loud.setBackgroundColor(Color.WHITE);
         iv_loud.setCircleBackgroundColor(Color.WHITE);
@@ -270,7 +259,6 @@ public class VoipCallingActivity extends AppCompatActivity {
     private class SinchCallListener implements CallListener {
         @Override
         public void onCallEnded(Call endedCall) {
-            Log.e(TAG, "onCallEnded: ");
             call = null;
             mHandler.removeCallbacks(mUpdate);
             Intent returnIntent = new Intent();

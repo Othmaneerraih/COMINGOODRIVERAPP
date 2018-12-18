@@ -3464,8 +3464,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.getUiSettings().setRotateGesturesEnabled(false);
         mMap.setBuildingsEnabled(false);
 
-        Log.e(TAG, "onMapReady: ");
-
         if (!isLocationEnabled(MapsActivity.this))
             checkLocationService();
         else {
@@ -3479,6 +3477,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     startLatLng = userLatLng;
             }
         }
+
+
 
         mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
             @Override
@@ -3563,6 +3563,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (grantResult.length > 0 && grantResult[0] == PackageManager.PERMISSION_GRANTED) {
             getLastLocation();
+            if (ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.RECORD_AUDIO)
+                    != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this,
+                    android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(MapsActivity.this,
+                        new String[]{android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.READ_PHONE_STATE},
+                        1);
+            }
         }
 
         if (requestCode == 10) {
@@ -4075,6 +4082,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onResume() {
         super.onResume();
 
+
+
         language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
         co = LocalHelper.setLocale(MapsActivity.this, language);
         resources = co.getResources();
@@ -4097,7 +4106,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
             userId = prefs.getString("userID", "");
             Log.e(TAG, "onResume: " + userId);
-            FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child(getString(R.string.txt_work)).addListenerForSingleValueEvent(new ValueEventListener() {
+            FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child("Work").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
@@ -4117,7 +4126,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 }
             });
-            FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child(getString(R.string.txt_home)).addListenerForSingleValueEvent(new ValueEventListener() {
+            FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child("Home").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
