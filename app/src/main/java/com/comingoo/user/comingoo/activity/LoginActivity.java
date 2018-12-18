@@ -1,10 +1,14 @@
 package com.comingoo.user.comingoo.activity;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -44,6 +48,7 @@ import com.google.maps.model.TravelMode;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Objects;
@@ -61,6 +66,14 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        String language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
+        Context context = LocalHelper.setLocale(LoginActivity.this, language);
+        resources = context.getResources();
+
+        if(!isNetworkConnectionAvailable()){
+            checkNetworkConnection();
+        }
+
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             startActivity(new Intent(LoginActivity.this, MapsActivity.class));
             finish();
@@ -74,10 +87,6 @@ public class LoginActivity extends AppCompatActivity {
         final String EMAIL = "email";
         final LoginButton loginButton = findViewById(R.id.login_button);
         loginButton.setReadPermissions(Collections.singletonList(EMAIL));
-
-        String language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
-        Context context = LocalHelper.setLocale(LoginActivity.this, language);
-        resources = context.getResources();
 
         LoginManager.getInstance().registerCallback(callbackManager,
                 new FacebookCallback<LoginResult>() {
@@ -185,6 +194,40 @@ public class LoginActivity extends AppCompatActivity {
                 });
 
     }
+
+    public void checkNetworkConnection(){
+        AlertDialog.Builder builder =new AlertDialog.Builder(this);
+        builder.setTitle(resources.getString(R.string.no_internet_txt));
+        builder.setMessage(resources.getString(R.string.internet_warning_txt));
+        builder.setNegativeButton(resources.getString(R.string.close_txt), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                finish();
+            }
+        });
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    public boolean isNetworkConnectionAvailable(){
+        ConnectivityManager cm =
+                (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = Objects.requireNonNull(cm).getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnected();
+        if(isConnected) {
+            Log.d("Network", "Connected");
+            return true;
+        }
+        else{
+            Log.d("Network","Not Connected");
+            return false;
+        }
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
