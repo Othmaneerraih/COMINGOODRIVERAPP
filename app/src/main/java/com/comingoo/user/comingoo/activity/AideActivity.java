@@ -30,17 +30,19 @@ import java.util.Locale;
 
 
 public class AideActivity extends AppCompatActivity {
-    private ConstraintLayout Q1, Q2, A1, A2;
+    private ConstraintLayout A1;
+    private ConstraintLayout A2;
     private boolean a1 = false, a2 = false;
     public ConstraintLayout fc, content;
-
-    private ConstraintLayout image;
     private Uri imageUri = null;
-
     private EditText message;
     private TextView selectImage;
     private ImageView ivArrawOne, ivArrawTwo;
     private String userId;
+
+    private Context context;
+    private Resources resources;
+    private String language;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,17 +55,21 @@ public class AideActivity extends AppCompatActivity {
         message = findViewById(R.id.message);
         selectImage = findViewById(R.id.image_text);
 
-        Q1 = findViewById(R.id.Q1);
+        ConstraintLayout q1 = findViewById(R.id.Q1);
         A1 = findViewById(R.id.A1);
-        Q2 = findViewById(R.id.Q2);
+        ConstraintLayout q2 = findViewById(R.id.Q2);
         A2 = findViewById(R.id.A2);
 
         fc = findViewById(R.id.fc);
         content = findViewById(R.id.content);
 
-        image = findViewById(R.id.add_image);
+        ConstraintLayout image = findViewById(R.id.add_image);
         ivArrawOne = findViewById(R.id.arrow1);
         ivArrawTwo = findViewById(R.id.arrow2);
+
+        language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
+        context = LocalHelper.setLocale(AideActivity.this, language);
+        resources = context.getResources();
 
         AnimateConstraint.animate(AideActivity.this, content, 250, 1, 0);
         String language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
@@ -82,7 +88,7 @@ public class AideActivity extends AppCompatActivity {
                 if (intent.resolveActivity(getPackageManager()) != null) {
                     startActivityForResult(intent, 10);
                 } else {
-                    Toast.makeText(AideActivity.this, resources.getString(R.string.txt_device_no_support_speech), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AideActivity.this, resources.getString(R.string.speech_input_warning_txt), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -109,7 +115,7 @@ public class AideActivity extends AppCompatActivity {
         });
 
 
-        Q1.setOnClickListener(new View.OnClickListener() {
+        q1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!a1) {
@@ -123,7 +129,7 @@ public class AideActivity extends AppCompatActivity {
                 }
             }
         });
-        Q2.setOnClickListener(new View.OnClickListener() {
+        q2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!a2) {
@@ -171,13 +177,13 @@ public class AideActivity extends AppCompatActivity {
 
             imageUri = data.getData();
             //image.setBackgroundResource();
-            selectImage.setText("image choisi");
+            selectImage.setText(resources.getString(R.string.image_warning_txt));
 
 
         }
 
         if (requestCode == 10 && resultCode == RESULT_OK) {
-            if (resultCode == RESULT_OK && data != null) {
+            if (data != null) {
                 ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                 message.setText(result.get(0));
             }
@@ -187,9 +193,7 @@ public class AideActivity extends AppCompatActivity {
 
 
     public void updateViews() {
-        Context context;
-        Resources resources;
-        String language;
+
         language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
 
         context = LocalHelper.setLocale(AideActivity.this, language);

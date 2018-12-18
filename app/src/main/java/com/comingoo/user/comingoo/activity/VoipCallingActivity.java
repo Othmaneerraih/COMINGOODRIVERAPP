@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.media.AudioManager;
@@ -22,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.comingoo.user.comingoo.R;
+import com.comingoo.user.comingoo.utility.LocalHelper;
 import com.sinch.android.rtc.PushPair;
 import com.sinch.android.rtc.Sinch;
 import com.sinch.android.rtc.SinchClient;
@@ -54,9 +56,11 @@ public class VoipCallingActivity extends AppCompatActivity {
     private CircleImageView iv_loud;
     private CircleImageView iv_recv_call_voip_one;
 
-    private static final String APP_KEY = "185d9822-a953-4af6-a780-b0af1fd31bf7";
-    private static final String APP_SECRET = "ZiJ6FqH5UEWYbkMZd1rWbw==";
-    private static final String ENVIRONMENT = "sandbox.sinch.com";
+
+
+    private Context context;
+    private Resources resources;
+    private String language;
 
     private Handler mHandler = new Handler();
     private int mHour, mMinute; // variables holding the hour and minute
@@ -107,8 +111,13 @@ public class VoipCallingActivity extends AppCompatActivity {
         callerName = getIntent().getStringExtra("driverName");
         clientImage = getIntent().getStringExtra("driverImage");
 
+        language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
+        context = LocalHelper.setLocale(VoipCallingActivity.this, language);
+        resources = context.getResources();
 
-        if (ContextCompat.checkSelfPermission(VoipCallingActivity.this, android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(VoipCallingActivity.this, android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+
+        if (ContextCompat.checkSelfPermission(VoipCallingActivity.this, android.Manifest.permission.RECORD_AUDIO)
+                != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(VoipCallingActivity.this, android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(VoipCallingActivity.this,
                     new String[]{android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.READ_PHONE_STATE},
                     1);
@@ -127,9 +136,9 @@ public class VoipCallingActivity extends AppCompatActivity {
         sinchClient = Sinch.getSinchClientBuilder()
                 .context(this)
                 .userId(clientId)
-                .applicationKey(APP_KEY)
-                .applicationSecret(APP_SECRET)
-                .environmentHost(ENVIRONMENT)
+                .applicationKey(getResources().getString(R.string.sinch_app_key))
+                .applicationSecret(getResources().getString(R.string.sinch_app_secret))
+                .environmentHost(getResources().getString(R.string.sinch_envirentmnet_host))
                 .build();
 
         sinchClient.setSupportCalling(true);
@@ -314,7 +323,7 @@ public class VoipCallingActivity extends AppCompatActivity {
         @Override
         public void onIncomingCall(CallClient callClient, Call incomingCall) {
             call = incomingCall;
-            Toast.makeText(VoipCallingActivity.this, "incoming call", Toast.LENGTH_SHORT).show();
+            Toast.makeText(VoipCallingActivity.this, resources.getString(R.string.incoming_call_txt), Toast.LENGTH_SHORT).show();
 //            call.answer();
             call.addCallListener(new SinchCallListener());
         }

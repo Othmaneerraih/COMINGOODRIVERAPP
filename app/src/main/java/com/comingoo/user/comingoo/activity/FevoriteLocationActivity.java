@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
@@ -32,6 +33,7 @@ import android.widget.Toast;
 
 import com.comingoo.user.comingoo.R;
 import com.comingoo.user.comingoo.model.Place;
+import com.comingoo.user.comingoo.utility.LocalHelper;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
 import com.google.android.gms.common.ConnectionResult;
@@ -61,6 +63,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
@@ -80,18 +83,15 @@ public class FevoriteLocationActivity extends AppCompatActivity
     Location mLastLocation;
     Marker mCurrLocationMarker;
     private EditText searchEt;
-    private Button confirmBtn;
-    private int position;
     private String userId = "";
     private String febPlaceName = "";
     private String febPlaceLat = "";
     private String febPlacelong = "";
     private String febPlaceAddress = "";
     private PlaceAutocompleteFragment autocompleteFragment;
-    private ImageButton positionButton;
     private LatLng searchLatLng;
     private RelativeLayout pinLayout;
-
+    private Resources resources;
     private GeoQuery geoQuery;
 
     @Override
@@ -100,11 +100,17 @@ public class FevoriteLocationActivity extends AppCompatActivity
         setContentView(R.layout.activity_fevorite_location);
         checkLocationPermission();
         mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        mapFrag.getMapAsync(this);
+        if (mapFrag != null) {
+            mapFrag.getMapAsync(this);
+        }
         searchEt = findViewById(R.id.search_edit_text);
-        confirmBtn = findViewById(R.id.confirm_btn);
-        positionButton = findViewById(R.id.my_position);
+        Button confirmBtn = findViewById(R.id.confirm_btn);
+        ImageButton positionButton = findViewById(R.id.my_position);
         pinLayout = findViewById(R.id.pin);
+
+        String language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
+        Context context = LocalHelper.setLocale(FevoriteLocationActivity.this, language);
+        resources = context.getResources();
 
         pinLayout.setVisibility(View.VISIBLE);
 
@@ -114,7 +120,7 @@ public class FevoriteLocationActivity extends AppCompatActivity
                 getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
 
 
-        position = getIntent().getIntExtra("position", 0);
+        int position = getIntent().getIntExtra("position", 0);
         userId = getIntent().getStringExtra("userId");
 
         if (position == 0) {
@@ -126,7 +132,7 @@ public class FevoriteLocationActivity extends AppCompatActivity
         confirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!febPlaceAddress.isEmpty() && febPlaceLat != "" && febPlacelong != "") {
+                if (!febPlaceAddress.isEmpty() && !febPlaceLat.equals("") && !febPlacelong.equals("")) {
                     FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child(febPlaceName).child("Lat").setValue(febPlaceLat);
                     FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child(febPlaceName).child("Long").setValue(febPlacelong);
                     FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child(febPlaceName).child("Address").setValue(febPlaceAddress);
@@ -146,7 +152,7 @@ public class FevoriteLocationActivity extends AppCompatActivity
             }
         });
 
-        autocompleteFragment.getView().setBackgroundResource(R.drawable.main_edit_text);
+        Objects.requireNonNull(autocompleteFragment.getView()).setBackgroundResource(R.drawable.main_edit_text);
 
         setAutocompleteFragmentAction();
 
@@ -176,8 +182,6 @@ public class FevoriteLocationActivity extends AppCompatActivity
         imageHeight = bOptions.outHeight;
         imageWidth = bOptions.outWidth;
 
-        imageHeight = bOptions.outHeight;
-        imageWidth = bOptions.outWidth;
         inSampleSize = 1;
 
         if (imageHeight > reqHeight || imageWidth > reqWidth) {
@@ -302,7 +306,7 @@ public class FevoriteLocationActivity extends AppCompatActivity
         double lat;
         double lon;
 
-        public ReverseGeocodingTask(Context context) {
+        ReverseGeocodingTask(Context context) {
             super();
             mContext = context;
         }
@@ -363,10 +367,7 @@ public class FevoriteLocationActivity extends AppCompatActivity
                     strReturnedAddress.append(returnedAddress.getAddressLine(i)).append("\n");
                 }
                 strAdd = strReturnedAddress.toString();
-            } else {
             }
-        } catch (NullPointerException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -452,7 +453,7 @@ public class FevoriteLocationActivity extends AppCompatActivity
     }
 
     @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
     }
 
     @Override
@@ -463,17 +464,8 @@ public class FevoriteLocationActivity extends AppCompatActivity
         }
 
         BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.depart_pin);
-//        scaleBitmap(76, 56, R.drawable.depart_pin)
-
         //Place current location marker
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-//        MarkerOptions markerOptions = new MarkerOptions();
-//        markerOptions.position(latLng);
-//        markerOptions.title("Current Position");
-//        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons("depart_pin", 56, 76)));
-//        mCurrLocationMarker = mGoogleMap.addMarker(markerOptions);
-
-
         BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.depart_pin);
         Bitmap b = bitmapdraw.getBitmap();
         Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
@@ -502,9 +494,9 @@ public class FevoriteLocationActivity extends AppCompatActivity
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
 
                 new AlertDialog.Builder(this)
-                        .setTitle("Location Permission Needed")
-                        .setMessage("This app needs the Location permission, please accept to use location functionality")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        .setTitle(resources.getString(R.string.location_permission_txt))
+                        .setMessage(resources.getString(R.string.location_permission_warning_txt))
+                        .setPositiveButton(resources.getString(R.string.ok_txt), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 ActivityCompat.requestPermissions(FevoriteLocationActivity.this,
@@ -527,7 +519,7 @@ public class FevoriteLocationActivity extends AppCompatActivity
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+                                           @NonNull String permissions[], @NonNull int[] grantResults) {
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_LOCATION: {
                 // If request is cancelled, the result arrays are empty.
@@ -545,7 +537,7 @@ public class FevoriteLocationActivity extends AppCompatActivity
                     }
 
                 } else {
-                    Toast.makeText(this, "permission denied", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, resources.getString(R.string.permission_denied_txt), Toast.LENGTH_LONG).show();
                 }
             }
         }
