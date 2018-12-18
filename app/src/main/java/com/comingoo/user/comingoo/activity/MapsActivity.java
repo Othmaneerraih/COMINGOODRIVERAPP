@@ -24,6 +24,8 @@ import android.location.LocationManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -1209,8 +1211,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         .icon(BitmapDescriptorFactory.fromBitmap(bm)));
             }
 
-        } catch (WindowManager.BadTokenException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1240,22 +1240,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void checkLocationService() {
-//        LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-//        boolean gps_enabled = false;
-//        boolean network_enabled = false;
-//
-//        try {
-//            gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
-//        } catch (Exception ex) {
-//        }
-//
-//        try {
-//            network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-//        } catch (Exception ex) {
-//        }
-//
-//        if (!gps_enabled && !network_enabled) {
-        // notify user
         AlertDialog.Builder dialog = new AlertDialog.Builder(MapsActivity.this);
         dialog.setMessage(resources.getString(R.string.txt_location_permission));
         dialog.setPositiveButton(resources.getString(R.string.txt_open_location), new DialogInterface.OnClickListener() {
@@ -2098,6 +2082,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //LeakCanary.install(getApplication());
+
+        language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
+        co = LocalHelper.setLocale(MapsActivity.this, language);
+        resources = co.getResources();
+
+        if(!isNetworkConnectionAvailable()){
+            checkNetworkConnection();
+        }
         displayLocationSettingsRequest(MapsActivity.this);
         SharedPreferences prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
         String userId = prefs.getString("userID", null);
@@ -2130,12 +2122,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
-
-        language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
-
-        co = LocalHelper.setLocale(MapsActivity.this, language);
-        resources = co.getResources();
-
 
         promoCode = findViewById(R.id.promoCode);
         promoCode.setText(resources.getString(R.string.promocode_txt));
@@ -2548,6 +2534,39 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             }
         });
+    }
+
+    public void checkNetworkConnection(){
+        android.support.v7.app.AlertDialog.Builder builder =new android.support.v7.app.AlertDialog.Builder(this);
+        builder.setTitle(resources.getString(R.string.no_internet_txt));
+        builder.setMessage(resources.getString(R.string.internet_warning_txt));
+        builder.setNegativeButton(resources.getString(R.string.close_txt), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                finish();
+            }
+        });
+
+        android.support.v7.app.AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    public boolean isNetworkConnectionAvailable(){
+        ConnectivityManager cm =
+                (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = Objects.requireNonNull(cm).getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnected();
+        if(isConnected) {
+            Log.d("Network", "Connected");
+            return true;
+        }
+        else{
+            Log.d("Network","Not Connected");
+            return false;
+        }
     }
 
     private void initialize() {
