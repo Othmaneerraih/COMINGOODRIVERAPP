@@ -31,8 +31,9 @@
     <string name="image_choisi_txt">image choisi</string>
     <string name="invite_txt">Bonjour, Je vous invite a utiliser l\'application Comingoo pour vos déplacements. www.comingoo.com/app</string>
 
-
-
+    <string name="close_txt">Fermer</string>
+    <string name="no_internet_txt">Pas de connexion Internet</string>
+    <string name="internet_warning_txt">S\'il vous plaît activer la connexion Internet pour continuer</string>
     <string name="speech_input_warning_txt">Votre appareil ne prend pas en charge la saisie vocale</string>
     <string name="location_permission_txt">Emplacement requis</string>
     <string name="location_permission_warning_txt">Cette application a besoin de l\'autorisation d\'emplacement. Veuillez accepter d\'utiliser la fonctionnalité d\'emplacement.</string>
