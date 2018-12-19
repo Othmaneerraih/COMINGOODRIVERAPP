@@ -20,7 +20,7 @@ import com.comingoo.user.comingoo.utility.LocalHelper;
 
 import java.util.List;
 
-public class FavouritePlaceAdapter  extends RecyclerView.Adapter<FavouritePlaceAdapter.ViewHolder> {
+public class FavouritePlaceAdapter extends RecyclerView.Adapter<FavouritePlaceAdapter.ViewHolder> {
     private List<Place> mDataset;
     private Context context;
     private boolean isAddButtonNeed;
@@ -65,11 +65,11 @@ public class FavouritePlaceAdapter  extends RecyclerView.Adapter<FavouritePlaceA
         String language = context.getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
 
         Context co = LocalHelper.setLocale(context, language);
-       Resources resources = co.getResources();
+        Resources resources = co.getResources();
 
 
-        if (position ==0)
-        holder.title.setText(resources.getString(R.string.txt_work));
+        if (position == 0)
+            holder.title.setText(resources.getString(R.string.txt_work));
         else if (position == 1) holder.title.setText(resources.getString(R.string.txt_home));
 
         holder.address.setText(newPlace.getAddress());
