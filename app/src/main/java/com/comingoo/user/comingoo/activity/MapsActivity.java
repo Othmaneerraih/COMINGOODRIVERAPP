@@ -990,7 +990,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 findViewById(R.id.buttonsLayout).setVisibility(View.VISIBLE);
                 return;
             }
-            Log.e(TAG, "handleCourseCallBack: " + statusT);
+
             if (statusT.equals("1")) {
                 callLayout.setVisibility(View.VISIBLE);
             }
@@ -1294,7 +1294,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             try {
                 locationMode = Settings.Secure.getInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE);
-
             } catch (Settings.SettingNotFoundException e) {
                 e.printStackTrace();
                 return false;
@@ -1311,27 +1310,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void checkLocationService() {
-        AlertDialog.Builder dialog = new AlertDialog.Builder(MapsActivity.this);
-        dialog.setMessage(resources.getString(R.string.txt_location_permission));
-        dialog.setPositiveButton(resources.getString(R.string.txt_open_location), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                // TODO Auto-generated method stub
-                Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                startActivity(myIntent);
-                //get gps
-            }
-        });
+        try {
+            AlertDialog.Builder dialog = new AlertDialog.Builder(MapsActivity.this);
+            dialog.setMessage(resources.getString(R.string.txt_location_permission));
+            dialog.setPositiveButton(resources.getString(R.string.txt_open_location), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                    // TODO Auto-generated method stub
+                    Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    startActivity(myIntent);
+                    //get gps
+                }
+            });
 
-        dialog.setNegativeButton(getString(R.string.txt_cancel), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                // TODO Auto-generated method stub
+            dialog.setNegativeButton(getString(R.string.txt_cancel), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                    // TODO Auto-generated method stub
 
-            }
-        });
-        dialog.show();
-//        }
+                }
+            });
+            dialog.show();
+        }catch (WindowManager.BadTokenException e){
+            e.printStackTrace();
+        } catch (Exception e){ e.printStackTrace();}
     }
 
 
@@ -1398,87 +1400,94 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void rideCancelDialog() {
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MapsActivity.this);
-        final AlertDialog alertDialog = dialogBuilder.create();
-        alertDialog.show();
-        Objects.requireNonNull(alertDialog.getWindow()).setBackgroundDrawableResource(android.R.color.transparent);
-        LayoutInflater inflater = this.getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.content_cancel_ride_dialog, null);
-        alertDialog.getWindow().setContentView(dialogView);
+        try {
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MapsActivity.this);
+            final AlertDialog alertDialog = dialogBuilder.create();
+            alertDialog.show();
+            Objects.requireNonNull(alertDialog.getWindow()).setBackgroundDrawableResource(android.R.color.transparent);
+            LayoutInflater inflater = this.getLayoutInflater();
+            View dialogView = inflater.inflate(R.layout.content_cancel_ride_dialog, null);
+            alertDialog.getWindow().setContentView(dialogView);
 
-        final Button btnYesCancelRide = dialogView.findViewById(R.id.btn_yes_cancel_ride);
-        final Button btnNoDontCancelRide = dialogView.findViewById(R.id.btn_dont_cancel_ride);
+            final Button btnYesCancelRide = dialogView.findViewById(R.id.btn_yes_cancel_ride);
+            final Button btnNoDontCancelRide = dialogView.findViewById(R.id.btn_dont_cancel_ride);
 
-        btnYesCancelRide.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                btnYesCancelRide.setBackgroundColor(Color.WHITE);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    btnYesCancelRide.setTextColor(getApplicationContext().getColor(R.color.primaryLight));
-                } else {
-                    btnYesCancelRide.setTextColor(getApplicationContext().getResources().getColor(R.color.primaryLight));
-                }
-
-                btnNoDontCancelRide.setBackgroundColor(Color.TRANSPARENT);
-                btnNoDontCancelRide.setTextColor(Color.WHITE);
-
-
-                FirebaseDatabase.getInstance().getReference("COURSES").child(courseIDT).child("state").setValue("5");
-
-                final Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        FirebaseDatabase.getInstance().getReference("COURSES").child(courseIDT).removeValue();
+            btnYesCancelRide.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    btnYesCancelRide.setBackgroundColor(Color.WHITE);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        btnYesCancelRide.setTextColor(getApplicationContext().getColor(R.color.primaryLight));
+                    } else {
+                        btnYesCancelRide.setTextColor(getApplicationContext().getResources().getColor(R.color.primaryLight));
                     }
-                }, 3000);
 
-                SharedPreferenceTask preferenceTask = new SharedPreferenceTask(getApplicationContext());
-                int prevCancel = preferenceTask.getCancelNumber();
-                preferenceTask.setCancelNumber(prevCancel + 1);
-                callLayout.setVisibility(View.GONE);
-                voip_view.setVisibility(View.GONE);
+                    btnNoDontCancelRide.setBackgroundColor(Color.TRANSPARENT);
+                    btnNoDontCancelRide.setTextColor(Color.WHITE);
 
 
-                if (preferenceTask.getCancelNumber() > 3) {
-                    Toast.makeText(MapsActivity.this,
-                            resources.getString(R.string.vous_avez_txt),
-                            Toast.LENGTH_LONG).show();
+                    FirebaseDatabase.getInstance().getReference("COURSES").child(courseIDT).child("state").setValue("5");
 
-                    blockingTimeOver = false;
-
-                    new CountDownTimer(3600000, 1000) {
-
-                        public void onTick(long millisUntilFinished) {
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            FirebaseDatabase.getInstance().getReference("COURSES").child(courseIDT).removeValue();
                         }
+                    }, 3000);
 
-                        public void onFinish() {
-                            blockingTimeOver = true;
-                        }
-                    }.start();
+                    SharedPreferenceTask preferenceTask = new SharedPreferenceTask(getApplicationContext());
+                    int prevCancel = preferenceTask.getCancelNumber();
+                    preferenceTask.setCancelNumber(prevCancel + 1);
+                    callLayout.setVisibility(View.GONE);
+                    voip_view.setVisibility(View.GONE);
+
+
+                    if (preferenceTask.getCancelNumber() > 3) {
+                        Toast.makeText(MapsActivity.this,
+                                resources.getString(R.string.vous_avez_txt),
+                                Toast.LENGTH_LONG).show();
+
+                        blockingTimeOver = false;
+
+                        new CountDownTimer(3600000, 1000) {
+
+                            public void onTick(long millisUntilFinished) {
+                            }
+
+                            public void onFinish() {
+                                blockingTimeOver = true;
+                            }
+                        }.start();
+                    }
+                    alertDialog.dismiss();
+                    ivCross.setVisibility(View.GONE);
+
                 }
-                alertDialog.dismiss();
-                ivCross.setVisibility(View.GONE);
+            });
 
-            }
-        });
+            btnNoDontCancelRide.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    alertDialog.dismiss();
+                    btnYesCancelRide.setBackgroundColor(Color.TRANSPARENT);
+                    btnYesCancelRide.setTextColor(Color.WHITE);
 
-        btnNoDontCancelRide.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                alertDialog.dismiss();
-                btnYesCancelRide.setBackgroundColor(Color.TRANSPARENT);
-                btnYesCancelRide.setTextColor(Color.WHITE);
+                    btnNoDontCancelRide.setBackgroundColor(Color.WHITE);
 
-                btnNoDontCancelRide.setBackgroundColor(Color.WHITE);
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    btnNoDontCancelRide.setTextColor(getApplicationContext().getColor(R.color.primaryLight));
-                } else {
-                    btnNoDontCancelRide.setTextColor(getApplicationContext().getResources().getColor(R.color.primaryLight));
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        btnNoDontCancelRide.setTextColor(getApplicationContext().getColor(R.color.primaryLight));
+                    } else {
+                        btnNoDontCancelRide.setTextColor(getApplicationContext().getResources().getColor(R.color.primaryLight));
+                    }
                 }
-            }
-        });
+            });
+
+        }catch (WindowManager.BadTokenException e){
+            e.printStackTrace();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     int RATE = 0;
@@ -2692,71 +2701,77 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void showPromoCodeDialog(final Context context) {
-        final Dialog dialog = new Dialog(context);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.content_promo_code, null, false);
-        final EditText etPromoCode = view.findViewById(R.id.et_promo_code);
-        Button btnOk = view.findViewById(R.id.btn_ok_promo_code);
-        Button btnCancel = view.findViewById(R.id.btn_cancel_promo_code);
+        try {
+            final Dialog dialog = new Dialog(context);
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View view = inflater.inflate(R.layout.content_promo_code, null, false);
+            final EditText etPromoCode = view.findViewById(R.id.et_promo_code);
+            Button btnOk = view.findViewById(R.id.btn_ok_promo_code);
+            Button btnCancel = view.findViewById(R.id.btn_cancel_promo_code);
 
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialog.dismiss();
-            }
-        });
+            btnCancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialog.dismiss();
+                }
+            });
 
-        btnOk.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!etPromoCode.getText().toString().equals("")) {
+            btnOk.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (!etPromoCode.getText().toString().equals("")) {
 
-                    FirebaseDatabase.getInstance().getReference("CLIENTNOTIFICATIONS").
-                            child("qsjkldjqld").child("code").addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            if (Objects.requireNonNull(dataSnapshot.getValue()).equals(etPromoCode.getText().toString())) {
+                        FirebaseDatabase.getInstance().getReference("CLIENTNOTIFICATIONS").
+                                child("qsjkldjqld").child("code").addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                if (Objects.requireNonNull(dataSnapshot.getValue()).equals(etPromoCode.getText().toString())) {
 
-                                FirebaseDatabase.getInstance().getReference("CLIENTNOTIFICATIONS").
-                                        child("qsjkldjqld").child("value").addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        if (dataSnapshot.exists()) {
-                                            price.setText(dataSnapshot.getValue() + " MAD");
-                                            promoCode.setText(etPromoCode.getText().toString());
-                                            userPromoCode = etPromoCode.getText().toString();
+                                    FirebaseDatabase.getInstance().getReference("CLIENTNOTIFICATIONS").
+                                            child("qsjkldjqld").child("value").addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                            if (dataSnapshot.exists()) {
+                                                price.setText(dataSnapshot.getValue() + " MAD");
+                                                promoCode.setText(etPromoCode.getText().toString());
+                                                userPromoCode = etPromoCode.getText().toString();
 
-                                            FirebaseDatabase.getInstance().getReference("clientUSERS").
-                                                    child(userId).child("PROMOCODE").setValue(userPromoCode);
+                                                FirebaseDatabase.getInstance().getReference("clientUSERS").
+                                                        child(userId).child("PROMOCODE").setValue(userPromoCode);
+                                                dialog.dismiss();
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
                                             dialog.dismiss();
                                         }
-                                    }
+                                    });
 
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                                        dialog.dismiss();
-                                    }
-                                });
+                                } else
+                                    Toast.makeText(getApplicationContext(), resources.getString(R.string.promoce_expired_txt), Toast.LENGTH_LONG).show();
+                            }
 
-                            } else
-                                Toast.makeText(getApplicationContext(), resources.getString(R.string.promoce_expired_txt), Toast.LENGTH_LONG).show();
-                        }
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                dialog.dismiss();
+                            }
+                        });
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-                            dialog.dismiss();
-                        }
-                    });
+                    } else
+                        Toast.makeText(getApplicationContext(), resources.getString(R.string.promocode_validation_txt), Toast.LENGTH_LONG).show();
+                }
+            });
 
-                } else
-                    Toast.makeText(getApplicationContext(), resources.getString(R.string.promocode_validation_txt), Toast.LENGTH_LONG).show();
-            }
-        });
-
-        dialog.setContentView(view);
-        Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawableResource(android.R.color.transparent);
-        dialog.show();
+            dialog.setContentView(view);
+            Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawableResource(android.R.color.transparent);
+            dialog.show();
+        }catch (WindowManager.BadTokenException e){
+            e.printStackTrace();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void showFavoritsAndRecents() {
