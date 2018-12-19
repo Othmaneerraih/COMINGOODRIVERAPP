@@ -189,7 +189,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ImageButton recordButton, playAudio, pauseAudio, deleteAudio;
     private String outputeFile;
     private boolean courseScreenIsOn = false;
-    private ConstraintLayout callLayout;
+    private RelativeLayout callLayout;
     private TextView tv_appelle_voip, tv_appelle_telephone;
     private LinearLayout voip_view;
     private RecyclerView mLocationView;
@@ -841,11 +841,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 startLocT.setLatitude(startPositionT.latitude);
                                 startLocT.setLatitude(startPositionT.longitude);
 
-//                                if (statusT.equals("4")){
-//                                    rlCallLayout.setVisibility(View.GONE);
-//                                }
-
-
                                 FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(driverIDT).addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -893,7 +888,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                 @Override
                                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                                     if (dataSnapshot.exists()) {
-
                                                         for (DataSnapshot data : dataSnapshot.getChildren()) {
                                                             driverCarName = data.child("name").getValue(String.class);
                                                             driverCarDescription = data.child("description").getValue(String.class);
@@ -984,8 +978,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 findViewById(R.id.buttonsLayout).setVisibility(View.VISIBLE);
                 return;
             }
+            Log.e(TAG, "handleCourseCallBack: "+statusT );
+            if (statusT.equals("1")){
+                callLayout.setVisibility(View.VISIBLE);
+            }
             stopSearchUI();
-            callLayout.setVisibility(View.GONE);
             shadowBg.setVisibility(View.VISIBLE);
             menuButton.setImageBitmap(scaleBitmap(45, 45, R.drawable.home_icon));
             menuButton.setOnClickListener(new View.OnClickListener() {
@@ -1054,7 +1051,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
             if (statusT.equals("0") && !courseScreenStageZero) {
-//                rlCallLayout.setVisibility(View.VISIBLE);
                 if (!userLevel.equals("2")) {
                     ivCallDriver.setVisibility(View.VISIBLE);
                     ivCallDriver.setOnClickListener(new View.OnClickListener() {
@@ -1170,6 +1166,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (statusT.equals("1") && !courseScreenStageOne) {
                 ivCross.setVisibility(View.GONE);
                 voip_view.setVisibility(View.GONE);
+                callLayout.setVisibility(View.VISIBLE);
                 if (!userLevel.equals("2")) {
                     ivCallDriver.setVisibility(View.VISIBLE);
                     ivCallDriver.setOnClickListener(new View.OnClickListener() {
@@ -1477,7 +1474,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private String COURSE;
     private String choseBox;
     private String dialogDriverId;
-    private DecimalFormat df2 = new DecimalFormat(".##");
+    private DecimalFormat df2 = new DecimalFormat("0.##");
 
     private class checkFinishedCourse extends AsyncTask<String, Integer, String> {
         SharedPreferences prefs;
@@ -1905,13 +1902,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                                             newDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
                                                                             newDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
                                                                             newDialog.show();
+                                                                        } catch (WindowManager.BadTokenException e) {
+                                                                            e.printStackTrace();
                                                                         } catch (Exception e) {
                                                                             e.printStackTrace();
                                                                         }
                                                                     }
                                                                 }
                                                             }
-                                                        } catch (Exception e) {
+                                                        } catch (WindowManager.BadTokenException e) {
+                                                            e.printStackTrace();
+                                                        }  catch (Exception e) {
                                                             e.printStackTrace();
                                                         }
                                                     }
@@ -1957,144 +1958,147 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return "this string is passed to onPostExecute";
         }
 
-        // This is called from background thread but runs in UI
         @Override
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
-            // Do things like update the progress bar
         }
 
-        // This runs in UI when background thread finishes
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            // Do things like hide the progress bar or change a TextView
-//            callLayout.setVisibility(View.GONE);
         }
     }
 
     private void showVoiceDialog() {
-        final Dialog newDialog = new Dialog(MapsActivity.this);
-        newDialog.setContentView(R.layout.voice_record);
+        try {
+            final Dialog newDialog = new Dialog(MapsActivity.this);
+            newDialog.setContentView(R.layout.voice_record);
 
-        TextView textView18 = newDialog.findViewById(R.id.tv_destination);
-        TextView textView19 = newDialog.findViewById(R.id.textView19);
-        TextView textView20 = newDialog.findViewById(R.id.textView20);
-
-
-        //Set Texts
-        textView18.setText(resources.getString(R.string.Appreciate));
-        textView19.setText(resources.getString(R.string.PS));
-        textView20.setText(resources.getString(R.string.Record));
+            TextView textView18 = newDialog.findViewById(R.id.tv_destination);
+            TextView textView19 = newDialog.findViewById(R.id.textView19);
+            TextView textView20 = newDialog.findViewById(R.id.textView20);
 
 
-        ImageButton nextBtn = newDialog.findViewById(R.id.imageButton6);
-        TextView name = newDialog.findViewById(R.id.textView17);
+            //Set Texts
+            textView18.setText(resources.getString(R.string.Appreciate));
+            textView19.setText(resources.getString(R.string.PS));
+            textView20.setText(resources.getString(R.string.Record));
 
 
-        recordButton = newDialog.findViewById(R.id.recordAudio);
-        playAudio = newDialog.findViewById(R.id.playAudio);
-        pauseAudio = newDialog.findViewById(R.id.pauseAudio);
-        deleteAudio = newDialog.findViewById(R.id.deleteAudio);
-        final MediaPlayer mediaPlayer = new MediaPlayer();
+            ImageButton nextBtn = newDialog.findViewById(R.id.imageButton6);
+            TextView name = newDialog.findViewById(R.id.textView17);
 
 
-        outputeFile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/recording.3gp";
-        final MediaRecorder myAudioRecorder = new MediaRecorder();
-        myAudioRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        myAudioRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
-        myAudioRecorder.setOutputFile(outputeFile);
+            recordButton = newDialog.findViewById(R.id.recordAudio);
+            playAudio = newDialog.findViewById(R.id.playAudio);
+            pauseAudio = newDialog.findViewById(R.id.pauseAudio);
+            deleteAudio = newDialog.findViewById(R.id.deleteAudio);
+            final MediaPlayer mediaPlayer = new MediaPlayer();
 
-        recordButton.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                int eventaction = event.getAction();
-                switch (eventaction) {
-                    case MotionEvent.ACTION_DOWN:
-                        try {
-                            recordButton.setScaleX((float) 1.3);
-                            recordButton.setScaleY((float) 1.3);
 
-                            myAudioRecorder.prepare();
-                            myAudioRecorder.start();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        } catch (Exception e) {
-                        }
-                        break;
+            outputeFile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/recording.3gp";
+            final MediaRecorder myAudioRecorder = new MediaRecorder();
+            myAudioRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+            myAudioRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
+            myAudioRecorder.setOutputFile(outputeFile);
 
-                    case MotionEvent.ACTION_UP:
-                        try {
-                            audioRecorded = true;
-                            recordButton.setScaleX((float) 1);
-                            recordButton.setScaleY((float) 1);
+            recordButton.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    int eventaction = event.getAction();
+                    switch (eventaction) {
+                        case MotionEvent.ACTION_DOWN:
+                            try {
+                                recordButton.setScaleX((float) 1.3);
+                                recordButton.setScaleY((float) 1.3);
 
-                            deleteAudio.setVisibility(View.VISIBLE);
-                            deleteAudio.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    mediaPlayer.stop();
-                                    mediaPlayer.release();
-                                    newDialog.dismiss();
-                                    showVoiceDialog();
-                                }
-                            });
+                                myAudioRecorder.prepare();
+                                myAudioRecorder.start();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            } catch (Exception e) {
+                            }
+                            break;
 
-                            myAudioRecorder.stop();
-                            myAudioRecorder.release();
-                            recordButton.setVisibility(View.GONE);
-                            playAudio.setVisibility(View.VISIBLE);
-                            setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        break;
+                        case MotionEvent.ACTION_UP:
+                            try {
+                                audioRecorded = true;
+                                recordButton.setScaleX((float) 1);
+                                recordButton.setScaleY((float) 1);
+
+                                deleteAudio.setVisibility(View.VISIBLE);
+                                deleteAudio.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        mediaPlayer.stop();
+                                        mediaPlayer.release();
+                                        newDialog.dismiss();
+                                        showVoiceDialog();
+                                    }
+                                });
+
+                                myAudioRecorder.stop();
+                                myAudioRecorder.release();
+                                recordButton.setVisibility(View.GONE);
+                                playAudio.setVisibility(View.VISIBLE);
+                                setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            break;
+                    }
+                    return false;
                 }
-                return false;
-            }
 
-        });
+            });
 
 
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                pauseAudio.setVisibility(View.GONE);
-                playAudio.setVisibility(View.VISIBLE);
-                mediaPlayer.reset();
-                setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
-            }
-        });
-
-        name.setText(userName);
-        nextBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (audioRecorded) {
-                    SharedPreferences prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
-                    String userId = prefs.getString("userID", null);
-
-                    final StorageReference filepath = FirebaseStorage.getInstance().getReference("audios").
-                            child(Objects.requireNonNull(userId)).child(COURSE + ".3gp");
-                    filepath.putFile(Uri.fromFile(new File(outputeFile)));
+            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    pauseAudio.setVisibility(View.GONE);
+                    playAudio.setVisibility(View.VISIBLE);
+                    mediaPlayer.reset();
+                    setupPlayAudio(outputeFile, playAudio, pauseAudio, mediaPlayer);
                 }
-                Toast.makeText(MapsActivity.this, resources.getString(R.string.thank_you_txt), Toast.LENGTH_SHORT).show();
-                newDialog.dismiss();
-            }
-        });
+            });
+
+            name.setText(userName);
+            nextBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (audioRecorded) {
+                        SharedPreferences prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
+                        String userId = prefs.getString("userID", null);
+
+                        final StorageReference filepath = FirebaseStorage.getInstance().getReference("audios").
+                                child(Objects.requireNonNull(userId)).child(COURSE + ".3gp");
+                        filepath.putFile(Uri.fromFile(new File(outputeFile)));
+                    }
+                    Toast.makeText(MapsActivity.this, resources.getString(R.string.thank_you_txt), Toast.LENGTH_SHORT).show();
+                    newDialog.dismiss();
+                }
+            });
 
 
-        newDialog.findViewById(R.id.body).getLayoutParams().width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int)
-                (dpWidth), getResources().getDisplayMetrics());
+            newDialog.findViewById(R.id.body).getLayoutParams().width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int)
+                    (dpWidth), getResources().getDisplayMetrics());
 
-        WindowManager.LayoutParams lp = Objects.requireNonNull(newDialog.getWindow()).getAttributes();
-        lp.dimAmount = 0.5f;
-        newDialog.getWindow().setAttributes(lp);
-        newDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-        newDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+            WindowManager.LayoutParams lp = Objects.requireNonNull(newDialog.getWindow()).getAttributes();
+            lp.dimAmount = 0.5f;
+            newDialog.getWindow().setAttributes(lp);
+            newDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+            newDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
 
-        newDialog.show();
+            newDialog.show();
+        }catch (WindowManager.BadTokenException e){
+            e.printStackTrace();
+        }catch (IllegalStateException e){
+            e.printStackTrace();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     boolean isPlaying = false;
@@ -2180,8 +2184,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         promoCode.setText(resources.getString(R.string.promocode_txt));
 
 //        rlCallLayout = findViewById(R.id.rl_calling);
-        callLayout = findViewById(R.id.callLayout);
-        callLayout.setVisibility(View.VISIBLE);
+        callLayout = findViewById(R.id.rl_calling);
+//        callLayout.setVisibility(View.VISIBLE);
 
         ivCallDriver = findViewById(R.id.iv_call_driver);
 
