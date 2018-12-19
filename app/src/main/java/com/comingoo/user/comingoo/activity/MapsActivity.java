@@ -1557,7 +1557,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                 final Button price = dialog.findViewById(R.id.button3);
 
                                                 if (courseIDT != null) {
-                                                    FirebaseDatabase.getInstance().getReference("COURSES").child(courseIDT).child("price").addValueEventListener(new ValueEventListener() {
+                                                    FirebaseDatabase.getInstance().getReference("COURSES").child(courseIDT).child("price").addListenerForSingleValueEvent(new ValueEventListener() {
                                                         @Override
                                                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                                             try {
