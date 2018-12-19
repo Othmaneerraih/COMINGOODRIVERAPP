@@ -189,6 +189,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ImageButton recordButton, playAudio, pauseAudio, deleteAudio;
     private String outputeFile;
     private boolean courseScreenIsOn = false;
+    private ConstraintLayout callLayout;
     private TextView tv_appelle_voip, tv_appelle_telephone;
     private LinearLayout voip_view;
     private RecyclerView mLocationView;
@@ -263,12 +264,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private CircleImageView iv_mute;
     private CircleImageView iv_loud;
     private CircleImageView iv_recv_call_voip_one;
-    private RelativeLayout rlCallLayout;
+//    private RelativeLayout rlCallLayout;
     private RelativeLayout.LayoutParams params;
     private Handler mHandler = new Handler();
     private int mHour, mMinute;
     private Resources resources;
-    private ConstraintLayout callLayout;
     private RatingBar rbDriverRating;
 
 
@@ -841,6 +841,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 startLocT.setLatitude(startPositionT.latitude);
                                 startLocT.setLatitude(startPositionT.longitude);
 
+//                                if (statusT.equals("4")){
+//                                    rlCallLayout.setVisibility(View.GONE);
+//                                }
+
 
                                 FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(driverIDT).addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
@@ -972,6 +976,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     findViewById(R.id.pin).setVisibility(View.VISIBLE);
                     state = 0;
                     cancelCommandLayout();
+                    callLayout.setVisibility(View.GONE);
                     hideSelectDestUI();
                     coverButton.setClickable(true);
                 }
@@ -980,6 +985,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 return;
             }
             stopSearchUI();
+            callLayout.setVisibility(View.GONE);
             shadowBg.setVisibility(View.VISIBLE);
             menuButton.setImageBitmap(scaleBitmap(45, 45, R.drawable.home_icon));
             menuButton.setOnClickListener(new View.OnClickListener() {
@@ -1048,6 +1054,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
             if (statusT.equals("0") && !courseScreenStageZero) {
+//                rlCallLayout.setVisibility(View.VISIBLE);
                 if (!userLevel.equals("2")) {
                     ivCallDriver.setVisibility(View.VISIBLE);
                     ivCallDriver.setOnClickListener(new View.OnClickListener() {
@@ -1233,6 +1240,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     dialog.getWindow().setAttributes(lp);
                     dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
                     dialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
+                } catch (WindowManager.BadTokenException e) {
+                    e.printStackTrace();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -1337,21 +1346,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 final Status status = result.getStatus();
                 switch (status.getStatusCode()) {
                     case LocationSettingsStatusCodes.SUCCESS:
-                        Log.i(TAG, "All location settings are satisfied.");
-                        break;
+                         break;
                     case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                        Log.i(TAG, "Location settings are not satisfied. Show the user a dialog to upgrade location settings ");
-
                         try {
                             // Show the dialog by calling startResolutionForResult(), and check the result
                             // in onActivityResult().
                             status.startResolutionForResult(MapsActivity.this, REQUEST_CHECK_SETTINGS);
                         } catch (IntentSender.SendIntentException e) {
-                            Log.i(TAG, "PendingIntent unable to execute request.");
                         }
                         break;
                     case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                        Log.i(TAG, "Location settings are inadequate, and cannot be fixed here. Dialog not created.");
                         break;
                 }
             }
@@ -2175,7 +2179,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         promoCode = findViewById(R.id.promoCode);
         promoCode.setText(resources.getString(R.string.promocode_txt));
 
-        rlCallLayout = findViewById(R.id.rl_calling);
+//        rlCallLayout = findViewById(R.id.rl_calling);
         callLayout = findViewById(R.id.callLayout);
         callLayout.setVisibility(View.VISIBLE);
 
@@ -3919,6 +3923,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                                                         if (dataSnapshot.exists()) {
                                                                             callLayout.setVisibility(View.VISIBLE);
+//                                                                            rlCallLayout.setVisibility(View.VISIBLE);
                                                                         }
                                                                     }
 
