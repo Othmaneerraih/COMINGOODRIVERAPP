@@ -119,7 +119,7 @@ public class SignupConfirmActivity extends AppCompatActivity {
                             Map<String, Object> data = new HashMap<>();
                             data.put("fullName", name);
                             data.put("email", Email);
-                            data.put("SOLDE", "0");
+                            data.put("SOLDE", "0.0");
                             data.put("USECREDIT", "1");
                             data.put("LASTCOURSE", "**La Premiére Course**");
                             data.put("phoneNumber", phoneNumber);

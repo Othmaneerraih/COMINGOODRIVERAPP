@@ -160,6 +160,8 @@ import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static android.location.GpsStatus.GPS_EVENT_STARTED;
+import static android.location.GpsStatus.GPS_EVENT_STOPPED;
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, PickLocation {
@@ -187,6 +189,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ImageButton recordButton, playAudio, pauseAudio, deleteAudio;
     private String outputeFile;
     private boolean courseScreenIsOn = false;
+    private ConstraintLayout callLayout;
     private TextView tv_appelle_voip, tv_appelle_telephone;
     private LinearLayout voip_view;
     private RecyclerView mLocationView;
@@ -261,12 +264,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private CircleImageView iv_mute;
     private CircleImageView iv_loud;
     private CircleImageView iv_recv_call_voip_one;
-    private RelativeLayout rlCallLayout;
+//    private RelativeLayout rlCallLayout;
     private RelativeLayout.LayoutParams params;
     private Handler mHandler = new Handler();
     private int mHour, mMinute;
     private Resources resources;
-    private ConstraintLayout callLayout;
     private RatingBar rbDriverRating;
 
 
@@ -482,7 +484,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-
     private class SinchCallClientListener implements CallClientListener {
         @Override
         public void onIncomingCall(CallClient callClient, Call incomingCall) {
@@ -499,7 +500,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
     }
-
 
     private Runnable mUpdate = new Runnable() {
 
@@ -557,13 +557,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 dialog.findViewById(R.id.incoming_call_view).setVisibility(View.GONE);
                 setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
 
-                mp.stop();
-                iv_mute.setVisibility(View.GONE);
-                iv_loud.setVisibility(View.GONE);
-                caller_name.setVisibility(View.GONE);
-                callState.setText("");
-                mHandler.removeCallbacks(mUpdate);// we need to remove our updates if the activity isn't focused(or even destroyed) or we could get in trouble
-                dialog.dismiss();
+                try {
+                    if (mp != null) {
+                        if (mp.isPlaying()) {
+                            mp.stop();
+                            mp.release();
+                        }
+                    }
+                    iv_mute.setVisibility(View.GONE);
+                    iv_loud.setVisibility(View.GONE);
+                    caller_name.setVisibility(View.GONE);
+                    callState.setText("");
+                    mHandler.removeCallbacks(mUpdate);// we need to remove our updates if the activity isn't focused(or even destroyed) or we could get in trouble
+                    dialog.dismiss();
+                }catch (IllegalStateException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
@@ -580,29 +591,50 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 params.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
                 params.addRule(RelativeLayout.CENTER_HORIZONTAL);
                 iv_cancel_call_voip_one.setLayoutParams(params);
-                mp.stop();
-
-                mHour = 00;//c.get(Calendar.HOUR_OF_DAY);
-                mMinute = 00;//c.get(Calendar.MINUTE);
-                caller_name.setText(mHour + ":" + mMinute);
-                mHandler.postDelayed(mUpdate, 1000); // 60000 a minute
+                try {
+                    if (mp != null) {
+                        if (mp.isPlaying()) {
+                            mp.stop();
+                            mp.release();
+                        }
+                    }
+                    mHour = 00;//c.get(Calendar.HOUR_OF_DAY);
+                    mMinute = 00;//c.get(Calendar.MINUTE);
+                    caller_name.setText(mHour + ":" + mMinute);
+                    mHandler.postDelayed(mUpdate, 1000); // 60000 a minute
+                }catch (IllegalStateException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
             public void onCallProgressing(Call progressingCall) {
                 //call is ringing
-                dialog.findViewById(R.id.incoming_call_view).setVisibility(View.VISIBLE);
-                caller_name.setText(progressingCall.getDetails().getDuration() + "");
-                caller_name.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-                iv_mute.setVisibility(View.VISIBLE);
-                iv_loud.setVisibility(View.VISIBLE);
-                caller_name.setTypeface(null, Typeface.BOLD);
-                callState.setText("ringing");
-                iv_recv_call_voip_one.setVisibility(View.GONE);
-                params.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-                params.addRule(RelativeLayout.CENTER_HORIZONTAL);
-                iv_cancel_call_voip_one.setLayoutParams(params);
-                mp.stop();
+                try {
+                    dialog.findViewById(R.id.incoming_call_view).setVisibility(View.VISIBLE);
+                    caller_name.setText(progressingCall.getDetails().getDuration() + "");
+                    caller_name.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+                    iv_mute.setVisibility(View.VISIBLE);
+                    iv_loud.setVisibility(View.VISIBLE);
+                    caller_name.setTypeface(null, Typeface.BOLD);
+                    callState.setText("ringing");
+                    iv_recv_call_voip_one.setVisibility(View.GONE);
+                    params.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                    params.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                    iv_cancel_call_voip_one.setLayoutParams(params);
+                    if (mp != null) {
+                        if (mp.isPlaying()) {
+                            mp.stop();
+                            mp.release();
+                        }
+                    }
+                }catch (IllegalStateException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
@@ -631,10 +663,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
-                if (mp.isPlaying()) {
-                    mp.stop();
+                try {
+                    if (mp != null) {
+                        if (mp.isPlaying()) {
+                            mp.stop();
+                            mp.release();
+                        }
+                    }
+                    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, origionalVolume, 0);
+                }catch (IllegalStateException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, origionalVolume, 0);
             }
         });
 
@@ -658,8 +699,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View v) {
                 call.hangup();
-                if (mp.isPlaying()) mp.stop();
-                dialog.dismiss();
+                try {
+                    if (mp != null) {
+                        if (mp.isPlaying()) {
+                            mp.stop();
+                            mp.release();
+                        }
+                    }
+                    dialog.dismiss();
+                }catch (IllegalStateException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -671,13 +723,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View v) {
 
-                if (mp.isPlaying()) mp.stop();
-                call.answer();
-                audioManager.setMicrophoneMute(false);
-                audioManager.setSpeakerphoneOn(false);
-
-//                iv_recv_call_voip_one.setEnabled(false);
-                iv_recv_call_voip_one.setClickable(false);
+                try {
+                    if (mp != null) {
+                        if (mp.isPlaying()) {
+                            mp.stop();
+                            mp.release();
+                        }
+                    }
+                    call.answer();
+                    audioManager.setMicrophoneMute(false);
+                    audioManager.setSpeakerphoneOn(false);
+                    iv_recv_call_voip_one.setClickable(false);
+                }catch (IllegalStateException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -776,6 +837,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                 startLocT.setLatitude(startPositionT.latitude);
                                 startLocT.setLatitude(startPositionT.longitude);
+
+//                                if (statusT.equals("4")){
+//                                    rlCallLayout.setVisibility(View.GONE);
+//                                }
 
 
                                 FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(driverIDT).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -908,6 +973,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     findViewById(R.id.pin).setVisibility(View.VISIBLE);
                     state = 0;
                     cancelCommandLayout();
+                    callLayout.setVisibility(View.GONE);
                     hideSelectDestUI();
                     coverButton.setClickable(true);
                 }
@@ -916,6 +982,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 return;
             }
             stopSearchUI();
+            callLayout.setVisibility(View.GONE);
             shadowBg.setVisibility(View.VISIBLE);
             menuButton.setImageBitmap(scaleBitmap(45, 45, R.drawable.home_icon));
             menuButton.setOnClickListener(new View.OnClickListener() {
@@ -984,6 +1051,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
             if (statusT.equals("0") && !courseScreenStageZero) {
+//                rlCallLayout.setVisibility(View.VISIBLE);
                 if (!userLevel.equals("2")) {
                     ivCallDriver.setVisibility(View.VISIBLE);
                     ivCallDriver.setOnClickListener(new View.OnClickListener() {
@@ -1025,7 +1093,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         public void onClick(View v) {
                             if (!driverIDT.isEmpty()) {
                                 tv_appelle_voip.setClickable(false);
-                                tv_appelle_voip.setEnabled(false);
+//                                tv_appelle_voip.setEnabled(false);
 
                                 Intent intent = new Intent(MapsActivity.this, VoipCallingActivity.class);
                                 intent.putExtra("driverId", driverIDT);
@@ -1143,7 +1211,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         public void onClick(View v) {
                             if (!driverIDT.isEmpty()) {
                                 tv_appelle_voip.setClickable(false);
-                                tv_appelle_voip.setEnabled(false);
+//                                tv_appelle_voip.setEnabled(false);
                                 Intent intent = new Intent(MapsActivity.this, VoipCallingActivity.class);
                                 intent.putExtra("driverId", driverIDT);
                                 intent.putExtra("clientId", clientID);
@@ -1178,6 +1246,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     dialog.getWindow().setAttributes(lp);
                     dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
                     dialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
+                } catch (WindowManager.BadTokenException e) {
+                    e.printStackTrace();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -1282,21 +1352,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 final Status status = result.getStatus();
                 switch (status.getStatusCode()) {
                     case LocationSettingsStatusCodes.SUCCESS:
-                        Log.i(TAG, "All location settings are satisfied.");
-                        break;
+                         break;
                     case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                        Log.i(TAG, "Location settings are not satisfied. Show the user a dialog to upgrade location settings ");
-
                         try {
                             // Show the dialog by calling startResolutionForResult(), and check the result
                             // in onActivityResult().
                             status.startResolutionForResult(MapsActivity.this, REQUEST_CHECK_SETTINGS);
                         } catch (IntentSender.SendIntentException e) {
-                            Log.i(TAG, "PendingIntent unable to execute request.");
                         }
                         break;
                     case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                        Log.i(TAG, "Location settings are inadequate, and cannot be fixed here. Dialog not created.");
                         break;
                 }
             }
@@ -1310,7 +1375,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (requestCode == 1 && RESULT_OK == -1 && data.hasExtra("result")) {
             tv_appelle_voip.setClickable(true);
-            tv_appelle_voip.setEnabled(true);
+//            tv_appelle_voip.setEnabled(true);
         }
 
         switch (requestCode) {
@@ -2120,7 +2185,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         promoCode = findViewById(R.id.promoCode);
         promoCode.setText(resources.getString(R.string.promocode_txt));
 
-        rlCallLayout = findViewById(R.id.rl_calling);
+//        rlCallLayout = findViewById(R.id.rl_calling);
         callLayout = findViewById(R.id.callLayout);
         callLayout.setVisibility(View.VISIBLE);
 
@@ -2139,7 +2204,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         tv_appelle_telephone = findViewById(R.id.tv_appelle_telephone);
 
         tv_appelle_voip.setClickable(true);
-        tv_appelle_voip.setEnabled(true);
+//        tv_appelle_voip.setEnabled(true);
 
         close_button = findViewById(R.id.close_button);
 
@@ -2166,14 +2231,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         carButton = findViewById(R.id.carButton);
         selectCity = findViewById(R.id.imageButton4);
         destArrow = findViewById(R.id.destArrow);
-
-//        if (ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.RECORD_AUDIO) !=
-//                PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this,
-//                android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-//            ActivityCompat.requestPermissions(MapsActivity.this,
-//                    new String[]{android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.READ_PHONE_STATE},
-//                    1);
-//        }
 
         SinchClient sinchClient = Sinch.getSinchClientBuilder()
                 .context(this)
@@ -3471,8 +3528,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.getUiSettings().setRotateGesturesEnabled(false);
         mMap.setBuildingsEnabled(false);
 
-        Log.e(TAG, "onMapReady: ");
-
         if (!isLocationEnabled(MapsActivity.this))
             checkLocationService();
         else {
@@ -3486,6 +3541,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     startLatLng = userLatLng;
             }
         }
+
+
 
         mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
             @Override
@@ -3570,6 +3627,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (grantResult.length > 0 && grantResult[0] == PackageManager.PERMISSION_GRANTED) {
             getLastLocation();
+            if (ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.RECORD_AUDIO)
+                    != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this,
+                    android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(MapsActivity.this,
+                        new String[]{android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.READ_PHONE_STATE},
+                        1);
+            }
         }
 
         if (requestCode == 10) {
@@ -3865,6 +3929,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                                                         if (dataSnapshot.exists()) {
                                                                             callLayout.setVisibility(View.VISIBLE);
+//                                                                            rlCallLayout.setVisibility(View.VISIBLE);
                                                                         }
                                                                     }
 
@@ -4082,6 +4147,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onResume() {
         super.onResume();
 
+
+
         language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
         co = LocalHelper.setLocale(MapsActivity.this, language);
         resources = co.getResources();
@@ -4104,7 +4171,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
             userId = prefs.getString("userID", "");
             Log.e(TAG, "onResume: " + userId);
-            FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child(getString(R.string.txt_work)).addListenerForSingleValueEvent(new ValueEventListener() {
+            FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child("Work").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
@@ -4124,7 +4191,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 }
             });
-            FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child(getString(R.string.txt_home)).addListenerForSingleValueEvent(new ValueEventListener() {
+            FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child("Home").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
@@ -4148,4 +4215,5 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             e.printStackTrace();
         }
     }
+
 }
