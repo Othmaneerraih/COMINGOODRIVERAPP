@@ -935,6 +935,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     }
                                 });
                             }
+                        } catch (NumberFormatException e) {
+                            e.printStackTrace();
                         } catch (NullPointerException e) {
                             e.printStackTrace();
                         }
