@@ -572,7 +572,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     callState.setText("");
                     mHandler.removeCallbacks(mUpdate);// we need to remove our updates if the activity isn't focused(or even destroyed) or we could get in trouble
                     dialog.dismiss();
-                }catch (IllegalStateException e) {
+                } catch (IllegalStateException e) {
                     e.printStackTrace();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -604,7 +604,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     mMinute = 00;//c.get(Calendar.MINUTE);
                     caller_name.setText(mHour + ":" + mMinute);
                     mHandler.postDelayed(mUpdate, 1000); // 60000 a minute
-                }catch (IllegalStateException e) {
+                } catch (IllegalStateException e) {
                     e.printStackTrace();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -632,7 +632,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             mp.release();
                         }
                     }
-                }catch (IllegalStateException e) {
+                } catch (IllegalStateException e) {
                     e.printStackTrace();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -676,7 +676,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         }
                     }
                     audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, origionalVolume, 0);
-                }catch (IllegalStateException e) {
+                } catch (IllegalStateException e) {
                     e.printStackTrace();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -712,7 +712,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         }
                     }
                     dialog.dismiss();
-                }catch (IllegalStateException e) {
+                } catch (IllegalStateException e) {
                     e.printStackTrace();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -739,7 +739,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     audioManager.setMicrophoneMute(false);
                     audioManager.setSpeakerphoneOn(false);
                     iv_recv_call_voip_one.setClickable(false);
-                }catch (IllegalStateException e) {
+                } catch (IllegalStateException e) {
                     e.printStackTrace();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -820,22 +820,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     if (dataSnapshot.exists()) {
                         try {
                             for (final DataSnapshot data : dataSnapshot.getChildren()) {
+                                try {
+                                    if (Objects.equals(data.child("driverPosLat").getValue(String.class), "") || Objects.equals(data.child("driverPosLong").getValue(String.class), "") || data.child("startLat").getValue(String.class).equals("") || data.child("startLong").getValue(String.class).equals("")) {
+                                        driverPosT = new LatLng(0.0,
+                                                0.0);
+
+                                        startPositionT = new LatLng(0.0,
+                                                0.0);
+                                    } else {
+                                        driverPosT = new LatLng(Double.parseDouble(Objects.requireNonNull(data.child("driverPosLat").getValue(String.class))),
+                                                Double.parseDouble(Objects.requireNonNull(data.child("driverPosLong").getValue(String.class))));
+                                        startPositionT = new LatLng(Double.parseDouble(Objects.requireNonNull(data.child("startLat").getValue(String.class))),
+                                                Double.parseDouble(Objects.requireNonNull(data.child("startLong").getValue(String.class))));
+                                    }
+                                } catch (NumberFormatException e) {
+                                    e.printStackTrace();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
                                 courseIDT = data.getKey();
                                 statusT = data.child("state").getValue(String.class);
                                 clientIdT = data.child("client").getValue(String.class);
                                 driverIDT = data.child("driver").getValue(String.class);
-                                if(Objects.equals(data.child("driverPosLat").getValue(String.class), "") || Objects.equals(data.child("driverPosLong").getValue(String.class), "") || data.child("startLat").getValue(String.class).equals("") || data.child("startLong").getValue(String.class).equals("")){
-                                    driverPosT = new LatLng(0.0,
-                                            0.0);
 
-                                    startPositionT = new LatLng(0.0,
-                                            0.0);
-                                }else{
-                                    driverPosT = new LatLng(Double.parseDouble(Objects.requireNonNull(data.child("driverPosLat").getValue(String.class))),
-                                            Double.parseDouble(Objects.requireNonNull(data.child("driverPosLong").getValue(String.class))));
-                                    startPositionT = new LatLng(Double.parseDouble(Objects.requireNonNull(data.child("startLat").getValue(String.class))),
-                                            Double.parseDouble(Objects.requireNonNull(data.child("startLong").getValue(String.class))));
-                                }
 
                                 driverLocT = new Location("");
                                 startLocT = new Location("");
@@ -2158,7 +2165,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         co = LocalHelper.setLocale(MapsActivity.this, language);
         resources = co.getResources();
 
-        if(!isNetworkConnectionAvailable()){
+        if (!isNetworkConnectionAvailable()) {
             checkNetworkConnection();
         }
         displayLocationSettingsRequest(MapsActivity.this);
@@ -2173,9 +2180,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             startActivity(intent);
             finish();
         }
-
-
-
 
 
 //        if (ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -2611,8 +2615,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
-    public void checkNetworkConnection(){
-        android.support.v7.app.AlertDialog.Builder builder =new android.support.v7.app.AlertDialog.Builder(this);
+    public void checkNetworkConnection() {
+        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(this);
         builder.setTitle(resources.getString(R.string.no_internet_txt));
         builder.setMessage(resources.getString(R.string.internet_warning_txt));
         builder.setNegativeButton(resources.getString(R.string.close_txt), new DialogInterface.OnClickListener() {
@@ -2627,19 +2631,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         alertDialog.show();
     }
 
-    public boolean isNetworkConnectionAvailable(){
+    public boolean isNetworkConnectionAvailable() {
         ConnectivityManager cm =
-                (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 
         NetworkInfo activeNetwork = Objects.requireNonNull(cm).getActiveNetworkInfo();
         boolean isConnected = activeNetwork != null &&
                 activeNetwork.isConnected();
-        if(isConnected) {
+        if (isConnected) {
             Log.d("Network", "Connected");
             return true;
-        }
-        else{
-            Log.d("Network","Not Connected");
+        } else {
+            Log.d("Network", "Not Connected");
             return false;
         }
     }
