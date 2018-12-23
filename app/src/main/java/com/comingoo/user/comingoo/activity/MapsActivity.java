@@ -2010,7 +2010,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void showVoiceDialog() {
         try {
             final Dialog newDialog = new Dialog(MapsActivity.this);
-            newDialog.setContentView(R.layout.voice_record);
+            newDialog.setContentView(R.layout.dialog_voice_record);
 
             TextView textView18 = newDialog.findViewById(R.id.tv_destination);
             TextView textView19 = newDialog.findViewById(R.id.textView19);

@@ -166,6 +166,7 @@
     <string name="oct">Octobre</string>
     <string name="nov">Novembre</string>
     <string name="dec">Décembre</string>
+    <string name="taha">Taha</string>
 
     <string-array name="blocked_users" tools:ignore="ExtraTranslation">
         <item>brightgupta18@gmail.com</item>
