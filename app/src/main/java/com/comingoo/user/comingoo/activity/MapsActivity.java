@@ -1807,7 +1807,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                                     } else {
                                                                         try {
                                                                             final Dialog newDialog = new Dialog(MapsActivity.this);
-                                                                            newDialog.setContentView(R.layout.finished_course_2);
+                                                                            newDialog.setContentView(R.layout.dialog_finished_course_2);
                                                                             choseBox = null;
 
                                                                             TextView textView15 = newDialog.findViewById(R.id.textView15);
