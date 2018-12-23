@@ -169,6 +169,12 @@
     <string name="rows_notification_details_content">TextView</string>
     <string name="apply_btn_txt">Apply</string>
     <string name="service">Service</string>
+    <string name="signup_info_register_txt">Register</string>
+    <string name="signup_info_fill_the_feilds_txt">Fill in the fields below</string>
+    <string name="full_name">Full Name</string>
+    <string name="email">Email</string>
+    <string name="password_txt">Password</string>
+    <string name="confirm_password_txt">Confirm password</string>
 
     <string-array name="blocked_users" tools:ignore="ExtraTranslation">
         <item>brightgupta18@gmail.com</item>
