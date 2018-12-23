@@ -304,41 +304,50 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
 
     private Bitmap scaleBitmap(int reqWidth, int reqHeight, int resId) {
-        // Raw height and width of image
+//        try {
+            // Raw height and width of image
+            Bitmap bitmap;
+            BitmapFactory.Options bOptions = new BitmapFactory.Options();
+            bOptions.inJustDecodeBounds = true;
+            BitmapFactory.decodeResource(getResources(), resId, bOptions);
+            int imageHeight = bOptions.outHeight;
+            int imageWidth = bOptions.outWidth;
 
-        BitmapFactory.Options bOptions = new BitmapFactory.Options();
-        bOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeResource(getResources(), resId, bOptions);
-        int imageHeight = bOptions.outHeight;
-        int imageWidth = bOptions.outWidth;
+            int inSampleSize = 1;
 
-        int inSampleSize = 1;
+            if (imageHeight > reqHeight || imageWidth > reqWidth) {
 
-        if (imageHeight > reqHeight || imageWidth > reqWidth) {
+                int lastImageHeight = imageHeight / 2;
+                lastImageWidth = lastImageWidth / 2;
 
-            int lastImageHeight = imageHeight / 2;
-            lastImageWidth = lastImageWidth / 2;
-
-            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
-            // height and width larger than the requested height and width.
-            while ((lastImageHeight / inSampleSize) >= reqHeight
-                    && (lastImageWidth / inSampleSize) >= reqWidth) {
-                inSampleSize *= 2;
+                // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+                // height and width larger than the requested height and width.
+                while ((lastImageHeight / inSampleSize) >= reqHeight
+                        && (lastImageWidth / inSampleSize) >= reqWidth) {
+                    inSampleSize *= 2;
+                }
             }
-        }
 
 
-        // First decode with inJustDecodeBounds=true to check dimensions
-        bOptions = new BitmapFactory.Options();
-        bOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeResource(getResources(), resId, bOptions);
+            // First decode with inJustDecodeBounds=true to check dimensions
+            bOptions = new BitmapFactory.Options();
+            bOptions.inJustDecodeBounds = true;
+            BitmapFactory.decodeResource(getResources(), resId, bOptions);
 
-        // Calculate inSampleSize
-        bOptions.inSampleSize = inSampleSize;
+            // Calculate inSampleSize
+            bOptions.inSampleSize = inSampleSize;
 
-        // Decode bitmap with inSampleSize set
-        bOptions.inJustDecodeBounds = false;
-        return BitmapFactory.decodeResource(getResources(), resId, bOptions);
+            // Decode bitmap with inSampleSize set
+            bOptions.inJustDecodeBounds = false;
+            bitmap = BitmapFactory.decodeResource(getResources(), resId, bOptions);
+            return bitmap;
+//        }catch (OutOfMemoryError e){
+//            e.printStackTrace();
+//            return null;
+//        } catch (Exception e){
+//            e.printStackTrace();
+//            return null;
+//        }
     }
 
     private void loadImages() {
@@ -715,7 +724,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             }
                         }
                         dialog.dismiss();
-                    }catch (IllegalStateException e) {
+                    } catch (IllegalStateException e) {
                         e.printStackTrace();
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -742,7 +751,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         audioManager.setMicrophoneMute(false);
                         audioManager.setSpeakerphoneOn(false);
                         iv_recv_call_voip_one.setClickable(false);
-                    }catch (IllegalStateException e) {
+                    } catch (IllegalStateException e) {
                         e.printStackTrace();
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -952,6 +961,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     }
                                 });
                             }
+                        } catch (NumberFormatException e) {
+                            e.printStackTrace();
                         } catch (NullPointerException e) {
                             e.printStackTrace();
                         }
@@ -1348,9 +1359,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             });
             dialog.show();
-        }catch (WindowManager.BadTokenException e){
+        } catch (WindowManager.BadTokenException e) {
             e.printStackTrace();
-        } catch (Exception e){ e.printStackTrace();}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -1500,9 +1513,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             });
 
-        }catch (WindowManager.BadTokenException e){
+        } catch (WindowManager.BadTokenException e) {
             e.printStackTrace();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -2784,9 +2797,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             dialog.setContentView(view);
             Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawableResource(android.R.color.transparent);
             dialog.show();
-        }catch (WindowManager.BadTokenException e){
+        } catch (WindowManager.BadTokenException e) {
             e.printStackTrace();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
