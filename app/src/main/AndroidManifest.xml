@@ -97,10 +97,6 @@
             android:name=".activity.SignupFacebookActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
-        <activity
-            android:name=".activity.SignupInfoActivity"
-            android:configChanges="orientation"
-            android:screenOrientation="portrait" />
 
         <activity
             android:name="com.comingoo.user.comingoo.activity.VoipCallingActivity"
