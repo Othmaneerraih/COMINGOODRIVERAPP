@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/login_bg"
+    tools:context="com.comingoo.user.comingoo.activity.SignupConfirmActivity">
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="44dp"
+        android:fontFamily="@font/roboto_thin"
+        android:text="@string/Sinscrire"
+        android:textColor="@android:color/white"
+        android:textSize="50sp" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView5"
+        android:layout_alignStart="@+id/textView5"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/roboto_thin"
+        android:text="@string/unCode"
+        android:textColor="@android:color/white"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/textView10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/textView4"
+        android:layout_centerInParent="true"
+        android:fontFamily="@font/roboto_thin"
+        android:text="OTP"
+        android:textColor="@android:color/white" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView10"
+        android:layout_marginStart="40dp"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginRight="40dp"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <EditText
+            android:id="@+id/code"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.16"
+            android:background="@drawable/number_field"
+            android:ems="10"
+            android:imeOptions="actionNext"
+            android:inputType="phone"
+            android:lines="1"
+            android:maxLength="1"
+            android:paddingStart="10dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="10dp"
+            android:textColor="@android:color/white"
+            android:textColorHint="#488CAA" />
+
+        <EditText
+            android:id="@+id/code2"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_weight="0.16"
+            android:background="@drawable/number_field"
+            android:ems="10"
+            android:imeOptions="actionNext"
+            android:inputType="phone"
+            android:lines="1"
+            android:maxLength="1"
+            android:paddingStart="10dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="10dp"
+            android:textColor="@android:color/white"
+            android:textColorHint="#488CAA" />
+
+        <EditText
+            android:id="@+id/code3"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_weight="0.16"
+            android:background="@drawable/number_field"
+            android:ems="10"
+            android:imeOptions="actionNext"
+            android:inputType="phone"
+            android:lines="1"
+            android:maxLength="1"
+            android:paddingStart="10dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="10dp"
+            android:textColor="@android:color/white"
+            android:textColorHint="#488CAA" />
+
+        <EditText
+            android:id="@+id/code4"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_weight="0.16"
+            android:background="@drawable/number_field"
+            android:ems="10"
+            android:imeOptions="actionNext"
+            android:inputType="phone"
+            android:lines="1"
+            android:maxLength="1"
+            android:paddingStart="10dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="10dp"
+            android:textColor="@android:color/white"
+            android:textColorHint="#488CAA" />
+
+        <EditText
+            android:id="@+id/code5"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_weight="0.16"
+            android:background="@drawable/number_field"
+            android:ems="10"
+            android:imeOptions="actionNext"
+            android:inputType="phone"
+            android:lines="1"
+            android:maxLength="1"
+            android:paddingStart="10dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="10dp"
+            android:textColor="@android:color/white"
+            android:textColorHint="#488CAA" />
+
+        <EditText
+            android:id="@+id/code6"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_weight="0.16"
+            android:background="@drawable/number_field"
+            android:ems="10"
+            android:imeOptions="actionDone"
+            android:inputType="phone"
+            android:lines="1"
+            android:maxLength="1"
+            android:paddingStart="10dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="10dp"
+            android:textColor="@android:color/white"
+            android:textColorHint="#488CAA" />
+
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/imageButton"
+        android:layout_width="70dp"
+        android:layout_height="72dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/next_bt" />
+
+
+</RelativeLayout>
