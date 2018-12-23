@@ -168,6 +168,7 @@
     <string name="rows_notification_title">Payment by bank card</string>
     <string name="rows_notification_details_content">TextView</string>
     <string name="apply_btn_txt">Apply</string>
+    <string name="service">Service</string>
 
     <string-array name="blocked_users" tools:ignore="ExtraTranslation">
         <item>brightgupta18@gmail.com</item>
