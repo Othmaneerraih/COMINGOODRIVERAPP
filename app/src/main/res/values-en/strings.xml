@@ -89,8 +89,6 @@
     <string name="driver_arrived_txt">At Comingoo, we ride in the front</string>
 
 
-
-
     <string name="speech_input_warning_txt">Your Device Don\'t Support Speech Input</string>
     <string name="location_permission_txt">Location Permission Needed</string>
     <string name="location_permission_warning_txt">This app needs the Location permission, please accept to use location functionality</string>
@@ -167,6 +165,9 @@
 
     <string name="txt_block_time_over">Your blocking time is not over yet.</string>
     <string name="taha">Taha</string>
+    <string name="rows_notification_title">Payment by bank card</string>
+    <string name="rows_notification_details_content">TextView</string>
+    <string name="apply_btn_txt">Apply</string>
 
     <string-array name="blocked_users" tools:ignore="ExtraTranslation">
         <item>brightgupta18@gmail.com</item>

@@ -167,6 +167,9 @@
     <string name="nov">Novembre</string>
     <string name="dec">Décembre</string>
     <string name="taha">Taha</string>
+    <string name="rows_notification_title">Payement par carte banquaire</string>
+    <string name="rows_notification_details_content">TextView</string>
+    <string name="apply_btn_txt">Appliquer</string>
 
     <string-array name="blocked_users" tools:ignore="ExtraTranslation">
         <item>brightgupta18@gmail.com</item>
