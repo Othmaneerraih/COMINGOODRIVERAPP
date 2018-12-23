@@ -175,6 +175,7 @@
     <string name="email">Email</string>
     <string name="password_txt">Password</string>
     <string name="confirm_password_txt">Confirm password</string>
+    <string name="notifications_txt">Notifications</string>
 
     <string-array name="blocked_users" tools:ignore="ExtraTranslation">
         <item>brightgupta18@gmail.com</item>
