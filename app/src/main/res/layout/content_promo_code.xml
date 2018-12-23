@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:gravity="center"
-        android:text="Please enter a valid promo code"
+        android:text="@string/please_enter_a_valid_promo_code"
         android:textColor="@android:color/white"
         android:textSize="18sp" />
 
@@ -41,7 +41,7 @@
             android:id="@+id/btn_cancel_promo_code"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cancel"
+            android:text="@string/txt_cancel"
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
             android:textColor="@color/colorPrimaryDark"
@@ -55,7 +55,7 @@
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
             android:layout_toEndOf="@id/btn_cancel_promo_code"
-            android:text="Confirm"
+            android:text="@string/confirm"
             android:textColor="@color/colorPrimaryDark"
             android:background="@android:color/white"/>
 
