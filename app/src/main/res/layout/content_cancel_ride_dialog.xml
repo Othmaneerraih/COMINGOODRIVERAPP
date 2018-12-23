@@ -50,11 +50,11 @@
             android:id="@+id/btn_yes_cancel_ride"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
             android:paddingLeft="20dp"
             android:textSize="12sp"
             android:paddingRight="20dp"
-            android:layout_toRightOf="@id/btn_dont_cancel_ride"
+            android:layout_toEndOf="@id/btn_dont_cancel_ride"
             android:text="Yes, I am sure"
             android:textColor="@android:color/white"
             android:background="@android:color/transparent"/>
