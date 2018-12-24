@@ -13,7 +13,6 @@ import android.widget.TextView;
 
 import com.comingoo.user.comingoo.Interfaces.PickLocation;
 import com.comingoo.user.comingoo.activity.FevoriteLocationActivity;
-import com.comingoo.user.comingoo.activity.MapsActivity;
 import com.comingoo.user.comingoo.R;
 import com.comingoo.user.comingoo.model.Place;
 import com.comingoo.user.comingoo.utility.LocalHelper;
@@ -39,7 +38,7 @@ public class FavouritePlaceAdapter extends RecyclerView.Adapter<FavouritePlaceAd
     public ViewHolder onCreateViewHolder(ViewGroup parent,
                                          int viewType) {
         View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.places_rows, parent, false);
+                .inflate(R.layout.rows_places, parent, false);
         ViewHolder vh = new ViewHolder(v);
         return vh;
     }

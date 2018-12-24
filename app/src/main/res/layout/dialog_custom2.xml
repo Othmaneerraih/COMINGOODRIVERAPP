@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:minWidth="300dp"
     android:layout_width="fill_parent"
     android:layout_height="270dp"
-    android:background="@drawable/driver_here">
+    android:background="@drawable/driver_here"
+    android:minWidth="300dp">
 
 
     <TextView
@@ -13,11 +13,11 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
         android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
         android:fontFamily="@font/roboto_bold"
         android:text="@string/Votrechauffeurestarrivé"
         android:textColor="@android:color/white"
@@ -46,7 +46,7 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_gravity="end|center_horizontal|center"
-            android:background="@drawable/wink"/>
+            android:background="@drawable/wink" />
 
     </LinearLayout>
 
@@ -56,11 +56,11 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="12dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="12dp"
         android:background="@android:color/white"
         android:fontFamily="@font/roboto_medium"
         android:text="@string/Daccord"

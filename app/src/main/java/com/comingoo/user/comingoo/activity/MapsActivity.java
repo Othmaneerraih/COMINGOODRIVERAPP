@@ -20,7 +20,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.location.Location;
-import android.location.LocationManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
@@ -117,10 +116,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -139,7 +135,6 @@ import com.google.maps.model.DirectionsRoute;
 import com.google.maps.model.DirectionsStep;
 import com.google.maps.model.EncodedPolyline;
 import com.mikhaellopez.circularimageview.CircularImageView;
-import com.mxn.soul.flowingdrawer_core.FlowingDrawer;
 import com.sinch.android.rtc.PushPair;
 import com.sinch.android.rtc.Sinch;
 import com.sinch.android.rtc.SinchClient;
@@ -163,8 +158,6 @@ import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-import static android.location.GpsStatus.GPS_EVENT_STARTED;
-import static android.location.GpsStatus.GPS_EVENT_STOPPED;
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, PickLocation {
@@ -537,7 +530,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             final Dialog dialog = new Dialog(context);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View view = inflater.inflate(R.layout.activity_incomming_call, null, false);
+            View view = inflater.inflate(R.layout.dialog_incomming_call, null, false);
             dialog.setContentView(view);
 
             RelativeLayout relativeLayout = dialog.findViewById(R.id.incoming_call_view);
@@ -1143,7 +1136,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 courseScreenStageZero = true;
                 try {
                     final Dialog dialog = new Dialog(MapsActivity.this);
-                    dialog.setContentView(R.layout.custom);
+                    dialog.setContentView(R.layout.dialog_custom);
                     Button dialogButton = dialog.findViewById(R.id.button);
                     TextView textView8 = dialog.findViewById(R.id.textView8);
 
@@ -1258,7 +1251,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 courseScreenStageOne = true;
                 try {
                     final Dialog dialog = new Dialog(MapsActivity.this);
-                    dialog.setContentView(R.layout.custom2);
+                    dialog.setContentView(R.layout.dialog_custom2);
                     TextView textView8 = dialog.findViewById(R.id.textView8);
                     Button ddd = dialog.findViewById(R.id.button);
                     //Set Texts
@@ -1436,7 +1429,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             alertDialog.show();
             Objects.requireNonNull(alertDialog.getWindow()).setBackgroundDrawableResource(android.R.color.transparent);
             LayoutInflater inflater = this.getLayoutInflater();
-            View dialogView = inflater.inflate(R.layout.content_cancel_ride_dialog, null);
+            View dialogView = inflater.inflate(R.layout.dialog_cancel_ride, null);
             alertDialog.getWindow().setContentView(dialogView);
 
             final Button btnYesCancelRide = dialogView.findViewById(R.id.btn_yes_cancel_ride);
@@ -1568,7 +1561,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                                 final Dialog dialog = new Dialog(MapsActivity.this);
                                                 dialogDriverId = dataSnapshott.child("driver").getValue(String.class);
-                                                dialog.setContentView(R.layout.finished_course);
+                                                dialog.setContentView(R.layout.dialog_finished_course);
 
 
                                                 TextView textView13 = dialog.findViewById(R.id.textView13);
@@ -2735,7 +2728,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             final Dialog dialog = new Dialog(context);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View view = inflater.inflate(R.layout.content_promo_code, null, false);
+            View view = inflater.inflate(R.layout.dialog_promo_code, null, false);
             final EditText etPromoCode = view.findViewById(R.id.et_promo_code);
             Button btnOk = view.findViewById(R.id.btn_ok_promo_code);
             Button btnCancel = view.findViewById(R.id.btn_cancel_promo_code);
