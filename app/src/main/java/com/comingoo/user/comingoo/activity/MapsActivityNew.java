@@ -347,7 +347,7 @@ public class MapsActivityNew extends FragmentActivity implements
             @Override
             public void onClick(View v) {
                 View contentMap = findViewById(R.id.content_map_view);
-                ConstraintLayout contentBlocker = findViewById(R.id.rl_block_content);
+                RelativeLayout contentBlocker = findViewById(R.id.rl_block_content);
                 AnimateConstraint.resideAnimation(getApplicationContext(), contentMap,
                         contentBlocker, (int) dpWidth, (int) dpHeight, 200);
 
@@ -1294,7 +1294,6 @@ public class MapsActivityNew extends FragmentActivity implements
                                 final Dialog dialog = new Dialog(getApplicationContext());
                                 dialogDriverId = dataSnapshott.child("driver").getValue(String.class);
                                 dialog.setContentView(R.layout.finished_course);
-
 
                                 TextView textView13 = (TextView) dialog.findViewById(R.id.textView13);
                                 TextView textView14 = (TextView) dialog.findViewById(R.id.textView14);

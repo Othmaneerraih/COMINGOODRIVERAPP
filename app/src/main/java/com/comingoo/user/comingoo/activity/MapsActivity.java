@@ -297,41 +297,50 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
 
     private Bitmap scaleBitmap(int reqWidth, int reqHeight, int resId) {
-        // Raw height and width of image
+//        try {
+            // Raw height and width of image
+            Bitmap bitmap;
+            BitmapFactory.Options bOptions = new BitmapFactory.Options();
+            bOptions.inJustDecodeBounds = true;
+            BitmapFactory.decodeResource(getResources(), resId, bOptions);
+            int imageHeight = bOptions.outHeight;
+            int imageWidth = bOptions.outWidth;
 
-        BitmapFactory.Options bOptions = new BitmapFactory.Options();
-        bOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeResource(getResources(), resId, bOptions);
-        int imageHeight = bOptions.outHeight;
-        int imageWidth = bOptions.outWidth;
+            int inSampleSize = 1;
 
-        int inSampleSize = 1;
+            if (imageHeight > reqHeight || imageWidth > reqWidth) {
 
-        if (imageHeight > reqHeight || imageWidth > reqWidth) {
+                int lastImageHeight = imageHeight / 2;
+                lastImageWidth = lastImageWidth / 2;
 
-            int lastImageHeight = imageHeight / 2;
-            lastImageWidth = lastImageWidth / 2;
-
-            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
-            // height and width larger than the requested height and width.
-            while ((lastImageHeight / inSampleSize) >= reqHeight
-                    && (lastImageWidth / inSampleSize) >= reqWidth) {
-                inSampleSize *= 2;
+                // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+                // height and width larger than the requested height and width.
+                while ((lastImageHeight / inSampleSize) >= reqHeight
+                        && (lastImageWidth / inSampleSize) >= reqWidth) {
+                    inSampleSize *= 2;
+                }
             }
-        }
 
 
-        // First decode with inJustDecodeBounds=true to check dimensions
-        bOptions = new BitmapFactory.Options();
-        bOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeResource(getResources(), resId, bOptions);
+            // First decode with inJustDecodeBounds=true to check dimensions
+            bOptions = new BitmapFactory.Options();
+            bOptions.inJustDecodeBounds = true;
+            BitmapFactory.decodeResource(getResources(), resId, bOptions);
 
-        // Calculate inSampleSize
-        bOptions.inSampleSize = inSampleSize;
+            // Calculate inSampleSize
+            bOptions.inSampleSize = inSampleSize;
 
-        // Decode bitmap with inSampleSize set
-        bOptions.inJustDecodeBounds = false;
-        return BitmapFactory.decodeResource(getResources(), resId, bOptions);
+            // Decode bitmap with inSampleSize set
+            bOptions.inJustDecodeBounds = false;
+            bitmap = BitmapFactory.decodeResource(getResources(), resId, bOptions);
+            return bitmap;
+//        }catch (OutOfMemoryError e){
+//            e.printStackTrace();
+//            return null;
+//        } catch (Exception e){
+//            e.printStackTrace();
+//            return null;
+//        }
     }
 
     private void loadImages() {
@@ -521,7 +530,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             final Dialog dialog = new Dialog(context);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View view = inflater.inflate(R.layout.activity_incomming_call, null, false);
+            View view = inflater.inflate(R.layout.dialog_incomming_call, null, false);
             dialog.setContentView(view);
 
             RelativeLayout relativeLayout = dialog.findViewById(R.id.incoming_call_view);
@@ -708,7 +717,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             }
                         }
                         dialog.dismiss();
-                    }catch (IllegalStateException e) {
+                    } catch (IllegalStateException e) {
                         e.printStackTrace();
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -735,7 +744,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         audioManager.setMicrophoneMute(false);
                         audioManager.setSpeakerphoneOn(false);
                         iv_recv_call_voip_one.setClickable(false);
-                    }catch (IllegalStateException e) {
+                    } catch (IllegalStateException e) {
                         e.printStackTrace();
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -945,6 +954,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     }
                                 });
                             }
+                        } catch (NumberFormatException e) {
+                            e.printStackTrace();
                         } catch (NullPointerException e) {
                             e.printStackTrace();
                         }
@@ -1125,7 +1136,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 courseScreenStageZero = true;
                 try {
                     final Dialog dialog = new Dialog(MapsActivity.this);
-                    dialog.setContentView(R.layout.custom);
+                    dialog.setContentView(R.layout.dialog_custom);
                     Button dialogButton = dialog.findViewById(R.id.button);
                     TextView textView8 = dialog.findViewById(R.id.textView8);
 
@@ -1240,7 +1251,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 courseScreenStageOne = true;
                 try {
                     final Dialog dialog = new Dialog(MapsActivity.this);
-                    dialog.setContentView(R.layout.custom2);
+                    dialog.setContentView(R.layout.dialog_custom2);
                     TextView textView8 = dialog.findViewById(R.id.textView8);
                     Button ddd = dialog.findViewById(R.id.button);
                     //Set Texts
@@ -1341,9 +1352,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             });
             dialog.show();
-        }catch (WindowManager.BadTokenException e){
+        } catch (WindowManager.BadTokenException e) {
             e.printStackTrace();
-        } catch (Exception e){ e.printStackTrace();}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -1416,7 +1429,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             alertDialog.show();
             Objects.requireNonNull(alertDialog.getWindow()).setBackgroundDrawableResource(android.R.color.transparent);
             LayoutInflater inflater = this.getLayoutInflater();
-            View dialogView = inflater.inflate(R.layout.content_cancel_ride_dialog, null);
+            View dialogView = inflater.inflate(R.layout.dialog_cancel_ride, null);
             alertDialog.getWindow().setContentView(dialogView);
 
             final Button btnYesCancelRide = dialogView.findViewById(R.id.btn_yes_cancel_ride);
@@ -1493,9 +1506,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             });
 
-        }catch (WindowManager.BadTokenException e){
+        } catch (WindowManager.BadTokenException e) {
             e.printStackTrace();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -1548,7 +1561,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                                 final Dialog dialog = new Dialog(MapsActivity.this);
                                                 dialogDriverId = dataSnapshott.child("driver").getValue(String.class);
-                                                dialog.setContentView(R.layout.finished_course);
+                                                dialog.setContentView(R.layout.dialog_finished_course);
 
 
                                                 TextView textView13 = dialog.findViewById(R.id.textView13);
@@ -1787,7 +1800,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                                     } else {
                                                                         try {
                                                                             final Dialog newDialog = new Dialog(MapsActivity.this);
-                                                                            newDialog.setContentView(R.layout.finished_course_2);
+                                                                            newDialog.setContentView(R.layout.dialog_finished_course_2);
                                                                             choseBox = null;
 
                                                                             TextView textView15 = newDialog.findViewById(R.id.textView15);
@@ -2003,7 +2016,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void showVoiceDialog() {
         try {
             final Dialog newDialog = new Dialog(MapsActivity.this);
-            newDialog.setContentView(R.layout.voice_record);
+            newDialog.setContentView(R.layout.dialog_voice_record);
 
             TextView textView18 = newDialog.findViewById(R.id.tv_destination);
             TextView textView19 = newDialog.findViewById(R.id.textView19);
@@ -2721,7 +2734,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             final Dialog dialog = new Dialog(context);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View view = inflater.inflate(R.layout.content_promo_code, null, false);
+            View view = inflater.inflate(R.layout.dialog_promo_code, null, false);
             final EditText etPromoCode = view.findViewById(R.id.et_promo_code);
             Button btnOk = view.findViewById(R.id.btn_ok_promo_code);
             Button btnCancel = view.findViewById(R.id.btn_cancel_promo_code);
@@ -2783,9 +2796,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             dialog.setContentView(view);
             Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawableResource(android.R.color.transparent);
             dialog.show();
-        }catch (WindowManager.BadTokenException e){
+        } catch (WindowManager.BadTokenException e) {
             e.printStackTrace();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

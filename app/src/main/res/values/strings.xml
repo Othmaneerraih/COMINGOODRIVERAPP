@@ -14,10 +14,10 @@
     <string name="Aide">Aide</string>
     <string name="Sedeconnecter">Devenir driver ? <a href="https://www.comingoo.com/driver"></a></string>
 
-<string name="txt_recent_place">Recent Place</string>
-<string name="txt_favourite_place">Favourite Place</string>
-<string name="txt_ignore">Ignore</string>
-<string name="txt_pick_up">Pick Up</string>
+    <string name="txt_recent_place">Recent Place</string>
+    <string name="txt_favourite_place">Favourite Place</string>
+    <string name="txt_ignore">Ignore</string>
+    <string name="txt_pick_up">Pick Up</string>
 
     <string name="txt_enter_promo_code">Please Enter Promo Code</string>
     <string name="txt_promo_code_expired">Promo Code is expired</string>
@@ -173,6 +173,25 @@
     <string name="oct">Octobre</string>
     <string name="nov">Novembre</string>
     <string name="dec">Décembre</string>
+    <string name="taha">Taha</string>
+    <string name="rows_notification_title">Payement par carte banquaire</string>
+    <string name="rows_notification_details_content">TextView</string>
+    <string name="apply_btn_txt">Appliquer</string>
+    <string name="service">Service</string>
+    <string name="signup_info_register_txt">S\'inscrire</string>
+    <string name="signup_info_fill_the_feilds_txt">Remplissez les champs ci-dessous</string>
+    <string name="full_name">Nom complet</string>
+    <string name="email">Email</string>
+    <string name="password_txt">Mot de passe</string>
+    <string name="confirm_password_txt">Confirmer le mot de passe</string>
+    <string name="notifications_txt">Les notifications</string>
+    <string name="address">Address</string>
+    <string name="are_you_sure_you_want_to_cancel_the_ride">Êtes-vous sûr de vouloir annuler le trajet?</string>
+    <string name="addition_charges_may_apply">Des frais supplémentaires peuvent s\'appliquer</string>
+    <string name="no_i_don_t_want_to_cancel">Non, je ne veux pas annuler</string>
+    <string name="yes_i_am_sure">Oui je suis sûr</string>
+    <string name="please_enter_a_valid_promo_code">S\'il vous plaît entrer un code promo valide</string>
+    <string name="confirm">confirmer</string>
 
     <string-array name="blocked_users" tools:ignore="ExtraTranslation">
         <item>brightgupta18@gmail.com</item>

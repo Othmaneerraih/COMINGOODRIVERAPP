@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/body"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/box"
+    android:minWidth="300dp">
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="100dp"
+        android:layout_height="76dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="36dp"
+        android:background="@drawable/sad_min" />
+
+    <TextView
+        android:id="@+id/textView15"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/imageView3"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:fontFamily="@font/roboto_medium"
+        android:text="@string/Noussommesdésolé"
+        android:textColor="#262626"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/textView16"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView15"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/roboto"
+        android:text="@string/whatswrong"
+        android:textSize="16sp" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView16"
+        android:layout_marginStart="30dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginRight="30dp"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:adjustViewBounds="false"
+            android:orientation="vertical">
+
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
+                android:layout_marginBottom="0dp"
+                android:elevation="0dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                app:cardBackgroundColor="@android:color/transparent"
+                app:cardElevation="0dp">
+
+                <Button
+                    android:id="@+id/button5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/select_box"
+                    android:fontFamily="@font/roboto_light"
+                    android:text="@string/Heuredarrivée"
+                    android:textAllCaps="false" />
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
+                android:layout_marginBottom="0dp"
+                android:elevation="0dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                app:cardBackgroundColor="@android:color/transparent"
+                app:cardElevation="0dp">
+
+                <Button
+                    android:id="@+id/button6"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/select_box"
+                    android:fontFamily="@font/roboto_light"
+                    android:text="Service"
+                    android:textAllCaps="false" />
+
+            </android.support.v7.widget.CardView>
+
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
+                android:layout_marginBottom="0dp"
+                android:elevation="0dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                app:cardBackgroundColor="@android:color/transparent"
+                app:cardElevation="0dp">
+
+                <Button
+                    android:id="@+id/button7"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/select_box"
+                    android:fontFamily="@font/roboto_light"
+                    android:text="@string/Etatdelavoiture"
+                    android:textAllCaps="false" />
+            </android.support.v7.widget.CardView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:adjustViewBounds="false"
+            android:orientation="vertical">
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
+                android:layout_marginBottom="0dp"
+                android:elevation="0dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                app:cardBackgroundColor="@android:color/transparent"
+                app:cardElevation="0dp">
+
+                <Button
+                    android:id="@+id/button8"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/select_box"
+                    android:fontFamily="@font/roboto_thin"
+                    android:text="@string/Conduite"
+                    android:textAllCaps="false" />
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
+                android:layout_marginBottom="0dp"
+                android:elevation="0dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                app:cardBackgroundColor="@android:color/transparent"
+                app:cardElevation="0dp">
+
+                <Button
+                    android:id="@+id/button9"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/select_box"
+                    android:fontFamily="@font/roboto_light"
+                    android:text="@string/Itinéraire"
+                    android:textAllCaps="false" />
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
+                android:layout_marginBottom="0dp"
+                android:elevation="0dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                app:cardBackgroundColor="@android:color/transparent"
+                app:cardElevation="0dp">
+
+                <Button
+                    android:id="@+id/button10"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/select_box"
+                    android:fontFamily="@font/roboto_light"
+                    android:text="@string/Autre"
+                    android:textAllCaps="false" />
+
+            </android.support.v7.widget.CardView>
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/imageButton3"
+        android:layout_below="@+id/linearLayout"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/custom_edittext"
+        android:ems="10"
+        android:fontFamily="@font/roboto_light"
+        android:hint="@string/Laissezuncommentaire"
+        android:inputType="textPersonName"
+        android:paddingStart="15dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp" />
+
+    <ImageButton
+        android:id="@+id/imageButton3"
+        android:layout_width="70dp"
+        android:layout_height="65dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="15dp"
+        android:background="@drawable/next" />
+
+
+</RelativeLayout>

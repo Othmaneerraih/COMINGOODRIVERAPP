@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/layout_round_background"
+    android:gravity="center"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/tv_sure_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:text="@string/please_enter_a_valid_promo_code"
+        android:textColor="@android:color/white"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/et_promo_code"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_sure_text"
+        android:layout_centerHorizontal="true"
+        android:textColorHint="#8af4f1f1"
+        android:gravity="center"
+        android:textColor="@android:color/white"
+        android:layout_marginTop="10dp"
+        android:hint="COMINGOO20"
+        android:padding="20dp" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/et_promo_code"
+        android:gravity="center"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="10dp">
+
+        <Button
+            android:id="@+id/btn_cancel_promo_code"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/txt_cancel"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:textColor="@color/colorPrimaryDark"
+            android:background="@android:color/white"/>
+
+        <Button
+            android:id="@+id/btn_ok_promo_code"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:layout_toEndOf="@id/btn_cancel_promo_code"
+            android:text="@string/confirm"
+            android:textColor="@color/colorPrimaryDark"
+            android:background="@android:color/white"/>
+
+    </RelativeLayout>
+</RelativeLayout>
