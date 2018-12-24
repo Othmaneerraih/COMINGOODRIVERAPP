@@ -28,13 +28,13 @@ import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -56,10 +56,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.comingoo.user.comingoo.interfaces.PickLocation;
 import com.comingoo.user.comingoo.R;
 import com.comingoo.user.comingoo.adapters.FavouritePlaceAdapter;
 import com.comingoo.user.comingoo.adapters.MyPlaceAdapter;
+import com.comingoo.user.comingoo.interfaces.PickLocation;
 import com.comingoo.user.comingoo.model.LocationInitializer;
 import com.comingoo.user.comingoo.model.place;
 import com.comingoo.user.comingoo.others.HttpConnection;
@@ -142,16 +142,14 @@ public class MapsActivityNew extends FragmentActivity implements
     private float dpHeight;
     private float dpWidth;
     int HeightAbsolute;
-    private int orderDriverState = 0;
+    private int driverSearchingState = 0;
     private boolean courseScreenIsOn = false;
 
     private TextView tvClosestDriver;
     private TextView tvFrameTime;
-
-    // Drawer elements
     private ImageView ivProfilePicDrawer;
     private TextView tvNameDrawer;
-    private LinearLayout llDrawerHome, llDrawerHistory,
+    private LinearLayout llDrawerHistory,
             llDrawerNotifications, llDrawerInvite, llDrawerComingooYou, llDrawerAide;
 
     private ArrayList<String> driversKeys;
@@ -166,6 +164,7 @@ public class MapsActivityNew extends FragmentActivity implements
 
     // Pickup Edittext contents
     private Button btnPickUp;
+    private LinearLayout llDeliveryCar;
     private RelativeLayout rlStartPoint, rlEndPoint;
     private ImageView ivWheel;
     private RecyclerView rvFavPlaces, rvRecentPlaces;
@@ -193,15 +192,14 @@ public class MapsActivityNew extends FragmentActivity implements
     private String userId;
     private String clientID;
 
-
     private String courseIDT;
     private String statusT = "4";
     private String clientIdT;
     private String driverIDT;
     private LatLng driverPosT;
-    private LatLng startPositionT;
+    private LatLng startPositionLatLong;
 
-    private Location driverLocT;
+    private Location driverLocation;
     private Location startLocT;
 
     private String driverPhone;
@@ -213,8 +211,6 @@ public class MapsActivityNew extends FragmentActivity implements
     private String driverName;
     private String driverCarName;
     private String driverCarDescription;
-    private boolean finished1 = false;
-    private boolean finished2 = false;
     private boolean courseScreenStageZero = false;
     private boolean courseScreenStageOne = false;
     private Marker driverPosMarker;
@@ -230,7 +226,7 @@ public class MapsActivityNew extends FragmentActivity implements
     private int stop = 0;
     SharedPreferences prefs;
 
-    private FrameLayout flLocationStart;
+    private RelativeLayout flLocationStart;
     private FrameLayout flLocationDestination;
     private FrameLayout flDriverPin;
     private TextView frameTime;
@@ -256,7 +252,6 @@ public class MapsActivityNew extends FragmentActivity implements
         fPlaceDataList = new ArrayList<>();
         rPlaceDataList = new ArrayList<>();
 
-        llDrawerHome = findViewById(R.id.ll_drawer_home);
         llDrawerInvite = findViewById(R.id.ll_drawer_refer_friend);
         llDrawerNotifications = findViewById(R.id.ll_drawer_notificatiions);
         llDrawerHistory = findViewById(R.id.ll_drawer_history);
@@ -290,16 +285,17 @@ public class MapsActivityNew extends FragmentActivity implements
 
         tvClosestDriver = findViewById(R.id.tv_closest_driver);
         tvFrameTime = findViewById(R.id.tv_closest_driverPin);
-        driverNameL = (TextView) findViewById(R.id.tv_driver_name);
-        iv_total_rating_number = (TextView) findViewById(R.id.iv_total_rating_number);
+        driverNameL = findViewById(R.id.tv_driver_name);
+        iv_total_rating_number = findViewById(R.id.iv_total_rating_number);
         ivDriver = findViewById(R.id.iv_driver_image);
-        iv_car_number = (TextView) findViewById(R.id.iv_car_number);
-        iv_total_ride_number = (TextView) findViewById(R.id.iv_total_ride_number);
+        iv_car_number = findViewById(R.id.iv_car_number);
+        iv_total_ride_number = findViewById(R.id.iv_total_ride_number);
 
-        tv_appelle_voip = (TextView) findViewById(R.id.tv_appelle_voip);
-        tv_appelle_telephone = (TextView) findViewById(R.id.tv_appelle_telephone);
+        tv_appelle_voip = findViewById(R.id.tv_appelle_voip);
+        tv_appelle_telephone = findViewById(R.id.tv_appelle_telephone);
 
         btnPickUp = findViewById(R.id.btn_pickup);
+        llDeliveryCar = findViewById(R.id.ll_delivery_car);
         rlStartPoint = findViewById(R.id.rl_start_point);
         rlEndPoint = findViewById(R.id.rl_end_point);
         ivWheel = findViewById(R.id.iv_wheel);
@@ -325,10 +321,6 @@ public class MapsActivityNew extends FragmentActivity implements
         tvPromoCode = findViewById(R.id.tv_promo_code);
         tvPrice = findViewById(R.id.tv_mad);
         tvMAD = findViewById(R.id.tv_mad);
-
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map_maps_activity);
-        mapFragment.getMapAsync(this);
     }
 
     private void action() {
@@ -385,13 +377,13 @@ public class MapsActivityNew extends FragmentActivity implements
             }
         });
 
-        orderDriverState = 0;
+        driverSearchingState = 0;
 
         btnPickUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 //                if (startPositionIsValid()) {
-                orderDriverState = 1;
+                driverSearchingState = 1;
                 showSelectDestUI();
                 state = 1;
 //                }
@@ -415,6 +407,7 @@ public class MapsActivityNew extends FragmentActivity implements
                         rlStartPoint, (dpHeight - 80), 100, 0);
                 ivWheel.setVisibility(View.GONE);
                 btnPickUp.setVisibility(View.GONE);
+                llDeliveryCar.setVisibility(View.GONE);
                 tvFavPlace.setVisibility(View.VISIBLE);
                 tvRecentPlace.setVisibility(View.VISIBLE);
                 rvSearchResult.setVisibility(View.VISIBLE);
@@ -469,12 +462,12 @@ public class MapsActivityNew extends FragmentActivity implements
         });
 
 
-
         try {
+            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.map_maps_activity);
+            mapFragment.getMapAsync(this);
             new CheckUserTask().execute();
             new checkFinishedCourse().execute();
-        } catch (NullPointerException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -510,8 +503,6 @@ public class MapsActivityNew extends FragmentActivity implements
                     try {
                         new LookForDriverTask().execute();
                         new sendRequestsTask().execute();
-                    } catch (NullPointerException e) {
-                        e.printStackTrace();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -519,12 +510,13 @@ public class MapsActivityNew extends FragmentActivity implements
             }
         });
 
-//        setSearchFunc();
+        setSearchFunc();
 
         mGeoDataClient = Places.getGeoDataClient(this);
     }
 
     private void setSearchFunc() {
+
 //        findViewById(R.id.coverButton).setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View view) {
@@ -540,76 +532,76 @@ public class MapsActivityNew extends FragmentActivity implements
 //        });
 
 
-        etSearchStartAddress.setOnTouchListener(new View.OnTouchListener() {
+//        etSearchStartAddress.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                rvSearchResult.setVisibility(View.VISIBLE);
+//                return true;
+//            }
+//        });
+
+        etSearchStartAddress.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                rvSearchResult.setVisibility(View.VISIBLE);
-                return true;
+            public void onFocusChange(View view, boolean b) {
+                if (b) {
+//                     hideSearchAddressStartUI();
+                    etSearchStartAddress.addTextChangedListener(new TextWatcher() {
+                        @Override
+                        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                        }
+
+                        @Override
+                        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                            txt = this;
+                            if (etSearchStartAddress.getText().toString().length() >= 3) {
+                                lookForAddress();
+                            }
+
+                        }
+
+                        @Override
+                        public void afterTextChanged(Editable editable) {
+
+                        }
+                    });
+                } else {
+                    etSearchStartAddress.removeTextChangedListener(txt);
+                }
             }
         });
 
-//        etSearchStartAddress.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-//            @Override
-//            public void onFocusChange(View view, boolean b) {
-//                if (b) {
-//                    // hideSearchAddressStartUI();
-//                    etSearchStartAddress.addTextChangedListener(new TextWatcher() {
-//                        @Override
-//                        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//
-//                        }
-//
-//                        @Override
-//                        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//                            txt = this;
-//                            if (etSearchStartAddress.getText().toString().length() >= 3) {
-//                                lookForAddress();
-//                            }
-//
-//                        }
-//
-//                        @Override
-//                        public void afterTextChanged(Editable editable) {
-//
-//                        }
-//                    });
-//                } else {
-//                    etSearchStartAddress.removeTextChangedListener(txt);
-//                }
-//            }
-//        });
-//
-//        etSearchDestination.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-//            @Override
-//            public void onFocusChange(View view, boolean b) {
-//                if (b) {
-//                    // hideSearchAddressStartUI();
-//                    etSearchDestination.addTextChangedListener(new TextWatcher() {
-//                        @Override
-//                        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//
-//                        }
-//
-//                        @Override
-//                        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//                            txtDest = this;
-//                            if (etSearchDestination.getText().toString().length() >= 3) {
-//                                lookForAddress();
-//                            }
-//
-//                        }
-//
-//                        @Override
-//                        public void afterTextChanged(Editable editable) {
-//
-//                        }
-//                    });
-//                } else {
-//                    etSearchDestination.removeTextChangedListener(txtDest);
-//                }
-//            }
-//        });
-//
+        etSearchDestination.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if (b) {
+//                     hideSearchAddressStartUI();
+                    etSearchDestination.addTextChangedListener(new TextWatcher() {
+                        @Override
+                        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                        }
+
+                        @Override
+                        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                            txtDest = this;
+                            if (etSearchDestination.getText().toString().length() >= 3) {
+                                lookForAddress();
+                            }
+
+                        }
+
+                        @Override
+                        public void afterTextChanged(Editable editable) {
+
+                        }
+                    });
+                } else {
+                    etSearchDestination.removeTextChangedListener(txtDest);
+                }
+            }
+        });
+
 //        etSearchStartAddress.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 //            @Override
 //            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
@@ -655,12 +647,12 @@ public class MapsActivityNew extends FragmentActivity implements
         etSearchStartAddress.clearFocus();
         etSearchDestination.clearFocus();
         //hideKeyboard(MapsActivity.this);
-        if ((etSearchStartAddress.getText().toString().length() == 0 && orderDriverState == 0)
-                || (etSearchDestination.getText().toString().length() == 0 && orderDriverState == 1)) {
+        if ((etSearchStartAddress.getText().toString().length() == 0 && driverSearchingState == 0)
+                || (etSearchDestination.getText().toString().length() == 0 && driverSearchingState == 1)) {
             showSearchAddressStartUI();
             return;
         }
-        if (orderDriverState == 1) {
+        if (driverSearchingState == 1) {
             rlStartPoint.setVisibility(View.INVISIBLE);
         }
         new LookForAddressTask().execute();
@@ -707,7 +699,6 @@ public class MapsActivityNew extends FragmentActivity implements
     }
 
     private class LookForAddressTask extends AsyncTask<String, Integer, String> {
-        // Runs in UI before background thread is called
         boolean finished;
         String searchText;
 
@@ -716,9 +707,9 @@ public class MapsActivityNew extends FragmentActivity implements
             super.onPreExecute();
             placeDataList.clear();
             finished = false;
-            if (orderDriverState == 0)
+            if (driverSearchingState == 0)
                 searchText = etSearchStartAddress.getText().toString();
-            if (orderDriverState == 1)
+            if (driverSearchingState == 1)
                 searchText = etSearchDestination.getText().toString();
         }
 
@@ -740,22 +731,22 @@ public class MapsActivityNew extends FragmentActivity implements
                         for (final AutocompletePrediction ap : aa) {
                             mGeoDataClient.getPlaceById(ap.getPlaceId()).addOnCompleteListener(
                                     new OnCompleteListener<PlaceBufferResponse>() {
-                                @Override
-                                public void onComplete(@NonNull Task<PlaceBufferResponse> task) {
-                                    if (task.isSuccessful() && task.getResult().getCount() > 0) {
-                                        for (Place gotPlace : task.getResult()) {
-                                            place Place = new place(gotPlace.getName().toString(),
-                                                    gotPlace.getAddress().toString(), "" + gotPlace.getLatLng().latitude,
-                                                    "" + gotPlace.getLatLng().longitude, R.drawable.lieux_proches);
-                                            placeDataList.add(Place);
+                                        @Override
+                                        public void onComplete(@NonNull Task<PlaceBufferResponse> task) {
+                                            if (task.isSuccessful() && task.getResult().getCount() > 0) {
+                                                for (Place gotPlace : task.getResult()) {
+                                                    place Place = new place(gotPlace.getName().toString(),
+                                                            gotPlace.getAddress().toString(), "" + gotPlace.getLatLng().latitude,
+                                                            "" + gotPlace.getLatLng().longitude, R.drawable.lieux_proches);
+                                                    placeDataList.add(Place);
+                                                }
+                                                placeAdapter.notifyDataSetChanged();
+                                                finished = true;
+                                            } else {
+                                                finished = true;
+                                            }
                                         }
-                                        placeAdapter.notifyDataSetChanged();
-                                        finished = true;
-                                    } else {
-                                        finished = true;
-                                    }
-                                }
-                            });
+                                    });
                         }
                     } else {
                         finished = true;
@@ -776,17 +767,17 @@ public class MapsActivityNew extends FragmentActivity implements
             int Height = 67 * placeDataList.size();
             AnimateConstraint.animate(getApplicationContext(), rvSearchResult, HeightAbsolute, HeightAbsolute, 1);
             AnimateConstraint.animate(getApplicationContext(), rlFavouritePlace, 1, 1, 1);
-            if (orderDriverState == 0) {
+            if (driverSearchingState == 0) {
 //                searchButton.setVisibility(View.VISIBLE);
                 rvSearchResult.setVisibility(View.VISIBLE);
                 //if(Height > (dpHeight - (270)))
                 getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-                rlStartPoint.setVisibility(View.GONE);
-                ivWheel.setVisibility(View.GONE);
-                ivShadow.setVisibility(View.GONE);
+//                rlStartPoint.setVisibility(View.GONE);
+//                ivWheel.setVisibility(View.GONE);
+//                ivShadow.setVisibility(View.GONE);
             }
 
-            if (orderDriverState == 1) {
+            if (driverSearchingState == 1) {
                 btnConfirmDestination.setVisibility(View.VISIBLE);
                 rvSearchResult.setVisibility(View.VISIBLE);
                 getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
@@ -797,15 +788,15 @@ public class MapsActivityNew extends FragmentActivity implements
         }
     }
 
-//    public void showFavoritsAndRecents() {
-//        rPlaceDataList.add(getRecentPlaces(getApplicationContext()));
-//        placeAdapter.notifyDataSetChanged();
-//        AnimateConstraint.animate(MapsActivityNew.this, rvFavPlaces, HeightAbsolute, 1, 100);
-//
-//        findViewById(R.id.x).setVisibility(View.VISIBLE);
-////        findViewById(R.id.my_position).setVisibility(View.GONE);
-////        findViewById(R.id.adress_result).setVisibility(View.INVISIBLE);
-//    }
+    public void showFavoritsAndRecents() {
+        rPlaceDataList.add(getRecentPlaces(getApplicationContext()));
+        placeAdapter.notifyDataSetChanged();
+        AnimateConstraint.animate(MapsActivityNew.this, rvFavPlaces, HeightAbsolute, 1, 100);
+
+        findViewById(R.id.x).setVisibility(View.VISIBLE);
+//        findViewById(R.id.my_position).setVisibility(View.GONE);
+//        findViewById(R.id.adress_result).setVisibility(View.INVISIBLE);
+    }
 
     public place getRecentPlaces(Context context) {
 
@@ -863,7 +854,6 @@ public class MapsActivityNew extends FragmentActivity implements
     private class sendRequestsTask extends AsyncTask<String, Integer, String> {
         SharedPreferences prefs;
 
-        String image;
         boolean finishedSendReq = false;
 
         // Runs in UI before background thread is called
@@ -1978,13 +1968,14 @@ public class MapsActivityNew extends FragmentActivity implements
     }
 
     private void showSelectDestUI() {
-        orderDriverState = 1;
+        driverSearchingState = 1;
         hideSearchAddressStartUI();
         btnPickUp.setVisibility(View.GONE);
         ivShadow.setVisibility(View.GONE);
         etSearchDestination.setVisibility(View.VISIBLE);
         rlEndPoint.setVisibility(View.VISIBLE);
         ivWheel.setVisibility(View.GONE);
+        llDeliveryCar.setVisibility(View.GONE);
 
         Display display = getWindowManager().getDefaultDisplay();
         DisplayMetrics outMetrics = new DisplayMetrics();
@@ -1994,7 +1985,7 @@ public class MapsActivityNew extends FragmentActivity implements
         float dpHeight = outMetrics.heightPixels / density;
         float dpWidth = outMetrics.widthPixels / density;
 
-        AnimateConstraint.animate(getApplicationContext(), rlStartPoint, (dpHeight - 70), 70, 500);
+        AnimateConstraint.animate(getApplicationContext(), rlStartPoint, (dpHeight - 90), 70, 500);
         AnimateConstraint.fadeIn(getApplicationContext(), rlEndPoint, 500, 10);
 
         etSearchStartAddress.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_dot, 0, 0, 0);
@@ -2010,7 +2001,7 @@ public class MapsActivityNew extends FragmentActivity implements
         frameTime.setText(tvClosestDriver.getText());
         Bitmap bm = flDriverPin.getDrawingCache();
 
-        Marker myMarker = mMap.addMarker(new MarkerOptions()
+        mMap.addMarker(new MarkerOptions()
                 .position(startLatLng)
                 .icon(BitmapDescriptorFactory.fromBitmap(bm)));
 
@@ -2024,17 +2015,6 @@ public class MapsActivityNew extends FragmentActivity implements
         });
 
     }
-
-//    public void hideSearchAddressStartUI() {
-//        placeDataList.clear();
-//        placeAdapter.notifyDataSetChanged();
-//        rvFavPlaces.setVisibility(View.INVISIBLE);
-//
-//        if (rvFavPlaces.getHeight() >= HeightAbsolute)
-//            AnimateConstraint.animateCollapse(getApplicationContext(), rvFavPlaces, 1, HeightAbsolute, 300);
-//        rlStartPoint.setVisibility(View.VISIBLE);
-//    }
-
 
     public void hideSearchAddressStartUI() {
         placeDataList.clear();
@@ -2053,19 +2033,20 @@ public class MapsActivityNew extends FragmentActivity implements
 //        findViewById(R.id.imageView7).setVisibility(View.INVISIBLE);
 //        findViewById(R.id.imageView8).setVisibility(View.INVISIBLE);
 //        coverButton.setVisibility(View.VISIBLE);
-        rlStartPoint.setVisibility(View.VISIBLE);
-        if (orderDriverState == 0) {
+        if (driverSearchingState == 0) {
+            AnimateConstraint.animate(MapsActivityNew.this, rlStartPoint, 200, (dpHeight - 80), 500);
             btnPickUp.setVisibility(View.VISIBLE);
-//            bottomMenu.setVisibility(View.VISIBLE);
             ivWheel.setVisibility(View.VISIBLE);
+            llDeliveryCar.setVisibility(View.VISIBLE);
         }
-        if (orderDriverState == 1) {
+
+        if (driverSearchingState == 1) {
             llConfirmDestination.setVisibility(View.VISIBLE);
         }
     }
 
     private void switchToCommandLayout() {
-        orderDriverState = 2;
+        driverSearchingState = 2;
         ivCurrentLocation.setVisibility(View.GONE);
         AnimateConstraint.animate(getApplicationContext(), rlEndPoint,
                 dpHeight - 130, 100, 500,
@@ -2280,7 +2261,7 @@ public class MapsActivityNew extends FragmentActivity implements
             flLocationStart.buildDrawingCache();
             bm = flLocationStart.getDrawingCache();
             startPositionMarker = mMap.addMarker(new MarkerOptions()
-                    .position(startPositionT)
+                    .position(startPositionLatLong)
                     .icon(BitmapDescriptorFactory.fromBitmap(bm)));
 
         }
@@ -2367,7 +2348,7 @@ public class MapsActivityNew extends FragmentActivity implements
 
 
             CameraPosition cameraPosition = new CameraPosition.Builder()
-                    .target(startPositionT)      // Sets the center of the map to Mountain View
+                    .target(startPositionLatLong)      // Sets the center of the map to Mountain View
                     .zoom(17)                   // Sets the zoom
                     .build();                   // Creates a CameraPosition from the builder
             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
@@ -2375,7 +2356,7 @@ public class MapsActivityNew extends FragmentActivity implements
 
             Bitmap bm = flDriverPin.getDrawingCache();
             startPositionMarker = mMap.addMarker(new MarkerOptions()
-                    .position(startPositionT)
+                    .position(startPositionLatLong)
                     .icon(BitmapDescriptorFactory.fromBitmap(bm)));
 
         }
@@ -2468,8 +2449,7 @@ public class MapsActivityNew extends FragmentActivity implements
 
 
     private void cancelCommandLayout() {
-        orderDriverState = 1;
-
+        driverSearchingState = 1;
         AnimateConstraint.animate(getApplicationContext(), rlEndPoint,
                 180, dpHeight - 20, 500, llConfirmDestination, ivArraw);
         ivArraw.setVisibility(View.GONE);
@@ -2477,16 +2457,17 @@ public class MapsActivityNew extends FragmentActivity implements
         ivGoo.setVisibility(View.GONE);
         contentPricePromoCode.setVisibility(View.GONE);
 
-        rlStartPoint.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) (dpHeight - 42),
+        rlStartPoint.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                (int) (dpHeight - 42),
                 getApplicationContext().getResources().getDisplayMetrics());
 
-        rlStartPoint.setVisibility(View.VISIBLE);
+//        rlStartPoint.setVisibility(View.VISIBLE);
         btnConfirmDestination.setVisibility(View.VISIBLE);
         ivDrawerToggol.setVisibility(View.VISIBLE);
 
         etSearchDestination.setEnabled(true);
 
-        findViewById(R.id.iv_location_pin_dest).setVisibility(View.VISIBLE);
+        flLocationDestination.setVisibility(View.VISIBLE);
         mMap.clear();
         showSelectDestUI();
     }
@@ -2586,7 +2567,7 @@ public class MapsActivityNew extends FragmentActivity implements
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             if (thePath != null) {
-                if (thePath.size() > 0 && orderDriverState == 2) {
+                if (thePath.size() > 0 && driverSearchingState == 2) {
                     if (mid != null) {
                    /* mMap.animateCamera(CameraUpdateFactory.newCameraPosition(   new CameraPosition.Builder()
                             .target(mid)      // Sets the center of the map to Mountain View
@@ -2614,17 +2595,18 @@ public class MapsActivityNew extends FragmentActivity implements
                         flDriverPin.setDrawingCacheEnabled(true);
                         flDriverPin.buildDrawingCache();
                         Bitmap bm = flDriverPin.getDrawingCache();
-                        /*driverPosMarker =*/ mMap.addMarker(new MarkerOptions()
+                        /*driverPosMarker =*/
+                        mMap.addMarker(new MarkerOptions()
                                 .position(arrival)
                                 .icon(BitmapDescriptorFactory.fromBitmap(bm)));
 
                         flLocationStart.setDrawingCacheEnabled(true);
                         flLocationStart.buildDrawingCache();
                         bm = flLocationStart.getDrawingCache();
-                        /*startPositionMarker =*/ mMap.addMarker(new MarkerOptions()
+                        /*startPositionMarker =*/
+                        mMap.addMarker(new MarkerOptions()
                                 .position(start)
                                 .icon(BitmapDescriptorFactory.fromBitmap(bm)));
-
 
 
                         builder.include(arrival);
@@ -2902,7 +2884,7 @@ public class MapsActivityNew extends FragmentActivity implements
             @Override
             public void onCameraIdle() {
                 Log.e(TAG, "onCameraIdle: ");
-                if (orderDriverState == 0) {
+                if (driverSearchingState == 0) {
                     if (geoQuery != null) {
                         geoQuery.setCenter(new GeoLocation(startLatLng.latitude, startLatLng.longitude));
                     }
@@ -2915,7 +2897,7 @@ public class MapsActivityNew extends FragmentActivity implements
                         new ReverseGeocodingTask(MapsActivityNew.this).execute(startLatLng);
                 }
 
-                if (orderDriverState == 1) {
+                if (driverSearchingState == 1) {
                     destLatLng = mMap.getCameraPosition().target;
                     if (!courseScreenIsOn)
                         new ReverseGeocodingTask(MapsActivityNew.this).execute(destLatLng);
@@ -2978,13 +2960,11 @@ public class MapsActivityNew extends FragmentActivity implements
 
 
     private void hideSelectDestUI() {
-        orderDriverState = 0;
-
+        driverSearchingState = 0;
         ivDrawerToggol.setClickable(true);
-
         hideSearchAddressStartUI();
         etSearchStartAddress.setVisibility(View.VISIBLE);
-        rlStartPoint.setVisibility(View.VISIBLE);
+//        rlStartPoint.setVisibility(View.VISIBLE);
 
         etSearchDestination.setVisibility(View.GONE);
         llConfirmDestination.setVisibility(View.GONE);
@@ -2992,7 +2972,6 @@ public class MapsActivityNew extends FragmentActivity implements
 
         etSearchStartAddress.setEnabled(true);
 
-        AnimateConstraint.animate(MapsActivityNew.this, rlStartPoint, 180, (dpHeight - 80), 500);
 
         findViewById(R.id.ic_location_pin_start).setVisibility(View.VISIBLE);
         findViewById(R.id.tv_closest_driver).setVisibility(View.VISIBLE);
@@ -3028,13 +3007,13 @@ public class MapsActivityNew extends FragmentActivity implements
 
         AnimateConstraint.animate(getApplicationContext(), etSearchStartAddress, 1, 1, 1);
 
-//        if (orderDriverState == 0) {
+//        if (driverSearchingState == 0) {
 //            selectStart.setVisibility(View.VISIBLE);
 //            bottomMenu.setVisibility(View.VISIBLE);
 //            selectedOp.setVisibility(View.VISIBLE);
 //            shadowBg.setVisibility(View.VISIBLE);
 //        }
-//        if (orderDriverState == 1) {
+//        if (driverSearchingState == 1) {
 //            selectDest.setVisibility(View.VISIBLE);
 //        }
     }
@@ -3049,7 +3028,7 @@ public class MapsActivityNew extends FragmentActivity implements
 
         @Override
         protected String doInBackground(LatLng... params) {
-            if (orderDriverState != 0 && orderDriverState != 1)
+            if (driverSearchingState != 0 && driverSearchingState != 1)
                 return "";
             return getCompleteAddressString(getApplicationContext(), params[0].latitude, params[0].longitude);
         }
@@ -3058,9 +3037,9 @@ public class MapsActivityNew extends FragmentActivity implements
         protected void onPostExecute(String addressText) {
             if (courseScreenIsOn)
                 return;
-            if (orderDriverState == 0)
+            if (driverSearchingState == 0)
                 etSearchStartAddress.setText(addressText);
-            if (orderDriverState == 1)
+            if (driverSearchingState == 1)
                 etSearchDestination.setText(addressText);
 
         }
@@ -3278,14 +3257,14 @@ public class MapsActivityNew extends FragmentActivity implements
 
             if (!courseScreenIsOn) {
                 tvClosestDriver.setText((int) distanceKmTime + "\nmin");
-                if (orderDriverState == 1) {
+                if (driverSearchingState == 1) {
                     if (tvClosestDriver.getText().toString().startsWith("-")) {
                         tvFrameTime.setText(tvClosestDriver.getText().toString().substring(1));
                     } else {
                         tvFrameTime.setText(tvClosestDriver.getText());
                     }
                 }
-                if (orderDriverState == 2) {
+                if (driverSearchingState == 2) {
                     if (tvClosestDriver.getText().toString().startsWith("-")) {
                         tvFrameTime.setText(tvClosestDriver.getText().toString().substring(1));
                     } else {
@@ -3298,11 +3277,11 @@ public class MapsActivityNew extends FragmentActivity implements
 
                 tvClosestDriver.setText("4\nmin");
                 tvFrameTime.setText("4\nMin");
-                if (orderDriverState == 1) {
+                if (driverSearchingState == 1) {
                     tvClosestDriver.setText("4\nmin");
                     tvFrameTime.setText("4\nMin");
                 }
-                if (orderDriverState == 2) {
+                if (driverSearchingState == 2) {
                     tvClosestDriver.setText("4\nmin");
                     tvFrameTime.setText("4\nMin");
                 }
@@ -3339,22 +3318,22 @@ public class MapsActivityNew extends FragmentActivity implements
                                 driverIDT = data.child("driver").getValue(String.class);
                                 driverPosT = new LatLng(Double.parseDouble(data.child("driverPosLat").getValue(String.class)),
                                         Double.parseDouble(data.child("driverPosLong").getValue(String.class)));
-                                startPositionT = new LatLng(Double.parseDouble(data.child("startLat").getValue(String.class)),
+                                startPositionLatLong = new LatLng(Double.parseDouble(data.child("startLat").getValue(String.class)),
                                         Double.parseDouble(data.child("startLong").getValue(String.class)));
 
 
-                                driverLocT = new Location("");
+                                driverLocation = new Location("");
                                 startLocT = new Location("");
 
 
                                 startText = data.child("startAddress").getValue(String.class);
                                 endText = data.child("endAddress").getValue(String.class);
 
-                                driverLocT.setLatitude(driverPosT.latitude);
-                                driverLocT.setLatitude(driverPosT.longitude);
+                                driverLocation.setLatitude(driverPosT.latitude);
+                                driverLocation.setLatitude(driverPosT.longitude);
 
-                                startLocT.setLatitude(startPositionT.latitude);
-                                startLocT.setLatitude(startPositionT.longitude);
+                                startLocT.setLatitude(startPositionLatLong.latitude);
+                                startLocT.setLatitude(startPositionLatLong.longitude);
 
 
                                 FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(driverIDT).addListenerForSingleValueEvent(new ValueEventListener() {

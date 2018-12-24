@@ -72,9 +72,9 @@ import android.widget.Toast;
 
 import com.comingoo.user.comingoo.async.ReadTask;
 import com.comingoo.user.comingoo.async.ReverseGeocodingTask;
+import com.comingoo.user.comingoo.interfaces.PickLocation;
 import com.comingoo.user.comingoo.model.place;
 import com.comingoo.user.comingoo.utility.AnimateConstraint;
-import com.comingoo.user.comingoo.interfaces.PickLocation;
 import com.comingoo.user.comingoo.utility.LocalHelper;
 import com.comingoo.user.comingoo.model.LocationInitializer;
 import com.comingoo.user.comingoo.R;
@@ -2808,7 +2808,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         getRecentPlaces(MapsActivity.this);
 
         AnimateConstraint.animate(MapsActivity.this, favorite, HeightAbsolute, 1, 100);
-
 
         findViewById(R.id.imageView7).setVisibility(View.VISIBLE);
         findViewById(R.id.x).setVisibility(View.VISIBLE);

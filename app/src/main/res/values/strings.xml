@@ -192,6 +192,11 @@
     <string name="yes_i_am_sure">Oui je suis sûr</string>
     <string name="please_enter_a_valid_promo_code">S\'il vous plaît entrer un code promo valide</string>
     <string name="confirm">confirmer</string>
+    <string name="todo">TODO</string>
+    <string name="new_line_dot">...</string>
+    <string name="user_name">User Name</string>
+    <string name="appelle_telephonique">Appelle telephonique</string>
+    <string name="appelle_voip">Appelle VOIP</string>
 
     <string-array name="blocked_users" tools:ignore="ExtraTranslation">
         <item>brightgupta18@gmail.com</item>

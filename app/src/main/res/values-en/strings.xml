@@ -192,6 +192,8 @@
     <string name="yes_i_am_sure">Yes, I am sure</string>
     <string name="please_enter_a_valid_promo_code">Please enter a valid promo code</string>
     <string name="confirm">Confirm</string>
+    <string name="appelle_telephonique">Appelle telephonique</string>
+    <string name="appelle_voip">Appelle VOIP</string>
 
     <string-array name="blocked_users" tools:ignore="ExtraTranslation">
         <item>brightgupta18@gmail.com</item>

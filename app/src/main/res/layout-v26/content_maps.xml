@@ -187,6 +187,7 @@
         android:src="@drawable/ic_bottom_fade"
         android:visibility="visible" />
 
+
     <RelativeLayout
         android:id="@+id/rl_start_point"
         android:layout_width="match_parent"
@@ -300,17 +301,13 @@
             android:layout_margin="@dimen/margin_large"
             android:background="@drawable/contact_area"
             android:cursorVisible="false"
-            android:drawableStart="@drawable/ic_dot"
-            android:drawableEnd="@drawable/ic_search"
+            android:drawableLeft="@drawable/ic_dot"
+            android:drawableRight="@drawable/ic_search"
             android:drawablePadding="@dimen/margin_normal"
             android:maxLines="1"
             android:padding="@dimen/margin_normal"
             android:singleLine="true"
-            android:textColor="@color/color_dark_ash"
-            android:autofillHints=""
-            android:inputType="text"
-            tools:ignore="LabelFor,UnusedAttribute"
-            tools:targetApi="o" />
+            android:textColor="@color/color_dark_ash" />
 
         <LinearLayout
             android:id="@+id/ll_destination"
@@ -329,19 +326,17 @@
                 android:layout_weight="0.3"
                 android:background="@drawable/ic_pickup"
                 android:text="@string/txt_pick_up"
-                android:textColor="@android:color/white"
-                tools:ignore="ButtonStyle" />
+                android:textColor="@android:color/white" />
 
             <Button
                 android:id="@+id/btn_destination_ignore"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:layout_marginEnd="@dimen/margin_normal"
+                android:layout_marginRight="@dimen/margin_normal"
                 android:layout_weight="0.7"
                 android:background="@drawable/gray_button"
                 android:text="@string/txt_ignore"
-                android:textColor="@android:color/white"
-                tools:ignore="ButtonStyle" />
+                android:textColor="@android:color/white" />
         </LinearLayout>
     </RelativeLayout>
 
@@ -351,7 +346,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/rl_start_point"
-        android:layout_marginStart="@dimen/margin_large">
+        android:layout_marginLeft="@dimen/margin_large">
 
         <TextView
             android:id="@+id/tv_fav_pace"
@@ -378,7 +373,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/rl_favourite_place"
-        android:layout_marginStart="@dimen/margin_large">
+        android:layout_marginLeft="@dimen/margin_large">
 
         <TextView
             android:id="@+id/tv_recent_place"
@@ -418,10 +413,10 @@
         android:id="@+id/iv_arrow_start_end"
         android:layout_width="20dp"
         android:layout_height="80dp"
-        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:layout_marginTop="70dp"
-        android:layout_marginEnd="@dimen/margin_small"
-        android:contentDescription="@string/todo"
+        android:layout_marginRight="@dimen/margin_small"
+        android:contentDescription="TODO"
         android:scaleType="fitXY"
         android:src="@drawable/arrow"
         android:visibility="gone" />
@@ -430,11 +425,11 @@
         android:id="@+id/iv_current_location"
         android:layout_width="35dp"
         android:layout_height="35dp"
-        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginEnd="@dimen/margin_normal"
+        android:layout_marginRight="@dimen/margin_normal"
         android:layout_marginBottom="190dp"
-        android:contentDescription="@string/todo"
+        android:contentDescription="TODO"
         android:src="@drawable/my_position_icon" />
 
     <include
@@ -443,7 +438,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:visibility="gone"/>
+        android:visibility="gone"></include>
 
     <include
         android:id="@+id/content_voip_view"
@@ -451,7 +446,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:visibility="gone"/>
+        android:visibility="gone"></include>
 
     <ImageView
         android:id="@+id/iv_goo"
@@ -459,7 +454,7 @@
         android:layout_height="60dp"
         android:layout_above="@+id/content_price_promo_code"
         android:layout_centerHorizontal="true"
-        android:contentDescription="@string/todo"
+        android:contentDescription="TODO"
         android:src="@drawable/goo"
         android:visibility="gone" />
 
@@ -470,14 +465,14 @@
         android:layout_above="@+id/content_price_promo_code"
         android:layout_centerHorizontal="true"
         android:background="@drawable/goo_layout"
-        android:contentDescription="@string/todo"
+        android:contentDescription="TODO"
         android:visibility="gone" />
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/iv_cancel_ride"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:layout_margin="15dp"
         android:src="@drawable/cancel"
         android:visibility="gone"
