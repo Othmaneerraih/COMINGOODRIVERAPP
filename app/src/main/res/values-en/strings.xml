@@ -9,6 +9,7 @@
     <string name="Invitervosamis">"Refer a friend "</string>
     <string name="Comingooandyou">Comingoo &amp; YOU</string>
     <string name="Aide">Help</string>
+    <string name="Notification">Notifications</string>
     <string name="Sedeconnecter">logout</string>
     <string name="Lieuxfavoris">Favorite places:</string>
     <string name="Lieuxrécents">recent places:</string>
@@ -89,6 +90,15 @@
     <string name="driver_arrived_txt">At Comingoo, we ride in the front</string>
 
 
+
+
+    <string name="txt_recent_place">Recent Place</string>
+    <string name="txt_favourite_place">Favourite Place</string>
+    <string name="txt_ignore">Ignore</string>
+    <string name="txt_pick_up">Pick Up</string>
+
+    <string name="txt_enter_promo_code">Please Enter Promo Code</string>
+    <string name="txt_promo_code_expired">Promo Code is expired</string>
 
 
     <string name="speech_input_warning_txt">Your Device Don\'t Support Speech Input</string>

@@ -75,7 +75,7 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-            startActivity(new Intent(LoginActivity.this, MapsActivity.class));
+            startActivity(new Intent(LoginActivity.this, MapsActivityNew.class));
             finish();
         }
 
@@ -145,7 +145,7 @@ public class LoginActivity extends AppCompatActivity {
                                                                         if (task.isSuccessful()) {
                                                                             SharedPreferences prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
                                                                             prefs.edit().putString("userID", FirebaseAuth.getInstance().getCurrentUser().getUid()).apply();
-                                                                            startActivity(new Intent(LoginActivity.this, MapsActivity.class));
+                                                                            startActivity(new Intent(LoginActivity.this, MapsActivityNew.class));
                                                                             finish();
                                                                         } else {
                                                                             Toast.makeText(LoginActivity.this, Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();

@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/map_maps_activity"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.comingoo.user.comingoo.MapsActivity" />
+
+    <FrameLayout
+        android:id="@+id/fl_location_start"
+        android:layout_width="79dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:visibility="visible">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/location_start_pin"
+                android:layout_width="56dp"
+                android:layout_height="76dp"
+                android:layout_marginStart="0dp"
+                android:layout_marginLeft="0dp"
+                android:layout_marginEnd="0dp"
+                android:layout_marginRight="0dp"
+                android:visibility="visible" />
+
+            <TextView
+                android:id="@+id/tv_closest_driverPin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:fontFamily="@font/roboto"
+                android:text="6\nmin"
+                android:textAlignment="center"
+                android:textColor="@android:color/white"
+                android:textSize="12sp" />
+
+        </RelativeLayout>
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/fl_location_destination"
+        android:layout_width="79dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:visibility="visible">
+
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/iv_location_dest_pin"
+                android:layout_width="56dp"
+                android:layout_height="76dp"
+                android:layout_marginStart="0dp"
+                android:layout_marginLeft="0dp"
+                android:layout_marginEnd="0dp"
+                android:layout_marginRight="0dp"
+                android:visibility="visible" />
+        </android.support.constraint.ConstraintLayout>
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/fl_driver_location_pic"
+        android:layout_width="79dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:visibility="visible">
+
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/driver_pin"
+                android:layout_width="56dp"
+                android:layout_height="76dp"
+                android:layout_marginStart="0dp"
+                android:layout_marginLeft="0dp"
+                android:layout_marginEnd="0dp"
+                android:layout_marginRight="0dp"
+                android:visibility="visible" />
+
+
+        </android.support.constraint.ConstraintLayout>
+
+    </FrameLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_depart_pin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/ic_location_pin_start"
+            android:layout_width="86dp"
+            android:layout_height="66dp"
+            android:layout_marginBottom="76dp"
+            android:src="@drawable/ic_depart_pin"
+            android:visibility="visible" />
+
+        <ImageView
+            android:id="@+id/iv_location_pin_dest"
+            android:layout_width="76dp"
+            android:layout_height="56dp"
+            android:layout_marginBottom="76dp"
+            android:src="@drawable/ic_destination_pin"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tv_closest_driver"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="12dp"
+            android:fontFamily="@font/roboto"
+            android:text="\n..."
+            android:textAlignment="center"
+            android:textColor="@android:color/white"
+            android:textSize="12sp" />
+
+    </RelativeLayout>
+
+
+    <ImageView
+        android:id="@+id/iv_menu_maps"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginLeft="@dimen/margin_normal"
+        android:layout_marginTop="@dimen/margin_normal"
+        android:src="@drawable/home_icon" />
+
+    <com.skyfishjy.library.RippleBackground xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/rapple_animation"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.5"
+        app:rb_color="@color/colorPrimaryDark"
+        app:rb_duration="3000"
+        app:rb_radius="32dp"
+        app:rb_rippleAmount="4"
+        app:rb_scale="6">
+
+        <ImageView
+            android:id="@+id/iv_rapple_center_image"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_centerInParent="true" />
+    </com.skyfishjy.library.RippleBackground>
+
+
+    <ImageView
+        android:id="@+id/iv_shadow"
+        android:layout_width="match_parent"
+        android:layout_height="115dp"
+        android:visibility="visible"
+        android:scaleType="fitXY"
+        android:layout_marginTop="@dimen/margin_normal"
+        android:adjustViewBounds="true"
+        android:layout_alignParentBottom="true"
+        android:src="@drawable/ic_bottom_fade" />
+
+    <RelativeLayout
+        android:id="@+id/rl_start_point"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:visibility="visible">
+
+        <EditText
+            android:id="@+id/et_start_point"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_margin="@dimen/margin_large"
+            android:background="@drawable/contact_area"
+            android:cursorVisible="false"
+            android:drawableLeft="@drawable/ic_dot"
+            android:drawableRight="@drawable/ic_search"
+            android:drawablePadding="@dimen/margin_normal"
+            android:maxLines="1"
+            android:padding="@dimen/margin_normal"
+            android:singleLine="true"
+            android:textColor="@color/color_dark_ash" />
+
+        <Button
+            android:id="@+id/btn_pickup"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_below="@+id/et_start_point"
+            android:layout_marginLeft="@dimen/margin_normal"
+            android:layout_marginRight="@dimen/margin_normal"
+            android:background="@drawable/ic_pickup"
+            android:text="@string/txt_pick_up"
+            android:textColor="@android:color/white" />
+
+        <ImageView
+            android:id="@+id/iv_wheel"
+            android:layout_width="80dp"
+            android:layout_height="50dp"
+            android:layout_below="@+id/btn_pickup"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/ic_wheel" />
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/rl_end_point"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:visibility="gone">
+
+        <EditText
+            android:id="@+id/et_end_point"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_margin="@dimen/margin_large"
+            android:background="@drawable/contact_area"
+            android:cursorVisible="false"
+            android:drawableLeft="@drawable/ic_dot"
+            android:drawableRight="@drawable/ic_search"
+            android:drawablePadding="@dimen/margin_normal"
+            android:maxLines="1"
+            android:padding="@dimen/margin_normal"
+            android:singleLine="true"
+            android:textColor="@color/color_dark_ash" />
+
+        <LinearLayout
+            android:id="@+id/ll_destination"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/et_end_point"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+            <Button
+                android:id="@+id/btn_destination"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginLeft="@dimen/margin_normal"
+                android:layout_marginRight="@dimen/margin_normal"
+                android:layout_weight="0.3"
+                android:background="@drawable/ic_pickup"
+                android:text="@string/txt_pick_up"
+                android:textColor="@android:color/white" />
+
+            <Button
+                android:id="@+id/btn_destination_ignore"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginRight="@dimen/margin_normal"
+                android:layout_weight="0.7"
+                android:background="@drawable/gray_button"
+                android:text="@string/txt_ignore"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/rl_favourite_place"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rl_start_point"
+        android:layout_marginLeft="@dimen/margin_large">
+
+        <TextView
+            android:id="@+id/tv_fav_pace"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/txt_favourite_place"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_fav_place"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_fav_pace"
+            android:layout_margin="@dimen/margin_normal"
+            android:fontFamily="@font/roboto"
+            android:paddingBottom="15dp"
+            android:scrollbars="vertical"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_recent_place"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rl_favourite_place"
+        android:layout_marginLeft="@dimen/margin_large">
+
+        <TextView
+            android:id="@+id/tv_recent_place"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/txt_recent_place"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_recent_places"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_recent_place"
+            android:layout_margin="@dimen/margin_normal"
+            android:fontFamily="@font/roboto"
+            android:paddingBottom="15dp"
+            android:scrollbars="vertical"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_search_result"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:fontFamily="@font/roboto"
+        android:scrollbars="vertical"
+        android:visibility="visible"
+        android:layout_below="@+id/rl_start_point"/>
+
+
+    <ImageView
+        android:id="@+id/iv_arrow_start_end"
+        android:layout_width="20dp"
+        android:layout_height="80dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="70dp"
+        android:layout_marginRight="@dimen/margin_small"
+        android:scaleType="fitXY"
+        android:src="@drawable/arrow"
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/iv_current_location"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="@dimen/margin_normal"
+        android:layout_marginBottom="190dp"
+        android:src="@drawable/my_position_icon" />
+
+    <include
+        android:id="@+id/content_price_promo_code"
+        layout="@layout/content_price_promo_code"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:visibility="gone"></include>
+
+    <include
+        android:id="@+id/content_voip_view"
+        layout="@layout/content_voip_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:visibility="gone"></include>
+
+    <ImageView
+        android:id="@+id/iv_goo"
+        android:layout_width="140dp"
+        android:layout_height="60dp"
+        android:layout_above="@+id/content_price_promo_code"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/goo"
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/iv_cancel_request"
+        android:layout_width="49dp"
+        android:layout_height="49dp"
+        android:layout_above="@+id/content_price_promo_code"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/goo_layout"
+        android:visibility="gone" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/iv_cancel_ride"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentRight="true"
+        android:layout_margin="15dp"
+        android:src="@drawable/cancel"
+        android:visibility="gone"
+        app:civ_border_color="@color/color_ash"
+        app:civ_border_width="2dp" />
+</RelativeLayout>

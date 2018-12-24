@@ -3,7 +3,6 @@ package com.comingoo.user.comingoo.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,21 +11,22 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.comingoo.user.comingoo.activity.FevoriteLocationActivity;
-import com.comingoo.user.comingoo.Interfaces.PickLocation;
-import com.comingoo.user.comingoo.activity.MapsActivity;
+import com.comingoo.user.comingoo.interfaces.PickLocation;
 import com.comingoo.user.comingoo.R;
-import com.comingoo.user.comingoo.model.Place;
+import com.comingoo.user.comingoo.model.place;
 
-import java.util.List;
+
+import java.util.ArrayList;
 
 public class MyPlaceAdapter extends RecyclerView.Adapter<MyPlaceAdapter.ViewHolder> {
-    private List<Place> mDataset;
+    private ArrayList<place> mDataset;
     private Context context;
     private boolean isAddButtonNeed;
     private String userId;
     private PickLocation pickLocation;
 
-    public MyPlaceAdapter(Context context, List<Place> myDataset, boolean isAddNeed, String userId, PickLocation pickLocation) {
+    public MyPlaceAdapter(Context context, ArrayList<place> myDataset,
+                          boolean isAddNeed, String userId, PickLocation pickLocation) {
         this.mDataset = myDataset;
         this.context = context;
         this.userId = userId;
@@ -45,7 +45,7 @@ public class MyPlaceAdapter extends RecyclerView.Adapter<MyPlaceAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        final Place newPlace = mDataset.get(position);
+        final place newPlace = mDataset.get(position);
 
         if (isAddButtonNeed) holder.addBtn.setVisibility(View.VISIBLE);
         else holder.addBtn.setVisibility(View.GONE);
@@ -53,8 +53,6 @@ public class MyPlaceAdapter extends RecyclerView.Adapter<MyPlaceAdapter.ViewHold
         holder.clickView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                MapsActivity.showSearchAddressStartUI();
-//                MapsActivity.goToLocation(context, Double.parseDouble(newPlace.getLat()), Double.parseDouble(newPlace.getLng()), newPlace);
                 pickLocation.pickedLocation(newPlace);
             }
         });

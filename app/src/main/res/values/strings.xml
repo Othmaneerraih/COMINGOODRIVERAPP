@@ -7,13 +7,20 @@
     <string name="fb_login_protocol_scheme" translatable="false">fb1914646915254873</string>
     <string name="Acceuil">Acceuil</string>
     <string name="Historique">Historique</string>
+    <string name="Notification">Notifications</string>
     <string name="Inbox">Inbox</string>
     <string name="Invitervosamis">Inviter vos amis</string>
     <string name="Comingooandyou">Comingoo &amp; YOU</string>
     <string name="Aide">Aide</string>
     <string name="Sedeconnecter">Devenir driver ? <a href="https://www.comingoo.com/driver"></a></string>
 
+<string name="txt_recent_place">Recent Place</string>
+<string name="txt_favourite_place">Favourite Place</string>
+<string name="txt_ignore">Ignore</string>
+<string name="txt_pick_up">Pick Up</string>
 
+    <string name="txt_enter_promo_code">Please Enter Promo Code</string>
+    <string name="txt_promo_code_expired">Promo Code is expired</string>
 
     <string name="bonne_music_txt">bonne Music</string>
     <string name="image_warning_txt">Ajouter une image</string>

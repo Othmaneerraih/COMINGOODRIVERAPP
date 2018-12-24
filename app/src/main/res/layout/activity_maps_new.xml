@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.MapsActivityNew">
+
+    <RelativeLayout
+        android:id="@+id/rl_map_drawer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/ic_maps_background">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/iv_user_image_drawer"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginLeft="@dimen/margin_large"
+            android:layout_marginTop="@dimen/margin_large"
+            android:src="@drawable/ic_driver"
+            app:civ_border_color="@android:color/white"
+            app:civ_border_width="5dp" />
+
+        <TextView
+            android:id="@+id/tv_user_name_drawer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_normal"
+            android:layout_marginTop="40dp"
+            android:layout_toRightOf="@+id/iv_user_image_drawer"
+            android:text="@string/app_name"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/txt_size_large" />
+
+        <LinearLayout
+            android:id="@+id/ll_drawer_home"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/iv_user_image_drawer"
+            android:layout_marginLeft="@dimen/margin_xlarge"
+            android:layout_marginTop="@dimen/margin_xxxlarge"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/ic_home_white" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="@dimen/margin_normal"
+                android:fontFamily="@font/roboto"
+                android:text="@string/Acceuil"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/txt_size_large" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_drawer_history"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/ll_drawer_home"
+            android:layout_marginLeft="@dimen/margin_xlarge"
+            android:layout_marginTop="@dimen/margin_xlarge"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/historique" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="@dimen/margin_normal"
+                android:fontFamily="@font/roboto"
+                android:text="@string/Historique"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/txt_size_large" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_drawer_notificatiions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/ll_drawer_history"
+            android:layout_marginLeft="@dimen/margin_xlarge"
+            android:layout_marginTop="@dimen/margin_xlarge"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/inbox" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="@dimen/margin_normal"
+                android:fontFamily="@font/roboto"
+                android:text="@string/Notification"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/txt_size_large" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_drawer_refer_friend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/ll_drawer_notificatiions"
+            android:layout_marginLeft="@dimen/margin_xlarge"
+            android:layout_marginTop="@dimen/margin_xlarge"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/invite_icon" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="@dimen/margin_normal"
+                android:fontFamily="@font/roboto"
+                android:text="@string/Invitervosamis"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/txt_size_large" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_drawer_comingoo_you"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/ll_drawer_refer_friend"
+            android:layout_marginLeft="@dimen/margin_xlarge"
+            android:layout_marginTop="@dimen/margin_xlarge"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/comingoo_you" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="@dimen/margin_normal"
+                android:fontFamily="@font/roboto"
+                android:text="@string/Comingooandyou"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/txt_size_large" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_drawer_help"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/ll_drawer_comingoo_you"
+            android:layout_marginLeft="@dimen/margin_xlarge"
+            android:layout_marginTop="@dimen/margin_xlarge"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/aide" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="@dimen/margin_normal"
+                android:fontFamily="@font/roboto"
+                android:text="@string/Aide"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/txt_size_large" />
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <include
+        android:id="@+id/content_map_view"
+        layout="@layout/content_maps" />
+
+    <RelativeLayout
+        android:id="@+id/rl_block_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:elevation="10dp"
+        android:visibility="gone">
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_loading_comingoo_logo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/online_button"
+        android:clickable="true"
+        android:visibility="visible">
+
+        <pl.droidsonroids.gif.GifImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"
+            android:src="@drawable/wheel_running" />
+
+    </RelativeLayout>
+</RelativeLayout>
