@@ -256,6 +256,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private MediaPlayer mp;
     private TextView callState;
     private TextView caller_name;
+
+
     private CircleImageView iv_cancel_call_voip_one;
     private CircleImageView iv_mute;
     private CircleImageView iv_loud;
@@ -3529,11 +3531,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void afterLook() {
         if (driversKeys.size() > 0) {
             double distanceKmTime = Math.floor(Double.parseDouble(driversLocations.get(0)));
-
             if (distanceKmTime >= 10) distanceKmTime -= (distanceKmTime * (distanceKmTime / 100));
 
             if (!courseScreenIsOn) {
-//                callLayout.setVisibility(View.GONE);
                 closestDriverText.setText((int) distanceKmTime + "\nmin");
                 if (orderDriverState == 1) {
                     if (closestDriverText.getText().toString().startsWith("-")) {
@@ -3550,7 +3550,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 }
             }
-        } else {
+        }
+        else {
             if (!courseScreenIsOn) {
                 callLayout.setVisibility(View.GONE);
                 closestDriverText.setText("4\nmin");

@@ -208,15 +208,16 @@
             android:elevation="5dp"
             android:ems="10"
             android:fontFamily="@font/roboto_light"
-            android:hint="Address"
+            android:hint="@string/address"
             android:imeOptions="actionDone"
             android:inputType="textPersonName"
-            android:paddingLeft="@dimen/margin_normal"
-            android:paddingRight="10dp"
+            android:paddingStart="@dimen/margin_normal"
+            android:paddingEnd="10dp"
             android:selectAllOnFocus="true"
             android:textColor="@color/purpleColor"
             android:textSize="14sp"
-            android:visibility="visible" />
+            android:visibility="visible"
+            android:autofillHints="" />
     </RelativeLayout>
     <Button
         android:id="@+id/btn_pickup"
@@ -276,20 +277,21 @@
         android:contentDescription="@string/todo"
         android:src="@drawable/ic_wheel" />
 
+
     <RelativeLayout
         android:id="@+id/rl_end_point"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="40dp"
+        android:layout_marginBottom="60dp"
         android:layout_marginTop="30dp"
+        android:layout_marginStart="@dimen/margin_large"
         android:visibility="gone"
-        android:layout_marginEnd="15dp">
+        android:layout_marginEnd="@dimen/margin_large">
         <EditText
             android:id="@+id/et_end_point"
-            android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_margin="@dimen/margin_large"
+            android:layout_width="match_parent"
             android:autofillHints=""
             android:background="@drawable/contact_area"
             android:cursorVisible="false"
