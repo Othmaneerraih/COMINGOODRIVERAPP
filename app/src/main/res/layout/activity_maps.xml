@@ -1008,12 +1008,10 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginRight="8dp"
                 android:elevation="5dp"
-                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@+id/search_edit_text"
                 app:layout_constraintEnd_toEndOf="@+id/search_edit_text"
                 app:layout_constraintTop_toTopOf="@+id/search_edit_text"
-                app:layout_constraintVertical_bias="0.0"
-                tools:visibility="gone" />
+                app:layout_constraintVertical_bias="0.0" />
 
         </android.support.constraint.ConstraintLayout>
 
@@ -1254,7 +1252,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:visibility="gone"
+            android:visibility="visible"
             app:layout_constraintBottom_toTopOf="@+id/selectedOperation"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">

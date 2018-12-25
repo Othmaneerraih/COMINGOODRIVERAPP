@@ -235,6 +235,7 @@ public class MapsActivityNew extends FragmentActivity implements
     private TextWatcher txtDest;
 
     private RecyclerView rvSearchResult;
+    private ImageView ivLocationStartPin, ivLocationDestPin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -252,6 +253,8 @@ public class MapsActivityNew extends FragmentActivity implements
         fPlaceDataList = new ArrayList<>();
         rPlaceDataList = new ArrayList<>();
 
+        ivLocationStartPin = findViewById(R.id.iv_location_pin_start);
+        ivLocationDestPin = findViewById(R.id.iv_location_pin_dest);
         llDrawerInvite = findViewById(R.id.ll_drawer_refer_friend);
         llDrawerNotifications = findViewById(R.id.ll_drawer_notificatiions);
         llDrawerHistory = findViewById(R.id.ll_drawer_history);
@@ -273,6 +276,7 @@ public class MapsActivityNew extends FragmentActivity implements
 
         ivDrawerToggol = findViewById(R.id.iv_menu_maps);
         ivCurrentLocation = findViewById(R.id.iv_current_location);
+        rlStartPoint = findViewById(R.id.rl_start_point);
         etSearchStartAddress = findViewById(R.id.et_start_point);
         etSearchDestination = findViewById(R.id.et_end_point);
         btnConfirmDestination = findViewById(R.id.btn_destination);
@@ -296,7 +300,6 @@ public class MapsActivityNew extends FragmentActivity implements
 
         btnPickUp = findViewById(R.id.btn_pickup);
         llDeliveryCar = findViewById(R.id.ll_delivery_car);
-        rlStartPoint = findViewById(R.id.rl_start_point);
         rlEndPoint = findViewById(R.id.rl_end_point);
         ivWheel = findViewById(R.id.iv_wheel);
 
@@ -324,8 +327,11 @@ public class MapsActivityNew extends FragmentActivity implements
     }
 
     private void action() {
+        // Getting user id from shared pref
         SharedPreferences prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
         userId = prefs.getString("userID", null);
+
+
 
         // Getting display resoulation and toggle drawer
         Display display = getWindowManager().getDefaultDisplay();
@@ -335,6 +341,11 @@ public class MapsActivityNew extends FragmentActivity implements
         dpHeight = outMetrics.heightPixels / density;
         dpWidth = outMetrics.widthPixels / density;
         HeightAbsolute = (int) dpHeight - (200);
+
+
+
+
+        // Drawer Toggoling
         ivDrawerToggol.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -351,22 +362,7 @@ public class MapsActivityNew extends FragmentActivity implements
             ActivityCompat.requestPermissions(MapsActivityNew.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         }
 
-        rvFavPlaces.setHasFixedSize(true);
-        rvFavPlaces.setLayoutManager(new LinearLayoutManager(this));
-
-        rvRecentPlaces.setHasFixedSize(true);
-        rvRecentPlaces.setLayoutManager(new LinearLayoutManager(this));
-
-        placeAdapter = new MyPlaceAdapter(MapsActivityNew.this, placeDataList, false, userId, this);
-        rvRecentPlaces.setAdapter(placeAdapter);
-        rvRecentPlaces.setAdapter(placeAdapter);
-
-        fPlaceAdapter = new FavouritePlaceAdapter(getApplicationContext(), fPlaceDataList, true, userId, this);
-        rvFavPlaces.setAdapter(fPlaceAdapter);
-
-
-        fPlaceAdapter = new FavouritePlaceAdapter(getApplicationContext(), fPlaceDataList, true, userId, this);
-        rvFavPlaces.setAdapter(fPlaceAdapter);
+        initializingRecyclerViews();
 
         ivCurrentLocation.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -404,7 +400,7 @@ public class MapsActivityNew extends FragmentActivity implements
             public void onClick(View v) {
                 state = 1;
                 AnimateConstraint.animate(MapsActivityNew.this,
-                        rlStartPoint, (dpHeight - 80), 100, 0);
+                        etSearchStartAddress, (dpHeight - 80), 100, 0);
                 ivWheel.setVisibility(View.GONE);
                 btnPickUp.setVisibility(View.GONE);
                 llDeliveryCar.setVisibility(View.GONE);
@@ -515,31 +511,26 @@ public class MapsActivityNew extends FragmentActivity implements
         mGeoDataClient = Places.getGeoDataClient(this);
     }
 
+    private void initializingRecyclerViews() {
+        rvFavPlaces.setHasFixedSize(true);
+        rvFavPlaces.setLayoutManager(new LinearLayoutManager(this));
+
+        rvRecentPlaces.setHasFixedSize(true);
+        rvRecentPlaces.setLayoutManager(new LinearLayoutManager(this));
+
+        placeAdapter = new MyPlaceAdapter(MapsActivityNew.this, placeDataList, false, userId, this);
+        rvRecentPlaces.setAdapter(placeAdapter);
+        rvRecentPlaces.setAdapter(placeAdapter);
+
+        fPlaceAdapter = new FavouritePlaceAdapter(getApplicationContext(), fPlaceDataList, true, userId, this);
+        rvFavPlaces.setAdapter(fPlaceAdapter);
+
+
+        fPlaceAdapter = new FavouritePlaceAdapter(getApplicationContext(), fPlaceDataList, true, userId, this);
+        rvFavPlaces.setAdapter(fPlaceAdapter);
+    }
+
     private void setSearchFunc() {
-
-//        findViewById(R.id.coverButton).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                selectStart.setVisibility(View.GONE);
-//                findViewById(R.id.shadow).setVisibility(View.GONE);
-//                bottomMenu.setVisibility(View.GONE);
-//                selectedOp.setVisibility(View.GONE);
-//                selectDest.setVisibility(View.GONE);
-//                findViewById(R.id.coverButton).setVisibility(View.GONE);
-//                state = -1;
-//                showFavoritsAndRecents();
-//            }
-//        });
-
-
-//        etSearchStartAddress.setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                rvSearchResult.setVisibility(View.VISIBLE);
-//                return true;
-//            }
-//        });
-
         etSearchStartAddress.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
@@ -1195,12 +1186,12 @@ public class MapsActivityNew extends FragmentActivity implements
                             }
                         });
 
-                        AnimateConstraint.fadeOut(getApplicationContext(), findViewById(R.id.rl_loading_comingoo_logo),
+                        AnimateConstraint.fadeOut(getApplicationContext(), findViewById(R.id.gif_loading_maps_activity),
                                 500, 10);
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                findViewById(R.id.rl_loading_comingoo_logo).setVisibility(View.GONE);
+                                findViewById(R.id.gif_loading_maps_activity).setVisibility(View.GONE);
                             }
                         }, 500);
                     }
@@ -1775,14 +1766,14 @@ public class MapsActivityNew extends FragmentActivity implements
         textView20.setText(getResources().getString(R.string.Record));
 
 
-        ImageButton nextBtn = (ImageButton) newDialog.findViewById(R.id.imageButton6);
-        TextView name = (TextView) newDialog.findViewById(R.id.textView17);
+        ImageButton nextBtn = newDialog.findViewById(R.id.imageButton6);
+        TextView name = newDialog.findViewById(R.id.textView17);
 
 
-        recordButton = (ImageButton) newDialog.findViewById(R.id.recordAudio);
-        playAudio = (ImageButton) newDialog.findViewById(R.id.playAudio);
-        pauseAudio = (ImageButton) newDialog.findViewById(R.id.pauseAudio);
-        deleteAudio = (ImageButton) newDialog.findViewById(R.id.deleteAudio);
+        recordButton = newDialog.findViewById(R.id.recordAudio);
+        playAudio = newDialog.findViewById(R.id.playAudio);
+        pauseAudio = newDialog.findViewById(R.id.pauseAudio);
+        deleteAudio = newDialog.findViewById(R.id.deleteAudio);
         final MediaPlayer mediaPlayer = new MediaPlayer();
 
 
@@ -1977,22 +1968,14 @@ public class MapsActivityNew extends FragmentActivity implements
         ivWheel.setVisibility(View.GONE);
         llDeliveryCar.setVisibility(View.GONE);
 
-        Display display = getWindowManager().getDefaultDisplay();
-        DisplayMetrics outMetrics = new DisplayMetrics();
-        display.getMetrics(outMetrics);
-
-        float density = getResources().getDisplayMetrics().density;
-        float dpHeight = outMetrics.heightPixels / density;
-        float dpWidth = outMetrics.widthPixels / density;
-
-        AnimateConstraint.animate(getApplicationContext(), rlStartPoint, (dpHeight - 90), 70, 500);
+        AnimateConstraint.animate(getApplicationContext(), rlStartPoint, (dpHeight - 110), 70, 500);
         AnimateConstraint.fadeIn(getApplicationContext(), rlEndPoint, 500, 10);
 
         etSearchStartAddress.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_dot, 0, 0, 0);
 
-        findViewById(R.id.ic_location_pin_start).setVisibility(View.GONE);
+        ivLocationStartPin.setVisibility(View.GONE);
         findViewById(R.id.tv_closest_driver).setVisibility(View.GONE);
-        findViewById(R.id.iv_location_pin_dest).setVisibility(View.VISIBLE);
+        ivLocationDestPin.setVisibility(View.VISIBLE);
 
         tvFrameTime.setText(tvClosestDriver.getText());
 
@@ -2048,6 +2031,7 @@ public class MapsActivityNew extends FragmentActivity implements
     private void switchToCommandLayout() {
         driverSearchingState = 2;
         ivCurrentLocation.setVisibility(View.GONE);
+
         AnimateConstraint.animate(getApplicationContext(), rlEndPoint,
                 dpHeight - 130, 100, 500,
                 llConfirmDestination, ivArraw);
@@ -2056,7 +2040,7 @@ public class MapsActivityNew extends FragmentActivity implements
         AnimateConstraint.fadeIn(MapsActivityNew.this, ivGoo, 500, 10);
         AnimateConstraint.fadeIn(MapsActivityNew.this, contentPricePromoCode, 500, 10);
 
-        rlStartPoint.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+        etSearchStartAddress.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                 (int) (dpHeight - 62), getApplicationContext().getResources().getDisplayMetrics());
 
         llConfirmDestination.setVisibility(View.GONE);
@@ -2064,7 +2048,7 @@ public class MapsActivityNew extends FragmentActivity implements
 
         state = 2;
 
-        findViewById(R.id.iv_location_pin_dest).setVisibility(View.GONE);
+        ivLocationDestPin.setVisibility(View.GONE);
 //        findViewById(R.id.iv_location_pin_start).setVisibility(View.GONE);
 
 
@@ -2457,11 +2441,12 @@ public class MapsActivityNew extends FragmentActivity implements
         ivGoo.setVisibility(View.GONE);
         contentPricePromoCode.setVisibility(View.GONE);
 
-        rlStartPoint.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+        etSearchStartAddress.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                 (int) (dpHeight - 42),
                 getApplicationContext().getResources().getDisplayMetrics());
 
 //        rlStartPoint.setVisibility(View.VISIBLE);
+        etSearchStartAddress.setVisibility(View.VISIBLE);
         btnConfirmDestination.setVisibility(View.VISIBLE);
         ivDrawerToggol.setVisibility(View.VISIBLE);
 
@@ -2973,10 +2958,10 @@ public class MapsActivityNew extends FragmentActivity implements
         etSearchStartAddress.setEnabled(true);
 
 
-        findViewById(R.id.ic_location_pin_start).setVisibility(View.VISIBLE);
+        ivLocationStartPin.setVisibility(View.VISIBLE);
         findViewById(R.id.tv_closest_driver).setVisibility(View.VISIBLE);
-        findViewById(R.id.iv_location_pin_dest).setVisibility(View.GONE);
-
+        ivLocationDestPin.setVisibility(View.GONE);
+        AnimateConstraint.animate(MapsActivityNew.this, rlStartPoint, 50, (dpHeight - 130), 500);
 
         ivDrawerToggol.setImageResource(R.drawable.home_icon);
         ivDrawerToggol.setOnClickListener(new View.OnClickListener() {

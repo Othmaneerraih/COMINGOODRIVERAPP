@@ -2937,7 +2937,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         destArrow.setVisibility(View.GONE);
         findViewById(R.id.gooContent).setVisibility(View.GONE);
         positionButton.setVisibility(View.VISIBLE);
-        startConstraint.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) (dpHeight - 42), getResources().getDisplayMetrics());
+        startConstraint.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                (int) (dpHeight - 42), getResources().getDisplayMetrics());
         shadowBg.setVisibility(View.VISIBLE);
         searchButtonDest.setVisibility(View.VISIBLE);
         menuButton.setVisibility(View.VISIBLE);
