@@ -117,7 +117,8 @@ public class AnimateConstraint {
         anim.start();
     }
 
-    public static void resideAnimation(final Context context, final View constraintLayout, final View contentBlocker, final int screenWidth, final int screenHeight, final int duration) {
+    public static void resideAnimation(final Context context, final View constraintLayout,
+                                       final View contentBlocker, final int screenWidth, final int screenHeight, final int duration) {
 
         final int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) screenHeight, context.getResources().getDisplayMetrics());
         final int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) screenWidth, context.getResources().getDisplayMetrics());

@@ -256,6 +256,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private MediaPlayer mp;
     private TextView callState;
     private TextView caller_name;
+
+
     private CircleImageView iv_cancel_call_voip_one;
     private CircleImageView iv_mute;
     private CircleImageView iv_loud;
@@ -2954,7 +2956,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         destArrow.setVisibility(View.GONE);
         findViewById(R.id.gooContent).setVisibility(View.GONE);
         positionButton.setVisibility(View.VISIBLE);
-        startConstraint.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) (dpHeight - 42), getResources().getDisplayMetrics());
+        startConstraint.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                (int) (dpHeight - 42), getResources().getDisplayMetrics());
         shadowBg.setVisibility(View.VISIBLE);
         searchButtonDest.setVisibility(View.VISIBLE);
         menuButton.setVisibility(View.VISIBLE);
@@ -3545,11 +3548,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void afterLook() {
         if (driversKeys.size() > 0) {
             double distanceKmTime = Math.floor(Double.parseDouble(driversLocations.get(0)));
-
             if (distanceKmTime >= 10) distanceKmTime -= (distanceKmTime * (distanceKmTime / 100));
 
             if (!courseScreenIsOn) {
-//                callLayout.setVisibility(View.GONE);
                 closestDriverText.setText((int) distanceKmTime + "\nmin");
                 if (orderDriverState == 1) {
                     if (closestDriverText.getText().toString().startsWith("-")) {
@@ -3566,7 +3567,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 }
             }
-        } else {
+        }
+        else {
             if (!courseScreenIsOn) {
                 callLayout.setVisibility(View.GONE);
                 closestDriverText.setText("4\nmin");

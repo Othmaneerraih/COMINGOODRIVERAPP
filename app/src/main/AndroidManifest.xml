@@ -135,6 +135,7 @@
             android:name=".activity.InviteActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
+        <activity android:name=".activity.MapsActivity" />
     </application>
 
 </manifest>
