@@ -1618,7 +1618,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                 final ImageButton im4 = dialog.findViewById(R.id.imageView7);
                                                 final ImageButton im5 = dialog.findViewById(R.id.imageView8);
 
-                                                final ImageButton nextButton = dialog.findViewById(R.id.next);
+                                                final ImageButton finishRide = dialog.findViewById(R.id.next);
 
                                                 final ImageView imot = dialog.findViewById(R.id.stars_rating);
 
@@ -1765,20 +1765,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                     }
                                                 });
 
-                                                nextButton.setOnClickListener(new View.OnClickListener() {
+                                                finishRide.setOnClickListener(new View.OnClickListener() {
                                                     @Override
                                                     public void onClick(View v) {
                                                         try {
                                                             if (RATE > 0) {
                                                                 dialog.dismiss();
                                                                 if (dialogDriverId != null) {
-                                                                    FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(dialogDriverId).child("rating").child(Integer.toString(RATE)).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                    FirebaseDatabase.getInstance().getReference("DRIVERUSERS").
+                                                                            child(dialogDriverId).child("rating").child(Integer.toString(RATE))
+                                                                            .addListenerForSingleValueEvent(new ValueEventListener() {
                                                                         @Override
                                                                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                                                                             if (dataSnapshot.exists()) {
-                                                                                int Rating = Integer.parseInt(Objects.requireNonNull(dataSnapshot.getValue(String.class))) + 1;
-                                                                                FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(dialogDriverId).child("rating").child(Integer.toString(RATE)).setValue("" + Rating);
+                                                                                int Rating = Integer.parseInt(Objects.requireNonNull(dataSnapshot.
+                                                                                        getValue(String.class))) + 1;
+                                                                                FirebaseDatabase.getInstance().getReference("DRIVERUSERS").
+                                                                                        child(dialogDriverId).child("rating").child(Integer.toString(RATE))
+                                                                                        .setValue("" + Rating);
                                                                             }
                                                                         }
 
@@ -1787,13 +1792,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                                                         }
                                                                     });
-                                                                    FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("COURSE").removeValue();
+                                                                    FirebaseDatabase.getInstance().getReference("clientUSERS")
+                                                                            .child(userId).child("COURSE").removeValue();
 
                                                                     if (RATE > 3) {
                                                                         if (ContextCompat.checkSelfPermission(MapsActivity.this,
-                                                                                Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                                                                                Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED ||
+                                                                                ContextCompat.checkSelfPermission(MapsActivity.this,
+                                                                                        Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
+                                                                                        PackageManager.PERMISSION_GRANTED) {
                                                                             ActivityCompat.requestPermissions(MapsActivity.this,
-                                                                                    new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 10);
+                                                                                    new String[]{Manifest.permission.RECORD_AUDIO,
+                                                                                            Manifest.permission.WRITE_EXTERNAL_STORAGE}, 10);
                                                                         } else {
                                                                             showVoiceDialog();
                                                                         }
@@ -1821,7 +1831,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                                             button10.setText(resources.getString(R.string.Autre));
 
                                                                             RelativeLayout body = newDialog.findViewById(R.id.body);
-                                                                            body.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) dpWidth, (int) dpWidth, R.drawable.finished_bg)));
+                                                                            body.setBackground(new BitmapDrawable(getResources(),
+                                                                                    scaleBitmap((int) dpWidth, (int) dpWidth, R.drawable.finished_bg)));
 
                                                                             final Button opt1 = newDialog.findViewById(R.id.button5);
                                                                             final Button opt2 = newDialog.findViewById(R.id.button6);
@@ -1912,9 +1923,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                                                 @Override
                                                                                 public void onDismiss(DialogInterface dialog) {
                                                                                     if (ContextCompat.checkSelfPermission(MapsActivity.this,
-                                                                                            Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                                                                                            Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED ||
+                                                                                            ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                                                                                                    != PackageManager.PERMISSION_GRANTED) {
                                                                                         ActivityCompat.requestPermissions(MapsActivity.this,
-                                                                                                new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 10);
+                                                                                                new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                                                                                10);
                                                                                     } else {
                                                                                         showVoiceDialog();
                                                                                     }
@@ -1931,19 +1945,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                                                         Map<String, String> data = new HashMap<>();
                                                                                         data.put("complaint", choseBox);
                                                                                         data.put("message", message);
-                                                                                        FirebaseDatabase.getInstance().getReference("COURSECOMPLAINT").child(COURSE).setValue(data);
+                                                                                        FirebaseDatabase.getInstance().getReference("COURSECOMPLAINT").
+                                                                                                child(COURSE).setValue(data);
                                                                                     }
                                                                                     newDialog.dismiss();
                                                                                 }
                                                                             });
 
                                                                             newDialog.findViewById(R.id.body).getLayoutParams().width = (int)
-                                                                                    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) (dpWidth), getResources().getDisplayMetrics());
+                                                                                    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) (dpWidth),
+                                                                                            getResources().getDisplayMetrics());
 
                                                                             WindowManager.LayoutParams lp = Objects.requireNonNull(newDialog.getWindow()).getAttributes();
                                                                             lp.dimAmount = 0.5f;
                                                                             newDialog.getWindow().setAttributes(lp);
-                                                                            newDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                                                                            newDialog.getWindow().setBackgroundDrawable
+                                                                                    (new ColorDrawable(android.graphics.Color.TRANSPARENT));
                                                                             newDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
                                                                             newDialog.show();
                                                                         } catch (WindowManager.BadTokenException e) {
