@@ -750,7 +750,7 @@
                         android:textColor="@color/color_ash_deep" />
 
                     <LinearLayout
-                        android:id="@+id/ll_call"
+                        android:id="@+id/ll_rating"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_above="@+id/iv_total_ride_number"
@@ -786,7 +786,7 @@
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:layout_marginTop="5dp"
-                        android:layout_below="@+id/ll_call"
+                        android:layout_below="@+id/ll_rating"
                         android:layout_marginRight="@dimen/margin_xlarge"
                         android:layout_alignParentRight="true"
                         android:src="@drawable/call" />
@@ -795,7 +795,7 @@
                         android:id="@+id/close_button"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
-                        android:layout_below="@+id/ll_call"
+                        android:layout_below="@+id/ll_rating"
                         android:layout_marginRight="@dimen/margin_large"
                         android:layout_alignParentRight="true"
                         android:src="@drawable/delete_button"
