@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/rl_calling"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="@dimen/margin_normal"
+        android:layout_marginRight="@dimen/margin_normal"
+        android:layout_marginBottom="50dp">
+
+        <RelativeLayout
+            android:id="@+id/callLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/borderbox_round">
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="@dimen/margin_normal"
+                android:gravity="center"
+                android:paddingStart="5dp"
+                android:paddingEnd="5dp">
+
+                <com.mikhaellopez.circularimageview.CircularImageView
+                    android:id="@+id/iv_driver_image"
+                    android:layout_width="90dp"
+                    android:layout_height="90dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/ic_driver"
+                    app:civ_border_width="1dp"
+                    app:civ_shadow="true"
+                    app:civ_shadow_radius="2" />
+
+                <TextView
+                    android:id="@+id/tv_driver_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_toEndOf="@+id/iv_driver_image"
+                    android:text="User Name"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/txt_size_large" />
+
+                <TextView
+                    android:id="@+id/iv_total_ride_number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/tv_driver_name"
+                    android:layout_marginStart="8dp"
+                    android:layout_toEndOf="@+id/iv_driver_image"
+                    android:text="User Name"
+                    android:textColor="@color/color_ash_deep" />
+
+                <TextView
+                    android:id="@+id/iv_car_number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/iv_total_ride_number"
+                    android:layout_marginStart="8dp"
+                    android:layout_toEndOf="@+id/iv_driver_image"
+                    android:text="123213"
+                    android:textColor="@color/color_ash_deep" />
+
+                <LinearLayout
+                    android:id="@+id/ll_rating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_above="@+id/iv_total_ride_number"
+                    android:layout_marginStart="@dimen/margin_normal"
+                    android:layout_marginTop="30dp"
+                    android:layout_toEndOf="@+id/tv_driver_name"
+                    android:background="@drawable/border_box"
+                    android:orientation="horizontal"
+                    android:padding="5dp">
+
+                    <RatingBar
+                        android:id="@+id/rb_user"
+                        style="?android:attr/ratingBarStyleSmall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:numStars="1"
+                        android:progressTint="@color/color_yellow"
+                        android:rating="1" />
+
+                    <TextView
+                        android:id="@+id/iv_total_rating_number"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:text="4.0"
+                        android:textColor="@android:color/black"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/iv_call_driver"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_below="@+id/ll_rating"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="@dimen/margin_xlarge"
+                    android:src="@drawable/call" />
+
+                <ImageView
+                    android:id="@+id/close_button"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_below="@+id/ll_rating"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="@dimen/margin_large"
+                    android:src="@drawable/delete_button" />
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/voip_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/callLayout"
+            android:layout_marginStart="60dp"
+            android:layout_marginEnd="60dp"
+            android:layout_marginBottom="-25dp"
+            android:background="@drawable/layout_background_rounded_corner"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_appelle_telephone"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginBottom="5dp"
+                android:gravity="center"
+                android:text="Appelle telephonique"
+                android:textSize="14sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/black" />
+
+
+            <TextView
+                android:id="@+id/tv_appelle_voip"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:gravity="center"
+                android:text="Appelle VOIP"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</RelativeLayout>

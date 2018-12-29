@@ -17,7 +17,6 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-
     <application
         android:allowBackup="true"
         android:hardwareAccelerated="false"
@@ -41,6 +40,7 @@
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />
+
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
@@ -72,17 +72,15 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
-            android:name="com.comingoo.user.comingoo.activity.MainActivity"
+            android:name=".activity.MainActivity"
             android:configChanges="orientation"
             android:label="Comingoo"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".activity.FevoriteLocationActivity"
             android:configChanges="orientation"
             android:label="Comingoo"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".activity.SignupActivity"
             android:configChanges="orientation"
@@ -97,12 +95,10 @@
             android:name=".activity.SignupFacebookActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
-
         <activity
-            android:name="com.comingoo.user.comingoo.activity.VoipCallingActivity"
+            android:name=".activity.VoipCallingActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".activity.LoginActivity"
             android:configChanges="orientation"
@@ -136,6 +132,7 @@
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity android:name=".activity.MapsActivity" />
+        <activity android:name=".activity.Maps2Activity"></activity>
     </application>
 
 </manifest>

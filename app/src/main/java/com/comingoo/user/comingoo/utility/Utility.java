@@ -253,7 +253,7 @@ public class Utility {
         }
     }
 
-    private void saveRecentPlaces(Context context, ArrayList<place> rPlaceDataList) {
+    public static void saveRecentPlaces(Context context, ArrayList<place> rPlaceDataList) {
         SharedPreferences appSharedPrefs = PreferenceManager
                 .getDefaultSharedPreferences(context.getApplicationContext());
         SharedPreferences.Editor prefsEditor = appSharedPrefs.edit();
@@ -263,7 +263,7 @@ public class Utility {
         prefsEditor.commit();
     }
 
-    private boolean contains(ArrayList<place> list, place place) {
+    public static boolean contains(ArrayList<place> list, place place) {
         for (place item : list) {
             if (item.getName().equals(place.name) || item.getLat().equals(place.getLat())
                     || item.getLng().equals(place.getLng())
@@ -272,5 +272,25 @@ public class Utility {
             }
         }
         return false;
+    }
+
+    private String getMapsApiDirectionsUrl(LatLng origin, LatLng dest) {
+        // Origin of route
+        String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
+
+        // Destination of route
+        String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
+
+        // Sensor enabled
+        String sensor = "sensor=false";
+
+        // Building the parameters to the web service
+        String parameters = str_origin + "&" + str_dest + "&" + sensor;
+
+        // Output format
+        String output = "json";
+
+        return "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters + "&key="
+                + "AIzaSyA69yMLMZGzJzaa1pHoNIk9yGYqyhsa_lw" + "&sensor=true";
     }
 }
