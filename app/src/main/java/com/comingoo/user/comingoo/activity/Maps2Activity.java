@@ -319,25 +319,40 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
         contentLayout = findViewById(R.id.contentLayout);
         rippleBackground = findViewById(R.id.gooVoidContent);
         framelayout = findViewById(R.id.framelayout);
+        // Note : Hide initially
+        framelayout.setVisibility(View.INVISIBLE);
         location_start_pin = findViewById(R.id.location_start_pin);
         closestDriverPin = findViewById(R.id.closestDriverPin);
         framelayout2 = findViewById(R.id.framelayout2);
+        // Note : Hide initially
+        framelayout2.setVisibility(View.INVISIBLE);
+        framelayout3 = findViewById(R.id.framelayout3);
+        // Note : Hide initially
+        framelayout3.setVisibility(View.INVISIBLE);
         location_dest_pin = findViewById(R.id.location_dest_pin);
         driver_pin = findViewById(R.id.driver_pin);
         pin = findViewById(R.id.pin);
         locationPin = findViewById(R.id.locationPin);
         locationPinDest = findViewById(R.id.locationPinDest);
+        // Note : Hide initially
+        framelayout3.setVisibility(View.GONE);
         closestDriver = findViewById(R.id.closestDriver);
 
 
         shadow_iv = findViewById(R.id.shadow_iv);
         shadow2_iv = findViewById(R.id.shadow2_iv);
+        // Note : Hide initially
+        shadow2_iv.setVisibility(View.INVISIBLE);
         shadow3_iv = findViewById(R.id.shadow3_iv);
+        // Note : Hide initially
+        shadow3_iv.setVisibility(View.GONE);
         my_position = findViewById(R.id.my_position);
         x = findViewById(R.id.x);
         menu_button = findViewById(R.id.menu_button);
 
         rl_calling = findViewById(R.id.rl_calling);
+        // Note : Hide initially
+        rl_calling.setVisibility(View.GONE);
         iv_driver_image = findViewById(R.id.iv_driver_image);
         tv_driver_name = findViewById(R.id.tv_driver_name);
         iv_total_ride_number = findViewById(R.id.iv_total_ride_number);
@@ -347,7 +362,11 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
         iv_total_rating_number = findViewById(R.id.iv_total_rating_number);
         iv_call_driver = findViewById(R.id.iv_call_driver);
         close_button = findViewById(R.id.close_button);
+        // Note : Hide initially
+        close_button.setVisibility(View.GONE);
         voip_view = findViewById(R.id.voip_view);
+        // Note : Hide initially
+        voip_view.setVisibility(View.GONE);
         tv_appelle_telephone = findViewById(R.id.tv_appelle_telephone);
         tv_appelle_voip = findViewById(R.id.tv_appelle_voip);
         rbDriverRating = findViewById(R.id.rb_user);
@@ -357,16 +376,26 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
         shadow_bg = findViewById(R.id.shadow_bg);
         bottomMenu = findViewById(R.id.bottomMenu);
         deliveryButton = findViewById(R.id.deliveryButton);
+        // Note : Hide initially
+        deliveryButton.setVisibility(View.INVISIBLE);
         carButton = findViewById(R.id.carButton);
+        // Note : Hide initially
+        deliveryButton.setVisibility(View.INVISIBLE);
         start_edit_text = findViewById(R.id.start_edit_text);
         et_start_point = findViewById(R.id.et_start_point);
         coverButton = findViewById(R.id.coverButton);
         dest_edit_text = findViewById(R.id.dest_edit_text);
+        // Note : Hide initially
+        dest_edit_text.setVisibility(View.GONE);
         et_end_point = findViewById(R.id.et_end_point);
         aR = findViewById(R.id.adress_result);
+        // Note : Hide initially
+        aR.setVisibility(View.GONE);
         my_recycler_view = findViewById(R.id.my_recycler_view);
         fR = findViewById(R.id.favorite);
         favorite = findViewById(R.id.favorite_recent);
+        // Note : Hide initially
+        favorite.setVisibility(View.GONE);
         favorite_recycler = findViewById(R.id.favorite_recycler);
         textView = findViewById(R.id.textView);
         rR = findViewById(R.id.recent);
@@ -376,27 +405,42 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
         select_start = findViewById(R.id.select_start);
         confirm_start = findViewById(R.id.confirm_start);
         search_dest_address_button = findViewById(R.id.search_dest_address_button);
+        // Note : Hide initially
+        search_dest_address_button.setVisibility(View.GONE);
 
         select_dest = findViewById(R.id.select_dest);
+        // Note : Hide initially
+        select_dest.setVisibility(View.GONE);
         confirm_dest = findViewById(R.id.confirm_dest);
         passer = findViewById(R.id.passer);
         select_city = findViewById(R.id.select_city);
+        // Note : Hide initially
+        select_city.setVisibility(View.GONE);
         city = findViewById(R.id.city);
         imageButton4 = findViewById(R.id.imageButton4);
         destArrow = findViewById(R.id.destArrow);
-
+        // Note : Hide initially
+        destArrow.setVisibility(View.INVISIBLE);
 
         gooContent = findViewById(R.id.gooContent);
+        // Note : Hide initially
+        gooContent.setVisibility(View.GONE);
         gooBox = findViewById(R.id.gooBox);
         iv_promo_code = findViewById(R.id.iv_promo_code);
         promoCode = findViewById(R.id.promoCode);
         contentBlocker = findViewById(R.id.contentBlocker);
+        // Note : Hide initially
+        contentBlocker.setVisibility(View.GONE);
         loadingScreen = findViewById(R.id.loadingScreen);
         iv_cancel_ride = findViewById(R.id.iv_cancel_ride);
+        // Note : Hide initially
+        iv_cancel_ride.setVisibility(View.GONE);
         gooButton = findViewById(R.id.gooButton);
         tv_mad = findViewById(R.id.tv_mad);
         tv_estimate_price = findViewById(R.id.tv_estimate_price);
         cancelRequest = findViewById(R.id.cancelRequest);
+        // Note : Hide initially
+        cancelRequest.setVisibility(View.GONE);
 
         searchLoc = "Casablanca";
         driversKeys = new ArrayList<>();

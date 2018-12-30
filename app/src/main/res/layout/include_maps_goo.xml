@@ -169,6 +169,7 @@
             android:layout_height="49dp"
             android:layout_above="@+id/gooBox"
             android:layout_centerHorizontal="true"
+            android:visibility="invisible"
             android:layout_marginBottom="8dp"
             android:clickable="false" />
 
