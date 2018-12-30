@@ -53,9 +53,9 @@
                 android:background="@color/color_ash" />
 
             <!--<RelativeLayout-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content">-->
-                <!---->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content">-->
+            <!---->
             <!--</RelativeLayout>-->
 
             <ImageView
@@ -153,7 +153,6 @@
         </RelativeLayout>
 
         <RelativeLayout
-            android:id="@+id/gooLayout"
             android:layout_width="1dp"
             android:layout_height="1dp"
             android:layout_alignTop="@+id/none"
@@ -171,8 +170,7 @@
             android:layout_above="@+id/gooBox"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="8dp"
-            android:clickable="false"
-            android:visibility="invisible" />
+            android:clickable="false" />
 
         <ImageButton
             android:id="@+id/cancelRequest"
@@ -181,8 +179,7 @@
             android:layout_above="@+id/gooBox"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="8dp"
-            android:background="@drawable/goo_layout"
-            android:visibility="gone" />
+            android:background="@drawable/goo_layout" />
 
         <ImageButton
             android:id="@+id/gooButton"
@@ -194,7 +191,6 @@
             android:background="@drawable/goo" />
 
         <RelativeLayout
-            android:id="@+id/gameLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentBottom="true"
@@ -202,7 +198,6 @@
             android:visibility="visible">
 
             <TextView
-                android:id="@+id/score"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
@@ -211,8 +206,7 @@
                 android:fontFamily="@font/roboto_bold"
                 android:text="0"
                 android:textColor="@android:color/white"
-                android:textSize="30sp"
-                android:visibility="invisible" />
+                android:textSize="30sp" />
 
         </RelativeLayout>
 

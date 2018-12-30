@@ -184,38 +184,7 @@ public class Utility {
         }
     }
 
-    private boolean startPositionIsValid(String startCity, LatLng startLatLng, Context context, Resources resources) {
-        startCity = "casa";
-
-        if (PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.casaPoly(), true) ||
-                PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.errahmaPoly(), true)) {
-            startCity = "casa";
-        } else if (PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.salePoly(), true)) {
-            startCity = "sale";
-        } else if (PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.aeroportCasaPoly(), true)) {
-            startCity = "aeroportCasa";
-        } else if (PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.bouskouraPoly(), true)) {
-            startCity = "bouskoura";
-        } else if (PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.darBouazzaPoly(), true)) {
-            startCity = "darBouazza";
-        } else if (PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.jadidaPoly(), true)) {
-            startCity = "jadida";
-        } else if (PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.marrakechPoly(), true)) {
-            startCity = "marrakech";
-        } else if (PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.sidiRahalPoly(), true)) {
-            startCity = "sidirahal";
-        } else if (PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.rabatPoly(), true) ||
-                PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.missingRabatPoly(), true)) {
-            startCity = "rabat";
-        } else {
-            Toast.makeText(context, resources.getString(R.string.sur_casablanca_txt), Toast.LENGTH_SHORT).show();
-            return false;
-        }
-
-        return true;
-    }
-
-    private boolean destPositionIsValid(LatLng destLatLng, String destCity) {
+    public static boolean destPositionIsValid(LatLng destLatLng, String destCity) {
         if (destLatLng == null)
             return false;
         if (PolyUtil.containsLocation(destLatLng.latitude, destLatLng.longitude, LocationInitializer.casaPoly(), true) ||
