@@ -243,7 +243,7 @@ public class Utility {
         return false;
     }
 
-    private String getMapsApiDirectionsUrl(LatLng origin, LatLng dest) {
+    public static String getMapsApiDirectionsUrl(LatLng origin, LatLng dest) {
         // Origin of route
         String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
 

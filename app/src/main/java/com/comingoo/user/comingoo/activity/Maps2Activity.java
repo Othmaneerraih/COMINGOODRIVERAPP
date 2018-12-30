@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
@@ -62,6 +63,7 @@ import android.widget.Toast;
 import com.comingoo.user.comingoo.R;
 import com.comingoo.user.comingoo.adapters.FavouritePlaceAdapter;
 import com.comingoo.user.comingoo.adapters.MyPlaceAdapter;
+import com.comingoo.user.comingoo.async.ReadTask;
 import com.comingoo.user.comingoo.async.ReverseGeocodingTask;
 import com.comingoo.user.comingoo.interfaces.PickLocation;
 import com.comingoo.user.comingoo.model.LocationInitializer;
@@ -234,6 +236,7 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
     private LatLng startLatLng;
     private LatLng destLatLng;
     private String destCity;
+    private String startCity;
     private GoogleMap mMap;
     private MyPlaceAdapter placeAdapter;
     private FavouritePlaceAdapter fPlaceAdapter;
@@ -262,6 +265,7 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
     private ArrayList<String> driversKeysHold;
     private int orderDriverState;
     private GeoQuery geoQuery;
+    private int lastImageWidth;
     private ImageButton search_dest_address_button;
     private String TAG = "Maps2Activity";
 
@@ -565,8 +569,16 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
         rR.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, rHeight,
                 getResources().getDisplayMetrics());
 
-        updateViews();
+        AnimateConstraint.fadeOut(Maps2Activity.this, findViewById(R.id.loadingScreen), 500, 10);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                findViewById(R.id.loadingScreen).setVisibility(View.GONE);
+            }
+        }, 500);
 
+        updateViews();
+        loadImages();
         gooButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -1026,6 +1038,13 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
         }
     }
 
+    public void drawPolyLineOnMap(LatLng currentLatitude, LatLng currentLongitude) {
+        String url = Utility.getMapsApiDirectionsUrl(currentLatitude, currentLongitude);
+        Log.e(TAG, "drawPolyLineOnMap: " + url);
+        ReadTask downloadTask = new ReadTask(getApplicationContext(), mMap);
+        downloadTask.execute(url);
+    }
+
     private boolean destPositionIsValid() {
         if (destLatLng == null)
             return false;
@@ -1062,6 +1081,38 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
         } else {
             return false;
         }
+    }
+
+    //Check Start Position
+    private boolean startPositionIsValid() {
+        startCity = "casa";
+
+        if (PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.casaPoly(), true) ||
+                PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.errahmaPoly(), true)) {
+            startCity = "casa";
+        } else if (PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.salePoly(), true)) {
+            startCity = "sale";
+        } else if (PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.aeroportCasaPoly(), true)) {
+            startCity = "aeroportCasa";
+        } else if (PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.bouskouraPoly(), true)) {
+            startCity = "bouskoura";
+        } else if (PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.darBouazzaPoly(), true)) {
+            startCity = "darBouazza";
+        } else if (PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.jadidaPoly(), true)) {
+            startCity = "jadida";
+        } else if (PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.marrakechPoly(), true)) {
+            startCity = "marrakech";
+        } else if (PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.sidiRahalPoly(), true)) {
+            startCity = "sidirahal";
+        } else if (PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.rabatPoly(), true) ||
+                PolyUtil.containsLocation(startLatLng.latitude, startLatLng.longitude, LocationInitializer.missingRabatPoly(), true)) {
+            startCity = "rabat";
+        } else {
+            Toast.makeText(Maps2Activity.this, resources.getString(R.string.sur_casablanca_txt), Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        return true;
     }
 
     private void mute(AudioManager audioManager, CircleImageView iv_mute) {
@@ -1786,6 +1837,49 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
         aR.setVisibility(View.INVISIBLE);
     }
 
+    private void getPrice() {
+        if ((startCity.equals("casa") && destCity.equals("casa")) ||
+                (startCity.equals("rabat") && destCity.equals("rabat")) || (startCity.equals("sale") && destCity.equals("sale"))
+                || (startCity.equals("bouskoura") && destCity.equals("bouskoura")) || (startCity.equals("aeroportCasa") && destCity.equals("aeroportCasa"))
+                || (startCity.equals("sidirahal") && destCity.equals("sidirahal"))
+                || (startCity.equals("darBouazza") && destCity.equals("darBouazza"))
+                || (startCity.equals("marrakech") && destCity.equals("marrakech"))
+                || (startCity.equals("jadida") && destCity.equals("jadida"))) {
+
+//            FirebaseDatabase.getInstance().getReference("PRICES").
+//                    addListenerForSingleValueEvent(new ValueEventListener() {
+//                        @Override
+//                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                            double price1 = Math.ceil((distance) * Double.parseDouble(Objects.requireNonNull(dataSnapshot.child("km").getValue(String.class))));
+//                            int price2 = (int) price1;
+//                            if (price2 < Double.parseDouble(Objects.requireNonNull(dataSnapshot.child("minimum").getValue(String.class))))
+//                                price2 = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("minimum").getValue(String.class)));
+//                            tv_mad.setText(price2 + " MAD");
+//                        }
+//
+//                        @Override
+//                        public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                        }
+//                    });
+
+        } else {
+//            FirebaseDatabase.getInstance().getReference("FIXEDDESTS").
+//                    child(startCity).child("destinations").child(destCity).
+//                    child("price").addListenerForSingleValueEvent(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                    tv_mad.setText(dataSnapshot.getValue(String.class) + " MAD");
+//                }
+//
+//                @Override
+//                public void onCancelled(@NonNull DatabaseError databaseError) {
+//                }
+//            });
+
+        }
+    }
+
     private void cancelCommandLayout() {
         orderDriverState = 1;
 
@@ -2418,6 +2512,68 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
             }
         }
 
+    }
+
+    private Bitmap scaleBitmap(int reqWidth, int reqHeight, int resId) {
+//        try {
+        // Raw height and width of image
+        Bitmap bitmap;
+        BitmapFactory.Options bOptions = new BitmapFactory.Options();
+        bOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeResource(getResources(), resId, bOptions);
+        int imageHeight = bOptions.outHeight;
+        int imageWidth = bOptions.outWidth;
+
+        int inSampleSize = 1;
+
+        if (imageHeight > reqHeight || imageWidth > reqWidth) {
+
+            int lastImageHeight = imageHeight / 2;
+            lastImageWidth = lastImageWidth / 2;
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while ((lastImageHeight / inSampleSize) >= reqHeight
+                    && (lastImageWidth / inSampleSize) >= reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+
+
+        // First decode with inJustDecodeBounds=true to check dimensions
+        bOptions = new BitmapFactory.Options();
+        bOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeResource(getResources(), resId, bOptions);
+
+        // Calculate inSampleSize
+        bOptions.inSampleSize = inSampleSize;
+
+        // Decode bitmap with inSampleSize set
+        bOptions.inJustDecodeBounds = false;
+        bitmap = BitmapFactory.decodeResource(getResources(), resId, bOptions);
+        return bitmap;
+//        }catch (OutOfMemoryError e){
+//            e.printStackTrace();
+//            return null;
+//        } catch (Exception e){
+//            e.printStackTrace();
+//            return null;
+//        }
+    }
+
+    private void loadImages() {
+        location_start_pin.setImageBitmap(scaleBitmap(76, 56, R.drawable.depart_pin));
+        location_dest_pin.setImageBitmap(scaleBitmap(76, 56, R.drawable.destination_pin));
+        driver_pin.setImageBitmap(scaleBitmap(76, 56, R.drawable.driver_pin));
+        locationPinDest.setImageBitmap(scaleBitmap(76, 56, R.drawable.destination_pin));
+        selectedOpImage.setImageBitmap(scaleBitmap(70, 70, R.drawable.ic_wheel));
+        deliveryButton.setImageBitmap(scaleBitmap((int) (dpWidth / 2), 55, R.drawable.delivery_icon));
+        carButton.setImageBitmap(scaleBitmap((int) (dpWidth / 2), 55, R.drawable.car_icon));
+        imageButton4.setImageBitmap(scaleBitmap(10, 15, R.drawable.city_arrow));
+        destArrow.setImageBitmap(scaleBitmap(26, 190, R.drawable.arrow));
+        menu_button.setImageBitmap(scaleBitmap(45, 45, R.drawable.home_icon));
+        my_position.setImageBitmap(scaleBitmap(40, 37, R.drawable.my_position_icon));
+        shadow_bg.setImageBitmap(scaleBitmap((int) dpWidth, 80, R.drawable.shadow_bottom));
     }
 
     @Override
