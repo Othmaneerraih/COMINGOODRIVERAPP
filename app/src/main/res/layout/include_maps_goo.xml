@@ -52,12 +52,6 @@
                 android:layout_marginTop="@dimen/margin_small"
                 android:background="@color/color_ash" />
 
-            <!--<RelativeLayout-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content">-->
-            <!---->
-            <!--</RelativeLayout>-->
-
             <ImageView
                 android:id="@+id/iv_promo_code"
                 android:layout_width="40dp"
@@ -72,7 +66,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_small"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="15dp"
                 android:layout_toEndOf="@id/iv_promo_code"
                 android:text="PROMO CODE"
                 android:textStyle="bold" />
@@ -169,9 +163,9 @@
             android:layout_height="49dp"
             android:layout_above="@+id/gooBox"
             android:layout_centerHorizontal="true"
-            android:visibility="invisible"
             android:layout_marginBottom="8dp"
-            android:clickable="false" />
+            android:clickable="false"
+            android:visibility="invisible" />
 
         <ImageButton
             android:id="@+id/cancelRequest"
