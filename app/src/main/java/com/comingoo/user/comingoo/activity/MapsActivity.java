@@ -286,7 +286,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private int lastImageWidth;
     private String userName;
     private String courseIDT;
-    private String statusT = "4";
+    private String statusT = "";
     private String clientIdT;
     private String driverIDT;
     private LatLng driverPosT;
@@ -967,8 +967,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             e.printStackTrace();
                         }
                     } else {
-                        statusT = "4";
-                        handleCourseCallBack();
+//                        statusT = "4";
+//                        handleCourseCallBack();
                     }
                 }
 
@@ -1001,6 +1001,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void handleCourseCallBack() {
         try {
             if (statusT.equals("4")) {
+                new checkFinishedCourse().execute();
                 mMap.clear();
                 positionButton.setVisibility(View.VISIBLE);
                 if (courseScreenIsOn) {
@@ -2217,7 +2218,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         try {
             new CheckUserTask().execute();
-            new checkFinishedCourse().execute();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -3088,7 +3088,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         findViewById(R.id.coverButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                selectStart.setVisibility(View.GONE);
+//                selectStart.setVisibility(View.GONE);
                 findViewById(R.id.shadow).setVisibility(View.GONE);
                 bottomMenu.setVisibility(View.GONE);
                 selectedOp.setVisibility(View.GONE);
