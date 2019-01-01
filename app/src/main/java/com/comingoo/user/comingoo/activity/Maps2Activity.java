@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -14,6 +15,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.location.Location;
@@ -66,7 +68,9 @@ import com.comingoo.user.comingoo.adapters.MyPlaceAdapter;
 import com.comingoo.user.comingoo.async.ReadTask;
 import com.comingoo.user.comingoo.async.ReverseGeocodingTask;
 import com.comingoo.user.comingoo.interfaces.CourseCallBack;
+import com.comingoo.user.comingoo.interfaces.FinishedCourseTaskCallback;
 import com.comingoo.user.comingoo.interfaces.PickLocation;
+import com.comingoo.user.comingoo.interfaces.TaskCallback;
 import com.comingoo.user.comingoo.model.LocationInitializer;
 import com.comingoo.user.comingoo.model.place;
 import com.comingoo.user.comingoo.utility.AnimateConstraint;
@@ -104,8 +108,11 @@ import com.sinch.android.rtc.calling.CallClient;
 import com.sinch.android.rtc.calling.CallClientListener;
 import com.sinch.android.rtc.calling.CallListener;
 import com.skyfishjy.library.RippleBackground;
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -263,6 +270,10 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
     private ImageButton search_dest_address_button;
     private String TAG = "Maps2Activity";
     private int state = 0;
+    // default rate
+    private int RATE = 4;
+    private String tagStatus;
+    private String choseBox;
 
     private MapsActivityVM mapsActivityVM;
 
@@ -284,6 +295,7 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
     private String driverCarName;
     private String driverCarDescription;
     private String totalRatingNumber;
+    private DecimalFormat df2 = new DecimalFormat("0.##");
 
 
     @Override
@@ -319,6 +331,7 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
+        mapsActivityVM = new MapsActivityVM();
         profile_image = findViewById(R.id.profile_image);
         drawer_user_name_tv = findViewById(R.id.drawer_user_name_tv);
         home_tv = findViewById(R.id.home_tv);
@@ -471,9 +484,53 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
 
     private void action() {
 
-        SharedPreferences prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
+        final SharedPreferences prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
         userId = prefs.getString("userID", null);
 
+        mapsActivityVM.CheckUserTask(Maps2Activity.this, userId, new TaskCallback() {
+            @Override
+            public void oncheckTaskCallBack(Boolean success, final String userName, final String userImage, final String email, final String phonerNumber) {
+                if (success) {
+                    Picasso.get().load(userImage).centerCrop().fit().into(profile_image);
+                    drawer_user_name_tv.setText(userName);
+                    comingoonyou_layout.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(Maps2Activity.this, ComingooAndYouActivity.class);
+                            intent.putExtra("image", userImage);
+                            intent.putExtra("name", userName);
+                            intent.putExtra("email", email);
+                            String callNumber = phonerNumber;
+                            if (callNumber != null && callNumber.contains("+212")) {
+                                callNumber = callNumber.replace("+212", "");
+                            }
+                            intent.putExtra("phone", callNumber);
+                            startActivity(intent);
+                        }
+                    });
+                } else {
+                    prefs.edit().remove("userID");
+                    Intent intent = new Intent(Maps2Activity.this, LoginActivity.class);
+                    startActivity(intent);
+                }
+            }
+        });
+
+
+        mapsActivityVM.checkFinishedCourseTask(Maps2Activity.this, userId, new FinishedCourseTaskCallback() {
+            @Override
+            public void onFinishedCourseTask(String driverId, Double finalPriceOfCourse, String course) {
+                rl_calling.setVisibility(View.GONE);
+
+                if (iv_cancel_ride != null)
+                    iv_cancel_ride.setVisibility(View.GONE);
+
+                if (voip_view != null)
+                    voip_view.setVisibility(View.GONE);
+
+                showRatingDialog(driverId, finalPriceOfCourse, course);
+            }
+        });
         promoCode.setText(resources.getString(R.string.promocode_txt));
         tv_appelle_voip.setClickable(true);
         close_button.setOnClickListener(new View.OnClickListener() {
@@ -715,9 +772,9 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
 //                try {
 //                    if (!et_start_point.getText().toString().equals("")) {
 //                        if (startPositionIsValid()) {
-                            orderDriverState = 1;
-                            showSelectDestUI();
-                            state = 1;
+                orderDriverState = 1;
+                showSelectDestUI();
+                state = 1;
 //                        }
 //                    }
 //                } catch (Exception e) {
@@ -725,8 +782,6 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
 //                }
             }
         });
-
-
 
 
         my_position.setOnClickListener(new View.OnClickListener() {
@@ -1117,6 +1172,400 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
         }
     }
 
+
+    private void showRatingDialog(final String dialogDriverId, Double finalPriceOfCourse, final String course) {
+        try {
+
+            final Dialog dialog = new Dialog(Maps2Activity.this);
+            dialog.setContentView(R.layout.dialog_finished_course);
+
+
+            TextView textView13 = dialog.findViewById(R.id.textView13);
+            TextView textView14 = dialog.findViewById(R.id.textView14);
+
+
+            //Set Texts
+            textView13.setText(resources.getString(R.string.Montanttotalàpayer));
+            textView14.setText(resources.getString(R.string.Evaluezvotreéxperience));
+
+
+            RelativeLayout body = dialog.findViewById(R.id.body);
+            body.setBackground(new BitmapDrawable(getResources(), scaleBitmap((int) dpWidth, (int) dpWidth, R.drawable.finished_bg)));
+
+            Button dialogButton = dialog.findViewById(R.id.button);
+            final Button price = dialog.findViewById(R.id.button3);
+
+            if (courseIDT != null) {
+                df2.setRoundingMode(RoundingMode.UP);
+                price.setText(df2.format(finalPriceOfCourse) + " MAD");
+            }
+
+            final Button star1 = dialog.findViewById(R.id.star1);
+            final Button star2 = dialog.findViewById(R.id.star2);
+            final Button star3 = dialog.findViewById(R.id.star3);
+            final Button star4 = dialog.findViewById(R.id.star4);
+            final Button star5 = dialog.findViewById(R.id.star5);
+
+            final ImageButton im1 = dialog.findViewById(R.id.imageView4);
+            final ImageButton im2 = dialog.findViewById(R.id.imageView5);
+            final ImageButton im3 = dialog.findViewById(R.id.imageView6);
+            final ImageButton im4 = dialog.findViewById(R.id.imageView7);
+            final ImageButton im5 = dialog.findViewById(R.id.imageView8);
+
+            final ImageButton finishRide = dialog.findViewById(R.id.next);
+
+            final ImageView imot = dialog.findViewById(R.id.stars_rating);
+
+            dialog.setCancelable(false);
+            dialog.setCanceledOnTouchOutside(false);
+
+            star1.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.normal_star)));
+            star2.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.normal_star)));
+            star3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.normal_star)));
+            star4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.selected_star)));
+            star5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.unselected_star)));
+            imot.setImageBitmap(scaleBitmap(150, 150, R.drawable.four_stars));
+
+
+            im1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    im1.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.belle_voiture)));
+                    im2.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.bonne_music_unselected)));
+                    im3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.exellent_service_unselected)));
+                    im4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.expert_en_navigation_unselected)));
+                    im5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.voiture_propre_unselected)));
+                    tagStatus = resources.getString(R.string.voirture_txt);
+                    ;
+
+                }
+            });
+            im2.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    im1.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.belle_voiture)));
+                    im2.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.bonne_music)));
+                    im3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.exellent_service_unselected)));
+                    im4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.expert_en_navigation_unselected)));
+                    im5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.voiture_propre_unselected)));
+                    tagStatus = resources.getString(R.string.bonne_music_txt);
+
+                }
+            });
+            im3.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    im1.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.belle_voiture)));
+                    im2.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.bonne_music_unselected)));
+                    im3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.exellent_service)));
+                    im4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.expert_en_navigation_unselected)));
+                    im5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.voiture_propre_unselected)));
+                    tagStatus = resources.getString(R.string.exilent_service_txt);
+                }
+            });
+            im4.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    im1.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.belle_voiture)));
+                    im2.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.bonne_music_unselected)));
+                    im3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.exellent_service_unselected)));
+                    im4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.expert_en_navigation)));
+                    im5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.voiture_propre_unselected)));
+                    tagStatus = resources.getString(R.string.expert_navagation_txt);
+                }
+            });
+            im5.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    im1.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.belle_voiture)));
+                    im2.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.bonne_music_unselected)));
+                    im3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.exellent_service_unselected)));
+                    im4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.expert_en_navigation_unselected)));
+                    im5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.voiture_propre)));
+                    tagStatus = resources.getString(R.string.voiture_propre_txt);
+                }
+            });
+
+            star1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    RATE = 1;
+
+                    star1.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.selected_star)));
+                    star2.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.unselected_star)));
+                    star3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.unselected_star)));
+                    star4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.unselected_star)));
+                    star5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.unselected_star)));
+
+                    imot.setImageBitmap(scaleBitmap(150, 150, R.drawable.one_star));
+                }
+            });
+            star2.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    RATE = 2;
+
+                    star1.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.normal_star)));
+                    star2.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.selected_star)));
+                    star3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.unselected_star)));
+                    star4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.unselected_star)));
+                    star5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.unselected_star)));
+
+                    imot.setImageBitmap(scaleBitmap(150, 150, R.drawable.two_stars));
+                }
+            });
+            star3.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    RATE = 3;
+
+                    star1.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.normal_star)));
+                    star2.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.normal_star)));
+                    star3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.selected_star)));
+                    star4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.unselected_star)));
+                    star5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.unselected_star)));
+
+                    imot.setImageBitmap(scaleBitmap(150, 150, R.drawable.three_stars));
+                }
+            });
+            star4.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    RATE = 4;
+
+                    star1.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.normal_star)));
+                    star2.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.normal_star)));
+                    star3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.normal_star)));
+                    star4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.selected_star)));
+                    star5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.unselected_star)));
+
+                    imot.setImageBitmap(scaleBitmap(150, 150, R.drawable.four_stars));
+                }
+            });
+
+            star5.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    RATE = 5;
+                    star1.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.normal_star)));
+                    star2.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.normal_star)));
+                    star3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.normal_star)));
+                    star4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.normal_star)));
+                    star5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.selected_star)));
+
+                    imot.setImageBitmap(scaleBitmap(150, 150, R.drawable.five_stars));
+                }
+            });
+
+            finishRide.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try {
+                        if (RATE > 0) {
+                            dialog.dismiss();
+                            if (dialogDriverId != null) {
+                                mapsActivityVM.getRating(userId, dialogDriverId, RATE);
+
+                                if (RATE > 3) {
+                                    if (ContextCompat.checkSelfPermission(Maps2Activity.this,
+                                            Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED ||
+                                            ContextCompat.checkSelfPermission(Maps2Activity.this,
+                                                    Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
+                                                    PackageManager.PERMISSION_GRANTED) {
+                                        ActivityCompat.requestPermissions(Maps2Activity.this,
+                                                new String[]{Manifest.permission.RECORD_AUDIO,
+                                                        Manifest.permission.WRITE_EXTERNAL_STORAGE}, 10);
+                                    } else {
+                                        showVoiceDialog();
+                                    }
+                                } else {
+                                    try {
+                                        final Dialog newDialog = new Dialog(Maps2Activity.this);
+                                        newDialog.setContentView(R.layout.dialog_finished_course_2);
+                                        choseBox = null;
+
+                                        TextView textView15 = newDialog.findViewById(R.id.textView15);
+                                        TextView textView16 = newDialog.findViewById(R.id.textView16);
+                                        Button button5 = newDialog.findViewById(R.id.button5);
+                                        Button button7 = newDialog.findViewById(R.id.button7);
+                                        Button button8 = newDialog.findViewById(R.id.button8);
+                                        Button button9 = newDialog.findViewById(R.id.button9);
+                                        Button button10 = newDialog.findViewById(R.id.button10);
+
+                                        //Set Texts
+                                        textView15.setText(resources.getString(R.string.Noussommesdésolé));
+                                        textView16.setText(resources.getString(R.string.whatswrong));
+                                        button5.setText(resources.getString(R.string.Heuredarrivée));
+                                        button7.setText(resources.getString(R.string.Etatdelavoiture));
+                                        button8.setText(resources.getString(R.string.Conduite));
+                                        button9.setText(resources.getString(R.string.Itinéraire));
+                                        button10.setText(resources.getString(R.string.Autre));
+
+                                        RelativeLayout body = newDialog.findViewById(R.id.body);
+                                        body.setBackground(new BitmapDrawable(getResources(),
+                                                scaleBitmap((int) dpWidth, (int) dpWidth, R.drawable.finished_bg)));
+
+                                        final Button opt1 = newDialog.findViewById(R.id.button5);
+                                        final Button opt2 = newDialog.findViewById(R.id.button6);
+                                        final Button opt3 = newDialog.findViewById(R.id.button7);
+                                        final Button opt4 = newDialog.findViewById(R.id.button8);
+                                        final Button opt5 = newDialog.findViewById(R.id.button9);
+                                        final Button opt6 = newDialog.findViewById(R.id.button10);
+
+                                        final EditText messageText = newDialog.findViewById(R.id.editText);
+
+                                        opt1.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                opt1.setBackgroundResource(R.drawable.box_shadow);
+                                                opt2.setBackgroundResource(R.drawable.select_box);
+                                                opt3.setBackgroundResource(R.drawable.select_box);
+                                                opt4.setBackgroundResource(R.drawable.select_box);
+                                                opt5.setBackgroundResource(R.drawable.select_box);
+                                                opt6.setBackgroundResource(R.drawable.select_box);
+
+                                                choseBox = resources.getString(R.string.arrive_txt);
+                                            }
+                                        });
+                                        opt2.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                opt1.setBackgroundResource(R.drawable.select_box);
+                                                opt2.setBackgroundResource(R.drawable.box_shadow);
+                                                opt3.setBackgroundResource(R.drawable.select_box);
+                                                opt4.setBackgroundResource(R.drawable.select_box);
+                                                opt5.setBackgroundResource(R.drawable.select_box);
+                                                opt6.setBackgroundResource(R.drawable.select_box);
+
+                                                choseBox = resources.getString(R.string.service_txt);
+                                            }
+                                        });
+                                        opt3.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                opt1.setBackgroundResource(R.drawable.select_box);
+                                                opt2.setBackgroundResource(R.drawable.select_box);
+                                                opt3.setBackgroundResource(R.drawable.box_shadow);
+                                                opt4.setBackgroundResource(R.drawable.select_box);
+                                                opt5.setBackgroundResource(R.drawable.select_box);
+                                                opt6.setBackgroundResource(R.drawable.select_box);
+
+                                                choseBox = resources.getString(R.string.voiture_txt);
+                                            }
+                                        });
+                                        opt4.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                opt1.setBackgroundResource(R.drawable.select_box);
+                                                opt2.setBackgroundResource(R.drawable.select_box);
+                                                opt3.setBackgroundResource(R.drawable.select_box);
+                                                opt4.setBackgroundResource(R.drawable.box_shadow);
+                                                opt5.setBackgroundResource(R.drawable.select_box);
+                                                opt6.setBackgroundResource(R.drawable.select_box);
+                                                choseBox = resources.getString(R.string.conduite_txt);
+                                            }
+                                        });
+                                        opt5.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                opt1.setBackgroundResource(R.drawable.select_box);
+                                                opt2.setBackgroundResource(R.drawable.select_box);
+                                                opt3.setBackgroundResource(R.drawable.select_box);
+                                                opt4.setBackgroundResource(R.drawable.select_box);
+                                                opt5.setBackgroundResource(R.drawable.box_shadow);
+                                                opt6.setBackgroundResource(R.drawable.select_box);
+                                                choseBox = resources.getString(R.string.itineraire_txt);
+                                            }
+                                        });
+                                        opt6.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                opt1.setBackgroundResource(R.drawable.select_box);
+                                                opt2.setBackgroundResource(R.drawable.select_box);
+                                                opt3.setBackgroundResource(R.drawable.select_box);
+                                                opt4.setBackgroundResource(R.drawable.select_box);
+                                                opt5.setBackgroundResource(R.drawable.select_box);
+                                                opt6.setBackgroundResource(R.drawable.box_shadow);
+                                                choseBox = resources.getString(R.string.autre_txt);
+                                            }
+                                        });
+
+                                        newDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                                            @Override
+                                            public void onDismiss(DialogInterface dialog) {
+                                                if (ContextCompat.checkSelfPermission(Maps2Activity.this,
+                                                        Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED ||
+                                                        ContextCompat.checkSelfPermission(Maps2Activity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                                                                != PackageManager.PERMISSION_GRANTED) {
+                                                    ActivityCompat.requestPermissions(Maps2Activity.this,
+                                                            new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                                            10);
+                                                } else {
+                                                    showVoiceDialog();
+                                                }
+                                            }
+                                        });
+
+                                        ImageButton nextBtn = newDialog.findViewById(R.id.imageButton3);
+
+                                        nextBtn.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                if (choseBox != null) {
+                                                    final String message = messageText.getText().toString();
+                                                    Map<String, String> data = new HashMap<>();
+                                                    data.put("complaint", choseBox);
+                                                    data.put("message", message);
+                                                    FirebaseDatabase.getInstance().getReference("COURSECOMPLAINT").
+                                                            child(course).setValue(data);
+                                                }
+                                                newDialog.dismiss();
+                                            }
+                                        });
+
+                                        newDialog.findViewById(R.id.body).getLayoutParams().width = (int)
+                                                TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) (dpWidth),
+                                                        getResources().getDisplayMetrics());
+
+                                        WindowManager.LayoutParams lp = Objects.requireNonNull(newDialog.getWindow()).getAttributes();
+                                        lp.dimAmount = 0.5f;
+                                        newDialog.getWindow().setAttributes(lp);
+                                        newDialog.getWindow().setBackgroundDrawable
+                                                (new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                                        newDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+                                        newDialog.show();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+
+
+            dialog.show();
+
+            dialog.findViewById(R.id.body).getLayoutParams().width = (int)
+                    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                            (int) (dpWidth), getResources().getDisplayMetrics());
+
+
+            WindowManager.LayoutParams lp = Objects.requireNonNull(dialog.getWindow()).getAttributes();
+            lp.dimAmount = 0.5f;
+            dialog.getWindow().setAttributes(lp);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+            dialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        } catch (WindowManager.BadTokenException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     //Check Start Position
     private boolean startPositionIsValid() {
         startCity = "casa";
@@ -1205,8 +1654,8 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
                 et_end_point.setEnabled(false);
                 coverButton.setClickable(false);
 
-//                et_start_point.setText(startText);
-//                et_end_point.setText(endText);
+                et_start_point.setText(startText);
+                et_end_point.setText(endText);
 
                 pin.setVisibility(View.GONE);
 
@@ -1225,14 +1674,14 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
 
                 buttonsLayout.setVisibility(View.GONE);
 
-//                tv_driver_name.setText(driverName);
-//                iv_car_number.setText(driverCarDescription);
-//                iv_total_ride_number.setText(driverCarName);
-//                if (iv_driver_image != null) {
-//                    if (driverImage.length() > 0) {
-//                        Picasso.get().load(driverImage).into(iv_driver_image);
-//                    }
-//                }
+                tv_driver_name.setText(driverName);
+                iv_car_number.setText(driverCarDescription);
+                iv_total_ride_number.setText(driverCarName);
+                if (iv_driver_image != null) {
+                    if (driverImage.length() > 0) {
+                        Picasso.get().load(driverImage).into(iv_driver_image);
+                    }
+                }
 
                 LayerDrawable stars = (LayerDrawable) rbDriverRating.getProgressDrawable();
                 stars.getDrawable(0).setColorFilter(Color.YELLOW, PorterDuff.Mode.SRC_ATOP);
@@ -1249,223 +1698,223 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
             }
 
 
-//            if (statusT.equals("0") && !courseScreenStageZero) {
-//                if (!userLevel.equals("2")) {
-//                    iv_call_driver.setVisibility(View.VISIBLE);
-//                    iv_call_driver.setOnClickListener(new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View v) {
-//                            close_button.setVisibility(View.VISIBLE);
-//                            iv_call_driver.setVisibility(View.GONE);
-//                            voip_view.setVisibility(View.VISIBLE);
-//                        }
-//                    });
-//
-//                    tv_appelle_telephone.setOnClickListener(new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View v) {
-//                            if (driverPhone != null) {
-//                                try {
-//                                    String callNumber = driverPhone;
-//                                    if (callNumber.contains("+212")) {
-//                                        callNumber = callNumber.replace("+212", "");
-//                                    }
-//
-//                                    Intent intent = new Intent(Intent.ACTION_DIAL);
-//                                    intent.setData(Uri.parse("tel:" + callNumber));
-//                                    startActivity(intent);
-//                                } catch (Exception e) {
-//                                    e.printStackTrace();
-//                                }
-//                            }
-//                        }
-//                    });
-//
-//                    tv_appelle_voip.setOnClickListener(new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View v) {
-//                            if (!driverIDT.isEmpty()) {
-//                                tv_appelle_voip.setClickable(false);
-////                                tv_appelle_voip.setEnabled(false);
-//
-//                                Intent intent = new Intent(Maps2Activity.this, VoipCallingActivity.class);
-//                                intent.putExtra("driverId", driverIDT);
-//                                intent.putExtra("clientId", clientID);
-//                                intent.putExtra("driverName", driverName);
-//                                intent.putExtra("driverImage", driverImage);
-//                                startActivityForResult(intent, 1);
-//                            }
-//                        }
-//                    });
-//                }
-//
-//                courseScreenStageZero = true;
-//                try {
-//                    final Dialog dialog = new Dialog(Maps2Activity.this);
-//                    dialog.setContentView(R.layout.dialog_custom);
-//                    Button dialogButton = dialog.findViewById(R.id.button);
-//                    TextView textView8 = dialog.findViewById(R.id.textView8);
-//
-//                    //Set Texts
-//                    textView8.setText(resources.getString(R.string.Votrechauffeurestenroute));
-//                    dialogButton.setText(resources.getString(R.string.Daccord));
-//
-//                    dialogButton.setOnClickListener(new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View v) {
-//                            dialog.dismiss();
-//                        }
-//                    });
-//                    dialog.show();
-//
-//                    WindowManager.LayoutParams lp = Objects.requireNonNull(dialog.getWindow()).getAttributes();
-//                    lp.dimAmount = 0.5f;
-//                    dialog.getWindow().setAttributes(lp);
-//                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-//                    dialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
-//                } catch (WindowManager.BadTokenException e) {
-//                    e.printStackTrace();
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//            }
+            if (statusT.equals("0") && !courseScreenStageZero) {
+                if (!userLevel.equals("2")) {
+                    iv_call_driver.setVisibility(View.VISIBLE);
+                    iv_call_driver.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            close_button.setVisibility(View.VISIBLE);
+                            iv_call_driver.setVisibility(View.GONE);
+                            voip_view.setVisibility(View.VISIBLE);
+                        }
+                    });
+
+                    tv_appelle_telephone.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (driverPhone != null) {
+                                try {
+                                    String callNumber = driverPhone;
+                                    if (callNumber.contains("+212")) {
+                                        callNumber = callNumber.replace("+212", "");
+                                    }
+
+                                    Intent intent = new Intent(Intent.ACTION_DIAL);
+                                    intent.setData(Uri.parse("tel:" + callNumber));
+                                    startActivity(intent);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    });
+
+                    tv_appelle_voip.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (!driverIDT.isEmpty()) {
+                                tv_appelle_voip.setClickable(false);
+//                                tv_appelle_voip.setEnabled(false);
+
+                                Intent intent = new Intent(Maps2Activity.this, VoipCallingActivity.class);
+                                intent.putExtra("driverId", driverIDT);
+                                intent.putExtra("clientId", clientID);
+                                intent.putExtra("driverName", driverName);
+                                intent.putExtra("driverImage", driverImage);
+                                startActivityForResult(intent, 1);
+                            }
+                        }
+                    });
+                }
+
+                courseScreenStageZero = true;
+                try {
+                    final Dialog dialog = new Dialog(Maps2Activity.this);
+                    dialog.setContentView(R.layout.dialog_custom);
+                    Button dialogButton = dialog.findViewById(R.id.button);
+                    TextView textView8 = dialog.findViewById(R.id.textView8);
+
+                    //Set Texts
+                    textView8.setText(resources.getString(R.string.Votrechauffeurestenroute));
+                    dialogButton.setText(resources.getString(R.string.Daccord));
+
+                    dialogButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                        }
+                    });
+                    dialog.show();
+
+                    WindowManager.LayoutParams lp = Objects.requireNonNull(dialog.getWindow()).getAttributes();
+                    lp.dimAmount = 0.5f;
+                    dialog.getWindow().setAttributes(lp);
+                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                    dialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
+                } catch (WindowManager.BadTokenException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
 
 
-//            if (statusT.equals("0")) {
-//                iv_cancel_ride.setVisibility(View.VISIBLE);
-//                iv_cancel_ride.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        rideCancelDialog();
-//                    }
-//                });
-//
-//                if (driverPosMarker != null)
-//                    driverPosMarker.remove();
-//
-//                if (startPositionMarker != null)
-//                    startPositionMarker.remove();
-//
-//
-//                framelayout3.setDrawingCacheEnabled(true);
-//                framelayout3.buildDrawingCache();
-//                Bitmap bm = framelayout3.getDrawingCache();
-//                driverPosMarker = mMap.addMarker(new MarkerOptions()
-//                        .position(driverPosT)
-//                        .icon(BitmapDescriptorFactory.fromBitmap(bm)));
-//
-//                framelayout.setDrawingCacheEnabled(true);
-//                framelayout.buildDrawingCache();
-//                bm = framelayout.getDrawingCache();
-//                startPositionMarker = mMap.addMarker(new MarkerOptions()
-//                        .position(startPositionT)
-//                        .icon(BitmapDescriptorFactory.fromBitmap(bm)));
-//            }
+            if (statusT.equals("0")) {
+                iv_cancel_ride.setVisibility(View.VISIBLE);
+                iv_cancel_ride.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        rideCancelDialog();
+                    }
+                });
 
-//            if (statusT.equals("1") && !courseScreenStageOne) {
-//                iv_cancel_ride.setVisibility(View.GONE);
-//                voip_view.setVisibility(View.GONE);
-//                rl_calling.setVisibility(View.VISIBLE);
-//                if (!userLevel.equals("2")) {
-//                    iv_call_driver.setVisibility(View.VISIBLE);
-//                    iv_call_driver.setOnClickListener(new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View view) {
-//                            close_button.setVisibility(View.VISIBLE);
-//                            iv_call_driver.setVisibility(View.GONE);
-//                            voip_view.setVisibility(View.VISIBLE);
-//                        }
-//                    });
-//
-//                    tv_appelle_telephone.setOnClickListener(new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View v) {
-//                            if (driverPhone != null) {
-//                                try {
-//                                    String callNumber = driverPhone;
-//                                    if (callNumber.contains("+212")) {
-//                                        callNumber = callNumber.replace("+212", "");
-//                                    }
-//                                    Intent intent = new Intent(Intent.ACTION_DIAL);
-//                                    intent.setData(Uri.parse("tel:" + callNumber));
-//                                    startActivity(intent);
-//                                } catch (Exception e) {
-//                                    e.printStackTrace();
-//                                }
-//                            }
-//                        }
-//                    });
-//
-//                    tv_appelle_voip.setOnClickListener(new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View v) {
-//                            if (!driverIDT.isEmpty()) {
-//                                tv_appelle_voip.setClickable(false);
-////                                tv_appelle_voip.setEnabled(false);
-//                                Intent intent = new Intent(Maps2Activity.this, VoipCallingActivity.class);
-//                                intent.putExtra("driverId", driverIDT);
-//                                intent.putExtra("clientId", clientID);
-//                                intent.putExtra("driverName", driverName);
-//                                intent.putExtra("driverImage", driverImage);
-//                                startActivity(intent);
-//                            }
-//                        }
-//                    });
-//                }
-//
-//                mMap.clear();
-//                courseScreenStageOne = true;
-//                try {
-//                    final Dialog dialog = new Dialog(Maps2Activity.this);
-//                    dialog.setContentView(R.layout.dialog_custom2);
-//                    TextView textView8 = dialog.findViewById(R.id.textView8);
-//                    Button ddd = dialog.findViewById(R.id.button);
-//                    //Set Texts
-//                    textView8.setText(resources.getString(R.string.Votrechauffeurestarrivé));
-//                    ddd.setText(resources.getString(R.string.Daccord));
-//                    Button dialogButton = dialog.findViewById(R.id.button);
-//                    dialogButton.setOnClickListener(new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View v) {
-//                            dialog.dismiss();
-//                        }
-//                    });
-//                    dialog.show();
-//                    WindowManager.LayoutParams lp = Objects.requireNonNull(dialog.getWindow()).getAttributes();
-//                    lp.dimAmount = 0.5f;
-//                    dialog.getWindow().setAttributes(lp);
-//                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-//                    dialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//
-//                framelayout.setDrawingCacheEnabled(true);
-//                framelayout.buildDrawingCache();
-//
-//
-//                CameraPosition cameraPosition = new CameraPosition.Builder()
-//                        .target(startPositionT)      // Sets the center of the map to Mountain View
-//                        .zoom(17)                   // Sets the zoom
-//                        .build();                   // Creates a CameraPosition from the builder
-//                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-//
-//
-//                Bitmap bm = framelayout3.getDrawingCache();
-//                startPositionMarker = mMap.addMarker(new MarkerOptions()
-//                        .position(startPositionT)
-//                        .icon(BitmapDescriptorFactory.fromBitmap(bm)));
-//
-//            }
-//            if (statusT.equals("2")) {
-//                mMap.clear();
-//                framelayout3.setDrawingCacheEnabled(true);
-//                framelayout3.buildDrawingCache();
-//                Bitmap bm = framelayout3.getDrawingCache();
-//                mMap.addMarker(new MarkerOptions()
-//                        .position(driverPosT)
-//                        .icon(BitmapDescriptorFactory.fromBitmap(bm)));
-//            }
+                if (driverPosMarker != null)
+                    driverPosMarker.remove();
+
+                if (startPositionMarker != null)
+                    startPositionMarker.remove();
+
+
+                framelayout3.setDrawingCacheEnabled(true);
+                framelayout3.buildDrawingCache();
+                Bitmap bm = framelayout3.getDrawingCache();
+                driverPosMarker = mMap.addMarker(new MarkerOptions()
+                        .position(driverPosT)
+                        .icon(BitmapDescriptorFactory.fromBitmap(bm)));
+
+                framelayout.setDrawingCacheEnabled(true);
+                framelayout.buildDrawingCache();
+                bm = framelayout.getDrawingCache();
+                startPositionMarker = mMap.addMarker(new MarkerOptions()
+                        .position(startPositionT)
+                        .icon(BitmapDescriptorFactory.fromBitmap(bm)));
+            }
+
+            if (statusT.equals("1") && !courseScreenStageOne) {
+                iv_cancel_ride.setVisibility(View.GONE);
+                voip_view.setVisibility(View.GONE);
+                rl_calling.setVisibility(View.VISIBLE);
+                if (!userLevel.equals("2")) {
+                    iv_call_driver.setVisibility(View.VISIBLE);
+                    iv_call_driver.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            close_button.setVisibility(View.VISIBLE);
+                            iv_call_driver.setVisibility(View.GONE);
+                            voip_view.setVisibility(View.VISIBLE);
+                        }
+                    });
+
+                    tv_appelle_telephone.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (driverPhone != null) {
+                                try {
+                                    String callNumber = driverPhone;
+                                    if (callNumber.contains("+212")) {
+                                        callNumber = callNumber.replace("+212", "");
+                                    }
+                                    Intent intent = new Intent(Intent.ACTION_DIAL);
+                                    intent.setData(Uri.parse("tel:" + callNumber));
+                                    startActivity(intent);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    });
+
+                    tv_appelle_voip.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (!driverIDT.isEmpty()) {
+                                tv_appelle_voip.setClickable(false);
+//                                tv_appelle_voip.setEnabled(false);
+                                Intent intent = new Intent(Maps2Activity.this, VoipCallingActivity.class);
+                                intent.putExtra("driverId", driverIDT);
+                                intent.putExtra("clientId", clientID);
+                                intent.putExtra("driverName", driverName);
+                                intent.putExtra("driverImage", driverImage);
+                                startActivity(intent);
+                            }
+                        }
+                    });
+                }
+
+                mMap.clear();
+                courseScreenStageOne = true;
+                try {
+                    final Dialog dialog = new Dialog(Maps2Activity.this);
+                    dialog.setContentView(R.layout.dialog_custom2);
+                    TextView textView8 = dialog.findViewById(R.id.textView8);
+                    Button ddd = dialog.findViewById(R.id.button);
+                    //Set Texts
+                    textView8.setText(resources.getString(R.string.Votrechauffeurestarrivé));
+                    ddd.setText(resources.getString(R.string.Daccord));
+                    Button dialogButton = dialog.findViewById(R.id.button);
+                    dialogButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                        }
+                    });
+                    dialog.show();
+                    WindowManager.LayoutParams lp = Objects.requireNonNull(dialog.getWindow()).getAttributes();
+                    lp.dimAmount = 0.5f;
+                    dialog.getWindow().setAttributes(lp);
+                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                    dialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                framelayout.setDrawingCacheEnabled(true);
+                framelayout.buildDrawingCache();
+
+
+                CameraPosition cameraPosition = new CameraPosition.Builder()
+                        .target(startPositionT)      // Sets the center of the map to Mountain View
+                        .zoom(17)                   // Sets the zoom
+                        .build();                   // Creates a CameraPosition from the builder
+                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+
+                Bitmap bm = framelayout3.getDrawingCache();
+                startPositionMarker = mMap.addMarker(new MarkerOptions()
+                        .position(startPositionT)
+                        .icon(BitmapDescriptorFactory.fromBitmap(bm)));
+
+            }
+            if (statusT.equals("2")) {
+                mMap.clear();
+                framelayout3.setDrawingCacheEnabled(true);
+                framelayout3.buildDrawingCache();
+                Bitmap bm = framelayout3.getDrawingCache();
+                mMap.addMarker(new MarkerOptions()
+                        .position(driverPosT)
+                        .icon(BitmapDescriptorFactory.fromBitmap(bm)));
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -2366,7 +2815,7 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
         });
 
         // Note: Getting value from callback
-        mapsActivityVM = new MapsActivityVM();
+
         mapsActivityVM.checkCourseTask(Maps2Activity.this, new CourseCallBack() {
             @Override
             public void onCourseCallBack(String courseID, String status, String clientId,

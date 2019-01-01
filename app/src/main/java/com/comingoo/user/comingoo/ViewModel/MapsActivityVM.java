@@ -1,6 +1,8 @@
 package com.comingoo.user.comingoo.ViewModel;
 
+import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -15,7 +17,13 @@ import android.view.WindowManager;
 import android.widget.EditText;
 
 import com.comingoo.user.comingoo.R;
+import com.comingoo.user.comingoo.activity.ComingooAndYouActivity;
+import com.comingoo.user.comingoo.activity.LoginActivity;
+import com.comingoo.user.comingoo.activity.Maps2Activity;
+import com.comingoo.user.comingoo.activity.MapsActivity;
 import com.comingoo.user.comingoo.interfaces.CourseCallBack;
+import com.comingoo.user.comingoo.interfaces.FinishedCourseTaskCallback;
+import com.comingoo.user.comingoo.interfaces.TaskCallback;
 import com.comingoo.user.comingoo.model.place;
 import com.comingoo.user.comingoo.utility.AnimateConstraint;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -32,10 +40,12 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import java.util.Objects;
 
@@ -63,11 +73,8 @@ public class MapsActivityVM {
     private String driverCarName;
     private String driverCarDescription;
     private String totalRatingNumber;
-
-
-    public MapsActivityVM() {
-    }
-
+    private String course;
+    private String TAG = "MapsActivityVM";
 
     public void checkCourseTask(Context context, final CourseCallBack callBack) {
         SharedPreferences prefs = context.getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
@@ -224,5 +231,110 @@ public class MapsActivityVM {
             }
         });
     }
+
+    public void CheckUserTask(final Context context, String clientId, final TaskCallback callback) {
+        FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientId).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
+                if (!dataSnapshot.exists()) {
+                    FirebaseAuth.getInstance().signOut();
+                    callback.oncheckTaskCallBack(false, "", "", "", "");
+                } else {
+                    String userName = dataSnapshot.child("fullName").getValue(String.class);
+                    String userImage = "";
+                    if (dataSnapshot.child("image").getValue(String.class) != null) {
+                        if (Objects.requireNonNull(dataSnapshot.child("image").getValue(String.class)).length() > 0) {
+                            userImage = dataSnapshot.child("image").getValue(String.class);
+                        }
+                    }
+                    String email = dataSnapshot.child("email").getValue(String.class);
+                    String callNumber = dataSnapshot.child("phoneNumber").getValue(String.class);
+                    course = dataSnapshot.child("COURSE").getValue(String.class);
+
+                    callback.oncheckTaskCallBack(true, userName, userImage, email, callNumber);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    public void checkFinishedCourseTask(final Context context, final String userId, final FinishedCourseTaskCallback callback) {
+        FirebaseDatabase.getInstance().getReference("CLIENTFINISHEDCOURSES").child(userId).child(course).
+                addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshott) {
+
+
+                        // finishing promo code
+                        FirebaseDatabase.getInstance().getReference("clientUSERS").
+                                child(userId).child("PROMOCODE").removeValue();
+
+                        final String driverId = dataSnapshott.child("driver").getValue(String.class);
+
+
+                        if (courseIDT != null) {
+                            FirebaseDatabase.getInstance().getReference("COURSES").child(courseIDT).child("price").addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    try {
+                                        if (dataSnapshot.getValue(String.class) != null) {
+                                            Log.e(TAG, "COURSES value onDataChange: " + dataSnapshot.getValue(String.class));
+////
+                                            double finalPriceOfCourse = Double.parseDouble(Objects.requireNonNull(dataSnapshot.getValue(String.class)));
+                                            callback.onFinishedCourseTask(driverId, finalPriceOfCourse,course);
+                                        }
+//
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+    }
+
+    public void getRating(final String userId, final String dialogDriverId,final int RATE){
+        FirebaseDatabase.getInstance().getReference("DRIVERUSERS").
+                child(dialogDriverId).child("rating").child(Integer.toString(RATE))
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        if (dataSnapshot.exists()) {
+                            int Rating = Integer.parseInt(Objects.requireNonNull(dataSnapshot.
+                                    getValue(String.class))) + 1;
+                            FirebaseDatabase.getInstance().getReference("DRIVERUSERS").
+                                    child(dialogDriverId).child("rating").child(Integer.toString(RATE))
+                                    .setValue("" + Rating);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+        FirebaseDatabase.getInstance().getReference("clientUSERS")
+                .child(userId).child("COURSE").removeValue();
+    }
+
 
 }
