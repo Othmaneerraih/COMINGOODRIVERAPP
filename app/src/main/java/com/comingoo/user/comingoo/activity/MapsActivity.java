@@ -878,10 +878,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             e.printStackTrace();
                         }
                     }
-//                    else {
+                    else {
 //                        statusT = "4";
 //                        handleCourseCallBack();
-//                    }
+                        if (courseScreenIsOn) {
+                            courseScreenIsOn = false;
+                            courseScreenStageZero = false;
+                            courseScreenStageOne = false;
+                            findViewById(R.id.pin).setVisibility(View.VISIBLE);
+                            state = 0;
+                            cancelCommandLayout();
+                            callLayout.setVisibility(View.GONE);
+                            hideSelectDestUI();
+                            coverButton.setClickable(true);
+                        }
+                    }
                 }
 
                 @Override
@@ -1460,7 +1471,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         protected String doInBackground(String... params) {
             try {
                 ispopupShowed = true;
-                FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("COURSE").addValueEventListener(new ValueEventListener() {
+                FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("COURSE").
+                        addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
                         if (dataSnapshot.exists()) {
@@ -1710,6 +1722,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                                                         }
                                                                     });
+
                                                                     FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("COURSE").removeValue();
 
                                                                     if (RATE > 3) {
