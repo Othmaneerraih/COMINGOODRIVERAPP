@@ -71,6 +71,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.comingoo.user.comingoo.Interfaces.Userinformation;
+import com.comingoo.user.comingoo.ViewModel.MapsActivityVM;
 import com.comingoo.user.comingoo.async.ReadTask;
 import com.comingoo.user.comingoo.async.ReverseGeocodingTask;
 import com.comingoo.user.comingoo.utility.AnimateConstraint;
@@ -257,6 +259,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ImageButton carButton;
     private ImageButton selectCity;
     private RelativeLayout gooBox;
+    private ConstraintLayout acceuil, invite, historique, inbox, aide, logout;
     private ConstraintLayout ComingoonYou;
     private Utility utility;
     private boolean isLoud = false;
@@ -274,7 +277,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Resources resources;
     private RatingBar rbDriverRating;
 
-
+    private MapsActivityVM mapsActivityVM;
     private TextView driverNameL, iv_total_ride_number, iv_car_number, iv_total_rating_number;
     private CircularImageView driverImageL;
     private ImageView ivCallDriver, close_button;
@@ -302,6 +305,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private String driverCarName;
     private String driverCarDescription;
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
+    private String userImage, userEmail, phoneNumber;
+    private DatabaseReference rootRef;
 
     private Bitmap scaleBitmap(int reqWidth, int reqHeight, int resId) {
 //        try {
@@ -401,99 +406,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         hideSearchAddressStartUI();
         isFocusableNeeded = false;
-    }
-
-    private class CheckUserTask extends AsyncTask<String, Integer, String> {
-        SharedPreferences prefs;
-        String userId;
-        String image;
-
-        // Runs in UI before background thread is called
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
-            userId = prefs.getString("userID", null);
-            // Do something like display a progress bar
-        }
-
-        // This is run in a background thread
-        @Override
-        protected String doInBackground(String... params) {
-
-
-            if (Looper.myLooper() == null) {
-                Looper.prepare();
-                Looper.myLooper();
-            }
-            clientID = userId;
-
-            FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
-                    if (!dataSnapshot.exists()) {
-                        prefs.edit().remove("userID");
-                        FirebaseAuth.getInstance().signOut();
-                        Intent intent = new Intent(MapsActivity.this, LoginActivity.class);
-                        startActivity(intent);
-                    } else {
-                        userName = dataSnapshot.child("fullName").getValue(String.class);
-                        String userImage = dataSnapshot.child("image").getValue(String.class);
-                        if (userImage != null) {
-                            if (userImage.length() > 0) {
-                                Picasso.get().load(userImage).centerCrop().fit().into(profileImage);
-                            }
-                        }
-                        tvUserName.setText(userName);
-                        ComingoonYou.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Intent intent = new Intent(MapsActivity.this, ComingooAndYouActivity.class);
-                                intent.putExtra("image", dataSnapshot.child("image").getValue(String.class));
-                                intent.putExtra("name", dataSnapshot.child("fullName").getValue(String.class));
-                                intent.putExtra("email", dataSnapshot.child("email").getValue(String.class));
-                                String callNumber = dataSnapshot.child("phoneNumber").getValue(String.class);
-                                if (callNumber != null && callNumber.contains("+212")) {
-                                    callNumber = callNumber.replace("+212", "");
-                                }
-                                intent.putExtra("phone", callNumber);
-                                startActivity(intent);
-                            }
-                        });
-
-                        AnimateConstraint.fadeOut(MapsActivity.this, findViewById(R.id.loadingScreen), 500, 10);
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                findViewById(R.id.loadingScreen).setVisibility(View.GONE);
-                            }
-                        }, 500);
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-
-            return "";
-        }
-
-        // This is called from background thread but runs in UI
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-            super.onProgressUpdate(values);
-
-            // Do things like update the progress bar
-        }
-
-        // This runs in UI when background thread finishes
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-            // Do things like hide the progress bar or change a TextView
-        }
     }
 
     private class SinchCallClientListener implements CallClientListener {
@@ -817,7 +729,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             iv_mute.setImageResource(R.drawable.mute_bt);
         }
     }
-
 
     private class checkCourseTask extends AsyncTask<String, Integer, String> {
         SharedPreferences prefs;
@@ -2189,13 +2100,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 });
             }
         });
-
-
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_maps);
+        initialize();
+        mapsActivityVM = new MapsActivityVM();
 
         language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
         co = LocalHelper.setLocale(MapsActivity.this, language);
@@ -2216,14 +2128,51 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             finish();
         }
 
-        try {
-            new CheckUserTask().execute();
-        } catch (Exception e) {
-            e.printStackTrace();
+        mapsActivityVM.checkUserTask(MapsActivity.this, new Userinformation() {
+            @Override
+            public void gettingUserInfo(String name, String image, String email, String number) {
+                userName = name;
+                userImage = image;
+                userEmail = email;
+                phoneNumber = number;
+                tvUserName.setText(userName);
+
+                rootRef = FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientID);
+            }
+        });
+
+        if (userImage != null) {
+            if (userImage.length() > 0) {
+                Picasso.get().load(userImage).centerCrop().fit().into(profileImage);
+            }
         }
 
 
-        setContentView(R.layout.activity_maps);
+        AnimateConstraint.fadeOut(MapsActivity.this, findViewById(R.id.loadingScreen), 500, 10);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                findViewById(R.id.loadingScreen).setVisibility(View.GONE);
+            }
+        }, 500);
+
+        ComingoonYou.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MapsActivity.this, ComingooAndYouActivity.class);
+                intent.putExtra("image", userImage);
+                intent.putExtra("name", userName);
+                intent.putExtra("email", userEmail);
+
+                if (phoneNumber != null && phoneNumber.contains("+212")) {
+                    phoneNumber = phoneNumber.replace("+212", "");
+                }
+                intent.putExtra("phone", phoneNumber);
+                startActivity(intent);
+            }
+        });
+
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -2233,10 +2182,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         promoCode = findViewById(R.id.promoCode);
         promoCode.setText(resources.getString(R.string.promocode_txt));
-
-//        rlCallLayout = findViewById(R.id.rl_calling);
         callLayout = findViewById(R.id.rl_calling);
-//        callLayout.setVisibility(View.VISIBLE);
 
         ivCallDriver = findViewById(R.id.iv_call_driver);
 
@@ -2253,7 +2199,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         tv_appelle_telephone = findViewById(R.id.tv_appelle_telephone);
 
         tv_appelle_voip.setClickable(true);
-//        tv_appelle_voip.setEnabled(true);
 
         close_button = findViewById(R.id.close_button);
 
@@ -2271,15 +2216,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         driversLocations = new ArrayList<>();
         driversKeysHold = new ArrayList<>();
 
-        locationPinDest = findViewById(R.id.locationPinDest);
-        locationPinDriver = findViewById(R.id.driver_pin);
-        profileImage = findViewById(R.id.profile_image);
-        tvUserName = findViewById(R.id.textView3);
-        selectedOpImage = findViewById(R.id.selectedOperation);
-        deleviryButton = findViewById(R.id.deliveryButton);
-        carButton = findViewById(R.id.carButton);
-        selectCity = findViewById(R.id.imageButton4);
-        destArrow = findViewById(R.id.destArrow);
+
 
         SinchClient sinchClient = Sinch.getSinchClientBuilder()
                 .context(this)
@@ -2343,7 +2280,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         mGeoDataClient = Places.getGeoDataClient(this);
 
-        initialize();
 
         placeDataList = new ArrayList<>();
         fPlaceDataList = new ArrayList<>();
@@ -2370,14 +2306,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         rPlaceAdapter = new MyPlaceAdapter(getApplicationContext(), rPlaceDataList, false, userId, this);
         rLocationView.setAdapter(rPlaceAdapter);
 
-
-        ConstraintLayout acceuil = findViewById(R.id.acceuil);
-        ConstraintLayout historique = findViewById(R.id.historique);
-        ConstraintLayout inbox = findViewById(R.id.inbox);
-        ComingoonYou = findViewById(R.id.comingoonyou);
-        ConstraintLayout aide = findViewById(R.id.aide);
-        ConstraintLayout logout = findViewById(R.id.logout);
-
         ivCallDriver.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -2394,14 +2322,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-        findViewById(R.id.invite).setOnClickListener(new View.OnClickListener() {
+        invite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MapsActivity.this, InviteActivity.class));
             }
         });
 
-        findViewById(R.id.logout).setOnClickListener(new View.OnClickListener() {
+        logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String url = "https://www.comingoo.com/driver";
@@ -2410,12 +2338,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 startActivity(i);
             }
         });
+
         inbox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MapsActivity.this, NotificationActivity.class));
             }
         });
+
         aide.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -2573,7 +2503,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         setSearchFunc();
 
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientID);
         rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -2584,8 +2513,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     dataRating.put("3", "0");
                     dataRating.put("4", "0");
                     dataRating.put("5", "0");
-                    FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientID).child("rating").setValue(dataRating);
-
+                    FirebaseDatabase.getInstance().
+                            getReference("clientUSERS").child(clientID).child("rating").setValue(dataRating);
                 }
             }
 
@@ -2596,8 +2525,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
 
-        DatabaseReference rootFavPlace = FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientID);
-        rootFavPlace.addListenerForSingleValueEvent(new ValueEventListener() {
+        rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.hasChild("favouritePlace")) {
@@ -2668,6 +2596,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void initialize() {
+       acceuil = findViewById(R.id.acceuil);
+         historique = findViewById(R.id.historique);
+        invite = findViewById(R.id.invite);
+         inbox = findViewById(R.id.inbox);
+        ComingoonYou = findViewById(R.id.comingoonyou);
+         aide = findViewById(R.id.aide);
+         logout = findViewById(R.id.logout);
+        locationPinDest = findViewById(R.id.locationPinDest);
+        locationPinDriver = findViewById(R.id.driver_pin);
+        profileImage = findViewById(R.id.profile_image);
+        tvUserName = findViewById(R.id.textView3);
+
+        selectedOpImage = findViewById(R.id.selectedOperation);
+        deleviryButton = findViewById(R.id.deliveryButton);
+        carButton = findViewById(R.id.carButton);
+        selectCity = findViewById(R.id.imageButton4);
+        destArrow = findViewById(R.id.destArrow);
         rippleBackground = findViewById(R.id.gooVoidContent);
         frameLayout = findViewById(R.id.framelayout);
         frameLayout2 = findViewById(R.id.framelayout2);
