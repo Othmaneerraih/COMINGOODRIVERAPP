@@ -117,7 +117,10 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -839,14 +842,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     if (dataSnapshot.exists()) {
                         try {
                             for (final DataSnapshot data : dataSnapshot.getChildren()) {
+                                try {
+                                    if (Objects.equals(data.child("driverPosLat").getValue(String.class), "") || Objects.equals(data.child("driverPosLong").getValue(String.class), "") || data.child("startLat").getValue(String.class).equals("") || data.child("startLong").getValue(String.class).equals("")) {
+                                        driverPosT = new LatLng(0.0,
+                                                0.0);
+
+                                        startPositionT = new LatLng(0.0,
+                                                0.0);
+                                    } else {
+                                        driverPosT = new LatLng(Double.parseDouble(Objects.requireNonNull(data.child("driverPosLat").getValue(String.class))),
+                                                Double.parseDouble(Objects.requireNonNull(data.child("driverPosLong").getValue(String.class))));
+                                        startPositionT = new LatLng(Double.parseDouble(Objects.requireNonNull(data.child("startLat").getValue(String.class))),
+                                                Double.parseDouble(Objects.requireNonNull(data.child("startLong").getValue(String.class))));
+                                    }
+                                } catch (NumberFormatException e) {
+                                    e.printStackTrace();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
                                 courseIDT = data.getKey();
                                 statusT = data.child("state").getValue(String.class);
                                 clientIdT = data.child("client").getValue(String.class);
                                 driverIDT = data.child("driver").getValue(String.class);
-                                driverPosT = new LatLng(Double.parseDouble(Objects.requireNonNull(data.child("driverPosLat").getValue(String.class))),
-                                        Double.parseDouble(Objects.requireNonNull(data.child("driverPosLong").getValue(String.class))));
-                                startPositionT = new LatLng(Double.parseDouble(Objects.requireNonNull(data.child("startLat").getValue(String.class))),
-                                        Double.parseDouble(Objects.requireNonNull(data.child("startLong").getValue(String.class))));
 
 
                                 driverLocT = new Location("");
@@ -1570,7 +1587,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                 final Button price = dialog.findViewById(R.id.button3);
 
                                                 if (courseIDT != null) {
-                                                    FirebaseDatabase.getInstance().getReference("COURSES").child(courseIDT).child("price").addValueEventListener(new ValueEventListener() {
+                                                    FirebaseDatabase.getInstance().getReference("COURSES").child(courseIDT).child("price").addListenerForSingleValueEvent(new ValueEventListener() {
                                                         @Override
                                                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                                             try {
