@@ -1,47 +1,35 @@
 package com.comingoo.user.comingoo.activity;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.location.Location;
 import android.media.AudioManager;
-import android.media.Image;
 import android.media.MediaPlayer;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -53,13 +41,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.comingoo.user.comingoo.R;
-import com.comingoo.user.comingoo.ViewModel.MapsActivityVM;
 import com.comingoo.user.comingoo.adapters.FavouritePlaceAdapter;
 import com.comingoo.user.comingoo.adapters.MyPlaceAdapter;
 import com.comingoo.user.comingoo.async.ReverseGeocodingTask;
-import com.comingoo.user.comingoo.model.place;
+import com.comingoo.user.comingoo.model.Place;
 import com.comingoo.user.comingoo.utility.AnimateConstraint;
-import com.comingoo.user.comingoo.utility.LocalHelper;
 import com.comingoo.user.comingoo.utility.Utility;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
@@ -68,11 +54,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -86,7 +69,6 @@ import com.sinch.android.rtc.calling.CallClient;
 import com.sinch.android.rtc.calling.CallClientListener;
 import com.sinch.android.rtc.calling.CallListener;
 import com.skyfishjy.library.RippleBackground;
-import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -96,7 +78,6 @@ import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-import static android.provider.Settings.*;
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
 public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallback {
@@ -125,12 +106,12 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
     private FrameLayout driverLocationPinLayout;
     private ImageView driverPinImage;
 
-    private ArrayList<place> rPlaceDataList;
+    private ArrayList<Place> rPlaceDataList;
     private MyPlaceAdapter placeAdapter;
     private FavouritePlaceAdapter fPlaceAdapter;
     private MyPlaceAdapter rPlaceAdapter;
-    private ArrayList<place> placeDataList;
-    private ArrayList<place> fPlaceDataList;
+    private ArrayList<Place> placeDataList;
+    private ArrayList<Place> fPlaceDataList;
 
     private RelativeLayout departPinLayout;
     private ImageView locationPinDtartImage;
@@ -873,8 +854,8 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
         Gson gson = new Gson();
         String json = appSharedPrefs.getString("recent_places", "");
 
-        place[] rPlace = gson.fromJson(json, place[].class);
-        place Place = new place("Travail",
+        Place[] rPlace = gson.fromJson(json, Place[].class);
+        Place Place = new Place("Travail",
                 "Casablanca, Morocco", "33.5725155", "-7.5962637", R.drawable.lieux_proches);
 
         if (rPlace == null || rPlace.length == 0) {
@@ -942,7 +923,7 @@ public class MapsActivityNew extends FragmentActivity implements OnMapReadyCallb
         rlEndPoint.setVisibility(View.GONE);
     }
 
-    private void goToLocation(Context context, Double lat, Double lng, place rPlace) {
+    private void goToLocation(Context context, Double lat, Double lng, Place rPlace) {
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(new LatLng(lat, lng))      // Sets the center of the map to Mountain View
                 .zoom(17)                   // Sets the zoom

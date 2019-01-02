@@ -2,51 +2,38 @@ package com.comingoo.user.comingoo.ViewModel;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.location.Location;
-import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
-import android.widget.EditText;
+import android.widget.Toast;
 
 import com.comingoo.user.comingoo.R;
-import com.comingoo.user.comingoo.activity.ComingooAndYouActivity;
-import com.comingoo.user.comingoo.activity.LoginActivity;
-import com.comingoo.user.comingoo.activity.Maps2Activity;
 import com.comingoo.user.comingoo.activity.MapsActivity;
 import com.comingoo.user.comingoo.interfaces.CourseCallBack;
 import com.comingoo.user.comingoo.interfaces.FinishedCourseTaskCallback;
+import com.comingoo.user.comingoo.interfaces.PricaCallback;
+import com.comingoo.user.comingoo.interfaces.PromoCodeCallback;
+import com.comingoo.user.comingoo.interfaces.SendRequestsTaskCallback;
 import com.comingoo.user.comingoo.interfaces.TaskCallback;
-import com.comingoo.user.comingoo.model.place;
-import com.comingoo.user.comingoo.utility.AnimateConstraint;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.places.AutocompleteFilter;
-import com.google.android.gms.location.places.AutocompletePrediction;
-import com.google.android.gms.location.places.AutocompletePredictionBufferResponse;
-import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.PlaceBufferResponse;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.CameraPosition;
+import com.comingoo.user.comingoo.model.Place;
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
+import com.firebase.geofire.GeoQueryDataEventListener;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -74,6 +61,10 @@ public class MapsActivityVM {
     private String driverCarDescription;
     private String totalRatingNumber;
     private String course;
+    private Place homePlace;
+    private Place workPlace;
+    private int driverSize;
+    private Runnable runnable;
     private String TAG = "MapsActivityVM";
 
     public void checkCourseTask(Context context, final CourseCallBack callBack) {
@@ -286,7 +277,7 @@ public class MapsActivityVM {
                                             Log.e(TAG, "COURSES value onDataChange: " + dataSnapshot.getValue(String.class));
 ////
                                             double finalPriceOfCourse = Double.parseDouble(Objects.requireNonNull(dataSnapshot.getValue(String.class)));
-                                            callback.onFinishedCourseTask(driverId, finalPriceOfCourse,course);
+                                            callback.onFinishedCourseTask(driverId, finalPriceOfCourse, course);
                                         }
 //
                                     } catch (Exception e) {
@@ -311,7 +302,7 @@ public class MapsActivityVM {
                 });
     }
 
-    public void getRating(final String userId, final String dialogDriverId,final int RATE){
+    public void getRating(final String userId, final String dialogDriverId, final int RATE) {
         FirebaseDatabase.getInstance().getReference("DRIVERUSERS").
                 child(dialogDriverId).child("rating").child(Integer.toString(RATE))
                 .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -336,5 +327,303 @@ public class MapsActivityVM {
                 .child(userId).child("COURSE").removeValue();
     }
 
+    public Place getFevouritePlaceWorkData(String userId) {
+        FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child("Work").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
 
+                    String address = dataSnapshot.child("Address").getValue(String.class);
+                    String lat = dataSnapshot.child("Lat").getValue(String.class);
+                    String Long = dataSnapshot.child("Long").getValue(String.class);
+                    workPlace = new Place(address, address, lat, Long, R.drawable.mdaison_con);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        return workPlace;
+    }
+
+    public Place getFevouritePlaceHomeData(String userId) {
+        FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child("Home").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    String homeAddress = dataSnapshot.child("Address").getValue(String.class);
+                    String homeLat = dataSnapshot.child("Lat").getValue(String.class);
+                    String homeLong = dataSnapshot.child("Long").getValue(String.class);
+
+                    homePlace = new Place(homeAddress, homeAddress, homeLat, homeLong, R.drawable.work_icon);
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        return homePlace;
+    }
+
+    public void sendRequestsTask(final String userId, final ArrayList<String> driversKeys,
+                                 final ArrayList<String> driversLocations, final ArrayList<String> driversKeysHold,
+                                 final String clientID, final String searchEditText,
+                                 final String searchDestEditText,
+                                 final String userPromoCode,
+                                 final LatLng startLatLng,
+                                 final LatLng destLatLng, final SendRequestsTaskCallback callback) {
+        final int Step = 3; //Number Of Drivers To Call Every Time
+        driverSize = driversKeys.size();
+
+        final Handler handler;
+
+
+        handler = new Handler(Looper.getMainLooper());
+        runnable = new Runnable() {
+            int counter = 0;
+
+            @Override
+            public void run() {
+                if (counter == 0) {
+                    driversKeysHold.clear();
+                    for (int j = counter; j < (counter + Step) && j < driversKeys.size(); j++) {
+                        if (driversKeys.get(j) != null) {
+                            final DatabaseReference pickupRequest =
+                                    FirebaseDatabase.getInstance().getReference("PICKUPREQUEST").
+                                            child(driversKeys.get(j)).child(Objects.requireNonNull(userId));
+
+                            Map<String, String> data = new HashMap<>();
+                            data.put("client", clientID);
+                            data.put("start", searchEditText);
+                            data.put("arrival", searchDestEditText);
+
+
+                            data.put("destFix", "0");
+                            data.put("fixedPrice", "");
+
+                            data.put("startLat", "" + startLatLng.latitude);
+                            data.put("startLong", "" + startLatLng.longitude);
+                            if (destLatLng != null) {
+                                data.put("endLat", "" + destLatLng.latitude);
+                                data.put("endLong", "" + destLatLng.longitude);
+                            } else {
+                                data.put("endLat", "");
+                                data.put("endLong", "");
+                            }
+
+                            data.put("distance", driversLocations.get(j));
+                            data.put("Refused", "0");
+
+//                                if (userPromoCode.equals(""))
+                            data.put("PROMOCODE", userPromoCode);
+
+
+                            pickupRequest.setValue(data);
+
+                            driversKeysHold.add(driversKeys.get(j));
+
+                            pickupRequest.onDisconnect().removeValue();
+
+
+                            pickupRequest.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    if (!dataSnapshot.exists()) {
+                                        driverSize -= 1;
+                                        counter += Step;
+                                        if (driverSize == 0) {
+
+                                            counter = 0;
+                                            pickupRequest.removeEventListener(this);
+
+                                            FirebaseDatabase.getInstance().getReference("COURSES").orderByChild("client").equalTo(userId).limitToFirst(1).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                    if (!dataSnapshot.exists()) {
+                                                        counter = 0;
+                                                        handler.removeCallbacks(runnable);
+                                                        callback.onPickUpRequest(true);
+
+                                                    } else {
+
+                                                        for (DataSnapshot data : dataSnapshot.getChildren()) {
+                                                            FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(Objects.requireNonNull(data.child("driver").getValue(String.class))).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                @Override
+                                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                                    if (dataSnapshot.exists()) {
+                                                                        callback.onPickUpRequest(false);
+
+//                                                                            rlCallLayout.setVisibility(View.VISIBLE);
+                                                                    }
+                                                                }
+
+                                                                @Override
+                                                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                                                }
+                                                            });
+                                                        }
+                                                    }
+                                                }
+
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                                }
+                                            });
+                                        }
+                                        if (counter <= driversKeys.size())
+                                            handler.postDelayed(runnable, 0);
+                                        pickupRequest.removeEventListener(this);
+                                        callback.normalRequest();
+
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                }
+                            });
+                        }
+                    }
+                } else {
+                    if (counter < driversKeys.size()) {
+                        final DatabaseReference pickupRequest = FirebaseDatabase.getInstance().getReference("PICKUPREQUEST").child(driversKeys.get(counter)).child(userId);
+                        String level = FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("level").toString();
+                        Map<String, String> data = new HashMap<>();
+                        data.put("client", clientID);
+                        data.put("start", searchEditText);
+                        data.put("arrival", searchDestEditText);
+                        data.put("startLat", "" + startLatLng.latitude);
+                        data.put("startLong", "" + startLatLng.longitude);
+                        data.put("destFix", "0");
+                        data.put("fixedPrice", "");
+                        if (destLatLng != null) {
+                            data.put("endLat", "" + destLatLng.latitude);
+                            data.put("endLong", "" + destLatLng.longitude);
+                        } else {
+                            data.put("endLat", "");
+                            data.put("endLong", "");
+                        }
+                        data.put("distance", driversLocations.get(counter));
+                        data.put("Refused", "0");
+                        pickupRequest.setValue(data);
+                        driversKeysHold.add(driversKeys.get(counter));
+                        pickupRequest.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                if (!dataSnapshot.exists()) {
+                                    counter++;
+                                    if (counter <= driversKeys.size())
+                                        handler.postDelayed(runnable, 0);
+
+                                    pickupRequest.removeEventListener(this);
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
+                    } else {
+                        return;
+                    }
+                }
+
+                callback.onSendRequestsTaskCallback(counter, Step);
+            }
+        };
+        handler.postDelayed(runnable, 1000);
+    }
+
+    public void getPrice(String startCity, String destCity, final Double distance, final PricaCallback callback) {
+        if ((startCity.equals("casa") && destCity.equals("casa")) ||
+                (startCity.equals("rabat") && destCity.equals("rabat")) || (startCity.equals("sale") && destCity.equals("sale"))
+                || (startCity.equals("bouskoura") && destCity.equals("bouskoura")) || (startCity.equals("aeroportCasa") && destCity.equals("aeroportCasa"))
+                || (startCity.equals("sidirahal") && destCity.equals("sidirahal"))
+                || (startCity.equals("darBouazza") && destCity.equals("darBouazza"))
+                || (startCity.equals("marrakech") && destCity.equals("marrakech"))
+                || (startCity.equals("jadida") && destCity.equals("jadida"))) {
+
+            FirebaseDatabase.getInstance().getReference("PRICES").
+                    addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            double price1 = Math.ceil((distance) * Double.parseDouble(Objects.requireNonNull(dataSnapshot.child("km").getValue(String.class))));
+                            if (price1 < Double.parseDouble(Objects.requireNonNull(dataSnapshot.child("minimum").getValue(String.class))))
+                                price1 = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("minimum").getValue(String.class)));
+                            callback.ongetPrice(price1);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
+        } else {
+            FirebaseDatabase.getInstance().getReference("FIXEDDESTS").
+                    child(startCity).child("destinations").child(destCity).
+                    child("price").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        callback.ongetPrice(Double.parseDouble(dataSnapshot.getValue(String.class)));
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                }
+            });
+
+        }
+    }
+
+    public void getPromoCode(final String etPromoCode, final String userId, final Dialog dialog, final PromoCodeCallback callback) {
+        FirebaseDatabase.getInstance().getReference("CLIENTNOTIFICATIONS").
+                child("qsjkldjqld").child("code").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (Objects.requireNonNull(dataSnapshot.getValue()).equals(etPromoCode)) {
+
+                    FirebaseDatabase.getInstance().getReference("CLIENTNOTIFICATIONS").
+                            child("qsjkldjqld").child("value").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.exists()) {
+                                FirebaseDatabase.getInstance().getReference("clientUSERS").
+                                        child(userId).child("PROMOCODE").setValue(etPromoCode);
+
+                                callback.onGetPromoCode(true, Objects.requireNonNull(dataSnapshot.getValue()).toString(), etPromoCode);
+
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            dialog.dismiss();
+                        }
+                    });
+
+                } else {
+                    callback.onGetPromoCode(false, "", "");
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                dialog.dismiss();
+            }
+        });
+
+    }
 }
+

@@ -17,13 +17,10 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.comingoo.user.comingoo.R;
-import com.comingoo.user.comingoo.activity.MapsActivity;
-import com.comingoo.user.comingoo.activity.MapsActivityNew;
 import com.comingoo.user.comingoo.model.LocationInitializer;
-import com.comingoo.user.comingoo.model.place;
+import com.comingoo.user.comingoo.model.Place;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
@@ -222,7 +219,7 @@ public class Utility {
         }
     }
 
-    public static void saveRecentPlaces(Context context, ArrayList<place> rPlaceDataList) {
+    public static void saveRecentPlaces(Context context, ArrayList<Place> rPlaceDataList) {
         SharedPreferences appSharedPrefs = PreferenceManager
                 .getDefaultSharedPreferences(context.getApplicationContext());
         SharedPreferences.Editor prefsEditor = appSharedPrefs.edit();
@@ -232,11 +229,11 @@ public class Utility {
         prefsEditor.commit();
     }
 
-    public static boolean contains(ArrayList<place> list, place place) {
-        for (place item : list) {
-            if (item.getName().equals(place.name) || item.getLat().equals(place.getLat())
-                    || item.getLng().equals(place.getLng())
-                    || item.getAddress().equals(place.getAddress())) {
+    public static boolean contains(ArrayList<Place> list, Place Place) {
+        for (Place item : list) {
+            if (item.getName().equals(Place.name) || item.getLat().equals(Place.getLat())
+                    || item.getLng().equals(Place.getLng())
+                    || item.getAddress().equals(Place.getAddress())) {
                 return true;
             }
         }
@@ -261,5 +258,12 @@ public class Utility {
 
         return "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters + "&key="
                 + "AIzaSyA69yMLMZGzJzaa1pHoNIk9yGYqyhsa_lw" + "&sensor=true";
+    }
+
+    public static int getPosition(List<String> sList, String element) {
+        for (int i = 0; i < sList.size(); i++) {
+            if (sList.get(i).equals(element)) return i;
+        }
+        return -1;
     }
 }

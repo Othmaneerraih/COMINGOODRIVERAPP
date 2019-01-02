@@ -14,19 +14,19 @@ import android.widget.TextView;
 import com.comingoo.user.comingoo.interfaces.PickLocation;
 import com.comingoo.user.comingoo.activity.FevoriteLocationActivity;
 import com.comingoo.user.comingoo.R;
-import com.comingoo.user.comingoo.model.place;
+import com.comingoo.user.comingoo.model.Place;
 import com.comingoo.user.comingoo.utility.LocalHelper;
 
 import java.util.List;
 
 public class FavouritePlaceAdapter extends RecyclerView.Adapter<FavouritePlaceAdapter.ViewHolder> {
-    private List<com.comingoo.user.comingoo.model.place> mDataset;
+    private List<Place> mDataset;
     private Context context;
     private boolean isAddButtonNeed;
     private String userId;
     private PickLocation pickLocation;
 
-    public FavouritePlaceAdapter(Context context, List<place> myDataset, boolean isAddNeed, String userId, PickLocation pickLocation) {
+    public FavouritePlaceAdapter(Context context, List<Place> myDataset, boolean isAddNeed, String userId, PickLocation pickLocation) {
         this.mDataset = myDataset;
         this.userId = userId;
         this.context = context;
@@ -45,7 +45,7 @@ public class FavouritePlaceAdapter extends RecyclerView.Adapter<FavouritePlaceAd
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        final com.comingoo.user.comingoo.model.place newPlace = mDataset.get(position);
+        final Place newPlace = mDataset.get(position);
 
         if (isAddButtonNeed) holder.addBtn.setVisibility(View.VISIBLE);
         else holder.addBtn.setVisibility(View.GONE);

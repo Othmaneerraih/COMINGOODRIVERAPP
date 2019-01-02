@@ -73,7 +73,7 @@ import android.widget.Toast;
 import com.comingoo.user.comingoo.async.ReadTask;
 import com.comingoo.user.comingoo.async.ReverseGeocodingTask;
 import com.comingoo.user.comingoo.interfaces.PickLocation;
-import com.comingoo.user.comingoo.model.place;
+import com.comingoo.user.comingoo.model.Place;
 import com.comingoo.user.comingoo.utility.AnimateConstraint;
 import com.comingoo.user.comingoo.utility.LocalHelper;
 import com.comingoo.user.comingoo.model.LocationInitializer;
@@ -179,8 +179,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private MyPlaceAdapter placeAdapter;
     private FavouritePlaceAdapter fPlaceAdapter;
     private MyPlaceAdapter rPlaceAdapter;
-    private ArrayList<place> placeDataList;
-    private ArrayList<place> fPlaceDataList;
+    private ArrayList<Place> placeDataList;
+    private ArrayList<Place> fPlaceDataList;
     private boolean audioRecorded = false;
     private ImageButton recordButton, playAudio, pauseAudio, deleteAudio;
     private String outputeFile;
@@ -189,7 +189,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private TextView tv_appelle_voip, tv_appelle_telephone;
     private LinearLayout voip_view;
     private RecyclerView mLocationView;
-    private ArrayList<place> rPlaceDataList;
+    private ArrayList<Place> rPlaceDataList;
     private ConstraintLayout startConstraint;
     private ConstraintLayout endConstraint;
     private GeoDataClient mGeoDataClient;
@@ -362,7 +362,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
-    public void pickedLocation(place place) {
+    public void pickedLocation(Place Place) {
         searchEditText.setFocusable(false);
         searchEditText.setFocusableInTouchMode(false);
         coverButton.setClickable(false);
@@ -370,7 +370,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         findViewById(R.id.shadow).setVisibility(View.VISIBLE);
 
         CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(new LatLng(Double.parseDouble(place.getLat()), Double.parseDouble(place.getLng())))
+                .target(new LatLng(Double.parseDouble(Place.getLat()), Double.parseDouble(Place.getLng())))
                 .zoom(17)                   // Sets the zoom
                 .build();                   // Creates a CameraPosition from the builder
 
@@ -388,9 +388,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-        if (!contains(rPlaceDataList, place)) {
-            place.setImage(R.drawable.lieux_proches);
-            rPlaceDataList.add(place);
+        if (!contains(rPlaceDataList, Place)) {
+            Place.setImage(R.drawable.lieux_proches);
+            rPlaceDataList.add(Place);
             saveRecentPlaces(MapsActivity.this, rPlaceDataList);
             rPlaceAdapter.notifyDataSetChanged();
         }
@@ -2719,8 +2719,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Gson gson = new Gson();
         String json = appSharedPrefs.getString("recent_places", "");
 
-        place[] rPlace = gson.fromJson(json, place[].class);
-        place Place = new place("Travail",
+        Place[] rPlace = gson.fromJson(json, Place[].class);
+        Place Place = new Place("Travail",
                 "Casablanca, Morocco", "33.5725155", "-7.5962637", R.drawable.lieux_proches);
 
         if (rPlace == null || rPlace.length == 0) {
@@ -3271,7 +3271,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 public void onComplete(@NonNull Task<PlaceBufferResponse> task) {
                                     if (task.isSuccessful() && Objects.requireNonNull(task.getResult()).getCount() > 0) {
                                         for (com.google.android.gms.location.places.Place gotPlace : task.getResult()) {
-                                            place Place = new place(gotPlace.getName().toString(),
+                                            Place Place = new Place(gotPlace.getName().toString(),
                                                     Objects.requireNonNull(gotPlace.getAddress()).toString(), "" + gotPlace.getLatLng().latitude,
                                                     "" + gotPlace.getLatLng().longitude, R.drawable.lieux_proches);
                                             placeDataList.add(Place);
@@ -3331,7 +3331,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    private void saveRecentPlaces(Context context, ArrayList<place> rPlaceDataList) {
+    private void saveRecentPlaces(Context context, ArrayList<Place> rPlaceDataList) {
         SharedPreferences appSharedPrefs = PreferenceManager
                 .getDefaultSharedPreferences(context.getApplicationContext());
         SharedPreferences.Editor prefsEditor = appSharedPrefs.edit();
@@ -3341,7 +3341,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         prefsEditor.commit();
     }
 
-    private void goToLocation(Context context, Double lat, Double lng, place rPlace) {
+    private void goToLocation(Context context, Double lat, Double lng, Place rPlace) {
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(new LatLng(lat, lng))      // Sets the center of the map to Mountain View
                 .zoom(17)                   // Sets the zoom
@@ -3354,11 +3354,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         searchDestEditText.setText(utility.getCompleteAddressString(context, lat, lng));
     }
 
-    private boolean contains(ArrayList<place> list, place place) {
-        for (place item : list) {
-            if (item.getName().equals(place.name) || item.getLat().equals(place.getLat())
-                    || item.getLng().equals(place.getLng())
-                    || item.getAddress().equals(place.getAddress())) {
+    private boolean contains(ArrayList<Place> list, Place Place) {
+        for (Place item : list) {
+            if (item.getName().equals(Place.name) || item.getLat().equals(Place.getLat())
+                    || item.getLng().equals(Place.getLng())
+                    || item.getAddress().equals(Place.getAddress())) {
                 return true;
             }
         }
@@ -4247,7 +4247,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         address = dataSnapshot.child("Address").getValue(String.class);
                         lat = dataSnapshot.child("Lat").getValue(String.class);
                         Long = dataSnapshot.child("Long").getValue(String.class);
-                        place workPlace = new place(address, address, lat, Long, R.drawable.mdaison_con);
+                        Place workPlace = new Place(address, address, lat, Long, R.drawable.mdaison_con);
 
                         fPlaceDataList.add(workPlace);
                         fPlaceAdapter.notifyDataSetChanged();
@@ -4267,7 +4267,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         homeLat = dataSnapshot.child("Lat").getValue(String.class);
                         homeLong = dataSnapshot.child("Long").getValue(String.class);
 
-                        place homePlace = new place(homeAddress, homeAddress, homeLat, homeLong, R.drawable.work_icon);
+                        Place homePlace = new Place(homeAddress, homeAddress, homeLat, homeLong, R.drawable.work_icon);
                         fPlaceDataList.add(homePlace);
                         fPlaceAdapter.notifyDataSetChanged();
                     }

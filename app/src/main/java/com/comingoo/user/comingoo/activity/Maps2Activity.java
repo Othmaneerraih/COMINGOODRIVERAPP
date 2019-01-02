@@ -23,6 +23,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.Environment;
@@ -70,17 +71,26 @@ import com.comingoo.user.comingoo.async.ReverseGeocodingTask;
 import com.comingoo.user.comingoo.interfaces.CourseCallBack;
 import com.comingoo.user.comingoo.interfaces.FinishedCourseTaskCallback;
 import com.comingoo.user.comingoo.interfaces.PickLocation;
+import com.comingoo.user.comingoo.interfaces.PricaCallback;
+import com.comingoo.user.comingoo.interfaces.PromoCodeCallback;
+import com.comingoo.user.comingoo.interfaces.SendRequestsTaskCallback;
 import com.comingoo.user.comingoo.interfaces.TaskCallback;
 import com.comingoo.user.comingoo.model.LocationInitializer;
-import com.comingoo.user.comingoo.model.place;
+import com.comingoo.user.comingoo.model.Place;
 import com.comingoo.user.comingoo.utility.AnimateConstraint;
 import com.comingoo.user.comingoo.utility.LocalHelper;
 import com.comingoo.user.comingoo.utility.SharedPreferenceTask;
 import com.comingoo.user.comingoo.utility.Utility;
+import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
+import com.firebase.geofire.GeoQueryDataEventListener;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.places.AutocompleteFilter;
+import com.google.android.gms.location.places.AutocompletePrediction;
+import com.google.android.gms.location.places.AutocompletePredictionBufferResponse;
 import com.google.android.gms.location.places.GeoDataClient;
+import com.google.android.gms.location.places.PlaceBufferResponse;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -89,10 +99,13 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -100,9 +113,19 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
+import com.google.maps.DirectionsApi;
+import com.google.maps.DirectionsApiRequest;
+import com.google.maps.GeoApiContext;
 import com.google.maps.android.PolyUtil;
+import com.google.maps.model.DirectionsLeg;
+import com.google.maps.model.DirectionsResult;
+import com.google.maps.model.DirectionsRoute;
+import com.google.maps.model.DirectionsStep;
+import com.google.maps.model.EncodedPolyline;
 import com.mikhaellopez.circularimageview.CircularImageView;
 import com.sinch.android.rtc.PushPair;
+import com.sinch.android.rtc.Sinch;
+import com.sinch.android.rtc.SinchClient;
 import com.sinch.android.rtc.calling.Call;
 import com.sinch.android.rtc.calling.CallClient;
 import com.sinch.android.rtc.calling.CallClientListener;
@@ -217,7 +240,7 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
     private RelativeLayout gooContent;
     private RelativeLayout gooBox;
     private ImageView iv_promo_code;
-    private TextView promoCode;
+    private TextView promoCodeTv;
     private RelativeLayout contentBlocker;
     private RelativeLayout loadingScreen;
     private CircleImageView iv_cancel_ride;
@@ -242,9 +265,9 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
     private MyPlaceAdapter placeAdapter;
     private FavouritePlaceAdapter fPlaceAdapter;
     private MyPlaceAdapter rPlaceAdapter;
-    private ArrayList<place> placeDataList;
-    private ArrayList<place> fPlaceDataList;
-    private ArrayList<place> rPlaceDataList;
+    private ArrayList<Place> placeDataList;
+    private ArrayList<Place> fPlaceDataList;
+    private ArrayList<Place> rPlaceDataList;
     private GeoDataClient mGeoDataClient;
     private String searchLoc;
     private boolean isLoud = false;
@@ -296,6 +319,8 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
     private String driverCarDescription;
     private String totalRatingNumber;
     private DecimalFormat df2 = new DecimalFormat("0.##");
+    private String userPromoCode = "";
+    private double distance = 0.0;
 
 
     @Override
@@ -460,7 +485,7 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
         gooContent.setVisibility(View.GONE);
         gooBox = findViewById(R.id.gooBox);
         iv_promo_code = findViewById(R.id.iv_promo_code);
-        promoCode = findViewById(R.id.promoCode);
+        promoCodeTv = findViewById(R.id.promoCode);
         contentBlocker = findViewById(R.id.contentBlocker);
         // Note : Hide initially
         contentBlocker.setVisibility(View.GONE);
@@ -531,7 +556,7 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
                 showRatingDialog(driverId, finalPriceOfCourse, course);
             }
         });
-        promoCode.setText(resources.getString(R.string.promocode_txt));
+        promoCodeTv.setText(resources.getString(R.string.promocode_txt));
         tv_appelle_voip.setClickable(true);
         close_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -542,19 +567,19 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
             }
         });
 
-//        SinchClient sinchClient = Sinch.getSinchClientBuilder()
-//                .context(this)
-//                .userId(userId)
-//                .applicationKey(getResources().getString(R.string.sinch_app_key))
-//                .applicationSecret(getResources().getString(R.string.sinch_app_secret))
-//                .environmentHost(getResources().getString(R.string.sinch_envirentmnet_host))
-//                .build();
-//
-//        sinchClient.setSupportCalling(true);
-//        sinchClient.startListeningOnActiveConnection();
-//        sinchClient.start();
-//
-//        sinchClient.getCallClient().addCallClientListener(new SinchCallClientListener());
+        SinchClient sinchClient = Sinch.getSinchClientBuilder()
+                .context(this)
+                .userId(userId)
+                .applicationKey(getResources().getString(R.string.sinch_app_key))
+                .applicationSecret(getResources().getString(R.string.sinch_app_secret))
+                .environmentHost(getResources().getString(R.string.sinch_envirentmnet_host))
+                .build();
+
+        sinchClient.setSupportCalling(true);
+        sinchClient.startListeningOnActiveConnection();
+        sinchClient.start();
+
+        sinchClient.getCallClient().addCallClientListener(new SinchCallClientListener());
 
 
         //** Note: start pin initially visible
@@ -641,7 +666,7 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
             }
         });
 
-        promoCode.setOnClickListener(new View.OnClickListener() {
+        promoCodeTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 showPromoCodeDialog(Maps2Activity.this);
@@ -682,6 +707,35 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
                     menu_button.setVisibility(View.VISIBLE);
                     startSearchUI();
                     hideAllUI();
+
+                    mapsActivityVM.sendRequestsTask(userId, driversKeys, driversLocations, driversKeysHold, clientID, et_start_point.getText().toString(), et_end_point.getText().toString(), userPromoCode, startLatLng, destLatLng, new SendRequestsTaskCallback() {
+                        @Override
+                        public void onSendRequestsTaskCallback(int counter, int step) {
+                            setCancelSearchButton(counter, step);
+                        }
+
+                        @Override
+                        public void onPickUpRequest(boolean success) {
+                            if (success) {
+                                Toast.makeText(Maps2Activity.this, resources.getString(R.string.no_driver_txt), Toast.LENGTH_SHORT).show();
+                                courseScreenIsOn = false;
+                                geoQuery.setCenter(new GeoLocation(startLatLng.latitude, startLatLng.longitude));
+                                stopSearchUI();
+                                showAllUI();
+                            } else {
+                                rl_calling.setVisibility(View.VISIBLE);
+                            }
+
+                        }
+
+                        @Override
+                        public void normalRequest() {
+                            stopSearchUI();
+                            showAllUI();
+                        }
+                    });
+                    lookForDriverTask();
+
                 } else
                     Toast.makeText(getApplicationContext(), getString(R.string.inviteText),
                             Toast.LENGTH_LONG).show();
@@ -769,17 +823,17 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
             @Override
             public void onClick(View view) {
                 //Begin Selecting Destination Phase
-//                try {
-//                    if (!et_start_point.getText().toString().equals("")) {
-//                        if (startPositionIsValid()) {
-                orderDriverState = 1;
-                showSelectDestUI();
-                state = 1;
-//                        }
-//                    }
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
+                try {
+                    if (!et_start_point.getText().toString().equals("")) {
+                        if (startPositionIsValid()) {
+                            orderDriverState = 1;
+                            showSelectDestUI();
+                            state = 1;
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -795,68 +849,68 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
 
         setSearchFunc();
 
-//        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientID);
-//        rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                if (!snapshot.hasChild("rating")) {
-//                    Map<String, String> dataRating = new HashMap();
-//                    dataRating.put("1", "0");
-//                    dataRating.put("2", "0");
-//                    dataRating.put("3", "0");
-//                    dataRating.put("4", "0");
-//                    dataRating.put("5", "0");
-//                    FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientID).child("rating").
-//                            setValue(dataRating);
-//
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
-//
-//
-//        DatabaseReference rootFavPlace = FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientID);
-//        rootFavPlace.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                if (snapshot.hasChild("favouritePlace")) {
-//                } else {
-//                    Map<String, String> dataFavPlace = new HashMap();
-//                    dataFavPlace.put(getString(R.string.txt_home), "");
-//                    dataFavPlace.put(getString(R.string.txt_work), "");
-//                    FirebaseDatabase.getInstance().getReference
-//                            ("clientUSERS").child(clientID).child("favouritePlace").setValue(dataFavPlace);
-//
-//                    Map<String, String> homeSt = new HashMap();
-//                    homeSt.put("Lat", "");
-//                    homeSt.put("Long", "");
-//                    homeSt.put("Address", "");
-//
-//                    Map<String, String> workSt = new HashMap();
-//                    workSt.put("Lat", "");
-//                    workSt.put("Long", "");
-//                    workSt.put("Address", "");
-//
-//                    FirebaseDatabase.getInstance().
-//                            getReference("clientUSERS").child(clientID)
-//                            .child("favouritePlace").child(getString(R.string.txt_home)).setValue(homeSt);
-//
-//                    FirebaseDatabase.getInstance().
-//                            getReference("clientUSERS").child(clientID)
-//                            .child("favouritePlace").child(getString(R.string.txt_work)).setValue(workSt);
-//
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientID);
+        rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!snapshot.hasChild("rating")) {
+                    Map<String, String> dataRating = new HashMap();
+                    dataRating.put("1", "0");
+                    dataRating.put("2", "0");
+                    dataRating.put("3", "0");
+                    dataRating.put("4", "0");
+                    dataRating.put("5", "0");
+                    FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientID).child("rating").
+                            setValue(dataRating);
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+        DatabaseReference rootFavPlace = FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientID);
+        rootFavPlace.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.hasChild("favouritePlace")) {
+                } else {
+                    Map<String, String> dataFavPlace = new HashMap();
+                    dataFavPlace.put(getString(R.string.txt_home), "");
+                    dataFavPlace.put(getString(R.string.txt_work), "");
+                    FirebaseDatabase.getInstance().getReference
+                            ("clientUSERS").child(clientID).child("favouritePlace").setValue(dataFavPlace);
+
+                    Map<String, String> homeSt = new HashMap();
+                    homeSt.put("Lat", "");
+                    homeSt.put("Long", "");
+                    homeSt.put("Address", "");
+
+                    Map<String, String> workSt = new HashMap();
+                    workSt.put("Lat", "");
+                    workSt.put("Long", "");
+                    workSt.put("Address", "");
+
+                    FirebaseDatabase.getInstance().
+                            getReference("clientUSERS").child(clientID)
+                            .child("favouritePlace").child(getString(R.string.txt_home)).setValue(homeSt);
+
+                    FirebaseDatabase.getInstance().
+                            getReference("clientUSERS").child(clientID)
+                            .child("favouritePlace").child(getString(R.string.txt_work)).setValue(workSt);
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     public void showDialog(final Context context, final Call call) {
@@ -2207,8 +2261,8 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
         Gson gson = new Gson();
         String json = appSharedPrefs.getString("recent_places", "");
 
-        place[] rPlace = gson.fromJson(json, place[].class);
-        place Place = new place("Travail",
+        Place[] rPlace = gson.fromJson(json, Place[].class);
+        Place Place = new Place("Travail",
                 "Casablanca, Morocco", "33.5725155", "-7.5962637", R.drawable.lieux_proches);
 
         if (rPlace == null || rPlace.length == 0) {
@@ -2258,43 +2312,19 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
                 public void onClick(View view) {
                     if (!etPromoCode.getText().toString().equals("")) {
 
-//                        FirebaseDatabase.getInstance().getReference("CLIENTNOTIFICATIONS").
-//                                child("qsjkldjqld").child("code").addListenerForSingleValueEvent(new ValueEventListener() {
-//                            @Override
-//                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                                if (Objects.requireNonNull(dataSnapshot.getValue()).equals(etPromoCode.getText().toString())) {
-//
-//                                    FirebaseDatabase.getInstance().getReference("CLIENTNOTIFICATIONS").
-//                                            child("qsjkldjqld").child("value").addListenerForSingleValueEvent(new ValueEventListener() {
-//                                        @Override
-//                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                                            if (dataSnapshot.exists()) {
-//                                                price.setText(dataSnapshot.getValue() + " MAD");
-//                                                promoCode.setText(etPromoCode.getText().toString());
-//                                                userPromoCode = etPromoCode.getText().toString();
-//
-//                                                FirebaseDatabase.getInstance().getReference("clientUSERS").
-//                                                        child(userId).child("PROMOCODE").setValue(userPromoCode);
-//                                                dialog.dismiss();
-//                                            }
-//                                        }
-//
-//                                        @Override
-//                                        public void onCancelled(@NonNull DatabaseError databaseError) {
-//                                            dialog.dismiss();
-//                                        }
-//                                    });
-//
-//                                } else
-//                                    Toast.makeText(getApplicationContext(), resources.getString(R.string.promoce_expired_txt), Toast.LENGTH_LONG).show();
-//                            }
-//
-//                            @Override
-//                            public void onCancelled(@NonNull DatabaseError databaseError) {
-//                                dialog.dismiss();
-//                            }
-//                        });
-
+                        mapsActivityVM.getPromoCode(etPromoCode.getText().toString(), userId, dialog, new PromoCodeCallback() {
+                            @Override
+                            public void onGetPromoCode(boolean success, String price, String promoCode) {
+                                if (success) {
+                                    tv_mad.setText(price + " MAD");
+                                    promoCodeTv.setText(promoCode);
+                                    userPromoCode = etPromoCode.getText().toString();
+                                    dialog.dismiss();
+                                } else {
+                                    Toast.makeText(getApplicationContext(), resources.getString(R.string.promoce_expired_txt), Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        });
                     } else
                         Toast.makeText(getApplicationContext(), resources.getString(R.string.promocode_validation_txt), Toast.LENGTH_LONG).show();
                 }
@@ -2320,48 +2350,6 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
         aR.setVisibility(View.INVISIBLE);
     }
 
-    private void getPrice() {
-        if ((startCity.equals("casa") && destCity.equals("casa")) ||
-                (startCity.equals("rabat") && destCity.equals("rabat")) || (startCity.equals("sale") && destCity.equals("sale"))
-                || (startCity.equals("bouskoura") && destCity.equals("bouskoura")) || (startCity.equals("aeroportCasa") && destCity.equals("aeroportCasa"))
-                || (startCity.equals("sidirahal") && destCity.equals("sidirahal"))
-                || (startCity.equals("darBouazza") && destCity.equals("darBouazza"))
-                || (startCity.equals("marrakech") && destCity.equals("marrakech"))
-                || (startCity.equals("jadida") && destCity.equals("jadida"))) {
-
-//            FirebaseDatabase.getInstance().getReference("PRICES").
-//                    addListenerForSingleValueEvent(new ValueEventListener() {
-//                        @Override
-//                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                            double price1 = Math.ceil((distance) * Double.parseDouble(Objects.requireNonNull(dataSnapshot.child("km").getValue(String.class))));
-//                            int price2 = (int) price1;
-//                            if (price2 < Double.parseDouble(Objects.requireNonNull(dataSnapshot.child("minimum").getValue(String.class))))
-//                                price2 = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("minimum").getValue(String.class)));
-//                            tv_mad.setText(price2 + " MAD");
-//                        }
-//
-//                        @Override
-//                        public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                        }
-//                    });
-
-        } else {
-//            FirebaseDatabase.getInstance().getReference("FIXEDDESTS").
-//                    child(startCity).child("destinations").child(destCity).
-//                    child("price").addListenerForSingleValueEvent(new ValueEventListener() {
-//                @Override
-//                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                    tv_mad.setText(dataSnapshot.getValue(String.class) + " MAD");
-//                }
-//
-//                @Override
-//                public void onCancelled(@NonNull DatabaseError databaseError) {
-//                }
-//            });
-
-        }
-    }
 
     private void cancelCommandLayout() {
         orderDriverState = 1;
@@ -2395,7 +2383,7 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
         start_edit_text.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) (dpHeight - 62),
                 getResources().getDisplayMetrics());
 //        searchButtonDest.setVisibility(View.GONE);
-//        state = 2;
+        state = 2;
 
         coverButton.setVisibility(View.GONE);
         et_end_point.setEnabled(false);
@@ -2403,7 +2391,7 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
         locationPinDest.setVisibility(View.GONE);
 
         if (destLatLng != null) {
-//            new MapsActivity.DrawRouteTask().execute(startLatLng, destLatLng);
+            new DrawRouteTask().execute(startLatLng, destLatLng);
             gooButton.setVisibility(View.GONE);
             framelayout2.setDrawingCacheEnabled(true);
             framelayout2.buildDrawingCache();
@@ -2527,7 +2515,7 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
                 coverButton.setVisibility(View.GONE);
                 favorite.setBackgroundColor(Color.WHITE);
                 isFocusableNeeded = true;
-//                state = -1;
+                state = -1;
                 showFavoritsAndRecents();
             }
         });
@@ -2639,10 +2627,10 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
             start_edit_text.setVisibility(View.INVISIBLE);
         }
         placeDataList.clear();
-//        new MapsActivity.LookForAddressTask().execute();
+        new LookForAddressTask().execute();
     }
 
-    private void goToLocation(Context context, Double lat, Double lng, place rPlace) {
+    private void goToLocation(Context context, Double lat, Double lng, Place rPlace) {
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(new LatLng(lat, lng))      // Sets the center of the map to Mountain View
                 .zoom(17)                   // Sets the zoom
@@ -2692,7 +2680,7 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
     private void showSearchAddressStartUI() {
         x.setVisibility(View.VISIBLE);
         menu_button.setVisibility(View.VISIBLE);
-//        state = 0;
+        state = 0;
         placeDataList.clear();
         placeAdapter.notifyDataSetChanged();
         start_edit_text.setVisibility(View.VISIBLE);
@@ -2713,6 +2701,104 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
         }
         if (orderDriverState == 1) {
             select_dest.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void lookForDriverTask() {
+        if (startLatLng != null) {
+
+            if (driversKeys != null) {
+                driversKeys.clear();
+                driversLocations.clear();
+            }
+
+            DatabaseReference onlineDrivers = FirebaseDatabase.getInstance().getReference("ONLINEDRIVERS");
+            GeoFire geoFire = new GeoFire(onlineDrivers);
+            geoQuery = geoFire.queryAtLocation(new GeoLocation(startLatLng.latitude, startLatLng.longitude), 50);
+
+            geoQuery.addGeoQueryDataEventListener(new GeoQueryDataEventListener() {
+                @Override
+                public void onDataEntered(DataSnapshot dataSnapshot, GeoLocation location) {
+                    if (dataSnapshot.exists()) {
+                        Location loc = new Location("A");
+                        loc.setLatitude(location.latitude);
+                        loc.setLongitude(location.longitude);
+                        Location loca = new Location("B");
+                        loca.setLatitude(startLatLng.latitude);
+                        loca.setLongitude(startLatLng.longitude);
+                        String distance = "" + (loc.distanceTo(loca) / 1000);
+
+                        for (int j = 0; j < driversKeys.size(); j++) {
+                            if (Double.parseDouble(driversLocations.get(j)) > Double.parseDouble(distance)) {
+                                driversKeys.add(j, dataSnapshot.getKey());
+                                driversLocations.add(j, distance);
+                                if (j == 0)
+                                    afterLook();
+                                return;
+                            }
+                        }
+
+                        driversLocations.add(distance);
+                        driversKeys.add(dataSnapshot.getKey());
+                    }
+                    afterLook();
+                }
+
+                @Override
+                public void onDataExited(DataSnapshot dataSnapshot) {
+                    int i = Utility.getPosition(driversKeys, dataSnapshot.getKey());
+                    if (i >= 0) {
+                        driversKeys.remove(i);
+                        driversLocations.remove(i);
+                    }
+                    afterLook();
+                }
+
+                @Override
+                public void onDataMoved(DataSnapshot dataSnapshot, GeoLocation location) {
+                    int i = Utility.getPosition(driversKeys, dataSnapshot.getKey());
+                    if (i >= 0) {
+                        driversKeys.remove(i);
+                        driversLocations.remove(i);
+
+                        Location loc = new Location("A");
+                        loc.setLatitude(location.latitude);
+                        loc.setLongitude(location.longitude);
+                        Location loca = new Location("B");
+                        loca.setLatitude(startLatLng.latitude);
+                        loca.setLongitude(startLatLng.longitude);
+                        String distance = "" + (loc.distanceTo(loca) / 1000);
+
+
+                        et_start_point.setText(Utility.getCompleteAddressString(Maps2Activity.this, startLatLng.latitude, startLatLng.longitude));
+
+
+                        for (int j = 0; j < driversKeys.size(); j++) {
+                            if (Double.parseDouble(driversLocations.get(j)) > Double.parseDouble(distance)) {
+                                driversKeys.add(j, dataSnapshot.getKey());
+                                driversLocations.add(j, distance);
+                                return;
+                            }
+                        }
+                        driversKeys.add(dataSnapshot.getKey());
+                        driversLocations.add(distance);
+                        afterLook();
+                    }
+                }
+
+                @Override
+                public void onDataChanged(DataSnapshot dataSnapshot, GeoLocation location) {
+                }
+
+                @Override
+                public void onGeoQueryReady() {
+                    afterLook();
+                }
+
+                @Override
+                public void onGeoQueryError(DatabaseError error) {
+                }
+            });
         }
     }
 
@@ -2755,13 +2841,6 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
         }
     }
 
-    private int getPosition(List<String> sList, String element) {
-        for (int i = 0; i < sList.size(); i++) {
-            if (sList.get(i).equals(element)) return i;
-        }
-        return -1;
-    }
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -2792,7 +2871,7 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
                     }
                     if (startLatLng == null) {
                         startLatLng = mMap.getCameraPosition().target;
-//                        new MapsActivity.LookForDriverTask().execute();
+                        lookForDriverTask();
                     }
                     startLatLng = mMap.getCameraPosition().target;
                     if (!courseScreenIsOn)
@@ -2959,7 +3038,6 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
         rippleBackground.stopRippleAnimation();
         menu_button.setVisibility(View.VISIBLE);
         cancelRequest.setVisibility(View.GONE);
-//        callLayout.setVisibility(View.GONE);
         gooButton.setClickable(true);
         driversKeys.clear();
         driversKeysHold.clear();
@@ -2968,7 +3046,7 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
     }
 
 
-    public void setCancelSearchButton(final String userId, final int counter, final int Step) {
+    public void setCancelSearchButton(final int counter, final int Step) {
         cancelRequest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -2999,6 +3077,7 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
         passer.setText(resources.getString(R.string.passer));
     }
 
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -3009,6 +3088,16 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
 
         updateViews();
         fPlaceDataList.clear();
+
+        if (mapsActivityVM.getFevouritePlaceHomeData(userId) != null) {
+            fPlaceDataList.add(mapsActivityVM.getFevouritePlaceHomeData(userId));
+            fPlaceAdapter.notifyDataSetChanged();
+        }
+
+        if (mapsActivityVM.getFevouritePlaceWorkData(userId) != null) {
+            fPlaceDataList.add(mapsActivityVM.getFevouritePlaceWorkData(userId));
+            fPlaceAdapter.notifyDataSetChanged();
+        }
     }
 
     private class SinchCallClientListener implements CallClientListener {
@@ -3025,6 +3114,252 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
             }
         }
 
+    }
+
+    private class LookForAddressTask extends AsyncTask<String, Integer, String> {
+        // Runs in UI before background thread is called
+        boolean finished;
+        String searchText;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            placeDataList.clear();
+            finished = false;
+            if (orderDriverState == 0)
+                searchText = et_start_point.getText().toString();
+            if (orderDriverState == 1)
+                searchText = et_end_point.getText().toString();
+
+            // Do something like display a progress bar
+        }
+
+        // This is run in a background thread
+        @Override
+        protected String doInBackground(String... params) {
+
+
+            AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
+                    .setTypeFilter(AutocompleteFilter.TYPE_FILTER_ESTABLISHMENT)
+                    .setCountry("MA")
+                    .build();
+
+            mGeoDataClient.getAutocompletePredictions(searchText + " " + searchLoc, null,
+                    typeFilter).addOnCompleteListener(new OnCompleteListener<AutocompletePredictionBufferResponse>() {
+                @Override
+                public void onComplete(@NonNull Task<AutocompletePredictionBufferResponse> task) {
+                    if (task.isSuccessful() && Objects.requireNonNull(task.getResult()).getCount() > 0) {
+                        finished = true;
+                        AutocompletePredictionBufferResponse aa = task.getResult();
+                        for (final AutocompletePrediction ap : aa) {
+                            mGeoDataClient.getPlaceById(ap.getPlaceId()).addOnCompleteListener(new OnCompleteListener<PlaceBufferResponse>() {
+                                @Override
+                                public void onComplete(@NonNull Task<PlaceBufferResponse> task) {
+                                    if (task.isSuccessful() && Objects.requireNonNull(task.getResult()).getCount() > 0) {
+                                        for (com.google.android.gms.location.places.Place gotPlace : task.getResult()) {
+                                            Place Place = new Place(gotPlace.getName().toString(),
+                                                    Objects.requireNonNull(gotPlace.getAddress()).toString(), "" + gotPlace.getLatLng().latitude,
+                                                    "" + gotPlace.getLatLng().longitude, R.drawable.lieux_proches);
+                                            placeDataList.add(Place);
+                                        }
+                                        favorite.setBackgroundColor(Color.WHITE);
+                                        my_recycler_view.setBackgroundColor(Color.WHITE);
+                                        fR.setBackgroundColor(Color.WHITE);
+                                        aR.setBackgroundColor(Color.WHITE);
+                                        placeAdapter.notifyDataSetChanged();
+                                        finished = true;
+                                    } else {
+                                        finished = true;
+                                    }
+                                }
+                            });
+                        }
+                    } else {
+                        finished = true;
+                    }
+                }
+            });
+            return "this string is passed to onPostExecute";
+        }
+
+        // This is called from background thread but runs in UI
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            // Do things like update the progress bar
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            int Height = 67 * placeDataList.size();
+            AnimateConstraint.animate(Maps2Activity.this, aR, HeightAbsolute, HeightAbsolute, 1);
+            AnimateConstraint.animate(Maps2Activity.this, favorite, 1, 1, 1);
+            if (orderDriverState == 0) {
+                findViewById(R.id.imageView111).setVisibility(View.VISIBLE);
+                aR.setVisibility(View.VISIBLE);
+                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+                select_start.setVisibility(View.GONE);
+                selectedOpImage.setVisibility(View.GONE);
+                bottomMenu.setVisibility(View.GONE);
+                findViewById(R.id.shadow).setVisibility(View.GONE);
+            }
+
+            if (orderDriverState == 1) {
+//                searchButtonDest.setVisibility(View.VISIBLE);
+                aR.setVisibility(View.VISIBLE);
+                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+                select_dest.setVisibility(View.GONE);
+            }
+//            searchProgBar.setVisibility(View.GONE);
+//            searchProgBarDest.setVisibility(View.GONE);
+
+        }
+    }
+
+    private class DrawRouteTask extends AsyncTask<LatLng, Integer, String> {
+        LatLng start;
+        LatLng arrival;
+        List<LatLng> thePath;
+        LatLng mid;
+        LatLngBounds.Builder builder;
+
+        // Runs in UI before background thread is called
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            // Do something like display a progress bar
+            mid = null;
+            builder = new LatLngBounds.Builder();
+        }
+
+        // This is run in a background thread
+        @Override
+        protected String doInBackground(LatLng... params) {
+
+            start = params[0];
+            arrival = params[1];
+
+            if (start != null && arrival != null)
+                mid = new LatLng((start.latitude + arrival.latitude) / 2, (start.longitude + arrival.longitude) / 2);
+
+            //Define list to get all latlng for the route
+            thePath = new ArrayList();
+            thePath.add(start);
+
+            builder.include(start);
+
+            //Execute Directions API request
+            GeoApiContext context = new GeoApiContext.Builder()
+                    .apiKey(getResources().getString(R.string.google_maps_key))
+                    .build();
+            DirectionsApiRequest req = DirectionsApi.getDirections(context, start.latitude + ","
+                    + start.longitude, arrival.latitude + "," + arrival.longitude);
+            try {
+                DirectionsResult res = req.await();
+
+                //Loop through legs and steps to get encoded polylines of each step
+                if (res.routes != null && res.routes.length > 0) {
+                    DirectionsRoute route = res.routes[0];
+
+                    if (route.legs != null) {
+                        for (int i = 0; i < route.legs.length; i++) {
+                            DirectionsLeg leg = route.legs[i];
+                            if (leg.steps != null) {
+                                for (int j = 0; j < leg.steps.length; j++) {
+                                    DirectionsStep step = leg.steps[j];
+                                    if (step.steps != null && step.steps.length > 0) {
+                                        for (int k = 0; k < step.steps.length; k++) {
+                                            DirectionsStep step1 = step.steps[k];
+                                            EncodedPolyline points1 = step1.polyline;
+                                            if (points1 != null) {
+                                                //Decode polyline and add points to list of route coordinates
+                                                List<com.google.maps.model.LatLng> coords1 = points1.decodePath();
+                                                for (com.google.maps.model.LatLng coord1 : coords1) {
+                                                    thePath.add(new LatLng(coord1.lat, coord1.lng));
+                                                    builder.include(new LatLng(coord1.lat, coord1.lng));
+                                                }
+                                            }
+                                        }
+                                    } else {
+                                        EncodedPolyline points = step.polyline;
+                                        if (points != null) {
+                                            //Decode polyline and add points to list of route coordinates
+                                            List<com.google.maps.model.LatLng> coords = points.decodePath();
+                                            for (com.google.maps.model.LatLng coord : coords) {
+                                                thePath.add(new LatLng(coord.lat, coord.lng));
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+
+            return "this string is passed to onPostExecute";
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            if (thePath != null) {
+                if (thePath.size() > 0 && orderDriverState == 2) {
+                    if (mid != null) {
+                        thePath.add(arrival);
+                        distance = 0;
+                        for (int i = 0; i < (thePath.size() - 1); i++) {
+                            Location loc1 = new Location("");
+                            loc1.setLatitude(thePath.get(i).latitude);
+                            loc1.setLongitude(thePath.get(i).longitude);
+
+                            Location loc2 = new Location("");
+                            loc2.setLatitude(thePath.get(i + 1).latitude);
+                            loc2.setLongitude(thePath.get(i + 1).longitude);
+
+                            distance += loc1.distanceTo(loc2);
+
+                        }
+                        distance /= 1000;
+                        mapsActivityVM.getPrice(startCity, destCity, distance, new PricaCallback() {
+                            @Override
+                            public void ongetPrice(double price) {
+                                tv_mad.setText(price + " MAD");
+                            }
+                        });
+                        drawPolyLineOnMap(start, arrival);
+                        builder.include(arrival);
+                        int padding = 200;
+                        LatLngBounds bounds = builder.build();
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding)
+                                , 1000, new GoogleMap.CancelableCallback() {
+                                    @Override
+                                    public void onFinish() {
+                                        gooButton.setVisibility(View.VISIBLE);
+                                    }
+
+                                    @Override
+                                    public void onCancel() {
+
+                                    }
+                                });
+                    }
+
+                } else {
+                    new DrawRouteTask().execute(start, arrival);
+                }
+            } else {
+                new DrawRouteTask().execute(start, arrival);
+            }
+        }
     }
 
     private Bitmap scaleBitmap(int reqWidth, int reqHeight, int resId) {
@@ -3090,7 +3425,7 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
     }
 
     @Override
-    public void pickedLocation(place place) {
+    public void pickedLocation(Place Place) {
         et_start_point.setFocusable(false);
         et_start_point.setFocusableInTouchMode(false);
         coverButton.setClickable(false);
@@ -3098,7 +3433,7 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
         shadow.setVisibility(View.VISIBLE);
 
         CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(new LatLng(Double.parseDouble(place.getLat()), Double.parseDouble(place.getLng())))
+                .target(new LatLng(Double.parseDouble(Place.getLat()), Double.parseDouble(Place.getLng())))
                 .zoom(17)                   // Sets the zoom
                 .build();                   // Creates a CameraPosition from the builder
 
@@ -3116,9 +3451,9 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
             }
         });
 
-        if (!Utility.contains(rPlaceDataList, place)) {
-            place.setImage(R.drawable.lieux_proches);
-            rPlaceDataList.add(place);
+        if (!Utility.contains(rPlaceDataList, Place)) {
+            Place.setImage(R.drawable.lieux_proches);
+            rPlaceDataList.add(Place);
             Utility.saveRecentPlaces(Maps2Activity.this, rPlaceDataList);
             rPlaceAdapter.notifyDataSetChanged();
         }
