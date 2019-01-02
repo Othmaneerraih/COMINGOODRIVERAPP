@@ -900,7 +900,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             });
 
-
             return "this string is passed to onPostExecute";
         }
 
