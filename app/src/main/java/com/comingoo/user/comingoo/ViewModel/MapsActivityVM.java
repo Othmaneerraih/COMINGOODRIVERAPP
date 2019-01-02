@@ -255,34 +255,50 @@ public class MapsActivityVM {
     }
 
     public void checkFinishedCourseTask(final Context context, final String userId, final FinishedCourseTaskCallback callback) {
-        FirebaseDatabase.getInstance().getReference("CLIENTFINISHEDCOURSES").child(userId).child(course).
-                addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshott) {
 
-
-                        // finishing promo code
-                        FirebaseDatabase.getInstance().getReference("clientUSERS").
-                                child(userId).child("PROMOCODE").removeValue();
-
-                        final String driverId = dataSnapshott.child("driver").getValue(String.class);
-
-
-                        if (courseIDT != null) {
-                            FirebaseDatabase.getInstance().getReference("COURSES").child(courseIDT).child("price").addListenerForSingleValueEvent(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    final String course = dataSnapshot.child("COURSE").getValue(String.class);
+                    FirebaseDatabase.getInstance().getReference("CLIENTFINISHEDCOURSES").child(userId).child(course).
+                            addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    try {
-                                        if (dataSnapshot.getValue(String.class) != null) {
-                                            Log.e(TAG, "COURSES value onDataChange: " + dataSnapshot.getValue(String.class));
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshott) {
+
+
+                                    // finishing promo code
+                                    FirebaseDatabase.getInstance().getReference("clientUSERS").
+                                            child(userId).child("PROMOCODE").removeValue();
+
+                                    final String driverId = dataSnapshott.child("driver").getValue(String.class);
+
+
+                                    if (courseIDT != null) {
+                                        FirebaseDatabase.getInstance().getReference("COURSES").child(courseIDT).child("price").addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                try {
+                                                    if (dataSnapshot.getValue(String.class) != null) {
+                                                        Log.e(TAG, "COURSES value onDataChange: " + dataSnapshot.getValue(String.class));
 ////
-                                            double finalPriceOfCourse = Double.parseDouble(Objects.requireNonNull(dataSnapshot.getValue(String.class)));
-                                            callback.onFinishedCourseTask(driverId, finalPriceOfCourse, course);
-                                        }
+                                                        double finalPriceOfCourse = Double.parseDouble(Objects.requireNonNull(dataSnapshot.getValue(String.class)));
+                                                        callback.onFinishedCourseTask(driverId, finalPriceOfCourse, course);
+                                                    }
 //
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                            }
+                                        });
+
                                     }
+
                                 }
 
                                 @Override
@@ -290,16 +306,14 @@ public class MapsActivityVM {
 
                                 }
                             });
+                }
+            }
 
-                        }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
+            }
+        });
     }
 
     public void getRating(final String userId, final String dialogDriverId, final int RATE) {

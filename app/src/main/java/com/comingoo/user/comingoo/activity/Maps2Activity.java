@@ -305,7 +305,6 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
     private String userName;
     private String courseIDT;
     private String statusT = "4";
-    private String clientID;
     private String driverIDT;
     private Location driverLocT;
     private Location startLocT;
@@ -681,11 +680,11 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
         rR.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, rHeight,
                 getResources().getDisplayMetrics());
 
-        AnimateConstraint.fadeOut(Maps2Activity.this, findViewById(R.id.loadingScreen), 500, 10);
+        AnimateConstraint.fadeOut(Maps2Activity.this, loadingScreen, 500, 10);
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                findViewById(R.id.loadingScreen).setVisibility(View.GONE);
+                loadingScreen.setVisibility(View.GONE);
             }
         }, 500);
 
@@ -708,7 +707,7 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
                     startSearchUI();
                     hideAllUI();
 
-                    mapsActivityVM.sendRequestsTask(userId, driversKeys, driversLocations, driversKeysHold, clientID, et_start_point.getText().toString(), et_end_point.getText().toString(), userPromoCode, startLatLng, destLatLng, new SendRequestsTaskCallback() {
+                    mapsActivityVM.sendRequestsTask(userId, driversKeys, driversLocations, driversKeysHold, userId, et_start_point.getText().toString(), et_end_point.getText().toString(), userPromoCode, startLatLng, destLatLng, new SendRequestsTaskCallback() {
                         @Override
                         public void onSendRequestsTaskCallback(int counter, int step) {
                             setCancelSearchButton(counter, step);
@@ -849,7 +848,7 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
 
         setSearchFunc();
 
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientID);
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId);
         rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -860,7 +859,7 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
                     dataRating.put("3", "0");
                     dataRating.put("4", "0");
                     dataRating.put("5", "0");
-                    FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientID).child("rating").
+                    FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("rating").
                             setValue(dataRating);
 
                 }
@@ -873,7 +872,7 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
         });
 
 
-        DatabaseReference rootFavPlace = FirebaseDatabase.getInstance().getReference("clientUSERS").child(clientID);
+        DatabaseReference rootFavPlace = FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId);
         rootFavPlace.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -883,7 +882,7 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
                     dataFavPlace.put(getString(R.string.txt_home), "");
                     dataFavPlace.put(getString(R.string.txt_work), "");
                     FirebaseDatabase.getInstance().getReference
-                            ("clientUSERS").child(clientID).child("favouritePlace").setValue(dataFavPlace);
+                            ("clientUSERS").child(userId).child("favouritePlace").setValue(dataFavPlace);
 
                     Map<String, String> homeSt = new HashMap();
                     homeSt.put("Lat", "");
@@ -896,11 +895,11 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
                     workSt.put("Address", "");
 
                     FirebaseDatabase.getInstance().
-                            getReference("clientUSERS").child(clientID)
+                            getReference("clientUSERS").child(userId)
                             .child("favouritePlace").child(getString(R.string.txt_home)).setValue(homeSt);
 
                     FirebaseDatabase.getInstance().
-                            getReference("clientUSERS").child(clientID)
+                            getReference("clientUSERS").child(userId)
                             .child("favouritePlace").child(getString(R.string.txt_work)).setValue(workSt);
 
                 }
@@ -1671,7 +1670,7 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
                     courseScreenIsOn = false;
                     courseScreenStageZero = false;
                     courseScreenStageOne = false;
-                    findViewById(R.id.pin).setVisibility(View.VISIBLE);
+                    pin.setVisibility(View.VISIBLE);
                     state = 0;
                     cancelCommandLayout();
                     rl_calling.setVisibility(View.GONE);
@@ -1679,7 +1678,7 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
                     coverButton.setClickable(true);
                 }
 
-                findViewById(R.id.buttonsLayout).setVisibility(View.VISIBLE);
+                buttonsLayout.setVisibility(View.VISIBLE);
                 return;
             }
 
@@ -1793,7 +1792,7 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
 
                                 Intent intent = new Intent(Maps2Activity.this, VoipCallingActivity.class);
                                 intent.putExtra("driverId", driverIDT);
-                                intent.putExtra("clientId", clientID);
+                                intent.putExtra("clientId", userId);
                                 intent.putExtra("driverName", driverName);
                                 intent.putExtra("driverImage", driverImage);
                                 startActivityForResult(intent, 1);
@@ -1907,7 +1906,7 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
 //                                tv_appelle_voip.setEnabled(false);
                                 Intent intent = new Intent(Maps2Activity.this, VoipCallingActivity.class);
                                 intent.putExtra("driverId", driverIDT);
-                                intent.putExtra("clientId", clientID);
+                                intent.putExtra("clientId", userId);
                                 intent.putExtra("driverName", driverName);
                                 intent.putExtra("driverImage", driverImage);
                                 startActivity(intent);
@@ -2355,7 +2354,7 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
         orderDriverState = 1;
 
         et_end_point.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.search_icon, 0);
-        AnimateConstraint.animate(Maps2Activity.this, dest_edit_text, 180, dpHeight - 20, 500, select_dest, findViewById(R.id.destArrow));
+        AnimateConstraint.animate(Maps2Activity.this, dest_edit_text, 180, dpHeight - 20, 500, select_dest, destArrow);
         destArrow.setVisibility(View.GONE);
         gooContent.setVisibility(View.GONE);
         my_position.setVisibility(View.VISIBLE);
@@ -2904,7 +2903,6 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
                                          String driverCarDesc, String totalRatingNum) {
                 courseIDT = courseID;
                 statusT = status;
-                clientID = clientId;
                 driverIDT = driverID;
                 driverLocT = driverLoc;
                 startLocT = startLoc;
@@ -3196,13 +3194,13 @@ public class Maps2Activity extends AppCompatActivity implements OnMapReadyCallba
             AnimateConstraint.animate(Maps2Activity.this, aR, HeightAbsolute, HeightAbsolute, 1);
             AnimateConstraint.animate(Maps2Activity.this, favorite, 1, 1, 1);
             if (orderDriverState == 0) {
-                findViewById(R.id.imageView111).setVisibility(View.VISIBLE);
+                shadow2_iv.setVisibility(View.VISIBLE);
                 aR.setVisibility(View.VISIBLE);
                 getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
                 select_start.setVisibility(View.GONE);
                 selectedOpImage.setVisibility(View.GONE);
                 bottomMenu.setVisibility(View.GONE);
-                findViewById(R.id.shadow).setVisibility(View.GONE);
+                shadow.setVisibility(View.GONE);
             }
 
             if (orderDriverState == 1) {
