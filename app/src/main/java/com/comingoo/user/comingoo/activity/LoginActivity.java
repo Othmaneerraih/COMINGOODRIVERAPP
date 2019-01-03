@@ -109,12 +109,14 @@ public class LoginActivity extends AppCompatActivity {
                                 new GraphRequest.GraphJSONObjectCallback() {
                                     @Override
                                     public void onCompleted(JSONObject object, GraphResponse response) {
-                                        // Application code
+                                        
                                         try {
                                             name = Profile.getCurrentProfile().getName();
                                             password = Profile.getCurrentProfile().getId();
                                             imageURI = Profile.getCurrentProfile().getProfilePictureUri(300, 300).toString();
-                                            Email = object.getString("email");
+                                            if (object.has("email"))
+                                                Email = object.getString("email");
+                                            else getEmailAddress();
                                             Log.e("LoginActivity", "onCompleted: email: " + Email);
 
 
@@ -167,7 +169,6 @@ public class LoginActivity extends AppCompatActivity {
                                             LoginManager.getInstance().logOut();
                                         } catch (Exception e) {
                                             Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                                            getEmailAddress();
                                         }
                                     }
                                 });
