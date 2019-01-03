@@ -1,10 +1,10 @@
 package com.comingoo.user.comingoo.model;
 
-public class Place {
+public class MyPlace {
     public String name, address, lat, lng;
     public int image;
 
-    public Place(String name, String address, String lat, String lng, int image) {
+    public MyPlace(String name, String address, String lat, String lng, int image) {
         this.name = name;
         this.address = address;
         this.lat = lat;
@@ -12,7 +12,7 @@ public class Place {
         this.image = image;
     }
 
-    public Place() {
+    public MyPlace() {
     }
 
     public String getName() {
