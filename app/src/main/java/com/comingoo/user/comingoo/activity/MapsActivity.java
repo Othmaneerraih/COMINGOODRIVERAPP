@@ -1448,8 +1448,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     String tagStatus;
     private String COURSE;
     private String choseBox;
-    private String dialogDriverId;
-    private DecimalFormat df2 = new DecimalFormat("0.##");
+//    private String dialogDriverId = "";
+    private DecimalFormat df2 = new DecimalFormat(".##");
 
     private class checkFinishedCourse extends AsyncTask<String, Integer, String> {
         SharedPreferences prefs;
@@ -1490,16 +1490,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                     // finishing promo code
                                                     FirebaseDatabase.getInstance().getReference("clientUSERS").
                                                             child(userId).child("PROMOCODE").removeValue();
+
                                                     try {
                                                         final Dialog dialog = new Dialog(MapsActivity.this);
-                                                        dialogDriverId = dataSnapshott.child("driver").getValue(String.class);
                                                         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                                                         View view = inflater.inflate(R.layout.finished_course, null, false);
                                                         dialog.setContentView(view);
-
                                                         TextView textView13 = view.findViewById(R.id.textView13);
                                                         TextView textView14 = view.findViewById(R.id.textView14);
-
 
                                                         //Set Texts
                                                         textView13.setText(resources.getString(R.string.Montanttotalàpayer));
@@ -1517,14 +1515,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                                                     try {
                                                                         if (dataSnapshot.getValue(String.class) != null) {
-                                                                            Log.e(TAG, "COURSES value onDataChange: " + dataSnapshot.getValue(String.class));
-//
                                                                             double finalPriceOfCourse = Double.parseDouble(Objects.requireNonNull(dataSnapshot.getValue(String.class)));
-                                                                            Log.e(TAG, "COURSES value finalPriceOfCourse: " + finalPriceOfCourse);
-                                                                            df2.setRoundingMode(RoundingMode.UP);
                                                                             price.setText(df2.format(finalPriceOfCourse) + " MAD");
                                                                         }
-//                                                    }
                                                                     } catch (Exception e) {
                                                                         e.printStackTrace();
                                                                     }
@@ -1701,16 +1694,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                             @Override
                                                             public void onClick(View v) {
                                                                 try {
-                                                                    Log.e(TAG, "onClick:RATE "+RATE );
                                                                     if (RATE > 0) {
-                                                                        if (dialogDriverId != null) {
-                                                                            FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(dialogDriverId).child("rating").child(Integer.toString(RATE)).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                        if (!driverIDT.equals("")) {
+                                                                            FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(driverIDT).child("rating").child(Integer.toString(RATE)).addListenerForSingleValueEvent(new ValueEventListener() {
                                                                                 @Override
                                                                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                                                                                     if (dataSnapshot.exists()) {
                                                                                         int Rating = Integer.parseInt(Objects.requireNonNull(dataSnapshot.getValue(String.class))) + 1;
-                                                                                        FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(dialogDriverId).child("rating").child(Integer.toString(RATE)).setValue("" + Rating);
+                                                                                        FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(driverIDT).child("rating").child(Integer.toString(RATE)).setValue("" + Rating);
                                                                                     }
                                                                                 }
 
@@ -1898,7 +1890,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                                         }
                                                                     }
 
-                                                                    dialog.dismiss();
                                                                 } catch (WindowManager.BadTokenException e) {
                                                                     e.printStackTrace();
                                                                 } catch (IllegalStateException e) {
@@ -1906,6 +1897,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                                 } catch (Exception e) {
                                                                     e.printStackTrace();
                                                                 }
+                                                                dialog.dismiss();
                                                             }
                                                         });
 
@@ -3537,7 +3529,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-        new checkFinishedCourse().execute();
 
         try {
             new checkCourseTask().execute();
