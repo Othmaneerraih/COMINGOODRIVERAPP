@@ -821,7 +821,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                         String avg = String.format("%.2f", avgRating);
                                                         String newString = avg.replace(",", ".");
                                                         if (newString.equals("")) {
-                                                            iv_total_rating_number.setText(newString);
+                                                            iv_total_rating_number.setText("4.0");
                                                         } else
                                                             iv_total_rating_number.setText(newString);
                                                     }
