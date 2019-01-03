@@ -5,18 +5,29 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
+import android.os.CountDownTimer;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.comingoo.user.comingoo.R;
 import com.comingoo.user.comingoo.utility.LocalHelper;
+import com.comingoo.user.comingoo.utility.SharedPreferenceTask;
+import com.comingoo.user.comingoo.utility.Utility;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -55,10 +66,9 @@ import java.util.Objects;
 
 
 public class LoginActivity extends AppCompatActivity {
-    private EditText phoneNumber;
-    private EditText password;
     private CallbackManager callbackManager;
     private Resources resources;
+    private String name = "", password = "", imageURI = "", Email = "";
 
 
     @Override
@@ -70,7 +80,7 @@ public class LoginActivity extends AppCompatActivity {
         Context context = LocalHelper.setLocale(LoginActivity.this, language);
         resources = context.getResources();
 
-        if(!isNetworkConnectionAvailable()){
+        if (!isNetworkConnectionAvailable()) {
             checkNetworkConnection();
         }
 
@@ -101,11 +111,10 @@ public class LoginActivity extends AppCompatActivity {
                                     public void onCompleted(JSONObject object, GraphResponse response) {
                                         // Application code
                                         try {
-                                            final String Email = object.getString("email");
-                                            final String name = Profile.getCurrentProfile().getName();
-                                            final String password = Profile.getCurrentProfile().getId();
-                                            final String imageURI = Profile.getCurrentProfile().getProfilePictureUri(300, 300).toString();
-
+                                            name = Profile.getCurrentProfile().getName();
+                                            password = Profile.getCurrentProfile().getId();
+                                            imageURI = Profile.getCurrentProfile().getProfilePictureUri(300, 300).toString();
+                                            Email = object.getString("email");
                                             Log.e("LoginActivity", "onCompleted: email: " + Email);
 
 
@@ -116,21 +125,7 @@ public class LoginActivity extends AppCompatActivity {
                                                 public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
                                                     if (!dataSnapshot.exists()) {
 
-                                                        String[] stringArray = getResources().getStringArray(R.array.blocked_users);
-                                                        Log.e("LoginActivity", "onDataChange: " + stringArray[0]);
-                                                        if (Arrays.asList(stringArray).contains(EMAIL)) {
-                                                            // true
-                                                            Toast.makeText(LoginActivity.this, resources.getString(R.string.account_blocked_txt), Toast.LENGTH_LONG).show();
-                                                        } else {
-                                                            Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
-                                                            intent.putExtra("Email", Email);
-                                                            intent.putExtra("name", name);
-                                                            intent.putExtra("password", password);
-                                                            intent.putExtra("imageURI", imageURI);
-                                                            startActivity(intent);
-                                                            finish();
-                                                        }
-
+                                                        goToSignupScreen();
 
                                                     } else {
 
@@ -172,6 +167,7 @@ public class LoginActivity extends AppCompatActivity {
                                             LoginManager.getInstance().logOut();
                                         } catch (Exception e) {
                                             Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                            getEmailAddress();
                                         }
                                     }
                                 });
@@ -195,8 +191,8 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    public void checkNetworkConnection(){
-        AlertDialog.Builder builder =new AlertDialog.Builder(this);
+    public void checkNetworkConnection() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(resources.getString(R.string.no_internet_txt));
         builder.setMessage(resources.getString(R.string.internet_warning_txt));
         builder.setNegativeButton(resources.getString(R.string.close_txt), new DialogInterface.OnClickListener() {
@@ -211,19 +207,89 @@ public class LoginActivity extends AppCompatActivity {
         alertDialog.show();
     }
 
-    public boolean isNetworkConnectionAvailable(){
+    private void goToSignupScreen() {
+        String[] stringArray = getResources().getStringArray(R.array.blocked_users);
+        Log.e("LoginActivity", "onDataChange: " + stringArray[0]);
+        if (Arrays.asList(stringArray).contains(Email)) {
+            // true
+            Toast.makeText(LoginActivity.this, resources.getString(R.string.account_blocked_txt), Toast.LENGTH_LONG).show();
+        } else {
+            if (validation()) {
+                Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
+                intent.putExtra("Email", Email);
+                intent.putExtra("name", name);
+                intent.putExtra("password", password);
+                intent.putExtra("imageURI", imageURI);
+                startActivity(intent);
+                finish();
+            } else {
+                Toast.makeText(LoginActivity.this, resources.getString(R.string.try_again_txt), Toast.LENGTH_LONG).show();
+            }
+        }
+
+    }
+
+    private boolean validation() {
+        return !Email.equals("") || !name.equals("") || !password.equals("") || !imageURI.equals("");
+    }
+
+
+    private void getEmailAddress() {
+        {
+            try {
+                android.app.AlertDialog.Builder dialogBuilder = new android.app.AlertDialog.Builder(LoginActivity.this);
+                final android.app.AlertDialog alertDialog = dialogBuilder.create();
+                alertDialog.show();
+                Objects.requireNonNull(alertDialog.getWindow()).setBackgroundDrawableResource(android.R.color.transparent);
+                LayoutInflater inflater = this.getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.dialog_email_address, null);
+                alertDialog.getWindow().setContentView(dialogView);
+
+                final Button cancelBtn = dialogView.findViewById(R.id.cancel_btn);
+                final Button okBtn = dialogView.findViewById(R.id.ok_btn);
+                final EditText emailAddress = dialogView.findViewById(R.id.email_address_et);
+
+
+                okBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (Utility.isValidEmail(emailAddress.getText().toString())) {
+                            Email = emailAddress.getText().toString();
+                            goToSignupScreen();
+                            alertDialog.dismiss();
+                        } else {
+                            Toast.makeText(LoginActivity.this, resources.getString(R.string.email_validation_txt), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+                cancelBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        alertDialog.dismiss();
+                    }
+                });
+
+            } catch (WindowManager.BadTokenException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public boolean isNetworkConnectionAvailable() {
         ConnectivityManager cm =
-                (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 
         NetworkInfo activeNetwork = Objects.requireNonNull(cm).getActiveNetworkInfo();
         boolean isConnected = activeNetwork != null &&
                 activeNetwork.isConnected();
-        if(isConnected) {
+        if (isConnected) {
             Log.d("Network", "Connected");
             return true;
-        }
-        else{
-            Log.d("Network","Not Connected");
+        } else {
+            Log.d("Network", "Not Connected");
             return false;
         }
     }

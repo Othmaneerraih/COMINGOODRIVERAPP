@@ -3,6 +3,7 @@ package com.comingoo.user.comingoo.utility;
 import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.util.List;
@@ -34,5 +35,9 @@ public class Utility {
             Log.e(TAG, "getCompleteAddressString: " + e.getMessage());
         }
         return strAdd;
+    }
+
+    public static boolean isValidEmail(String email) {
+        return !TextUtils.isEmpty(email) && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 }

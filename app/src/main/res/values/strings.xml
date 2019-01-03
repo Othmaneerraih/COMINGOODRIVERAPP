@@ -14,7 +14,6 @@
     <string name="Sedeconnecter">Devenir driver ? <a href="https://www.comingoo.com/driver"></a></string>
 
 
-
     <string name="bonne_music_txt">bonne Music</string>
     <string name="image_warning_txt">Ajouter une image</string>
     <string name="message_warning_txt">message envoyé.</string>
@@ -42,9 +41,11 @@
     <string name="fb_not_installed_txt">Facebook n\'a pas été installé.</string>
     <string name="no_email_txt">Ne pas obtenir votre adresse email</string>
     <string name="account_blocked_txt">Ce compte est bloqué</string>
+    <string name="try_again_txt">Veuillez réessayer</string>
     <string name="database_checking_txt">Nombre déjà dans la base de données</string>
     <string name="wrong_code_txt">MAUVAIS CODE VEUILLEZ ESSAYER À NOUVEAU</string>
     <string name="enter_otp_txt">S\'il vous plaît entrez votre code OTP</string>
+    <string name="email_warning_txt">Vous n\'avez pas d\'adresse email. S\'il vous plaît entrer une adresse email valide s\'il vous plaît</string>
     <string name="error_txt">Erreur!!!</string>
     <string name="incoming_call_txt">Appel entrant</string>
     <string name="thank_you_txt">Je vous remercie</string>
@@ -60,7 +61,7 @@
     <string name="txt_home">Maison</string>
     <string name="txt_work">Travail</string>
     <string name="txt_device_no_support_speech">Su dispositivo no admite entrada de voz</string>
-
+    <string name="email_validation_txt">Veuillez entrer une adresse email valide</string>
     <string name="txt_cancel">cancelar</string>
     <string name="txt_open_location">configuración de ubicación abierta</string>
     <string name="txt_location_permission">El servicio de localización no está habilitado.</string>

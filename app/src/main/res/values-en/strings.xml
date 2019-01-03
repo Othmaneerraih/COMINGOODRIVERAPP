@@ -99,6 +99,7 @@
     <string name="fb_not_installed_txt">Facebook have not been installed. </string>
     <string name="no_email_txt">Not get your email address</string>
     <string name="account_blocked_txt">This account is blocked</string>
+    <string name="try_again_txt">Please try again</string>
     <string name="database_checking_txt">Number Already in Database</string>
     <string name="wrong_code_txt">WRONG CODE PLEASE TRY AGAIN</string>
     <string name="enter_otp_txt">Please Enter Your OTP Code</string>
@@ -135,7 +136,8 @@
     <string name="no_internet_txt">No internet Connection</string>
     <string name="internet_warning_txt">Please turn on internet connection to continue</string>
     <string name="close_txt">close</string>
-
+    <string name="email_validation_txt">Please enter valid email address</string>
+    <string name="email_warning_txt">You have no email address. Please enter a valied email address please</string>
 
     <string name="txt_home">Home</string>
     <string name="txt_work">Work</string>
