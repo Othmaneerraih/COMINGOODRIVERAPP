@@ -3224,7 +3224,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
             AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
-                    .setTypeFilter(AutocompleteFilter.TYPE_FILTER_ESTABLISHMENT)
+                    .setTypeFilter(AutocompleteFilter.TYPE_FILTER_NONE)
                     .setCountry("MA")
                     .build();
 
