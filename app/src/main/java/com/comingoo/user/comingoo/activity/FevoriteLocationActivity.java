@@ -32,7 +32,7 @@ import android.widget.Toast;
 
 
 import com.comingoo.user.comingoo.R;
-import com.comingoo.user.comingoo.model.Place;
+import com.comingoo.user.comingoo.model.MyPlace;
 import com.comingoo.user.comingoo.utility.LocalHelper;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
@@ -374,7 +374,7 @@ public class FevoriteLocationActivity extends AppCompatActivity
         return strAdd;
     }
 
-    public void goToLocation(Context context, Double lat, Double lng, Place rPlace) {
+    public void goToLocation(Context context, Double lat, Double lng, MyPlace rPlace) {
         mGoogleMap.clear();
         BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.depart_pin);
         Bitmap b = bitmapdraw.getBitmap();
@@ -464,7 +464,7 @@ public class FevoriteLocationActivity extends AppCompatActivity
         }
 
         BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.depart_pin);
-        //Place current location marker
+        //MyPlace current location marker
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.depart_pin);
         Bitmap b = bitmapdraw.getBitmap();

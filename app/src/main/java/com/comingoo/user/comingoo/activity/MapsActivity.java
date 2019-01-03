@@ -20,7 +20,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.location.Location;
-import android.location.LocationManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
@@ -73,6 +72,7 @@ import android.widget.Toast;
 
 import com.comingoo.user.comingoo.async.ReadTask;
 import com.comingoo.user.comingoo.async.ReverseGeocodingTask;
+import com.comingoo.user.comingoo.model.MyPlace;
 import com.comingoo.user.comingoo.utility.AnimateConstraint;
 import com.comingoo.user.comingoo.Interfaces.PickLocation;
 import com.comingoo.user.comingoo.utility.LocalHelper;
@@ -81,7 +81,6 @@ import com.comingoo.user.comingoo.R;
 import com.comingoo.user.comingoo.utility.SharedPreferenceTask;
 import com.comingoo.user.comingoo.adapters.FavouritePlaceAdapter;
 import com.comingoo.user.comingoo.adapters.MyPlaceAdapter;
-import com.comingoo.user.comingoo.model.Place;
 import com.comingoo.user.comingoo.utility.Utility;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
@@ -117,10 +116,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -139,7 +135,6 @@ import com.google.maps.model.DirectionsRoute;
 import com.google.maps.model.DirectionsStep;
 import com.google.maps.model.EncodedPolyline;
 import com.mikhaellopez.circularimageview.CircularImageView;
-import com.mxn.soul.flowingdrawer_core.FlowingDrawer;
 import com.sinch.android.rtc.PushPair;
 import com.sinch.android.rtc.Sinch;
 import com.sinch.android.rtc.SinchClient;
@@ -163,8 +158,6 @@ import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-import static android.location.GpsStatus.GPS_EVENT_STARTED;
-import static android.location.GpsStatus.GPS_EVENT_STOPPED;
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, PickLocation {
@@ -186,8 +179,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private MyPlaceAdapter placeAdapter;
     private FavouritePlaceAdapter fPlaceAdapter;
     private MyPlaceAdapter rPlaceAdapter;
-    private ArrayList<Place> placeDataList;
-    private ArrayList<Place> fPlaceDataList;
+    private ArrayList<MyPlace> placeDataList;
+    private ArrayList<MyPlace> fPlaceDataList;
     private boolean audioRecorded = false;
     private ImageButton recordButton, playAudio, pauseAudio, deleteAudio;
     private String outputeFile;
@@ -196,7 +189,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private TextView tv_appelle_voip, tv_appelle_telephone;
     private LinearLayout voip_view;
     private RecyclerView mLocationView;
-    private ArrayList<Place> rPlaceDataList;
+    private ArrayList<MyPlace> rPlaceDataList;
     private ConstraintLayout startConstraint;
     private ConstraintLayout endConstraint;
     private GeoDataClient mGeoDataClient;
@@ -358,7 +351,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
-    public void pickedLocation(Place place) {
+    public void pickedLocation(MyPlace myPlace) {
         searchEditText.setFocusable(false);
         searchEditText.setFocusableInTouchMode(false);
         coverButton.setClickable(false);
@@ -366,7 +359,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         findViewById(R.id.shadow).setVisibility(View.VISIBLE);
 
         CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(new LatLng(Double.parseDouble(place.getLat()), Double.parseDouble(place.getLng())))
+                .target(new LatLng(Double.parseDouble(myPlace.getLat()), Double.parseDouble(myPlace.getLng())))
                 .zoom(17)                   // Sets the zoom
                 .build();                   // Creates a CameraPosition from the builder
 
@@ -384,9 +377,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-        if (!contains(rPlaceDataList, place)) {
-            place.setImage(R.drawable.lieux_proches);
-            rPlaceDataList.add(place);
+        if (!contains(rPlaceDataList, myPlace)) {
+            myPlace.setImage(R.drawable.lieux_proches);
+            rPlaceDataList.add(myPlace);
             saveRecentPlaces(MapsActivity.this, rPlaceDataList);
             rPlaceAdapter.notifyDataSetChanged();
         }
@@ -715,7 +708,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             }
                         }
                         dialog.dismiss();
-                    }catch (IllegalStateException e) {
+                    } catch (IllegalStateException e) {
                         e.printStackTrace();
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -742,7 +735,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         audioManager.setMicrophoneMute(false);
                         audioManager.setSpeakerphoneOn(false);
                         iv_recv_call_voip_one.setClickable(false);
-                    }catch (IllegalStateException e) {
+                    } catch (IllegalStateException e) {
                         e.printStackTrace();
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -1348,9 +1341,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             });
             dialog.show();
-        }catch (WindowManager.BadTokenException e){
+        } catch (WindowManager.BadTokenException e) {
             e.printStackTrace();
-        } catch (Exception e){ e.printStackTrace();}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -1500,9 +1495,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             });
 
-        }catch (WindowManager.BadTokenException e){
+        } catch (WindowManager.BadTokenException e) {
             e.printStackTrace();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -2688,12 +2683,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Gson gson = new Gson();
         String json = appSharedPrefs.getString("recent_places", "");
 
-        Place[] rPlace = gson.fromJson(json, Place[].class);
-        Place Place = new Place("Travail",
+        MyPlace[] rPlace = gson.fromJson(json, MyPlace[].class);
+        MyPlace myPlace = new MyPlace("Travail",
                 "Casablanca, Morocco", "33.5725155", "-7.5962637", R.drawable.lieux_proches);
 
         if (rPlace == null || rPlace.length == 0) {
-            rPlaceDataList.add(Place);
+            rPlaceDataList.add(myPlace);
         } else {
             rPlaceDataList.addAll(Arrays.asList(rPlace));
         }
@@ -2784,9 +2779,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             dialog.setContentView(view);
             Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawableResource(android.R.color.transparent);
             dialog.show();
-        }catch (WindowManager.BadTokenException e){
+        } catch (WindowManager.BadTokenException e) {
             e.printStackTrace();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -3101,11 +3096,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         @Override
                         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                             txt = this;
-                            if (searchEditText.getText().toString().length() >= 3) {
-                                if (isFocusableNeeded) {
-                                    lookForAddress();
-                                }
+                            if (isFocusableNeeded) {
+                                lookForAddress();
                             }
+//                            if (searchEditText.getText().toString().length() >= 3) {
+//                                if (isFocusableNeeded) {
+//                                    lookForAddress();
+//                                }
+//                            }
                         }
 
                         @Override
@@ -3130,11 +3128,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         @Override
                         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                             txtDest = this;
-                            if (searchDestEditText.getText().toString().length() >= 3) {
-                                if (isFocusableNeeded) {
-                                    lookForAddress();
-                                }
+                            if (isFocusableNeeded) {
+                                lookForAddress();
                             }
+//                            if (searchDestEditText.getText().toString().length() >= 3) {
+//                                if (isFocusableNeeded) {
+//                                    lookForAddress();
+//                                }
+//                            }
                         }
 
                         @Override
@@ -3240,10 +3241,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 public void onComplete(@NonNull Task<PlaceBufferResponse> task) {
                                     if (task.isSuccessful() && Objects.requireNonNull(task.getResult()).getCount() > 0) {
                                         for (com.google.android.gms.location.places.Place gotPlace : task.getResult()) {
-                                            Place Place = new Place(gotPlace.getName().toString(),
+                                            MyPlace myPlace = new MyPlace(gotPlace.getName().toString(),
                                                     Objects.requireNonNull(gotPlace.getAddress()).toString(), "" + gotPlace.getLatLng().latitude,
                                                     "" + gotPlace.getLatLng().longitude, R.drawable.lieux_proches);
-                                            placeDataList.add(Place);
+                                            placeDataList.add(myPlace);
                                         }
                                         favorite.setBackgroundColor(Color.WHITE);
                                         mLocationView.setBackgroundColor(Color.WHITE);
@@ -3300,7 +3301,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    private void saveRecentPlaces(Context context, ArrayList<Place> rPlaceDataList) {
+    private void saveRecentPlaces(Context context, ArrayList<MyPlace> rPlaceDataList) {
         SharedPreferences appSharedPrefs = PreferenceManager
                 .getDefaultSharedPreferences(context.getApplicationContext());
         SharedPreferences.Editor prefsEditor = appSharedPrefs.edit();
@@ -3310,7 +3311,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         prefsEditor.commit();
     }
 
-    private void goToLocation(Context context, Double lat, Double lng, Place rPlace) {
+    private void goToLocation(Context context, Double lat, Double lng, MyPlace rPlace) {
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(new LatLng(lat, lng))      // Sets the center of the map to Mountain View
                 .zoom(17)                   // Sets the zoom
@@ -3323,10 +3324,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         searchDestEditText.setText(utility.getCompleteAddressString(context, lat, lng));
     }
 
-    private boolean contains(ArrayList<Place> list, Place place) {
-        for (Place item : list) {
-            if (item.getName().equals(place.name) || item.getLat().equals(place.lat) || item.getLng().equals(place.lng)
-                    || item.getAddress().equals(place.address)) {
+    private boolean contains(ArrayList<MyPlace> list, MyPlace myPlace) {
+        for (MyPlace item : list) {
+            if (item.getName().equals(myPlace.name) || item.getLat().equals(myPlace.lat) || item.getLng().equals(myPlace.lng)
+                    || item.getAddress().equals(myPlace.address)) {
                 return true;
             }
         }
@@ -4215,7 +4216,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         address = dataSnapshot.child("Address").getValue(String.class);
                         lat = dataSnapshot.child("Lat").getValue(String.class);
                         Long = dataSnapshot.child("Long").getValue(String.class);
-                        Place workPlace = new Place(address, address, lat, Long, R.drawable.mdaison_con);
+                        MyPlace workPlace = new MyPlace(address, address, lat, Long, R.drawable.mdaison_con);
 
                         fPlaceDataList.add(workPlace);
                         fPlaceAdapter.notifyDataSetChanged();
@@ -4235,7 +4236,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         homeLat = dataSnapshot.child("Lat").getValue(String.class);
                         homeLong = dataSnapshot.child("Long").getValue(String.class);
 
-                        Place homePlace = new Place(homeAddress, homeAddress, homeLat, homeLong, R.drawable.work_icon);
+                        MyPlace homePlace = new MyPlace(homeAddress, homeAddress, homeLat, homeLong, R.drawable.work_icon);
                         fPlaceDataList.add(homePlace);
                         fPlaceAdapter.notifyDataSetChanged();
                     }
