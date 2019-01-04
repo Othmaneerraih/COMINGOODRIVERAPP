@@ -1373,7 +1373,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     btnNoDontCancelRide.setTextColor(Color.WHITE);
 
 
-                    FirebaseDatabase.getInstance().getReference("COURSES").child(courseIDT).child("state").setValue("5");
+                    FirebaseDatabase.getInstance().getReference("COURSES").child(courseIDT).child("state").setValue("3");
 
                     final Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {
