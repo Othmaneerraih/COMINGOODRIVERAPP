@@ -167,7 +167,7 @@ public class LoginActivity extends AppCompatActivity {
                                             LoginManager.getInstance().logOut();
                                         } catch (Exception e) {
                                             Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                                            getEmailAddress();
+                                            createDefaultEmail();
                                         }
                                     }
                                 });
@@ -206,6 +206,17 @@ public class LoginActivity extends AppCompatActivity {
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
+    
+    private void createDefaultEmail() {
+        if (name.equals("")) {
+            LoginManager.getInstance().logOut();
+            Toast.makeText(LoginActivity.this, resources.getString(R.string.try_again_txt), Toast.LENGTH_LONG).show();
+        } else {
+            String lowercase = name.toLowerCase();
+            Email = lowercase.replace(" ", "_") + "@comingoo.com";
+            goToSignupScreen();
+        }
+    }
 
     private void goToSignupScreen() {
         String[] stringArray = getResources().getStringArray(R.array.blocked_users);
@@ -226,56 +237,53 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(LoginActivity.this, resources.getString(R.string.try_again_txt), Toast.LENGTH_LONG).show();
             }
         }
-
     }
 
     private boolean validation() {
         return !Email.equals("") || !name.equals("") || !password.equals("") || !imageURI.equals("");
     }
 
-
     private void getEmailAddress() {
-        {
-            try {
-                android.app.AlertDialog.Builder dialogBuilder = new android.app.AlertDialog.Builder(LoginActivity.this);
-                final android.app.AlertDialog alertDialog = dialogBuilder.create();
-                alertDialog.show();
-                Objects.requireNonNull(alertDialog.getWindow()).setBackgroundDrawableResource(android.R.color.transparent);
-                LayoutInflater inflater = this.getLayoutInflater();
-                View dialogView = inflater.inflate(R.layout.dialog_email_address, null);
-                alertDialog.getWindow().setContentView(dialogView);
+        try {
+            android.app.AlertDialog.Builder dialogBuilder = new android.app.AlertDialog.Builder(LoginActivity.this);
+            final android.app.AlertDialog alertDialog = dialogBuilder.create();
+            alertDialog.show();
+            Objects.requireNonNull(alertDialog.getWindow()).setBackgroundDrawableResource(android.R.color.transparent);
+            LayoutInflater inflater = this.getLayoutInflater();
+            View dialogView = inflater.inflate(R.layout.dialog_email_address, null);
+            alertDialog.getWindow().setContentView(dialogView);
 
-                final Button cancelBtn = dialogView.findViewById(R.id.cancel_btn);
-                final Button okBtn = dialogView.findViewById(R.id.ok_btn);
-                final EditText emailAddress = dialogView.findViewById(R.id.email_address_et);
+            final Button cancelBtn = dialogView.findViewById(R.id.cancel_btn);
+            final Button okBtn = dialogView.findViewById(R.id.ok_btn);
+            final EditText emailAddress = dialogView.findViewById(R.id.email_address_et);
 
 
-                okBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if (Utility.isValidEmail(emailAddress.getText().toString())) {
-                            Email = emailAddress.getText().toString();
-                            goToSignupScreen();
-                            alertDialog.dismiss();
-                        } else {
-                            Toast.makeText(LoginActivity.this, resources.getString(R.string.email_validation_txt), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-
-                cancelBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
+            okBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (Utility.isValidEmail(emailAddress.getText().toString())) {
+                        Email = emailAddress.getText().toString();
+                        goToSignupScreen();
                         alertDialog.dismiss();
+                    } else {
+                        Toast.makeText(LoginActivity.this, resources.getString(R.string.email_validation_txt), Toast.LENGTH_SHORT).show();
                     }
-                });
+                }
+            });
 
-            } catch (WindowManager.BadTokenException e) {
-                e.printStackTrace();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            cancelBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    alertDialog.dismiss();
+                }
+            });
+
+        } catch (WindowManager.BadTokenException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
     }
 
     public boolean isNetworkConnectionAvailable() {
