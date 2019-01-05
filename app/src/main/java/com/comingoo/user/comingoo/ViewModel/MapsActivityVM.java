@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.View;
 
 import com.comingoo.user.comingoo.Interfaces.Userinformation;
@@ -31,9 +32,11 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class MapsActivityVM {
 
-    public void checkUserTask(final Context context, final Userinformation userinformation){
-       final SharedPreferences prefs = context.getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
-       final String userId = prefs.getString("userID", null);
+    private double wallet = 0.0;
+
+    public void checkUserTask(final Context context, final Userinformation userinformation) {
+        final SharedPreferences prefs = context.getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
+        final String userId = prefs.getString("userID", null);
         FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
@@ -268,4 +271,24 @@ public class MapsActivityVM {
 //        });
 //
 //    }
+
+    public void punishment(final String userId) {
+
+        FirebaseDatabase.getInstance().getReference("clientUSERS").
+                child(userId).child("SOLDE").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    double oldWallet = Double.parseDouble(Objects.requireNonNull(dataSnapshot.getValue(String.class)));
+                    double punishment = oldWallet - 10;
+                    FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("SOLDE").setValue("" + punishment);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
 }
