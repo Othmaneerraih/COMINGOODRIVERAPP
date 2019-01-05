@@ -150,7 +150,7 @@
 
     <string name="sinch_app_key">185d9822-a953-4af6-a780-b0af1fd31bf7</string>
     <string name="sinch_app_secret">ZiJ6FqH5UEWYbkMZd1rWbw==</string>
-    <string name="sinch_envirentmnet_host">sandbox.sinch.com</string>
+    <string name="sinch_envirentmnet_host">clientapi.sinch.com</string>
     <string name="title_activity_confirm_btn">Confirmer address</string>
     <string name="txt_block_time_over">Your blocking time is not over yet.</string>
 

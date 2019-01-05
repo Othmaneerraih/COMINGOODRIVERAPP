@@ -29,7 +29,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
-                android:layout_marginLeft="12dp"
                 android:layout_marginTop="48dp"
                 android:fontFamily="@font/roboto_medium"
                 android:text=""
@@ -102,7 +101,6 @@
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:layout_marginStart="36dp"
-                    android:layout_marginLeft="36dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
                     android:background="@drawable/historique"
@@ -238,7 +236,7 @@
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/aide"
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="60dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -276,7 +274,7 @@
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/logout"
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:visibility="gone"
                 android:background="@drawable/top_border"
@@ -667,7 +665,6 @@
             android:layout_width="45dp"
             android:layout_height="45dp"
             android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
             android:layout_marginTop="12dp"
             android:background="@color/transp"
             android:scaleType="fitCenter"
@@ -745,7 +742,7 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/iv_total_ride_number"
                         android:layout_marginStart="8dp"
-                        android:layout_toRightOf="@+id/iv_driver_image"
+                        android:layout_toEndOf="@+id/iv_driver_image"
                         android:text="123213"
                         android:textColor="@color/color_ash_deep" />
 
@@ -906,7 +903,7 @@
                 <ImageButton
                     android:id="@+id/deliveryButton"
                     android:layout_width="wrap_content"
-                    android:layout_height="fill_parent"
+                    android:layout_height="match_parent"
                     android:layout_marginStart="0dp"
                     android:layout_marginLeft="0dp"
                     android:layout_weight="1"
@@ -919,7 +916,7 @@
                 <ImageButton
                     android:id="@+id/carButton"
                     android:layout_width="wrap_content"
-                    android:layout_height="fill_parent"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:adjustViewBounds="false"
                     android:background="@drawable/ripple_effect"
@@ -1254,7 +1251,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@+id/selectedOperation"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
@@ -1278,7 +1274,7 @@
 
                 <Button
                     android:id="@+id/confirm_start"
-                    android:layout_width="fill_parent"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/gradiantEnd2"
                     android:elevation="1dp"
@@ -1339,7 +1335,7 @@
                     <Button
                         android:id="@+id/passer"
                         android:layout_width="100dp"
-                        android:layout_height="fill_parent"
+                        android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:background="@drawable/gray_ripple"
                         android:fontFamily="@font/roboto_bold"
