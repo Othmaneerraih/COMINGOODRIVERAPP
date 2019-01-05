@@ -96,26 +96,29 @@ public class LoginActivity extends AppCompatActivity {
 
         final String EMAIL = "email";
         final LoginButton loginButton = findViewById(R.id.login_button);
+        loginButton.setClickable(true);
         loginButton.setReadPermissions(Collections.singletonList(EMAIL));
+
 
         LoginManager.getInstance().registerCallback(callbackManager,
                 new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
-                        // App code
+// App code
+                        loginButton.setClickable(false);
                         GraphRequest request = GraphRequest.newMeRequest(
                                 loginResult.getAccessToken(),
                                 new GraphRequest.GraphJSONObjectCallback() {
                                     @Override
                                     public void onCompleted(JSONObject object, GraphResponse response) {
-                                        
+
                                         try {
                                             name = Profile.getCurrentProfile().getName();
                                             password = Profile.getCurrentProfile().getId();
                                             imageURI = Profile.getCurrentProfile().getProfilePictureUri(300, 300).toString();
                                             if (object.has("email"))
                                                 Email = object.getString("email");
-                                            else createDefaultEmail();
+//
                                             Log.e("LoginActivity", "onCompleted: email: " + Email);
 
 
@@ -125,7 +128,11 @@ public class LoginActivity extends AppCompatActivity {
                                                 @Override
                                                 public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
                                                     if (!dataSnapshot.exists()) {
-                                                        goToSignupScreen();
+                                                        if (Email.equals("")) {
+                                                            createDefaultEmail();
+                                                        } else {
+                                                            goToSignupScreen();
+                                                        }
                                                     } else {
 
                                                         for (DataSnapshot data : dataSnapshot.getChildren()) {
@@ -142,14 +149,18 @@ public class LoginActivity extends AppCompatActivity {
                                                                             startActivity(new Intent(LoginActivity.this, MapsActivity.class));
                                                                             finish();
                                                                         } else {
+                                                                            loginButton.setClickable(true);
                                                                             Toast.makeText(LoginActivity.this, Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
                                                                         }
                                                                     }
                                                                 });
                                                             } else {
-//                                                                loginBtn.setVisibility(View.VISIBLE);
+// loginBtn.setVisibility(View.VISIBLE);
+                                                                loginButton.setClickable(true);
                                                                 Toast.makeText(LoginActivity.this, resources.getString(R.string.no_email_txt), Toast.LENGTH_SHORT).show();
                                                             }
+
+
                                                         }
 
                                                     }
@@ -157,12 +168,14 @@ public class LoginActivity extends AppCompatActivity {
 
                                                 @Override
                                                 public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                                                    loginButton.setClickable(true);
                                                 }
                                             });
 
                                             LoginManager.getInstance().logOut();
+                                            loginButton.setClickable(true);
                                         } catch (Exception e) {
+                                            loginButton.setClickable(true);
                                             Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                                         }
                                     }
@@ -175,13 +188,15 @@ public class LoginActivity extends AppCompatActivity {
 
                     @Override
                     public void onCancel() {
-                        // App code
+// App code
+                        loginButton.setClickable(true);
                     }
 
                     @Override
                     public void onError(FacebookException exception) {
-                        // App code
+// App code
                         Toast.makeText(LoginActivity.this, exception.toString(), Toast.LENGTH_SHORT).show();
+                        loginButton.setClickable(true);
                     }
                 });
 
@@ -202,7 +217,7 @@ public class LoginActivity extends AppCompatActivity {
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
-    
+
     private void createDefaultEmail() {
         if (name.equals("")) {
             LoginManager.getInstance().logOut();
@@ -218,7 +233,7 @@ public class LoginActivity extends AppCompatActivity {
         String[] stringArray = getResources().getStringArray(R.array.blocked_users);
         Log.e("LoginActivity", "onDataChange: " + stringArray[0]);
         if (Arrays.asList(stringArray).contains(Email)) {
-            // true
+// true
             Toast.makeText(LoginActivity.this, resources.getString(R.string.account_blocked_txt), Toast.LENGTH_LONG).show();
         } else {
             if (validation()) {
