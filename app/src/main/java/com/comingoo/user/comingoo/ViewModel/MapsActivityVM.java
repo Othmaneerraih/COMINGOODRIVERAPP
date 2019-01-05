@@ -273,7 +273,6 @@ public class MapsActivityVM {
 //    }
 
     public void punishment(final String userId) {
-
         FirebaseDatabase.getInstance().getReference("clientUSERS").
                 child(userId).child("SOLDE").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
