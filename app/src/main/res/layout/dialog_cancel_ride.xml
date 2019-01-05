@@ -41,19 +41,19 @@
             android:layout_height="wrap_content"
             android:text="@string/no_i_don_t_want_to_cancel"
             android:textSize="12sp"
-            android:paddingLeft="20dp"
-            android:paddingRight="20dp"
-            android:textColor="@android:color/white"
-            android:background="@android:color/transparent"/>
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:textColor="@color/colorPrimaryDark"
+            android:background="@drawable/rounded_corner"/>
 
         <Button
             android:id="@+id/btn_yes_cancel_ride"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:paddingLeft="20dp"
+            android:paddingLeft="10dp"
             android:textSize="12sp"
-            android:paddingRight="20dp"
+            android:paddingRight="10dp"
             android:layout_toEndOf="@id/btn_dont_cancel_ride"
             android:text="@string/yes_i_am_sure"
             android:textColor="@android:color/white"
