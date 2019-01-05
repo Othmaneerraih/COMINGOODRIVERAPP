@@ -404,12 +404,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private class SinchCallClientListener implements CallClientListener {
         @Override
         public void onIncomingCall(CallClient callClient, Call incomingCall) {
-            Log.e(TAG, "onIncomingCall: ");
             Toast.makeText(MapsActivity.this, resources.getString(R.string.incoming_call_txt), Toast.LENGTH_SHORT).show();
             try {
                 if (VoipCallingActivity.activity != null)
                     if (!VoipCallingActivity.activity.isFinishing())
                         VoipCallingActivity.activity.finish();
+                Log.e(TAG, "onIncomingCall: " + incomingCall.getCallId());
                 showDialog(MapsActivity.this, incomingCall);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -1007,6 +1007,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
             if (statusT.equals("0") && !courseScreenStageZero) {
+                confirmStart.setVisibility(View.GONE);
+
                 if (!userLevel.equals("2")) {
                     ivCallDriver.setVisibility(View.VISIBLE);
                     ivCallDriver.setOnClickListener(new View.OnClickListener() {
@@ -1372,8 +1374,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     btnNoDontCancelRide.setBackgroundColor(Color.TRANSPARENT);
                     btnNoDontCancelRide.setTextColor(Color.WHITE);
 
-
-                    FirebaseDatabase.getInstance().getReference("COURSES").child(courseIDT).child("state").setValue("3");
+                    FirebaseDatabase.getInstance().getReference("COURSES").child(courseIDT).child("state").setValue("5");
 
                     final Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {
@@ -1441,7 +1442,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     String tagStatus;
     private String COURSE;
     private String choseBox;
-//    private String dialogDriverId = "";
+    //    private String dialogDriverId = "";
     private DecimalFormat df2 = new DecimalFormat(".##");
 
     private class checkFinishedCourse extends AsyncTask<String, Integer, String> {

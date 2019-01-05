@@ -105,7 +105,7 @@ public class VoipCallingActivity extends AppCompatActivity {
         iv_loud.setVisibility(View.VISIBLE);
 
         driverId = getIntent().getStringExtra("driverId");
-        clientId = getIntent().getStringExtra("clientId");//"RHiU2GIxm2ZIlU4GBGgKFZWxk4J3";//getIntent().getStringExtra("clientId");
+        clientId = getIntent().getStringExtra("userId");//"RHiU2GIxm2ZIlU4GBGgKFZWxk4J3";//getIntent().getStringExtra("clientId");
         callerName = getIntent().getStringExtra("driverName");
         clientImage = getIntent().getStringExtra("driverImage");
 
