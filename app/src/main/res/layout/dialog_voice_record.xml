@@ -52,7 +52,7 @@
         android:layout_height="100dp"
         android:layout_below="@+id/top_txt_layout"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="20dp"
         android:background="@drawable/recording_circles">
 
         <ImageButton
@@ -69,14 +69,13 @@
 
     </RelativeLayout>
 
-
     <ImageButton
         android:id="@+id/playAudio"
         android:layout_width="75dp"
         android:layout_height="75dp"
         android:layout_below="@+id/top_txt_layout"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="30dp"
         android:background="@drawable/play_button"
         android:visibility="gone" />
 
@@ -105,10 +104,11 @@
         android:id="@+id/textView20"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/imageButton6"
         android:layout_below="@+id/record_audio_layout"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="36dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:fontFamily="@font/roboto_medium"
         android:text="@string/Record"
         android:textAlignment="center"
@@ -120,7 +120,7 @@
         android:layout_height="70dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="30dp"
+        android:layout_marginBottom="20dp"
         android:background="@drawable/next_bt" />
 
 </RelativeLayout>

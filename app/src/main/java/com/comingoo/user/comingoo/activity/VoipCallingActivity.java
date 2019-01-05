@@ -85,7 +85,7 @@ public class VoipCallingActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.content_voip_one);
+        setContentView(R.layout.activity_voip_one);
         activity = this;
 
         ImageView iv_back_voip_one = findViewById(R.id.iv_back_voip_one);
