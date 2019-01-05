@@ -24,15 +24,20 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 import static android.content.Context.MODE_PRIVATE;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.MINUTES;
 
 public class MapsActivityVM {
 
-    private double wallet = 0.0;
+    private long FIVE_MINUTES_DURATION = MILLISECONDS.convert(5, MINUTES);
+    private int PANISHMENT_VALUE = 10;
 
     public void checkUserTask(final Context context, final Userinformation userinformation) {
         final SharedPreferences prefs = context.getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
@@ -272,23 +277,32 @@ public class MapsActivityVM {
 //
 //    }
 
-    public void punishment(final String userId) {
+    public void punishment(final String userId, final Date startTime) {
 
-        FirebaseDatabase.getInstance().getReference("clientUSERS").
-                child(userId).child("SOLDE").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    double oldWallet = Double.parseDouble(Objects.requireNonNull(dataSnapshot.getValue(String.class)));
-                    double punishment = oldWallet - 10;
-                    FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("SOLDE").setValue("" + punishment);
-                }
+
+        Date currentTcurrentTimeime = Calendar.getInstance().getTime();
+        if (startTime != null) {
+            long diff = startTime.getTime() - currentTcurrentTimeime.getTime();
+            if (diff >= FIVE_MINUTES_DURATION) {
+                FirebaseDatabase.getInstance().getReference("clientUSERS").
+                        child(userId).child("SOLDE").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            double oldWallet = Double.parseDouble(Objects.requireNonNull(dataSnapshot.getValue(String.class)));
+                            double punishment = oldWallet - PANISHMENT_VALUE;
+                            FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("SOLDE").setValue("" + punishment);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
             }
+        }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            }
-        });
     }
 }

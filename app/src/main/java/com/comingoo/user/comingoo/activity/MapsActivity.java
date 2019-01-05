@@ -153,6 +153,8 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -300,6 +302,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
     private String userId, userImage, userEmail, phoneNumber;
     private DatabaseReference rootRef;
+    private Date startTime;
 
     private Bitmap scaleBitmap(int reqWidth, int reqHeight, int resId) {
 //        try {
@@ -1008,6 +1011,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             if (statusT.equals("0") && !courseScreenStageZero) {
                 confirmStart.setVisibility(View.GONE);
+                startTime = Calendar.getInstance().getTime();
 
                 if (!userLevel.equals("2")) {
                     ivCallDriver.setVisibility(View.VISIBLE);
@@ -1252,8 +1256,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             locationProviders = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
             return !TextUtils.isEmpty(locationProviders);
         }
-
-
     }
 
     private void checkLocationService() {
@@ -1368,6 +1370,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
 
                     mapsActivityVM.punishment(userId);
+
                     btnNoDontCancelRide.setBackgroundColor(Color.TRANSPARENT);
                     btnNoDontCancelRide.setTextColor(Color.WHITE);
 
@@ -3226,7 +3229,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Log.e(TAG, "goToLocation: " + lat);
         Log.e(TAG, "goToLocation: " + lng);
         String completeAddress = utility.getCompleteAddressString(context, lat, lng);
-        Log.e(TAG, "goToLocation: completeAddress "+completeAddress );
+        Log.e(TAG, "goToLocation: completeAddress " + completeAddress);
         searchEditText.setText(completeAddress);
         searchDestEditText.setText(completeAddress);
     }
