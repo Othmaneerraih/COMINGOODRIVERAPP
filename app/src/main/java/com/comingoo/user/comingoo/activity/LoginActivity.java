@@ -64,12 +64,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Objects;
 
-
 public class LoginActivity extends AppCompatActivity {
     private CallbackManager callbackManager;
     private Resources resources;
     private String name = "", password = "", imageURI = "", Email = "";
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,28 +97,22 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setClickable(true);
         loginButton.setReadPermissions(Collections.singletonList(EMAIL));
 
-
         LoginManager.getInstance().registerCallback(callbackManager,
                 new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
-// App code
+                        // App code
                         loginButton.setClickable(false);
                         GraphRequest request = GraphRequest.newMeRequest(
-                                loginResult.getAccessToken(),
-                                new GraphRequest.GraphJSONObjectCallback() {
+                                loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
                                     @Override
                                     public void onCompleted(JSONObject object, GraphResponse response) {
-
                                         try {
                                             name = Profile.getCurrentProfile().getName();
                                             password = Profile.getCurrentProfile().getId();
                                             imageURI = Profile.getCurrentProfile().getProfilePictureUri(300, 300).toString();
                                             if (object.has("email"))
                                                 Email = object.getString("email");
-//
-                                            Log.e("LoginActivity", "onCompleted: email: " + Email);
-
 
                                             FirebaseDatabase.getInstance().getReference("clientUSERS").orderByChild("email").equalTo(Email).
                                                     limitToFirst(1).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -136,7 +128,6 @@ public class LoginActivity extends AppCompatActivity {
                                                     } else {
 
                                                         for (DataSnapshot data : dataSnapshot.getChildren()) {
-
                                                             String email = data.child("email").getValue(String.class);
 
                                                             if (email != null) {

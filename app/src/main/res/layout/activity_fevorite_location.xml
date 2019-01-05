@@ -22,8 +22,8 @@
 
         <ImageView
             android:id="@+id/locationPin"
-            android:layout_width="30dp"
-            android:layout_height="60dp"
+            android:layout_width="40dp"
+            android:layout_height="65dp"
             android:scaleType="fitXY"
             android:layout_alignParentTop="true"
             android:adjustViewBounds="true"
