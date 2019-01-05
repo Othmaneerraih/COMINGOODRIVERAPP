@@ -299,9 +299,7 @@ public class MapsActivityVM {
 
                     }
                 });
-            } else Toast.makeText(context, "Not yet 5 min", Toast.LENGTH_SHORT).show();
+            }
         }
-
-
     }
 }

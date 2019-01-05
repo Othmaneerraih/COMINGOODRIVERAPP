@@ -369,6 +369,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void pickedLocation(MyPlace myPlace) {
+
+        if (orderDriverState == 0)   selectStart.setVisibility(View.VISIBLE);
+        else if (orderDriverState == 1) selectDest.setVisibility(View.VISIBLE);
+
         searchEditText.setFocusable(false);
         searchEditText.setFocusableInTouchMode(false);
         coverButton.setClickable(false);
@@ -941,6 +945,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (statusT.equals("1")) {
                 callLayout.setVisibility(View.VISIBLE);
             }
+
             stopSearchUI();
             shadowBg.setVisibility(View.VISIBLE);
             menuButton.setImageBitmap(scaleBitmap(45, 45, R.drawable.home_icon));
@@ -1008,7 +1013,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             }
 
-
             if (statusT.equals("0") && !courseScreenStageZero) {
                 confirmStart.setVisibility(View.GONE);
                 startTime = Calendar.getInstance().getTime();
@@ -1049,8 +1053,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         public void onClick(View v) {
                             if (!driverIDT.isEmpty()) {
                                 tv_appelle_voip.setClickable(false);
-//                                tv_appelle_voip.setEnabled(false);
-
                                 Intent intent = new Intent(MapsActivity.this, VoipCallingActivity.class);
                                 intent.putExtra("driverId", driverIDT);
                                 intent.putExtra("userId", userId);
@@ -2986,18 +2988,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         findViewById(R.id.coverButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                selectStart.setVisibility(View.GONE);
                 findViewById(R.id.shadow).setVisibility(View.GONE);
                 bottomMenu.setVisibility(View.GONE);
                 selectedOp.setVisibility(View.GONE);
-                selectDest.setVisibility(View.GONE);
                 findViewById(R.id.coverButton).setVisibility(View.GONE);
                 favorite.setBackgroundColor(Color.WHITE);
                 isFocusableNeeded = true;
                 state = -1;
                 showFavoritsAndRecents();
-                confirmStart.setVisibility(View.GONE);
-                confirmDest.setVisibility(View.GONE);
+                selectStart.setVisibility(View.GONE);
+                selectDest.setVisibility(View.GONE);
             }
         });
 
@@ -3861,18 +3861,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                             handler.removeCallbacks(runnable);
                                                             geoQuery.setCenter(new GeoLocation(startLatLng.latitude, startLatLng.longitude));
                                                             counter = 0;
-
                                                             stopSearchUI();
                                                             showAllUI();
                                                         } else {
 
                                                             for (DataSnapshot data : dataSnapshot.getChildren()) {
-                                                                FirebaseDatabase.getInstance().getReference("DRIVERUSERS").child(Objects.requireNonNull(data.child("driver").getValue(String.class))).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                FirebaseDatabase.getInstance().getReference("DRIVERUSERS")
+                                                                        .child(Objects.requireNonNull(data.child("driver").getValue(String.class))).addListenerForSingleValueEvent(new ValueEventListener() {
                                                                     @Override
                                                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                                                         if (dataSnapshot.exists()) {
                                                                             callLayout.setVisibility(View.VISIBLE);
-//                                                                            rlCallLayout.setVisibility(View.VISIBLE);
                                                                         }
                                                                     }
 
