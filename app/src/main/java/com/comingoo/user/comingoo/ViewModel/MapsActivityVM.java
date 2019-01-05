@@ -278,8 +278,6 @@ public class MapsActivityVM {
 //    }
 
     public void punishment(final String userId, final Date startTime) {
-
-
         Date currentTcurrentTimeime = Calendar.getInstance().getTime();
         if (startTime != null) {
             long diff = startTime.getTime() - currentTcurrentTimeime.getTime();
