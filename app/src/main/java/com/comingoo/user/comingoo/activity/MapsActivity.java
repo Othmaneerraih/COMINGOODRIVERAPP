@@ -1369,7 +1369,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         btnYesCancelRide.setTextColor(getApplicationContext().getResources().getColor(R.color.primaryLight));
                     }
 
-                    mapsActivityVM.punishment(userId, startTime);
+                    mapsActivityVM.punishment(getApplicationContext(), userId, startTime);
 
                     btnNoDontCancelRide.setBackgroundColor(Color.TRANSPARENT);
                     btnNoDontCancelRide.setTextColor(Color.WHITE);

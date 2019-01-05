@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.comingoo.user.comingoo.Interfaces.Userinformation;
 import com.comingoo.user.comingoo.R;
@@ -277,7 +278,7 @@ public class MapsActivityVM {
 //
 //    }
 
-    public void punishment(final String userId, final Date startTime) {
+    public void punishment(Context context, final String userId, final Date startTime) {
         Date currentTcurrentTimeime = Calendar.getInstance().getTime();
         if (startTime != null) {
             long diff = startTime.getTime() - currentTcurrentTimeime.getTime();
@@ -298,7 +299,7 @@ public class MapsActivityVM {
 
                     }
                 });
-            }
+            } else Toast.makeText(context, "Not yet 5 min", Toast.LENGTH_SHORT).show();
         }
 
 
