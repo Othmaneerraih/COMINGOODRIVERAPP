@@ -1263,20 +1263,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             dialog.setPositiveButton(resources.getString(R.string.txt_open_location), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                    // TODO Auto-generated method stub
                     Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                     startActivity(myIntent);
-                    //get gps
                 }
             });
 
             dialog.setNegativeButton(getString(R.string.txt_cancel), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                    // TODO Auto-generated method stub
-
                 }
             });
+
             dialog.show();
         } catch (WindowManager.BadTokenException e) {
             e.printStackTrace();
@@ -1284,7 +1281,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             e.printStackTrace();
         }
     }
-
 
     private void displayLocationSettingsRequest(Context context) {
         GoogleApiClient googleApiClient = new GoogleApiClient.Builder(context)
@@ -2997,6 +2993,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 isFocusableNeeded = true;
                 state = -1;
                 showFavoritsAndRecents();
+                confirmStart.setVisibility(View.GONE);
+                confirmDest.setVisibility(View.GONE);
             }
         });
 
@@ -3016,11 +3014,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             if (isFocusableNeeded) {
                                 lookForAddress();
                             }
-//                            if (searchEditText.getText().toString().length() >= 3) {
-//                                if (isFocusableNeeded) {
-//                                    lookForAddress();
-//                                }
-//                            }
                         }
 
                         @Override
@@ -3048,11 +3041,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             if (isFocusableNeeded) {
                                 lookForAddress();
                             }
-//                            if (searchDestEditText.getText().toString().length() >= 3) {
-//                                if (isFocusableNeeded) {
-//                                    lookForAddress();
-//                                }
-//                            }
                         }
 
                         @Override
@@ -3237,8 +3225,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         Log.e(TAG, "goToLocation: " + lat);
         Log.e(TAG, "goToLocation: " + lng);
-        searchEditText.setText(utility.getCompleteAddressString(context, lat, lng));
-        searchDestEditText.setText(utility.getCompleteAddressString(context, lat, lng));
+        String completeAddress = utility.getCompleteAddressString(context, lat, lng);
+        Log.e(TAG, "goToLocation: completeAddress "+completeAddress );
+        searchEditText.setText(completeAddress);
+        searchDestEditText.setText(completeAddress);
     }
 
     private boolean contains(ArrayList<MyPlace> list, MyPlace myPlace) {

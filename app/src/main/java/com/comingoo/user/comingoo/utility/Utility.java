@@ -30,6 +30,7 @@ public class Utility {
             } else {
             }
         } catch (NullPointerException e) {
+            Log.e(TAG, "getCompleteAddressString: " + e.getMessage());
             e.printStackTrace();
         } catch (Exception e) {
             Log.e(TAG, "getCompleteAddressString: " + e.getMessage());
