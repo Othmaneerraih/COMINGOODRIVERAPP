@@ -1534,12 +1534,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                         final Button star4 = view.findViewById(R.id.star4);
                                                         final Button star5 = view.findViewById(R.id.star5);
 
-                                                        final ImageButton im1 = view.findViewById(R.id.imageView4);
-                                                        final ImageButton im2 = view.findViewById(R.id.imageView5);
-                                                        final ImageButton im3 = view.findViewById(R.id.imageView6);
-                                                        final ImageButton im4 = view.findViewById(R.id.imageView7);
-                                                        final ImageButton im5 = view.findViewById(R.id.imageView8);
-
                                                         final ImageButton nextButton = view.findViewById(R.id.next);
 
                                                         final ImageView imot = view.findViewById(R.id.stars_rating);
@@ -1555,66 +1549,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                         star4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.selected_star)));
                                                         star5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.unselected_star)));
                                                         imot.setImageBitmap(scaleBitmap(150, 150, R.drawable.four_stars));
-
-
-                                                        im1.setOnClickListener(new View.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(View v) {
-                                                                im1.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.belle_voiture)));
-                                                                im2.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.bonne_music_unselected)));
-                                                                im3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.exellent_service_unselected)));
-                                                                im4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.expert_en_navigation_unselected)));
-                                                                im5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.voiture_propre_unselected)));
-                                                                tagStatus = resources.getString(R.string.voirture_txt);
-                                                                ;
-
-                                                            }
-                                                        });
-                                                        im2.setOnClickListener(new View.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(View v) {
-                                                                im1.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.belle_voiture)));
-                                                                im2.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.bonne_music)));
-                                                                im3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.exellent_service_unselected)));
-                                                                im4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.expert_en_navigation_unselected)));
-                                                                im5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.voiture_propre_unselected)));
-                                                                tagStatus = resources.getString(R.string.bonne_music_txt);
-
-                                                            }
-                                                        });
-                                                        im3.setOnClickListener(new View.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(View v) {
-                                                                im1.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.belle_voiture)));
-                                                                im2.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.bonne_music_unselected)));
-                                                                im3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.exellent_service)));
-                                                                im4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.expert_en_navigation_unselected)));
-                                                                im5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.voiture_propre_unselected)));
-                                                                tagStatus = resources.getString(R.string.exilent_service_txt);
-                                                            }
-                                                        });
-                                                        im4.setOnClickListener(new View.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(View v) {
-                                                                im1.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.belle_voiture)));
-                                                                im2.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.bonne_music_unselected)));
-                                                                im3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.exellent_service_unselected)));
-                                                                im4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.expert_en_navigation)));
-                                                                im5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.voiture_propre_unselected)));
-                                                                tagStatus = resources.getString(R.string.expert_navagation_txt);
-                                                            }
-                                                        });
-                                                        im5.setOnClickListener(new View.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(View v) {
-                                                                im1.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.belle_voiture)));
-                                                                im2.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.bonne_music_unselected)));
-                                                                im3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.exellent_service_unselected)));
-                                                                im4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.expert_en_navigation_unselected)));
-                                                                im5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.voiture_propre)));
-                                                                tagStatus = resources.getString(R.string.voiture_propre_txt);
-                                                            }
-                                                        });
 
                                                         star1.setOnClickListener(new View.OnClickListener() {
                                                             @Override
