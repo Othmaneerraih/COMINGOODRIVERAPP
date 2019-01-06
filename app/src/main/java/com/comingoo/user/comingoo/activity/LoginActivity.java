@@ -28,12 +28,14 @@ import com.comingoo.user.comingoo.R;
 import com.comingoo.user.comingoo.utility.LocalHelper;
 import com.comingoo.user.comingoo.utility.SharedPreferenceTask;
 import com.comingoo.user.comingoo.utility.Utility;
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
 import com.facebook.Profile;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
@@ -67,14 +69,16 @@ import java.util.Objects;
 public class LoginActivity extends AppCompatActivity {
     private CallbackManager callbackManager;
     private Resources resources;
-    private String name = "", password = "", imageURI = "", Email = "";
+    private String name = "", password = "", imageURI = "", Email = "", TAG = "LoginActivity";
+    private boolean isProfilePicValid = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        String language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
+        String language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE",
+                Context.MODE_PRIVATE).getString("language", "fr");
         Context context = LocalHelper.setLocale(LoginActivity.this, language);
         resources = context.getResources();
 
@@ -100,9 +104,31 @@ public class LoginActivity extends AppCompatActivity {
         LoginManager.getInstance().registerCallback(callbackManager,
                 new FacebookCallback<LoginResult>() {
                     @Override
-                    public void onSuccess(LoginResult loginResult) {
+                    public void onSuccess(final LoginResult loginResult) {
                         // App code
                         loginButton.setClickable(false);
+                        Bundle params = new Bundle();
+                        params.putString("fields", "id,email,gender,cover,picture.type(large)");
+                        new GraphRequest(AccessToken.getCurrentAccessToken(), "me", params, HttpMethod.GET,
+                                new GraphRequest.Callback() {
+                                    @Override
+                                    public void onCompleted(GraphResponse response) {
+                                        if (response != null) {
+                                            try {
+                                                JSONObject data = response.getJSONObject();
+                                                if (data.has("picture")) {
+                                                     isProfilePicValid = data.getJSONObject("picture").getJSONObject("data").getBoolean("is_silhouette");
+                                                }
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    }
+                                }).executeAsync();
+
+
+
+
                         GraphRequest request = GraphRequest.newMeRequest(
                                 loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
                                     @Override
@@ -233,6 +259,7 @@ public class LoginActivity extends AppCompatActivity {
                 intent.putExtra("name", name);
                 intent.putExtra("password", password);
                 intent.putExtra("imageURI", imageURI);
+                intent.putExtra("isProfilePicValid", isProfilePicValid);
                 startActivity(intent);
                 finish();
             } else {
