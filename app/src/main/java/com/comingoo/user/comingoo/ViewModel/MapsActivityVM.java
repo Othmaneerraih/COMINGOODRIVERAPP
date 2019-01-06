@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static android.content.Context.MODE_PRIVATE;
+import static android.webkit.ConsoleMessage.MessageLevel.LOG;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.MINUTES;
 
@@ -39,6 +40,7 @@ public class MapsActivityVM {
 
     private long FIVE_MINUTES_DURATION = MILLISECONDS.convert(5, MINUTES);
     private int PANISHMENT_VALUE = 10;
+    private String TAG = "MapsActivityVM";
 
     public void checkUserTask(final Context context, final Userinformation userinformation) {
         final SharedPreferences prefs = context.getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
@@ -282,6 +284,7 @@ public class MapsActivityVM {
         if (startTime != null) {
             long diff = startTime.getTime() - currentTcurrentTimeime.getTime();
             if (diff >= FIVE_MINUTES_DURATION) {
+                Log.e(TAG , "5 min passed");
                 FirebaseDatabase.getInstance().getReference("clientUSERS").
                         child(userId).child("SOLDE").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
