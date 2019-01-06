@@ -37,6 +37,7 @@ public class SignupActivity extends AppCompatActivity {
     private String name;
     private String password;
     private String imageURI;
+    private boolean isProfilePicValid = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +57,7 @@ public class SignupActivity extends AppCompatActivity {
         name = getIntent().getStringExtra("name");
         password = getIntent().getStringExtra("password");
         imageURI = getIntent().getStringExtra("imageURI");
+        isProfilePicValid = getIntent().getBooleanExtra("isProfilePicValid", false);
 
         String language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
         Context context = LocalHelper.setLocale(SignupActivity.this, language);
@@ -87,6 +89,7 @@ public class SignupActivity extends AppCompatActivity {
                 intent.putExtra("name",  name);
                 intent.putExtra("password",  password);
                 intent.putExtra("imageURI",  imageURI);
+                intent.putExtra("isProfilePicValid",  isProfilePicValid);
                 startActivity(intent);
                 finish();
                 registerButton.setVisibility(View.VISIBLE);

@@ -44,6 +44,7 @@ public class SignupConfirmActivity extends AppCompatActivity {
     private EditText code6;
 
     private String Email,name,password,imageURI;
+    private boolean isProfilePicValid = false;
     private String TAG = "SignupConfirmActivity";
 
     @Override
@@ -63,6 +64,7 @@ public class SignupConfirmActivity extends AppCompatActivity {
         name = getIntent().getStringExtra("name");
         password = getIntent().getStringExtra("password");
         imageURI = getIntent().getStringExtra("imageURI");
+        isProfilePicValid = getIntent().getBooleanExtra("isProfilePicValid", false);
 
         String language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
         Context context = LocalHelper.setLocale(SignupConfirmActivity.this, language);
@@ -124,9 +126,8 @@ public class SignupConfirmActivity extends AppCompatActivity {
                             data.put("LASTCOURSE", "**La Premiére Course**");
                             data.put("phoneNumber", phoneNumber);
                             data.put("image", imageURI);
+                            data.put("isProfilePicValid", isProfilePicValid);
                             data.put("level", "2");
-
-                            Log.e(TAG, "onComplete: successfull");
 
                             FirebaseDatabase.getInstance().getReference("clientUSERS").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).setValue(data).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
