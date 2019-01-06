@@ -104,11 +104,10 @@
     <string name="pénalité">*Aucune pénalité pour les commandes annulées 2 minutes aprés le confirmation.</string>
     <string name="inviteText">Nous précions l\'amitié, c\'est pourquoi nous vous encourageons à inviter vos amis à utiliser Comingoo et gangez des points que vous pouvez convertir ensuite en crédit Comingoo</string>
     <string name="Inviter">Inviter</string>
-    <string name="SeConnecter">Se Connecter</string>
     <string name="signupText">Vous n\'avez pas de compte ?</string>
     <string name="Sinscrire">S\'inscrire</string>
     <string name="loginText">Vous avez deja un compte ?</string>
-    <string name="Seconnecter">Se connecter</string>
+    <string name="Seconnecter">Continuer avec Facebook</string>
     <string name="Entrezvotrenumerodetéléphone">Entrez votre numero de téléphone</string>
     <string name="Numérodetéléphone">Numéro de téléphone</string>
     <string name="unCode">Un code de vérification a été envoyé à votre numéro de téléphone, s\'il vous plait saisissez le ici pour continuer.</string>

@@ -92,11 +92,10 @@ public class MapsActivityVM {
         rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.hasChild("favouritePlace")) {
-                } else {
+                if (!snapshot.hasChild("favouritePlace")) {
                     Map<String, String> dataFavPlace = new HashMap();
-                    dataFavPlace.put(context.getString(R.string.txt_home), "");
-                    dataFavPlace.put(context.getString(R.string.txt_work), "");
+                    dataFavPlace.put("Home", "");
+                    dataFavPlace.put("Work", "");
                     FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").setValue(dataFavPlace);
 
                     Map<String, String> homeSt = new HashMap();
@@ -111,11 +110,11 @@ public class MapsActivityVM {
 
                     FirebaseDatabase.getInstance().
                             getReference("clientUSERS").child(userId)
-                            .child("favouritePlace").child(context.getString(R.string.txt_home)).setValue(homeSt);
+                            .child("favouritePlace").child("Home").setValue(homeSt);
 
                     FirebaseDatabase.getInstance().
                             getReference("clientUSERS").child(userId)
-                            .child("favouritePlace").child(context.getString(R.string.txt_work)).setValue(workSt);
+                            .child("favouritePlace").child("Work").setValue(workSt);
 
                 }
             }

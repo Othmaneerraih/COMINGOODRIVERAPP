@@ -662,8 +662,8 @@
 
         <ImageButton
             android:id="@+id/menu_button"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="12dp"
             android:background="@color/transp"
@@ -697,7 +697,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/margin_normal"
                     android:gravity="center"
-                    android:paddingLeft="5dp"
+                    android:paddingStart="5dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
@@ -721,7 +721,7 @@
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="30dp"
                         android:layout_marginEnd="8dp"
-                        android:layout_toRightOf="@+id/iv_driver_image"
+                        android:layout_toEndOf="@+id/iv_driver_image"
                         android:text="User Name"
                         android:textColor="@android:color/black"
                         android:textSize="@dimen/txt_size_large" />
@@ -1036,7 +1036,7 @@
             android:id="@+id/dest_edit_text"
             android:layout_width="match_parent"
             android:layout_height="180dp"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="10dp"
             android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@+id/adress_result"
             app:layout_constraintEnd_toEndOf="parent"
@@ -1681,7 +1681,7 @@
 
     </android.support.constraint.ConstraintLayout>
 
-    <de.hdodenhof.circleimageview.CircleImageView
+    <ImageView
         android:id="@+id/iv_cancel_ride"
         android:layout_width="25dp"
         android:layout_height="25dp"

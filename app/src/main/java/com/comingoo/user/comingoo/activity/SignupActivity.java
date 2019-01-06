@@ -6,6 +6,8 @@ import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -109,7 +111,7 @@ public class SignupActivity extends AppCompatActivity {
                             Toast.makeText(SignupActivity.this, resources.getString(R.string.database_checking_txt), Toast.LENGTH_SHORT).show();
                             registerButton.setVisibility(View.VISIBLE);
                         }else {
-                            String phoneNumber = "+212" + phoneNumberField.getText();
+                            String phoneNumber = "+212" + phoneNumberField.getText().toString();
                             PhoneAuthProvider.getInstance().verifyPhoneNumber(
                                     phoneNumber,        // Phone number to verify
                                     120,                 // Timeout duration

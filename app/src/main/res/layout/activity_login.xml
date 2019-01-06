@@ -62,11 +62,11 @@
             android:layout_height="wrap_content"
             android:layout_alignStart="@+id/divider"
             android:layout_centerVertical="true"
-            android:layout_marginStart="20dp"
+            android:layout_marginStart="10dp"
             android:fontFamily="@font/roboto_light"
             android:text="@string/Seconnecter"
             android:textColor="@android:color/white"
-            android:textSize="18sp" />
+            android:textSize="16sp" />
 
     </RelativeLayout>
 
