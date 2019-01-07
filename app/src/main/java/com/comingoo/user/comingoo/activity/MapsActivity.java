@@ -151,6 +151,8 @@ import java.io.File;
 import java.io.IOException;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -302,7 +304,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
     private String userId, userImage, userEmail, phoneNumber;
     private DatabaseReference rootRef;
-    private Date startTime;
+    private Date courseStartTime;
 
     private Bitmap scaleBitmap(int reqWidth, int reqHeight, int resId) {
 //        try {
@@ -775,7 +777,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 statusT = data.child("state").getValue(String.class);
                                 clientIdT = data.child("client").getValue(String.class);
                                 driverIDT = data.child("driver").getValue(String.class);
+                                String startTime = data.child("startTime").getValue(String.class);
 
+                                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+                                try {
+                                    courseStartTime = format.parse(startTime);
+                                    System.out.println(courseStartTime);
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
 
                                 driverLocT = new Location("");
                                 startLocT = new Location("");
@@ -1015,7 +1025,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             if (statusT.equals("0") && !courseScreenStageZero) {
                 confirmStart.setVisibility(View.GONE);
-                startTime = Calendar.getInstance().getTime();
 
                 if (!userLevel.equals("2")) {
                     ivCallDriver.setVisibility(View.VISIBLE);
@@ -1371,7 +1380,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         btnYesCancelRide.setTextColor(getApplicationContext().getResources().getColor(R.color.primaryLight));
                     }
 
-                    mapsActivityVM.punishment(getApplicationContext(), userId, startTime);
+                    mapsActivityVM.punishment(userId, courseStartTime);
 
                     btnNoDontCancelRide.setBackgroundColor(Color.TRANSPARENT);
                     btnNoDontCancelRide.setTextColor(Color.WHITE);
