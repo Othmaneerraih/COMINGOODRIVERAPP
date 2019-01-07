@@ -184,6 +184,7 @@
     <string name="please_enter_a_valid_promo_code">Please enter a valid promo code</string>
     <string name="confirm">Confirm</string>
     <string name="try_again_txt">Please try again</string>
+    <string name="message_waring">Please Enter Your Message</string>
     <string name="email_validation_txt">Please enter valid email address</string>
     <string name="email_warning_txt">You have no email address. Please enter a valied email address please</string>
 

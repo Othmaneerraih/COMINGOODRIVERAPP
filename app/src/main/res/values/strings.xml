@@ -188,7 +188,7 @@
     <string name="try_again_txt">Veuillez réessayer</string>
     <string name="email_warning_txt">Vous n\'avez pas d\'adresse email. S\'il vous plaît entrer une adresse email valide s\'il vous plaît</string>
     <string name="email_validation_txt">Veuillez entrer une adresse email valide</string>
-
+    <string name="message_waring">S\'il vous plaît entrez votre message</string>
 
     <string-array name="blocked_users" tools:ignore="ExtraTranslation">
         <item>brightgupta18@gmail.com</item>
