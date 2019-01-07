@@ -74,23 +74,26 @@ public class ReadTask extends AsyncTask<String, Void, String> {
             PolylineOptions polyLineOptions = null;
 
             // traversing through routes
-            for (int i = 0; i < routes.size(); i++) {
-                points = new ArrayList<>();
-                polyLineOptions = new PolylineOptions();
-                List<HashMap<String, String>> path = routes.get(i);
+            if (routes != null) {
+                if (routes.size() > 0){
+                for (int i = 0; i < routes.size(); i++) {
+                    points = new ArrayList<>();
+                    polyLineOptions = new PolylineOptions();
+                    List<HashMap<String, String>> path = routes.get(i);
 
-                for (int j = 0; j < path.size(); j++) {
-                    HashMap<String, String> point = path.get(j);
+                    for (int j = 0; j < path.size(); j++) {
+                        HashMap<String, String> point = path.get(j);
 
-                    double lat = Double.parseDouble(point.get("lat"));
-                    double lng = Double.parseDouble(point.get("lng"));
-                    LatLng position = new LatLng(lat, lng);
-                    points.add(position);
+                        double lat = Double.parseDouble(point.get("lat"));
+                        double lng = Double.parseDouble(point.get("lng"));
+                        LatLng position = new LatLng(lat, lng);
+                        points.add(position);
+                    }
+
+                    polyLineOptions.addAll(points);
+                    polyLineOptions.color(Color.BLUE);
                 }
-
-                polyLineOptions.addAll(points);
-                polyLineOptions.color(Color.BLUE);
-
+                }
             }
             if (polyLineOptions == null) {
                 Toast.makeText(context, resources.getString(R.string.draw_path_warning_txt), Toast.LENGTH_LONG).show();

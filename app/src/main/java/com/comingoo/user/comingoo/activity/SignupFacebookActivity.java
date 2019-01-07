@@ -68,8 +68,6 @@ public class SignupFacebookActivity extends AppCompatActivity {
                                     public void onCompleted(JSONObject object, GraphResponse response) {
                                         // Application code
                                         try {
-                                            Log.e(TAG, "onCompleted response: "+response.toString() );
-                                            Log.e(TAG, "onCompleted object: "+object.toString() );
                                             final String Email  = object.getString("email");
                                             final String name = Profile.getCurrentProfile().getName();
                                             final String phoneNumber = getIntent().getStringExtra("phoneNumber");

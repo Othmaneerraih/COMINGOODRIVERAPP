@@ -180,6 +180,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ProgressBar searchProgBar;
     private ProgressBar searchProgBarDest;
     public static TextView promoCode;
+    private ImageView ivPromocode;
     private MyPlaceAdapter placeAdapter;
     private FavouritePlaceAdapter fPlaceAdapter;
     private MyPlaceAdapter rPlaceAdapter;
@@ -276,7 +277,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private TextView driverNameL, iv_total_ride_number, iv_car_number, iv_total_rating_number;
     private CircularImageView driverImageL;
     private ImageView ivCallDriver, close_button;
-    private CircleImageView ivCross;
+    private ImageView ivCross;
     private ArrayList<String> driversKeys;
     private ArrayList<String> driversLocations;
     private ArrayList<String> driversKeysHold;
@@ -362,7 +363,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         carButton.setImageBitmap(scaleBitmap((int) (dpWidth / 2), 55, R.drawable.car_icon));
         selectCity.setImageBitmap(scaleBitmap(10, 15, R.drawable.city_arrow));
         destArrow.setImageBitmap(scaleBitmap(26, 190, R.drawable.arrow));
-        menuButton.setImageBitmap(scaleBitmap(45, 45, R.drawable.home_icon));
+        menuButton.setImageBitmap(scaleBitmap(35, 35, R.drawable.home_icon));
         positionButton.setImageBitmap(scaleBitmap(40, 37, R.drawable.my_position_icon));
         shadowBg.setImageBitmap(scaleBitmap((int) dpWidth, 80, R.drawable.shadow_bottom));
     }
@@ -948,7 +949,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             stopSearchUI();
             shadowBg.setVisibility(View.VISIBLE);
-            menuButton.setImageBitmap(scaleBitmap(45, 45, R.drawable.home_icon));
+            menuButton.setImageBitmap(scaleBitmap(35, 35, R.drawable.home_icon));
             menuButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -1533,12 +1534,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                         final Button star4 = view.findViewById(R.id.star4);
                                                         final Button star5 = view.findViewById(R.id.star5);
 
-                                                        final ImageButton im1 = view.findViewById(R.id.imageView4);
-                                                        final ImageButton im2 = view.findViewById(R.id.imageView5);
-                                                        final ImageButton im3 = view.findViewById(R.id.imageView6);
-                                                        final ImageButton im4 = view.findViewById(R.id.imageView7);
-                                                        final ImageButton im5 = view.findViewById(R.id.imageView8);
-
                                                         final ImageButton nextButton = view.findViewById(R.id.next);
 
                                                         final ImageView imot = view.findViewById(R.id.stars_rating);
@@ -1554,66 +1549,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                         star4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.selected_star)));
                                                         star5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(45, 45, R.drawable.unselected_star)));
                                                         imot.setImageBitmap(scaleBitmap(150, 150, R.drawable.four_stars));
-
-
-                                                        im1.setOnClickListener(new View.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(View v) {
-                                                                im1.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.belle_voiture)));
-                                                                im2.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.bonne_music_unselected)));
-                                                                im3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.exellent_service_unselected)));
-                                                                im4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.expert_en_navigation_unselected)));
-                                                                im5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.voiture_propre_unselected)));
-                                                                tagStatus = resources.getString(R.string.voirture_txt);
-                                                                ;
-
-                                                            }
-                                                        });
-                                                        im2.setOnClickListener(new View.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(View v) {
-                                                                im1.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.belle_voiture)));
-                                                                im2.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.bonne_music)));
-                                                                im3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.exellent_service_unselected)));
-                                                                im4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.expert_en_navigation_unselected)));
-                                                                im5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.voiture_propre_unselected)));
-                                                                tagStatus = resources.getString(R.string.bonne_music_txt);
-
-                                                            }
-                                                        });
-                                                        im3.setOnClickListener(new View.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(View v) {
-                                                                im1.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.belle_voiture)));
-                                                                im2.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.bonne_music_unselected)));
-                                                                im3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.exellent_service)));
-                                                                im4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.expert_en_navigation_unselected)));
-                                                                im5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.voiture_propre_unselected)));
-                                                                tagStatus = resources.getString(R.string.exilent_service_txt);
-                                                            }
-                                                        });
-                                                        im4.setOnClickListener(new View.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(View v) {
-                                                                im1.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.belle_voiture)));
-                                                                im2.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.bonne_music_unselected)));
-                                                                im3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.exellent_service_unselected)));
-                                                                im4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.expert_en_navigation)));
-                                                                im5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.voiture_propre_unselected)));
-                                                                tagStatus = resources.getString(R.string.expert_navagation_txt);
-                                                            }
-                                                        });
-                                                        im5.setOnClickListener(new View.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(View v) {
-                                                                im1.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.belle_voiture)));
-                                                                im2.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.bonne_music_unselected)));
-                                                                im3.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.exellent_service_unselected)));
-                                                                im4.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.expert_en_navigation_unselected)));
-                                                                im5.setBackground(new BitmapDrawable(getResources(), scaleBitmap(100, 100, R.drawable.voiture_propre)));
-                                                                tagStatus = resources.getString(R.string.voiture_propre_txt);
-                                                            }
-                                                        });
 
                                                         star1.setOnClickListener(new View.OnClickListener() {
                                                             @Override
@@ -2156,14 +2091,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 userEmail = email;
                 phoneNumber = number;
                 tvUserName.setText(userName);
+                if (userImage != null) {
+                    if (userImage.length() > 0) {
+                        Picasso.get().load(userImage).centerCrop().fit().into(profileImage);
+                    }
+                }
             }
         });
-
-        if (userImage != null) {
-            if (userImage.length() > 0) {
-                Picasso.get().load(userImage).centerCrop().fit().into(profileImage);
-            }
-        }
 
         AnimateConstraint.fadeOut(MapsActivity.this, findViewById(R.id.loadingScreen), 500, 10);
         new Handler().postDelayed(new Runnable() {
@@ -2198,6 +2132,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         promoCode = findViewById(R.id.promoCode);
+        ivPromocode = findViewById(R.id.iv_promo_code);
         promoCode.setText(resources.getString(R.string.promocode_txt));
         callLayout = findViewById(R.id.rl_calling);
 
@@ -2669,6 +2604,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                                 FirebaseDatabase.getInstance().getReference("clientUSERS").
                                                         child(userId).child("PROMOCODE").setValue(userPromoCode);
+                                                ivPromocode.setImageResource(R.drawable.ic_promo_code_ok);
                                                 dialog.dismiss();
                                             }
                                         }
@@ -2845,6 +2781,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         menuButton.setVisibility(View.VISIBLE);
         coverButton.setVisibility(View.VISIBLE);
         searchDestEditText.setEnabled(true);
+        searchDestEditText.setVisibility(View.VISIBLE);
 
         findViewById(R.id.locationPinDest).setVisibility(View.VISIBLE);
         mMap.clear();
@@ -2855,11 +2792,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         orderDriverState = 2;
         positionButton.setVisibility(View.GONE);
         searchDestEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-        AnimateConstraint.animate(MapsActivity.this, endConstraint, dpHeight - 40, 180, 500, selectDest,
-                findViewById(R.id.destArrow));
+        AnimateConstraint.animate(MapsActivity.this, endConstraint, dpHeight - 25,
+                180, 500, selectDest, findViewById(R.id.destArrow));
         AnimateConstraint.fadeIn(MapsActivity.this, findViewById(R.id.gooContent), 500, 10);
 
-        startConstraint.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) (dpHeight - 62),
+        startConstraint.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int) (dpHeight - 52),
                 getResources().getDisplayMetrics());
         searchButtonDest.setVisibility(View.GONE);
         state = 2;
@@ -2888,9 +2825,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View v) {
                 state = 0;
+                if (rippleBackground.isRippleAnimationRunning()) {
+                    rippleBackground.stopRippleAnimation();
+                    DatabaseReference pickupRequest = FirebaseDatabase.getInstance().
+                            getReference("PICKUPREQUEST");
+                    pickupRequest.removeValue();
+                }
                 cancelCommandLayout();
             }
         });
+
+        gooBox.setVisibility(View.VISIBLE);
+        gooButton.setVisibility(View.VISIBLE);
+        cancelRequest.setVisibility(View.GONE);
     }
 
     private void hideSelectDestUI() {
@@ -2920,7 +2867,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         findViewById(R.id.locationPinDest).setVisibility(View.GONE);
 
 
-        menuButton.setImageBitmap(scaleBitmap(45, 45, R.drawable.home_icon));
+        menuButton.setImageBitmap(scaleBitmap(35, 35, R.drawable.home_icon));
         menuButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -2971,11 +2918,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .icon(BitmapDescriptorFactory.fromBitmap(bm)));
 
         menuButton.setVisibility(View.VISIBLE);
-        menuButton.setImageBitmap(scaleBitmap(30, 30, R.drawable.back_arrow));
+        menuButton.setImageBitmap(scaleBitmap(35, 35, R.drawable.back_arrow));
         menuButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                hideSelectDestUI();
+                if (rippleBackground.isRippleAnimationRunning()) {
+                    rippleBackground.stopRippleAnimation();
+                    DatabaseReference pickupRequest = FirebaseDatabase.getInstance().
+                            getReference("PICKUPREQUEST");
+                    pickupRequest.removeValue();
+                }
+                    hideSelectDestUI();
+
             }
         });
 
@@ -4096,7 +4050,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         updateViews();
         fPlaceDataList.clear();
-        Log.e(TAG, "onResume: ");
 
 //        if (isLocationEnabled(MapsActivity.this)) {
 //            if (ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -4112,7 +4065,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
             userId = prefs.getString("userID", "");
             Log.e(TAG, "onResume: " + userId);
-            FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child("Work").addListenerForSingleValueEvent(new ValueEventListener() {
+            FirebaseDatabase.getInstance().getReference("clientUSERS").
+                    child(userId).child("favouritePlace").child("Work").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
@@ -4132,7 +4086,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 }
             });
-            FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("favouritePlace").child("Home").addListenerForSingleValueEvent(new ValueEventListener() {
+            FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId)
+                    .child("favouritePlace").child("Home").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {

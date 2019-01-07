@@ -33,8 +33,7 @@ public class MyPlaceAdapter extends RecyclerView.Adapter<MyPlaceAdapter.ViewHold
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent,
-                                         int viewType) {
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.rows_places, parent, false);
         ViewHolder vh = new ViewHolder(v);
@@ -51,8 +50,6 @@ public class MyPlaceAdapter extends RecyclerView.Adapter<MyPlaceAdapter.ViewHold
         holder.clickView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                MapsActivity.showSearchAddressStartUI();
-//                MapsActivity.goToLocation(context, Double.parseDouble(newPlace.getLat()), Double.parseDouble(newPlace.getLng()), newPlace);
                 pickLocation.pickedLocation(newPlace);
             }
         });
@@ -87,7 +84,6 @@ public class MyPlaceAdapter extends RecyclerView.Adapter<MyPlaceAdapter.ViewHold
         ViewHolder(View v) {
             super(v);
             h = v;
-
             image = v.findViewById(R.id.imageView);
             title = v.findViewById(R.id.title);
             address = v.findViewById(R.id.address);
