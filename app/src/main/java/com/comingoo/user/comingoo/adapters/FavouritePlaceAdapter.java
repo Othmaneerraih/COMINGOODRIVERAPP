@@ -35,8 +35,7 @@ public class FavouritePlaceAdapter extends RecyclerView.Adapter<FavouritePlaceAd
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent,
-                                         int viewType) {
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.rows_places, parent, false);
         ViewHolder vh = new ViewHolder(v);
@@ -62,10 +61,8 @@ public class FavouritePlaceAdapter extends RecyclerView.Adapter<FavouritePlaceAd
         });
 
         String language = context.getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
-
         Context co = LocalHelper.setLocale(context, language);
         Resources resources = co.getResources();
-
 
         if (position == 0)
             holder.title.setText(resources.getString(R.string.txt_work));

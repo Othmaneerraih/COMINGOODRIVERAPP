@@ -31,19 +31,31 @@
         android:textColor="@android:color/white"
         android:textSize="12sp" />
 
-    <TextView
-        android:id="@+id/textView10"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/code"
-        android:layout_alignStart="@+id/textView4"
-        android:fontFamily="@font/roboto_thin"
-        android:text="@string/Numérodetéléphone"
-        android:textColor="@android:color/white" />
 
-    <EditText
-        android:id="@+id/code"
-        android:layout_width="fill_parent"
+    <!--<EditText-->
+    <!--android:id="@+id/code"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_centerInParent="true"-->
+    <!--android:layout_marginStart="40dp"-->
+    <!--android:layout_marginLeft="40dp"-->
+    <!--android:layout_marginTop="16dp"-->
+    <!--android:layout_marginEnd="40dp"-->
+    <!--android:layout_marginRight="40dp"-->
+    <!--android:background="@drawable/number_field"-->
+    <!--android:ems="10"-->
+    <!--android:hint="06 XX XX XX"-->
+    <!--android:inputType="phone"-->
+    <!--android:paddingStart="10dp"-->
+    <!--android:paddingTop="10dp"-->
+    <!--android:paddingEnd="10dp"-->
+    <!--android:paddingBottom="10dp"-->
+    <!--android:textColor="@android:color/white"-->
+    <!--android:textColorHint="#488CAA" />-->
+
+    <RelativeLayout
+        android:id="@+id/rl_phone_number"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:layout_marginStart="40dp"
@@ -52,15 +64,38 @@
         android:layout_marginEnd="40dp"
         android:layout_marginRight="40dp"
         android:background="@drawable/number_field"
-        android:ems="10"
-        android:hint="06 XX XX XX"
-        android:inputType="phone"
-        android:paddingStart="10dp"
-        android:paddingTop="10dp"
-        android:paddingEnd="10dp"
-        android:paddingBottom="10dp"
-        android:textColor="@android:color/white"
-        android:textColorHint="#488CAA" />
+        android:ems="10">
+
+        <TextView
+            android:id="@+id/tv_prefix_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="3dp"
+            android:text="+212"
+            android:textColor="@android:color/white"
+            android:textColorHint="#488CAA"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/code"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="40dp"
+            android:layout_marginRight="40dp"
+            android:layout_toRightOf="@+id/tv_prefix_number"
+            android:background="@android:color/transparent"
+            android:hint="06 XX XX XX"
+            android:inputType="phone"
+            android:paddingStart="5dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="10dp"
+            android:textColor="@android:color/white"
+            android:textColorHint="#488CAA" />
+    </RelativeLayout>
 
     <ImageButton
         android:id="@+id/continuer"
@@ -71,5 +106,14 @@
         android:layout_marginBottom="16dp"
         android:background="@drawable/next_bt" />
 
+    <TextView
+        android:id="@+id/textView10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/rl_phone_number"
+        android:layout_alignStart="@+id/textView4"
+        android:fontFamily="@font/roboto_thin"
+        android:text="@string/Numérodetéléphone"
+        android:textColor="@android:color/white" />
 
 </RelativeLayout>

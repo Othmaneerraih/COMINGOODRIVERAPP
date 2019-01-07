@@ -50,11 +50,10 @@
     <string name="pénalité">*Aucune pénalité pour les commandes annulées 2 minutes aprés le confirmation.</string>
     <string name="inviteText">"We value friendship, so we encourage you to invite your friends to use Comingoo to earn points that you can then convert to Comingoo credit. "</string>
     <string name="Inviter">Refer</string>
-    <string name="SeConnecter">Sign in</string>
     <string name="signupText">"Don’t have an account? "</string>
     <string name="Sinscrire">"Sign up "</string>
     <string name="loginText">"Already have an account? "</string>
-    <string name="Seconnecter">Sign in</string>
+    <string name="Seconnecter">Continue With Facebook</string>
     <string name="Entrezvotrenumerodetéléphone">Enter your phone number</string>
     <string name="Numérodetéléphone">Phone number</string>
     <string name="unCode">A verification code has been sent to your phone number, please confirm it to continue</string>
