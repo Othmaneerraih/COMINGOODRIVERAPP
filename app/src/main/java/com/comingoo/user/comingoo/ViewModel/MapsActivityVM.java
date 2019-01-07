@@ -279,10 +279,10 @@ public class MapsActivityVM {
 //
 //    }
 
-    public void punishment(Context context, final String userId, final Date startTime) {
+    public void punishment(final String userId, final Date startTime) {
         Date currentTcurrentTimeime = Calendar.getInstance().getTime();
         if (startTime != null) {
-            long diff = startTime.getTime() - currentTcurrentTimeime.getTime();
+            long diff = currentTcurrentTimeime.getTime() - startTime.getTime();
             if (diff >= FIVE_MINUTES_DURATION) {
                 Log.e(TAG , "5 min passed");
                 FirebaseDatabase.getInstance().getReference("clientUSERS").

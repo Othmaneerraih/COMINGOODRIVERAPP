@@ -75,7 +75,7 @@ public class AideActivity extends AppCompatActivity {
         String language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
 
         Context co = LocalHelper.setLocale(AideActivity.this, language);
-       final Resources resources = co.getResources();
+        final Resources resources = co.getResources();
 
         findViewById(R.id.add_voice).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,8 +109,12 @@ public class AideActivity extends AppCompatActivity {
         findViewById(R.id.send).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new UpdateInfoAideTask(AideActivity.this, userId, imageUri, message, selectImage).execute();
-                AnimateConstraint.animate(AideActivity.this, content, 1, 250, 500);
+                if (message.getText().toString().length() == 0) {
+                    message.setError(resources.getString(R.string.message_waring));
+                } else {
+                    new UpdateInfoAideTask(AideActivity.this, userId, imageUri, message, selectImage).execute();
+                    AnimateConstraint.animate(AideActivity.this, content, 1, 250, 500);
+                }
             }
         });
 

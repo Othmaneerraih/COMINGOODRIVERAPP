@@ -28,6 +28,7 @@ public class HistoriqueActivity extends AppCompatActivity {
     private HistoriqueAdapter cAdapter;
     private List<Course> CoursesData;
     private String userId;
+    private TextView noDataTv;
 
     Context context;
     Resources resources;
@@ -37,15 +38,16 @@ public class HistoriqueActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_historique);
-        language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
 
+        language = getApplicationContext().getSharedPreferences("COMINGOOLANGUAGE", Context.MODE_PRIVATE).getString("language", "fr");
         context = LocalHelper.setLocale(HistoriqueActivity.this, language);
         resources = context.getResources();
-
-
         SharedPreferences prefs = getSharedPreferences("COMINGOOUSERDATA", MODE_PRIVATE);
         userId = prefs.getString("userID", null);
 
+        noDataTv = findViewById(R.id.no_data_txt);
+        noDataTv.setVisibility(View.GONE);
+        noDataTv.setText(resources.getString(R.string.no_data_availabl_txt));
         mLocation = FirebaseDatabase.getInstance().getReference("CLIENTFINISHEDCOURSES").child(userId);
         mLocation.keepSynced(true);
 
@@ -63,6 +65,10 @@ public class HistoriqueActivity extends AppCompatActivity {
                 finish();
             }
         });
+
+        if (CoursesData.size() > 0) {
+            noDataTv.setVisibility(View.VISIBLE);
+        }
 
         updateViews();
 

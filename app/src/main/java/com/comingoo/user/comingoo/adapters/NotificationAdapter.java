@@ -44,7 +44,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public NotificationAdapter(List<Notification> myDataset,String userId,Context context) {
+    public NotificationAdapter(List<Notification> myDataset, String userId, Context context) {
         this.mDataset = myDataset;
         this.userId = userId;
         this.context = context;
@@ -53,7 +53,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     // Create new views (invoked by the layout manager)
     @Override
     public NotificationAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                                        int viewType) {
+                                                             int viewType) {
         // create a new view
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.rows_notification, parent, false);
@@ -70,8 +70,8 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
 
         holder.title.setText(newCourse.getTitle());
         holder.content.setText(newCourse.getContent());
-        if(newCourse.getCode() != null){
-            if(newCourse.getCode().length() > 0){
+        if (newCourse.getCode() != null) {
+            if (newCourse.getCode().length() > 0) {
                 holder.promoImg.setVisibility(View.VISIBLE);
                 holder.promoCode.setVisibility(View.VISIBLE);
                 holder.apply.setVisibility(View.VISIBLE);
@@ -80,23 +80,26 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
                 holder.apply.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        try{
-                            if(newCourse != null){
-                                if (newCourse.getCode() != null){
+                        try {
+                            if (newCourse != null) {
+                                if (newCourse.getCode() != null) {
                                     MapsActivity.promoCode.setText(newCourse.getCode());
                                     MapsActivity.ivPromocode.setImageResource(R.drawable.ic_promo_code_ok);
                                     FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("PROMOCODE").setValue(newCourse.getCode());
 
-                                    ((Activity)context).finish();
+                                    ((Activity) context).finish();
                                 }
                             }
-                        }catch (Exception e){
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
 
 
                     }
                 });
+            } else {
+                holder.apply.setVisibility(View.GONE);
+                holder.promoCode.setVisibility(View.GONE);
             }
 
         }

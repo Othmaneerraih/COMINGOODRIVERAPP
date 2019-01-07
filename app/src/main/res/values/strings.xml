@@ -51,6 +51,7 @@
     <string name="promoce_expired_txt">Le code promo a expiré</string>
     <string name="promocode_validation_txt">S\'il vous plaît entrer le code promo</string>
     <string name="no_driver_txt">Aucun pilote trouvé, veuillez réessayer</string>
+    <string name="no_data_availabl_txt">Pas de données disponibles</string>
     <string name="back_exit_txt">Veuillez cliquer à nouveau sur RETOUR pour quitter.</string>
     <string name="expert_navagation_txt">navigationexpert</string>
     <string name="exilent_service_txt">excellentservice</string>
@@ -187,7 +188,7 @@
     <string name="try_again_txt">Veuillez réessayer</string>
     <string name="email_warning_txt">Vous n\'avez pas d\'adresse email. S\'il vous plaît entrer une adresse email valide s\'il vous plaît</string>
     <string name="email_validation_txt">Veuillez entrer une adresse email valide</string>
-
+    <string name="message_waring">S\'il vous plaît entrez votre message</string>
 
     <string-array name="blocked_users" tools:ignore="ExtraTranslation">
         <item>brightgupta18@gmail.com</item>
