@@ -2781,6 +2781,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         menuButton.setVisibility(View.VISIBLE);
         coverButton.setVisibility(View.VISIBLE);
         searchDestEditText.setEnabled(true);
+        searchDestEditText.setVisibility(View.VISIBLE);
 
         findViewById(R.id.locationPinDest).setVisibility(View.VISIBLE);
         mMap.clear();
@@ -2824,9 +2825,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View v) {
                 state = 0;
+                if (rippleBackground.isRippleAnimationRunning()) {
+                    rippleBackground.stopRippleAnimation();
+                    DatabaseReference pickupRequest = FirebaseDatabase.getInstance().
+                            getReference("PICKUPREQUEST");
+                    pickupRequest.removeValue();
+                }
                 cancelCommandLayout();
             }
         });
+
+        gooBox.setVisibility(View.VISIBLE);
+        gooButton.setVisibility(View.VISIBLE);
+        cancelRequest.setVisibility(View.GONE);
     }
 
     private void hideSelectDestUI() {
@@ -2911,7 +2922,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         menuButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                hideSelectDestUI();
+                if (rippleBackground.isRippleAnimationRunning()) {
+                    rippleBackground.stopRippleAnimation();
+                    DatabaseReference pickupRequest = FirebaseDatabase.getInstance().
+                            getReference("PICKUPREQUEST");
+                    pickupRequest.removeValue();
+                }
+                    hideSelectDestUI();
+
             }
         });
 
