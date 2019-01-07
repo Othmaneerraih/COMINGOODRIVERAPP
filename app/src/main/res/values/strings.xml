@@ -51,6 +51,7 @@
     <string name="promoce_expired_txt">Le code promo a expiré</string>
     <string name="promocode_validation_txt">S\'il vous plaît entrer le code promo</string>
     <string name="no_driver_txt">Aucun pilote trouvé, veuillez réessayer</string>
+    <string name="no_data_availabl_txt">Pas de données disponibles</string>
     <string name="back_exit_txt">Veuillez cliquer à nouveau sur RETOUR pour quitter.</string>
     <string name="expert_navagation_txt">navigationexpert</string>
     <string name="exilent_service_txt">excellentservice</string>

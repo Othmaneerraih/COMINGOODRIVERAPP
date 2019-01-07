@@ -186,7 +186,7 @@
     <string name="message_waring">Please Enter Your Message</string>
     <string name="email_validation_txt">Please enter valid email address</string>
     <string name="email_warning_txt">You have no email address. Please enter a valied email address please</string>
-
+    <string name="no_data_availabl_txt">No Data available</string>
     <string-array name="blocked_users" tools:ignore="ExtraTranslation">
         <item>brightgupta18@gmail.com</item>
     </string-array>
