@@ -3217,9 +3217,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         findViewById(R.id.imageView111).setVisibility(View.INVISIBLE);
 
         if (favorite.getHeight() >= HeightAbsolute)
-            AnimateConstraint.animateCollapse(MapsActivity.this, favorite, 1, HeightAbsolute, 300);
+            AnimateConstraint.animateCollapse(MapsActivity.this, favorite,fR, 1, HeightAbsolute, 300);
         if (aR.getHeight() >= HeightAbsolute)
-            AnimateConstraint.animateCollapse(MapsActivity.this, aR, 1, HeightAbsolute, 300);
+            AnimateConstraint.animateCollapse(MapsActivity.this, aR,fR, 1, HeightAbsolute, 300);
         findViewById(R.id.imageView7).setVisibility(View.INVISIBLE);
         findViewById(R.id.imageView8).setVisibility(View.INVISIBLE);
         coverButton.setVisibility(View.VISIBLE);

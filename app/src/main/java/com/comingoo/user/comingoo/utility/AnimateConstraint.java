@@ -38,6 +38,7 @@ public class AnimateConstraint {
                 constraintLayout.setLayoutParams(layoutParams);
             }
         });
+
         anim.setDuration(duration);
         anim.start();
 
@@ -86,7 +87,7 @@ public class AnimateConstraint {
         mAnimationSet.start();
     }
 
-    public static void animateCollapse(final Context context, final View constraintLayout, final float reachedHeigth, final float currentHeight, int duration) {
+    public static void animateCollapse(final Context context, final View constraintLayout,final View constraintLayout2, final float reachedHeigth, final float currentHeight, int duration) {
 
         constraintLayout.setVisibility(View.VISIBLE);
 
@@ -110,6 +111,7 @@ public class AnimateConstraint {
             public void onAnimationEnd(Animator animation)
             {
                 constraintLayout.setBackgroundColor(Color.TRANSPARENT);
+                constraintLayout2.setBackgroundColor(Color.TRANSPARENT);
             }
         });
 

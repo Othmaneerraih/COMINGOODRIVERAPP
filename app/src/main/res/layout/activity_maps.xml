@@ -563,7 +563,6 @@
         </android.support.constraint.ConstraintLayout>
 
 
-
         <ImageView
             android:id="@+id/imageView5"
             android:layout_width="match_parent"
