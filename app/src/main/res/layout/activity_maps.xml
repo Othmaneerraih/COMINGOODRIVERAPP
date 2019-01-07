@@ -1036,7 +1036,7 @@
             android:id="@+id/dest_edit_text"
             android:layout_width="match_parent"
             android:layout_height="180dp"
-            android:layout_marginBottom="10dp"
+            android:layout_marginBottom="20dp"
             android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@+id/adress_result"
             app:layout_constraintEnd_toEndOf="parent"
@@ -1688,8 +1688,6 @@
         android:layout_margin="15dp"
         android:src="@drawable/cancel"
         android:visibility="gone"
-        app:civ_border_color="@android:color/black"
-        app:civ_border_width="2dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

@@ -2091,14 +2091,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 userEmail = email;
                 phoneNumber = number;
                 tvUserName.setText(userName);
+                if (userImage != null) {
+                    if (userImage.length() > 0) {
+                        Picasso.get().load(userImage).centerCrop().fit().into(profileImage);
+                    }
+                }
             }
         });
-
-        if (userImage != null) {
-            if (userImage.length() > 0) {
-                Picasso.get().load(userImage).centerCrop().fit().into(profileImage);
-            }
-        }
 
         AnimateConstraint.fadeOut(MapsActivity.this, findViewById(R.id.loadingScreen), 500, 10);
         new Handler().postDelayed(new Runnable() {
