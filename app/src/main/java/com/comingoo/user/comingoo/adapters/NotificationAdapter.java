@@ -22,9 +22,6 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     private String userId;
     private Context context;
 
-    // Provide a reference to the views for each data item
-    // Complex data items may need more than one view per item, and
-    // you provide access to all the views for a data item in a view holder
     public class ViewHolder extends RecyclerView.ViewHolder {
         // each data item is just a string in this case
 
@@ -87,6 +84,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
                             if(newCourse != null){
                                 if (newCourse.getCode() != null){
                                     MapsActivity.promoCode.setText(newCourse.getCode());
+                                    MapsActivity.ivPromocode.setImageResource(R.drawable.ic_promo_code_ok);
                                     FirebaseDatabase.getInstance().getReference("clientUSERS").child(userId).child("PROMOCODE").setValue(newCourse.getCode());
 
                                     ((Activity)context).finish();

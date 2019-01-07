@@ -180,7 +180,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ProgressBar searchProgBar;
     private ProgressBar searchProgBarDest;
     public static TextView promoCode;
-    private ImageView ivPromocode;
+    public static ImageView ivPromocode;
     private MyPlaceAdapter placeAdapter;
     private FavouritePlaceAdapter fPlaceAdapter;
     private MyPlaceAdapter rPlaceAdapter;
@@ -362,7 +362,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         deleviryButton.setImageBitmap(scaleBitmap((int) (dpWidth / 2), 55, R.drawable.delivery_icon));
         carButton.setImageBitmap(scaleBitmap((int) (dpWidth / 2), 55, R.drawable.car_icon));
         selectCity.setImageBitmap(scaleBitmap(10, 15, R.drawable.city_arrow));
-        destArrow.setImageBitmap(scaleBitmap(26, 190, R.drawable.arrow));
+        destArrow.setImageBitmap(scaleBitmap(20, 210, R.drawable.arrow));
         menuButton.setImageBitmap(scaleBitmap(35, 35, R.drawable.home_icon));
         positionButton.setImageBitmap(scaleBitmap(40, 37, R.drawable.my_position_icon));
         shadowBg.setImageBitmap(scaleBitmap((int) dpWidth, 80, R.drawable.shadow_bottom));
@@ -943,6 +943,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 return;
             }
 
+            if (statusT.equals("5")){
+                hideSelectDestUI();
+            }
+
             if (statusT.equals("1")) {
                 callLayout.setVisibility(View.VISIBLE);
             }
@@ -1495,6 +1499,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                         dialog.setContentView(view);
                                                         TextView textView13 = view.findViewById(R.id.textView13);
                                                         TextView textView14 = view.findViewById(R.id.textView14);
+                                                        dialog.setCancelable(false);
+                                                        dialog.setCanceledOnTouchOutside(false);
 
                                                         //Set Texts
                                                         textView13.setText(resources.getString(R.string.Montanttotalàpayer));
@@ -1662,6 +1668,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                                                     View view = inflater.inflate(R.layout.dialog_finished_course_2, null, false);
                                                                                     newDialog.setContentView(view);
                                                                                     choseBox = null;
+
+                                                                                    newDialog.setCancelable(false);
+                                                                                    newDialog.setCanceledOnTouchOutside(false);
 
                                                                                     TextView textView15 = view.findViewById(R.id.textView15);
                                                                                     TextView textView16 = view.findViewById(R.id.textView16);
@@ -1891,7 +1900,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             View view = inflater.inflate(R.layout.dialog_voice_record, null, false);
             newDialog.setContentView(view);
-
+            newDialog.setCancelable(false);
+            newDialog.setCanceledOnTouchOutside(false);
             TextView textView18 = view.findViewById(R.id.tv_destination);
             TextView textView19 = view.findViewById(R.id.textView19);
             TextView textView20 = view.findViewById(R.id.textView20);
@@ -2769,9 +2779,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void cancelCommandLayout() {
         orderDriverState = 1;
-
+        findViewById(R.id.search_dest_address_button).setVisibility(View.GONE);
         searchDestEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.search_icon, 0);
-        AnimateConstraint.animate(MapsActivity.this, endConstraint, 180, dpHeight - 20, 500, selectDest, findViewById(R.id.destArrow));
+        AnimateConstraint.animate(MapsActivity.this, endConstraint, 180, dpHeight - 20,
+                500, selectDest, findViewById(R.id.destArrow));
         destArrow.setVisibility(View.GONE);
         findViewById(R.id.gooContent).setVisibility(View.GONE);
         positionButton.setVisibility(View.VISIBLE);
@@ -2792,6 +2803,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         orderDriverState = 2;
         positionButton.setVisibility(View.GONE);
         searchDestEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+        findViewById(R.id.search_dest_address_button).setVisibility(View.VISIBLE);
         AnimateConstraint.animate(MapsActivity.this, endConstraint, dpHeight - 25,
                 180, 500, selectDest, findViewById(R.id.destArrow));
         AnimateConstraint.fadeIn(MapsActivity.this, findViewById(R.id.gooContent), 500, 10);
@@ -2842,7 +2854,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void hideSelectDestUI() {
         orderDriverState = 0;
-//        callLayout.setVisibility(View.GONE);
         ivCross.setVisibility(View.GONE);
         coverButton.setClickable(true);
         voip_view.setVisibility(View.GONE);
@@ -2859,6 +2870,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         startConstraint.setVisibility(View.VISIBLE);
         searchEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.search_icon, 0);
+        findViewById(R.id.search_address_button).setVisibility(View.GONE);
 
         AnimateConstraint.animate(MapsActivity.this, startConstraint, 80, (dpHeight - 130), 500);
 
@@ -2904,6 +2916,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         AnimateConstraint.fadeIn(MapsActivity.this, selectDest, 500, 10);
 
         searchEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+        findViewById(R.id.search_address_button).setVisibility(View.VISIBLE);
 
         findViewById(R.id.locationPin).setVisibility(View.GONE);
         findViewById(R.id.closestDriver).setVisibility(View.GONE);
@@ -3017,6 +3030,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     hideKeyboard(MapsActivity.this);
                     searchEditText.clearFocus();
                     searchEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                    findViewById(R.id.search_address_button).setVisibility(View.VISIBLE);
                     return true;
                 }
                 return false;
